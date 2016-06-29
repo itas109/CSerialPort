@@ -49,3 +49,16 @@ http://blog.csdn.net/itas109
 * 修复停止位在头文件中定义成1导致SetCommState报错的问题，应为1对应的停止位是1.5。UINT stopsbits = ONESTOPBIT
 * switch(stopbits)和switch(parity)增加默认情况，增强程序健壮性
 
+by itas109 on 2016-06-22
+http://blog.csdn.net/itas109
+* 增加ReceiveStr方法，用于接收字符串（接收缓冲区有多少字符就接收多少字符）。
+       解决ReceiveChar只能接收单个字符的问题。
+
+by itas109 on 2016-06-29
+http://blog.csdn.net/itas109
+* 解决RestartMonitoring方法和StopMonitoring方法命令不准确引起的歧义，根据实际作用。
+		将RestartMonitoring更改为ResumeMonitoring，将StopMonitoring更改为SuspendMonitoring。
+* 增加IsThreadSuspend方法，用于判断线程是否挂起。
+* 改进ClosePort方法，增加线程挂起判断，解决由于线程挂起导致串口关闭死锁的问题。
+* 增加IsReceiveString宏定义，用于接收时采用单字节接收还是多字节接收
+
