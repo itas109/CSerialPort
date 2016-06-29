@@ -13,10 +13,11 @@
 **
 **  2007-12-25 mrlong    https://code.google.com/p/mycom/
 **  2011-11-06 liquanhai http://blog.csdn.net/liquanhai/article/details/6941574
-**  2013-12-04 viruscamp https://github.com/viruscamp/CSerialPort
+**  2013-12-04 viruscamp
 **  2014-01-10 itas109   http://blog.csdn.net/itas109
 **  2014-12-18 liquanhai http://blog.csdn.net/liquanhai/article/details/6941574
 **  2016-05-06 itas109   http://blog.csdn.net/itas109
+**  2016-06-22 itas109   http://blog.csdn.net/itas109
 */
 
 #include "stdafx.h"
@@ -75,7 +76,11 @@ CSerialPort::~CSerialPort()
 
 	//TRACE("Thread ended\n");
 
-	delete [] m_szWriteBuffer;
+	if(m_szWriteBuffer != NULL)
+	{
+		delete [] m_szWriteBuffer;
+		m_szWriteBuffer = NULL;
+	}
 }
 
 //
@@ -109,7 +114,7 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 						   DWORD   WriteTotalTimeoutConstant )	
 
 {
-	assert(portnr > 0 && portnr < 200);
+	assert(portnr > 0 && portnr < MaxSerialPortNum);
 	assert(pPortOwner != NULL);
 
 	// if the thread is alive: Kill
@@ -358,6 +363,7 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 	DWORD CommEvent = 0;
 	DWORD dwError = 0;
 	COMSTAT comstat;
+
 	BOOL  bResult = TRUE;
 		
 	// Clear comm buffers at startup
@@ -485,11 +491,33 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 
 				break;
 			}
+		case 1: // write event 发送数据
+			{
+				// Write character event from port
+				WriteChar(port);
+				break;
+			}
 		case 2:	// read event 将定义的各种消息发送出去
 			{
 				GetCommMask(port->m_hComm, &CommEvent);
-				if (CommEvent & EV_RXCHAR) //接收到字符，并置于输入缓冲区中 
-					ReceiveChar(port);
+				if (CommEvent & EV_RXCHAR) //接收到字符，并置于输入缓冲区中
+				{
+					if (IsReceiveString == 1)
+					{
+						ReceiveStr(port);//多字符接收
+					}
+					else if (IsReceiveString == 0)
+					{
+						ReceiveChar(port);//单字符接收
+					}
+					else
+					{
+						//默认多字符接收
+						ReceiveStr(port);//多字符接收
+					}
+					
+					
+				}
 				
 				if (CommEvent & EV_CTS) //CTS信号状态发生变化
 					::SendMessage(port->m_pOwner->m_hWnd, WM_COMM_CTS_DETECTED, (WPARAM) 0, (LPARAM) port->m_nPortNr);
@@ -504,12 +532,6 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 					
 				break;
 			}  
-		case 1: // write event 发送数据
-			{
-				// Write character event from port
-				WriteChar(port);
-				break;
-			}
 		default:
 			{
 				AfxMessageBox("接收有问题!");
@@ -533,27 +555,26 @@ BOOL CSerialPort::StartMonitoring()
 	if (!(m_Thread = ::CreateThread (NULL, 0, CommThread, this, 0, NULL )))
 		return FALSE;
 	//TRACE("Thread started\n");
-	return TRUE;	
+	return TRUE;
 }
 
 //
 // Restart the comm thread
-///复位监视线程
+///从挂起恢复监视线程
 //
-BOOL CSerialPort::RestartMonitoring()
+BOOL CSerialPort::ResumeMonitoring()
 {
 	//TRACE("Thread resumed\n");
 	//m_Thread->ResumeThread();
 	::ResumeThread(m_Thread);
-	return TRUE;	
+	return TRUE;
 }
-
 
 //
 // Suspend the comm thread
 ///挂起监视线程
 //
-BOOL CSerialPort::StopMonitoring()
+BOOL CSerialPort::SuspendMonitoring()
 {
 	//TRACE("Thread suspended\n");
 	//m_Thread->SuspendThread();
@@ -561,6 +582,16 @@ BOOL CSerialPort::StopMonitoring()
 	return TRUE;
 }
 
+BOOL CSerialPort::IsThreadSuspend(HANDLE hThread)
+{
+	DWORD   count = SuspendThread(hThread);
+	if (count == -1)
+	{
+		return FALSE;
+	}
+	ResumeThread(hThread);
+	return (count != 0);
+}
 
 //
 // If there is a error, give the right message
@@ -786,6 +817,133 @@ void CSerialPort::ReceiveChar(CSerialPort* port)
 }
 
 //
+// str received. Inform the owner
+//
+void CSerialPort::ReceiveStr(CSerialPort* port)
+{
+	BOOL  bRead = TRUE; 
+	BOOL  bResult = TRUE;
+	DWORD dwError = 0;
+	DWORD BytesRead = 0;
+	COMSTAT comstat;
+
+	for (;;) 
+	{ 
+		//add by liquanhai 2011-11-06  防止死锁
+		if(WaitForSingleObject(port->m_hShutdownEvent,0)==WAIT_OBJECT_0)
+			return;
+
+		// Gain ownership of the comm port critical section.
+		// This process guarantees no other part of this program 
+		// is using the port object. 
+
+		EnterCriticalSection(&port->m_csCommunicationSync);
+
+		// ClearCommError() will update the COMSTAT structure and
+		// clear any other errors.
+		///更新COMSTAT
+
+		bResult = ClearCommError(port->m_hComm, &dwError, &comstat);
+
+		LeaveCriticalSection(&port->m_csCommunicationSync);
+
+		// start forever loop.  I use this type of loop because I
+		// do not know at runtime how many loops this will have to
+		// run. My solution is to start a forever loop and to
+		// break out of it when I have processed all of the
+		// data available.  Be careful with this approach and
+		// be sure your loop will exit.
+		// My reasons for this are not as clear in this sample 
+		// as it is in my production code, but I have found this 
+		// solutiion to be the most efficient way to do this.
+
+		///所有字符均被读出，中断循环
+		if (comstat.cbInQue == 0)
+		{
+			// break out when all bytes have been read
+			break;
+		}
+
+		//如果遇到'\0'，那么数据会被截断，实际数据全部读取只是没有显示完全，这个时候使用memcpy才能全部获取
+		unsigned char* RXBuff = new unsigned char[comstat.cbInQue+1];
+		if(RXBuff == NULL)
+		{
+			return;
+		}
+		RXBuff[comstat.cbInQue] = '\0';//附加字符串结束符
+
+		EnterCriticalSection(&port->m_csCommunicationSync);
+
+		if (bRead)
+		{
+			///串口读出，读出缓冲区中字节
+			bResult = ReadFile(port->m_hComm,		// Handle to COMM port 
+				RXBuff,				// RX Buffer Pointer
+				comstat.cbInQue,					// Read cbInQue len byte
+				&BytesRead,			// Stores number of bytes read
+				&port->m_ov);		// pointer to the m_ov structure
+			// deal with the error code 
+			///若返回错误，错误处理
+			if (!bResult)  
+			{ 
+				switch (dwError = GetLastError()) 
+				{ 
+				case ERROR_IO_PENDING: 	
+					{ 
+						// asynchronous i/o is still in progress 
+						// Proceed on to GetOverlappedResults();
+						///异步IO仍在进行
+						bRead = FALSE;
+						break;
+					}
+				default:
+					{
+						// Another error has occured.  Process this error.
+						port->ProcessErrorMessage("ReadFile()");
+						break;
+						//return;///防止读写数据时，串口非正常断开导致死循环一直执行。add by itas109 2014-01-09 与上面liquanhai添加防死锁的代码差不多
+					} 
+				}
+			}
+			else///ReadFile返回TRUE
+			{
+				// ReadFile() returned complete. It is not necessary to call GetOverlappedResults()
+				bRead = TRUE;
+			}
+		}  // close if (bRead)
+
+		///异步IO操作仍在进行，需要调用GetOverlappedResult查询
+		if (!bRead)
+		{
+			bRead = TRUE;
+			bResult = GetOverlappedResult(port->m_hComm,	// Handle to COMM port 
+				&port->m_ov,		// Overlapped structure
+				&BytesRead,		// Stores number of bytes read
+				TRUE); 			// Wait flag
+
+			// deal with the error code 
+			if (!bResult)  
+			{
+				port->ProcessErrorMessage("GetOverlappedResults() in ReadFile()");
+			}	
+		}  // close if (!bRead)
+
+		LeaveCriticalSection(&port->m_csCommunicationSync);
+
+		// notify parent that some byte was received
+		::SendMessage((port->m_pOwner)->m_hWnd, WM_COMM_RXSTR, (WPARAM) RXBuff, (LPARAM) port->m_nPortNr);
+		//如果只有一个串口收发数据，可以传输读取长度，因为RXBuff中可能包含'\0'，ASCII为00
+		//::SendMessage((port->m_pOwner)->m_hWnd, WM_COMM_RXSTR, (WPARAM) RXBuff, BytesRead);
+		
+		//释放
+		delete[] RXBuff;
+		RXBuff = NULL;
+
+	} // end forever loop
+
+}
+
+//
 // Write a string to the port
 //
 void CSerialPort::WriteToPort(char* string)
@@ -831,10 +989,17 @@ BOOL CSerialPort::IsOpen()
 void CSerialPort::ClosePort()
 {
 	MSG message;
-	//add by liquanhai  防止死锁  2011-11-06
+
+	//增加线程挂起判断，解决由于线程挂起导致串口关闭死锁的问题 add by itas109 2016-06-29
+	if(IsThreadSuspend(m_Thread))
+	{
+		ResumeThread(m_Thread);
+	}
+
 	do
 	{
 		SetEvent(m_hShutdownEvent);
+		//add by liquanhai  防止死锁  2011-11-06
 		if(::PeekMessage(&message,m_pOwner->m_hWnd,0,0,PM_REMOVE))
 		{
 			::TranslateMessage(&message);
@@ -848,22 +1013,23 @@ void CSerialPort::ClosePort()
 		CloseHandle(m_hComm);
 		m_hComm = NULL;
 	}
-	
+
 	// Close Handles  
 	if(m_hShutdownEvent!=NULL)
 		ResetEvent(m_hShutdownEvent);
 	if(m_ov.hEvent!=NULL)
 		ResetEvent(m_ov.hEvent);
 	if(m_hWriteEvent!=NULL)
-		ResetEvent(m_hWriteEvent);			
-		
-	//delete [] m_szWriteBuffer;
-	    if(m_szWriteBuffer != NULL)
-    {
-        delete [] m_szWriteBuffer;
-        m_szWriteBuffer = NULL;
-    }
-	
+	{
+		ResetEvent(m_hWriteEvent);	
+		CloseHandle(m_hWriteEvent);
+	}
+
+	if(m_szWriteBuffer != NULL)
+	{
+		delete [] m_szWriteBuffer;
+		m_szWriteBuffer = NULL;
+	}
 }
 
 void CSerialPort::WriteToPort(char* string,int n)
@@ -926,8 +1092,6 @@ BOOL CSerialPort::RecvData(LPTSTR lpszData, const int nSize)
 		if(!ReadFile(m_hComm,lpszData,nSize,&mylen2,NULL)) 
 			return FALSE;
 		mylen += mylen2;
-
-		
 	}
 	
 	return TRUE;

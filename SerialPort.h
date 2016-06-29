@@ -55,7 +55,23 @@
 **		 参考：http://zhidao.baidu.com/link?url=RSrbPcfTZRULFFd2ziHZPBwnoXv1iCSu_Nmycb_yEw1mklT8gkoNZAkWpl3UDhk8L35DtRPo5VV5kEGpOx-Gea
 **    2) 修复停止位在头文件中定义成1导致SetCommState报错的问题，应为1对应的停止位是1.5。UINT stopsbits = ONESTOPBIT
 **    3) switch(stopbits)和switch(parity)增加默认情况，增强程序健壮性
-** 
+** ***************************************************************************************
+**  author: itas109  date:2016-06-22
+**  Blog：blog.csdn.net/itas109
+**
+**  改进
+**  1） 增加ReceiveStr方法，用于接收字符串（接收缓冲区有多少字符就接收多少字符）。
+**      解决ReceiveChar只能接收单个字符的问题。
+** ***************************************************************************************
+**  author: itas109  date:2016-06-29
+**  Blog：blog.csdn.net/itas109
+**
+**  改进
+**  1） 解决RestartMonitoring方法和StopMonitoring方法命令不准确引起的歧义，根据实际作用。
+**		将RestartMonitoring更改为ResumeMonitoring，将StopMonitoring更改为SuspendMonitoring。
+**	2)  增加IsThreadSuspend方法，用于判断线程是否挂起。
+**	3)  改进ClosePort方法，增加线程挂起判断，解决由于线程挂起导致串口关闭死锁的问题。
+**  4） 增加IsReceiveString宏定义，用于接收时采用单字节接收还是多字节接收
 */
 
 #ifndef __SERIALPORT_H__
@@ -74,8 +90,10 @@
 #define WM_COMM_RXCHAR				WM_COMM_MSG_BASE + 7	// A character was received and placed in the input buffer. 
 #define WM_COMM_RXFLAG_DETECTED		WM_COMM_MSG_BASE + 8	// The event character was received and placed in the input buffer.  
 #define WM_COMM_TXEMPTY_DETECTED	WM_COMM_MSG_BASE + 9	// The last character in the output buffer was sent.  
+#define WM_COMM_RXSTR               WM_COMM_MSG_BASE + 10   // Receive string
 
-#define MaxSerialPortNum 20   ///有效的串口总个数，不是串口的号 //add by itas109 2014-01-09
+#define MaxSerialPortNum 200   ///有效的串口总个数，不是串口的号 //add by itas109 2014-01-09
+#define IsReceiveString  1     //采用何种方式接收：ReceiveString 1多字符串接收（对应响应函数为WM_COMM_RXSTR），ReceiveString 0一个字符一个字符接收（对应响应函数为WM_COMM_RXCHAR）
 class CSerialPort
 {														 
 public:
@@ -100,8 +118,9 @@ public:
 	// start/stop comm watching
 	///控制串口监视线程
 	BOOL		 StartMonitoring();//开始监听
-	BOOL		 RestartMonitoring();//重新监听
-	BOOL		 StopMonitoring();//停止监听
+	BOOL		 ResumeMonitoring();//恢复监听
+	BOOL		 SuspendMonitoring();//挂起监听
+	BOOL         IsThreadSuspend(HANDLE hThread);//判断线程是否挂起 //add by itas109 2016-06-29
 
 	DWORD		 GetWriteBufferSize();///获取写缓冲大小
 	DWORD		 GetCommEvents();///获取事件
@@ -126,11 +145,12 @@ protected:
 	void		ProcessErrorMessage(char* ErrorText);///错误处理
 	static DWORD WINAPI CommThread(LPVOID pParam);///线程函数
 	static void	ReceiveChar(CSerialPort* port);
+	static void ReceiveStr(CSerialPort* port); //add by itas109 2016-06-22
 	static void	WriteChar(CSerialPort* port);
 
 	// thread
 	//CWinThread*			m_Thread;
-	HANDLE			  m_Thread;
+	HANDLE			    m_Thread;
 	BOOL                m_bIsSuspened;///thread监视线程是否挂起
 
 	// synchronisation objects
@@ -168,7 +188,7 @@ protected:
 	DWORD				m_dwCommEvents;
 	DWORD				m_nWriteBufferSize;///写缓冲大小
 
-	int				 m_nWriteSize;//写入字节数 //add by mrlong 2007-12-25
+	int				    m_nWriteSize;//写入字节数 //add by mrlong 2007-12-25
 };
 
 #endif __SERIALPORT_H__
