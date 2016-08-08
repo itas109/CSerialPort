@@ -33,6 +33,7 @@ https://github.com/viruscamp/CSerialPort
 
 by itas109 on 2014-01-10
 http://blog.csdn.net/itas109/article/details/18358297
+https://github.com/itas109
 * 解决COM10以上端口无法显示的问题 
 * 扩展可选择端口，最大值MaxSerialPortNum可以自定义 
 * 添加QueryKey()和Hkey2ComboBox两个方法，用于自动查询当前有效的串口号。
@@ -43,6 +44,7 @@ by liquanhai on 2014-12-18
 
 by itas109 on 2016-05-07
 http://blog.csdn.net/itas109
+https://github.com/itas109
 * 修复每次打开串口发送一次，当串口无应答时，需要关闭再打开或者接收完数据才能发送的问题。
   解决办法：在m_hEventArray中调整m_hWriteEvent的优先级高于读的优先级。CommThread(LPVOID pParam)函数中读写的位置也调换。
   参考：http://zhidao.baidu.com/link?url=RSrbPcfTZRULFFd2ziHZPBwnoXv1iCSu_Nmycb_yEw1mklT8gkoNZAkWpl3UDhk8L35DtRPo5VV5kEGpOx-Gea
@@ -51,14 +53,31 @@ http://blog.csdn.net/itas109
 
 by itas109 on 2016-06-22
 http://blog.csdn.net/itas109
+https://github.com/itas109
 * 增加ReceiveStr方法，用于接收字符串（接收缓冲区有多少字符就接收多少字符）。
        解决ReceiveChar只能接收单个字符的问题。
 
 by itas109 on 2016-06-29
 http://blog.csdn.net/itas109
+https://github.com/itas109
 * 解决RestartMonitoring方法和StopMonitoring方法命令不准确引起的歧义，根据实际作用。
 		将RestartMonitoring更改为ResumeMonitoring，将StopMonitoring更改为SuspendMonitoring。
 * 增加IsThreadSuspend方法，用于判断线程是否挂起。
 * 改进ClosePort方法，增加线程挂起判断，解决由于线程挂起导致串口关闭死锁的问题。
 * 增加IsReceiveString宏定义，用于接收时采用单字节接收还是多字节接收
 
+by itas109 on 2016-08-02
+http://blog.csdn.net/itas109
+https://github.com/itas109
+* 改进IsOpen方法，m_hComm增加INVALID_HANDLE_VALUE的情况，因为CreateFile方法失败返回的是INVALID_HANDLE_VALUE，不是NULL
+* 改进ClosePort方法：增加串口句柄无效的判断(防止关闭死锁)；m_hWriteEvent不使用CloseHandle关闭
+* 改进CommThread、ReceiveChar、ReceiveStr和WriteChar方法中异常处理的判断，增加三种判断：串口打开失败(error code:ERROR_INVALID_HANDLE)、连接过程中非法断开(error code:ERROR_BAD_COMMAND)和拒绝访问(error code:ERROR_ACCESS_DENIED)
+* 采用安全函数sprintf_s和strcpy_s函数替换掉sprintf和strcpy
+* 改进QueryKey方法，用于查询注册表的可用串口值，可以搜索到任意的可用串口
+* 改进InitPort方法，串口打开失败，增加提示信息:串口不存在(error code:ERROR_FILE_NOT_FOUND)和串口拒绝访问(error code:ERROR_ACCESS_DENIED)
+* 加入viruscamp 取消对 MFC 的依赖
+* 改进InitPort方法，如果上次串口是打开，再次调用InitPort方法，关闭串口需要做一定的延时，否则有几率导致ERROR_ACCESS_DENIED拒绝访问，也就是串口占用问题
+* 初始化默认波特率修改为9600
+* 修复一些释放的BUG
+* 规范了一些错误信息，参考winerror.h --  error code definitions for the Win32 API functions
+* 删除SendData和RecvData方法
