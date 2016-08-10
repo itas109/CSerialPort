@@ -81,3 +81,8 @@ https://github.com/itas109
 * 修复一些释放的BUG
 * 规范了一些错误信息，参考winerror.h --  error code definitions for the Win32 API functions
 * 删除SendData和RecvData方法
+
+by itas109 on 2016-08-10
+http://blog.csdn.net/itas109
+https://github.com/itas109
+*  改进ReceiveStr方法，comstat.cbInQue = 0xcccccccc的情况（如串口异常断开），会导致RXBuff初始化失败
