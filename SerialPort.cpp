@@ -20,6 +20,7 @@
 **  2016-06-22 itas109   http://blog.csdn.net/itas109
 **  2016-06-29 itas109   http://blog.csdn.net/itas109
 **  2016-08-02 itas109   http://blog.csdn.net/itas109
+**  2016-08-10 itas109   http://blog.csdn.net/itas109
 */
 
 #include "stdafx.h"
@@ -228,7 +229,7 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 	*/
 	// now it critical!
 	EnterCriticalSection(&m_csCommunicationSync);
-	
+
 	// if the port is already opened: close it
 	///串口已打开就关掉
 	if (m_hComm != NULL)
@@ -236,7 +237,7 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 		CloseHandle(m_hComm);
 		m_hComm = NULL;
 	}
-	
+
 	// prepare port strings
 	sprintf_s(szPort,50, "\\\\.\\COM%d", portnr);///可以显示COM10以上端口//add by itas109 2014-01-09
 
@@ -995,7 +996,8 @@ void CSerialPort::ReceiveStr(CSerialPort* port)
 		// solutiion to be the most efficient way to do this.
 
 		///所有字符均被读出，中断循环
-		if (comstat.cbInQue == 0)
+		//0xcccccccc表示串口异常了，会导致RXBuff指针初始化错误
+		if (comstat.cbInQue == 0 || comstat.cbInQue == 0xcccccccc)
 		{
 			// break out when all bytes have been read
 			break;
