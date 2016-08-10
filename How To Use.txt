@@ -21,7 +21,7 @@ void OnClose()
 {
 	// TODO: Add your message handler code here and/or call default
 
-	//comQR.StopMonitoring();//这个函数不需添加，会挂起线程，直接调用ClosePort
+	//comQR.StopMonitoring();//这个函数不需添加，会挂起线程(后面已经修复)，直接调用ClosePort
 
 	if (comQR.IsOpen())
 	{
