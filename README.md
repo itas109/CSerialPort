@@ -86,3 +86,12 @@ by itas109 on 2016-08-10
 http://blog.csdn.net/itas109
 https://github.com/itas109
 *  改进ReceiveStr方法，comstat.cbInQue = 0xcccccccc的情况（如串口异常断开），会导致RXBuff初始化失败
+
+by itas109 on 2017-02-14
+http://blog.csdn.net/itas109
+https://github.com/itas109
+* 兼容ASCII和UNICODE编码
+* ReceiveStr函数中发送函数SendMessage的第二个参数采用结构体形式，包括portNr串口号和bytesRead读取的字节数，可以处理16进制的时候0x00截断问题
+* 精简不必要的函数SendData和RecvData
+* 尽量的取消对 MFC 的依赖，Hkey2ComboBox函数暂时保留
+* 其他小问题修改

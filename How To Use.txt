@@ -1,6 +1,12 @@
-1、ON_MESSAGE(WM_COMM_RXSTR, &CtkrrfaceDlg::OnReceiveString)
+1.串口开启
+if (m_SerialPort.InitPort(this->GetSafeHwnd(), SelPortNO)//串口号
+{
+	m_SerialPort.StartMonitoring();//启动监听
+}
 
-2、LRESULT CtkrrfaceDlg::OnReceiveString(WPARAM str, LPARAM port)///接收消息响应函数
+2.ON_MESSAGE(WM_COMM_RXSTR, &CtkrrfaceDlg::OnReceiveString)
+
+3.LRESULT CtkrrfaceDlg::OnReceiveString(WPARAM str, LPARAM port)///接收消息响应函数
 {
 char dest[13];
 //char des[13];
@@ -8,15 +14,11 @@ memcpy(dest,(char*)str,13*sizeof(char));//13为字符长度，需要修改
 ...
 }
 
-3、如果要转换单字节和多字节接收，可以修改宏定义
+4.如果要转换单字节和多字节接收，可以修改宏定义
 #define IsReceiveString  1
 ReceiveString 1多字符串接收（对应响应函数为WM_COMM_RXSTR），ReceiveString 0一个字符一个字符接收（对应响应函数为WM_COMM_RXCHAR）
 
-4、
-//如果只有一个串口收发数据，可以传输读取长度，因为RXBuff中可能包含'\0'，ASCII为00
-		//::SendMessage((port->m_pOwner)->m_hWnd, WM_COMM_RXSTR, (WPARAM) RXBuff, BytesRead);
-
-5、串口关闭函数
+5.串口关闭函数
 void OnClose()
 {
 	// TODO: Add your message handler code here and/or call default
