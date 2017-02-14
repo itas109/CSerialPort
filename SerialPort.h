@@ -36,7 +36,7 @@
 **	3) 修改 InitPort 中 portnr 取值范围，portnr>9 时特殊处理
 **	4) 取消对 MFC 的依赖，使用 HWND 替代 CWnd，使用 win32 thread 函数而不是 MFC 的
 **	5) 增加用户消息编号自定义，方法来自 CnComm
-*************************************************************************************** 
+***************************************************************************************
 ***************************************************************************************
 **  author: itas109  date:2014-01-10
 **  Blog：blog.csdn.net/itas109
@@ -92,48 +92,63 @@
 **  Blog：blog.csdn.net/itas109
 **  改进
 **  1） 改进ReceiveStr方法，comstat.cbInQue = 0xcccccccc的情况（如串口异常断开），会导致RXBuff初始化失败
+** ***************************************************************************************
+**  author: itas109  date:2017-02-14
+**  Blog：blog.csdn.net/itas109
+**  改进
+**  1)  兼容ASCII和UNICODE编码
+**  2)  ReceiveStr函数中发送函数SendMessage的第二个参数采用结构体形式，包括portNr串口号和bytesRead读取的字节数，可以处理16进制的时候0x00截断问题
+**  3)  精简不必要的函数SendData和RecvData
+**  4)  尽量的取消对 MFC 的依赖，Hkey2ComboBox函数暂时保留
+**  5)  其他小问题修改
 */
 
 #ifndef __SERIALPORT_H__
 #define __SERIALPORT_H__
 
-#ifndef WM_COMM_MSG_BASE 
-	#define WM_COMM_MSG_BASE		WM_USER + 617		//!< 消息编号的基点  
+struct serialPortInfo
+{
+	UINT portNr;//串口号
+	DWORD bytesRead;//读取的字节数
+};
+
+#ifndef Wm_SerialPort_MSG_BASE 
+#define Wm_SerialPort_MSG_BASE		WM_USER + 617		//!< 消息编号的基点  
 #endif
 
-#define WM_COMM_BREAK_DETECTED		WM_COMM_MSG_BASE + 1	// A break was detected on input.
-#define WM_COMM_CTS_DETECTED		WM_COMM_MSG_BASE + 2	// The CTS (clear-to-send) signal changed state. 
-#define WM_COMM_DSR_DETECTED		WM_COMM_MSG_BASE + 3	// The DSR (data-set-ready) signal changed state. 
-#define WM_COMM_ERR_DETECTED		WM_COMM_MSG_BASE + 4	// A line-status error occurred. Line-status errors are CE_FRAME, CE_OVERRUN, and CE_RXPARITY. 
-#define WM_COMM_RING_DETECTED		WM_COMM_MSG_BASE + 5	// A ring indicator was detected. 
-#define WM_COMM_RLSD_DETECTED		WM_COMM_MSG_BASE + 6	// The RLSD (receive-line-signal-detect) signal changed state. 
-#define WM_COMM_RXCHAR				WM_COMM_MSG_BASE + 7	// A character was received and placed in the input buffer. 
-#define WM_COMM_RXFLAG_DETECTED		WM_COMM_MSG_BASE + 8	// The event character was received and placed in the input buffer.  
-#define WM_COMM_TXEMPTY_DETECTED	WM_COMM_MSG_BASE + 9	// The last character in the output buffer was sent.  
-#define WM_COMM_RXSTR               WM_COMM_MSG_BASE + 10   // Receive string
+#define Wm_SerialPort_BREAK_DETECTED		Wm_SerialPort_MSG_BASE + 1	// A break was detected on input.
+#define Wm_SerialPort_CTS_DETECTED		Wm_SerialPort_MSG_BASE + 2	// The CTS (clear-to-send) signal changed state. 
+#define Wm_SerialPort_DSR_DETECTED		Wm_SerialPort_MSG_BASE + 3	// The DSR (data-set-ready) signal changed state. 
+#define Wm_SerialPort_ERR_DETECTED		Wm_SerialPort_MSG_BASE + 4	// A line-status error occurred. Line-status errors are CE_FRAME, CE_OVERRUN, and CE_RXPARITY. 
+#define Wm_SerialPort_RING_DETECTED		Wm_SerialPort_MSG_BASE + 5	// A ring indicator was detected. 
+#define Wm_SerialPort_RLSD_DETECTED		Wm_SerialPort_MSG_BASE + 6	// The RLSD (receive-line-signal-detect) signal changed state. 
+#define Wm_SerialPort_RXCHAR				Wm_SerialPort_MSG_BASE + 7	// A character was received and placed in the input buffer. 
+#define Wm_SerialPort_RXFLAG_DETECTED		Wm_SerialPort_MSG_BASE + 8	// The event character was received and placed in the input buffer.  
+#define Wm_SerialPort_TXEMPTY_DETECTED	Wm_SerialPort_MSG_BASE + 9	// The last character in the output buffer was sent.  
+#define Wm_SerialPort_RXSTR               Wm_SerialPort_MSG_BASE + 10   // Receive string
 
 #define MaxSerialPortNum 200   ///有效的串口总个数，不是串口的号 //add by itas109 2014-01-09
-#define IsReceiveString  1     //采用何种方式接收：ReceiveString 1多字符串接收（对应响应函数为WM_COMM_RXSTR），ReceiveString 0一个字符一个字符接收（对应响应函数为WM_COMM_RXCHAR）
+#define IsReceiveString  1     //采用何种方式接收：ReceiveString 1多字符串接收（对应响应函数为Wm_SerialPort_RXSTR），ReceiveString 0一个字符一个字符接收（对应响应函数为Wm_SerialPort_RXCHAR）
 class CSerialPort
-{				 
+{
 public:
 	// contruction and destruction
 	CSerialPort();
-	virtual		~CSerialPort(   );
+	virtual		~CSerialPort();
 
 	// port initialisation		
 	// UINT stopsbits = ONESTOPBIT   stop is index 0 = 1 1=1.5 2=2 
 	// 切记：stopsbits = 1，不是停止位为1。
 	// by itas109 20160506
-	BOOL		InitPort(HWND pPortOwner, UINT portnr = 1, UINT baud = 9600, 
-				char parity = 'N', UINT databits = 8, UINT stopsbits = ONESTOPBIT, 
-				DWORD dwCommEvents = EV_RXCHAR | EV_CTS, UINT nBufferSize = 512,
-			
-				DWORD ReadIntervalTimeout = 1000,
-				DWORD ReadTotalTimeoutMultiplier = 1000,
-				DWORD ReadTotalTimeoutConstant = 1000,
-				DWORD WriteTotalTimeoutMultiplier = 1000,
-				DWORD WriteTotalTimeoutConstant = 1000);
+	BOOL		InitPort(HWND pPortOwner, UINT portnr = 1, UINT baud = 9600,
+		TCHAR parity = _T('N'), UINT databits = 8, UINT stopsbits = ONESTOPBIT,
+		DWORD dwCommEvents = EV_RXCHAR | EV_CTS, UINT nBufferSize = 512,
+
+		DWORD ReadIntervalTimeout = 1000,
+		DWORD ReadTotalTimeoutMultiplier = 1000,
+		DWORD ReadTotalTimeoutConstant = 1000,
+		DWORD WriteTotalTimeoutMultiplier = 1000,
+		DWORD WriteTotalTimeoutConstant = 1000);
 
 	// start/stop comm watching
 	///控制串口监视线程
@@ -146,30 +161,24 @@ public:
 	DWORD		 GetCommEvents();///获取事件
 	DCB			 GetDCB();///获取DCB
 
-///写数据到串口
-	void		WriteToPort(char* string);
-	void		WriteToPort(char* string,int n); // add by mrlong 2007-12-25
-	void		WriteToPort(LPCTSTR string);	 // add by mrlong 2007-12-25
-    void		WriteToPort(LPCTSTR string,int n);//add by mrlong 2007-12-2
-	void		WriteToPort(BYTE* Buffer, int n);// add by mrlong
+	///写数据到串口
+	void		WriteToPort(char* string, size_t n); // add by mrlong 2007-12-25
+	void		WriteToPort(PBYTE Buffer, size_t n);// add by mrlong
 	void		ClosePort();					 // add by mrlong 2007-12-2  
 	BOOL		IsOpen();
 
-	//void SendData(LPCTSTR lpszData, const int nLength);   //串口发送函数 by mrlong 2008-2-15
-	//BOOL RecvData(LPTSTR lpszData, const int nSize);	  //串口接收函数 by mrlong 2008-2-15
 	void QueryKey(HKEY hKey);///查询注册表的串口号，将值存于数组中
 	void Hkey2ComboBox(CComboBox& m_PortNO);///将QueryKey查询到的串口号添加到CComboBox控件中
 
 protected:
 	// protected memberfunctions
-	void		ProcessErrorMessage(char* ErrorText);///错误处理
+	void		ProcessErrorMessage(TCHAR* ErrorText);///错误处理
 	static DWORD WINAPI CommThread(LPVOID pParam);///线程函数
 	static void	ReceiveChar(CSerialPort* port);
 	static void ReceiveStr(CSerialPort* port); //add by itas109 2016-06-22
 	static void	WriteChar(CSerialPort* port);
 
 	// thread
-	//CWinThread*			m_Thread;
 	HANDLE			    m_Thread;
 	BOOL                m_bIsSuspened;///thread监视线程是否挂起
 
@@ -194,21 +203,19 @@ protected:
 
 	// structures
 	OVERLAPPED			m_ov;///异步I/O
-	COMMTIMEOUTS		m_CommTimeouts;///超时设置
+	COMMTIMEOUTS		m_SerialPortTimeouts;///超时设置
 	DCB					m_dcb;///设备控制块
 
 	// owner window
-	//CWnd*				m_pOwner;
 	HWND				m_pOwner;
-
 
 	// misc
 	UINT				m_nPortNr;		///串口号
-	char*				m_szWriteBuffer;///写缓冲区
+	PBYTE				m_szWriteBuffer;///写缓冲区
 	DWORD				m_dwCommEvents;
 	DWORD				m_nWriteBufferSize;///写缓冲大小
 
-	int				    m_nWriteSize;//写入字节数 //add by mrlong 2007-12-25
+	size_t				m_nWriteSize;//写入字节数 //add by mrlong 2007-12-25
 };
 
 #endif __SERIALPORT_H__

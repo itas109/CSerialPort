@@ -21,6 +21,7 @@
 **  2016-06-29 itas109   http://blog.csdn.net/itas109
 **  2016-08-02 itas109   http://blog.csdn.net/itas109
 **  2016-08-10 itas109   http://blog.csdn.net/itas109
+**  2017-02-14 itas109   http://blog.csdn.net/itas109
 */
 
 #include "stdafx.h"
@@ -61,13 +62,13 @@ CSerialPort::~CSerialPort()
 	MSG message;
 
 	//增加线程挂起判断，解决由于线程挂起导致串口关闭死锁的问题 add by itas109 2016-06-29
-	if(IsThreadSuspend(m_Thread))
+	if (IsThreadSuspend(m_Thread))
 	{
 		ResumeThread(m_Thread);
 	}
 
 	//串口句柄无效  add by itas109 2016-07-29
-	if(m_hComm == INVALID_HANDLE_VALUE)
+	if (m_hComm == INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(m_hComm);
 		m_hComm = NULL;
@@ -78,7 +79,7 @@ CSerialPort::~CSerialPort()
 	{
 		SetEvent(m_hShutdownEvent);
 		//add by liquanhai  防止死锁  2011-11-06
-		if(::PeekMessage(&message,m_pOwner,0,0,PM_REMOVE))
+		if (::PeekMessage(&message, m_pOwner, 0, 0, PM_REMOVE))
 		{
 			::TranslateMessage(&message);
 			::DispatchMessage(&message);
@@ -92,18 +93,18 @@ CSerialPort::~CSerialPort()
 		m_hComm = NULL;
 	}
 	// Close Handles  
-	if(m_hShutdownEvent!=NULL)
-		CloseHandle( m_hShutdownEvent); 
-	if(m_ov.hEvent!=NULL)
-		CloseHandle( m_ov.hEvent ); 
-	if(m_hWriteEvent!=NULL)
-		CloseHandle( m_hWriteEvent ); 
+	if (m_hShutdownEvent != NULL)
+		CloseHandle(m_hShutdownEvent);
+	if (m_ov.hEvent != NULL)
+		CloseHandle(m_ov.hEvent);
+	if (m_hWriteEvent != NULL)
+		CloseHandle(m_hWriteEvent);
 
 	//TRACE("Thread ended\n");
 
-	if(m_szWriteBuffer != NULL)
+	if (m_szWriteBuffer != NULL)
 	{
-		delete [] m_szWriteBuffer;
+		delete[] m_szWriteBuffer;
 		m_szWriteBuffer = NULL;
 	}
 }
@@ -126,7 +127,7 @@ CSerialPort::~CSerialPort()
 BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (receives message)
 	UINT  portnr,		// portnumber (1..MaxSerialPortNum)
 	UINT  baud,			// baudrate
-	char  parity,		// parity 
+	TCHAR  parity,		// parity 
 	UINT  databits,		// databits 
 	UINT  stopbits,		// stopbits 
 	DWORD dwCommEvents,	// EV_RXCHAR, EV_CTS etc
@@ -136,7 +137,7 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 	DWORD   ReadTotalTimeoutMultiplier,
 	DWORD   ReadTotalTimeoutConstant,
 	DWORD   WriteTotalTimeoutMultiplier,
-	DWORD   WriteTotalTimeoutConstant )	
+	DWORD   WriteTotalTimeoutConstant)
 
 {
 	assert(portnr > 0 && portnr < MaxSerialPortNum);
@@ -145,7 +146,7 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 	MSG message;
 
 	//增加线程挂起判断，解决由于线程挂起导致串口关闭死锁的问题 add by itas109 2016-06-29
-	if(IsThreadSuspend(m_Thread))
+	if (IsThreadSuspend(m_Thread))
 	{
 		ResumeThread(m_Thread);
 	}
@@ -157,7 +158,7 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 		{
 			SetEvent(m_hShutdownEvent);
 			//add by liquanhai  防止死锁  2011-11-06
-			if(::PeekMessage(&message,m_pOwner,0,0,PM_REMOVE))
+			if (::PeekMessage(&message, m_pOwner, 0, 0, PM_REMOVE))
 			{
 				::TranslateMessage(&message);
 				::DispatchMessage(&message);
@@ -205,12 +206,12 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 	// set buffersize for writing and save the owner
 	m_pOwner = pPortOwner;
 
-	if(m_szWriteBuffer != NULL)
+	if (m_szWriteBuffer != NULL)
 	{
-		delete [] m_szWriteBuffer;
+		delete[] m_szWriteBuffer;
 		m_szWriteBuffer = NULL;
 	}
-	m_szWriteBuffer = new char[writebuffersize];
+	m_szWriteBuffer = new BYTE[writebuffersize];
 
 	m_nPortNr = portnr;
 
@@ -218,8 +219,8 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 	m_dwCommEvents = dwCommEvents;
 
 	BOOL bResult = FALSE;
-	char *szPort = new char[50];
-	char *szBaud = new char[50];
+	TCHAR *szPort = new TCHAR[MAX_PATH];
+	TCHAR *szBaud = new TCHAR[MAX_PATH];
 
 	/*
 	多个线程操作相同的数据时，一般是需要按顺序访问的，否则会引导数据错乱，
@@ -239,12 +240,12 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 	}
 
 	// prepare port strings
-	sprintf_s(szPort,50, "\\\\.\\COM%d", portnr);///可以显示COM10以上端口//add by itas109 2014-01-09
+	_stprintf_s(szPort, MAX_PATH, _T("\\\\.\\COM%d"), portnr);///可以显示COM10以上端口//add by itas109 2014-01-09
 
 	// stop is index 0 = 1 1=1.5 2=2
 	int mystop;
 	int myparity;
-	switch(stopbits)
+	switch (stopbits)
 	{
 	case 0:
 		mystop = ONESTOPBIT;
@@ -263,22 +264,22 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 		break;
 	}
 	myparity = 0;
-	parity = toupper(parity);
-	switch(parity)
+	parity = _totupper(parity);
+	switch (parity)
 	{
-	case 'N':
+	case _T('N'):
 		myparity = 0;
 		break;
-	case 'O':
+	case _T('O'):
 		myparity = 1;
 		break;
-	case 'E':
+	case _T('E'):
 		myparity = 2;
 		break;
-	case 'M':
+	case _T('M'):
 		myparity = 3;
 		break;
-	case 'S':
+	case _T('S'):
 		myparity = 4;
 		break;
 		//增加默认情况。
@@ -287,7 +288,7 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 		myparity = 0;
 		break;
 	}
-	sprintf_s(szBaud,50, "baud=%d parity=%c data=%d stop=%d", baud, parity, databits, mystop);
+	_stprintf_s(szBaud, MAX_PATH, _T("baud=%d parity=%c data=%d stop=%d"), baud, parity, databits, mystop);
 
 	// get a handle to the port
 	/*
@@ -314,47 +315,47 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 	{
 		//add by itas109 2016-08-02
 		//串口打开失败，增加提示信息
-		switch(GetLastError())
+		switch (GetLastError())
 		{
 			//串口不存在
 		case ERROR_FILE_NOT_FOUND:
-			{
-				CString str;
-				str.Format("COM%d ERROR_FILE_NOT_FOUND,Error Code:%d",portnr,GetLastError());
-				AfxMessageBox(str);
-				break;
-			}
+		{
+									 TCHAR Temp[200] = { 0 };
+									 _stprintf_s(Temp, 200, _T("COM%d ERROR_FILE_NOT_FOUND,Error Code:%d"), portnr, GetLastError());
+									 MessageBox(NULL, Temp, _T("COM InitPort Error"), MB_ICONERROR);
+									 break;
+		}
 			//串口拒绝访问
 		case ERROR_ACCESS_DENIED:
-			{
-				CString str;
-				str.Format("COM%d ERROR_ACCESS_DENIED,Error Code:%d",portnr,GetLastError());
-				AfxMessageBox(str);
-				break;
-			}
+		{
+									TCHAR Temp[200] = { 0 };
+									_stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED,Error Code:%d"), portnr, GetLastError());
+									MessageBox(NULL, Temp, _T("COM InitPort Error"), MB_ICONERROR);
+									break;
+		}
 		default:
 			break;
 		}
 		// port not found
-		delete [] szPort;
-		delete [] szBaud;
+		delete[] szPort;
+		delete[] szBaud;
 
 		return FALSE;
 	}
 
 	// set the timeout values
 	///设置超时
-	m_CommTimeouts.ReadIntervalTimeout		 = ReadIntervalTimeout * 1000;
-	m_CommTimeouts.ReadTotalTimeoutMultiplier  = ReadTotalTimeoutMultiplier * 1000;
-	m_CommTimeouts.ReadTotalTimeoutConstant	= ReadTotalTimeoutConstant * 1000;
-	m_CommTimeouts.WriteTotalTimeoutMultiplier = WriteTotalTimeoutMultiplier * 1000;
-	m_CommTimeouts.WriteTotalTimeoutConstant   = WriteTotalTimeoutConstant * 1000;
+	m_SerialPortTimeouts.ReadIntervalTimeout = ReadIntervalTimeout * 1000;
+	m_SerialPortTimeouts.ReadTotalTimeoutMultiplier = ReadTotalTimeoutMultiplier * 1000;
+	m_SerialPortTimeouts.ReadTotalTimeoutConstant = ReadTotalTimeoutConstant * 1000;
+	m_SerialPortTimeouts.WriteTotalTimeoutMultiplier = WriteTotalTimeoutMultiplier * 1000;
+	m_SerialPortTimeouts.WriteTotalTimeoutConstant = WriteTotalTimeoutConstant * 1000;
 
 	// configure
 	///配置
 	///分别调用Windows API设置串口参数
-	if (SetCommTimeouts(m_hComm, &m_CommTimeouts))///设置超时
-	{						   
+	if (SetCommTimeouts(m_hComm, &m_SerialPortTimeouts))///设置超时
+	{
 		/*
 		若对端口数据的响应时间要求较严格，可采用事件驱动方式。
 		事件驱动方式通过设置事件通知，当所希望的事件发生时，Windows
@@ -374,7 +375,7 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 				m_dcb.EvtChar = 'q';
 				m_dcb.fRtsControl = RTS_CONTROL_ENABLE;		// set RTS bit high!
 				m_dcb.BaudRate = baud;  // add by mrlong
-				m_dcb.Parity   = myparity;
+				m_dcb.Parity = myparity;
 				m_dcb.ByteSize = databits;
 				m_dcb.StopBits = mystop;
 
@@ -383,22 +384,22 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 				if (SetCommState(m_hComm, &m_dcb))///配置DCB
 					; // normal operation... continue
 				else
-					ProcessErrorMessage("SetCommState()");
+					ProcessErrorMessage(_T("SetCommState()"));
 				//}
 				//else
 				//	ProcessErrorMessage("BuildCommDCB()");
 			}
 			else
-				ProcessErrorMessage("GetCommState()");
+				ProcessErrorMessage(_T("GetCommState()"));
 		}
 		else
-			ProcessErrorMessage("SetCommMask()");
+			ProcessErrorMessage(_T("SetCommMask()"));
 	}
 	else
-		ProcessErrorMessage("SetCommTimeouts()");
+		ProcessErrorMessage(_T("SetCommTimeouts()"));
 
-	delete [] szPort;
-	delete [] szBaud;
+	delete[] szPort;
+	delete[] szBaud;
 
 	// flush the port
 	///终止读写并清空接收和发送
@@ -428,10 +429,10 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 	// Set the status variable in the dialog class to
 	// TRUE to indicate the thread is running.
 	///TRUE表示线程正在运行
-	port->m_bThreadAlive = TRUE;	
+	port->m_bThreadAlive = TRUE;
 
 	// Misc. variables
-	DWORD BytesTransfered = 0; 
+	DWORD BytesTransfered = 0;
 	DWORD Event = 0;
 	DWORD CommEvent = 0;
 	DWORD dwError = 0;
@@ -446,8 +447,8 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 
 	// begin forever loop.  This loop will run as long as the thread is alive.
 	///只要线程存在就不断读取数据
-	for (;;) 
-	{ 
+	for (;;)
+	{
 
 		// Make a call to WaitCommEvent().  This call will return immediatly
 		// because our port was created as an async port (FILE_FLAG_OVERLAPPED
@@ -470,57 +471,57 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 
 		bResult = WaitCommEvent(port->m_hComm, &Event, &port->m_ov);///表示该函数是异步的
 
-		if (!bResult)  
-		{ 
+		if (!bResult)
+		{
 			// If WaitCommEvent() returns FALSE, process the last error to determin
 			// the reason..
 			///如果WaitCommEvent返回Error为FALSE，则查询错误信息
-			switch (dwError = GetLastError()) 
-			{ 
+			switch (dwError = GetLastError())
+			{
 			case ERROR_IO_PENDING: 	///正常情况，没有字符可读 erroe code:997
-				{ 
-					// This is a normal return value if there are no bytes
-					// to read at the port.
-					// Do nothing and continue
-					break;
-				}
+			{
+										// This is a normal return value if there are no bytes
+										// to read at the port.
+										// Do nothing and continue
+										break;
+			}
 			case ERROR_INVALID_PARAMETER:///系统错误 erroe code:87
-				{
-					// Under Windows NT, this value is returned for some reason.
-					// I have not investigated why, but it is also a valid reply
-					// Also do nothing and continue.
-					break;
-				}
+			{
+											 // Under Windows NT, this value is returned for some reason.
+											 // I have not investigated why, but it is also a valid reply
+											 // Also do nothing and continue.
+											 break;
+			}
 			case ERROR_ACCESS_DENIED:///拒绝访问 erroe code:5
-				{
-					port->m_hComm = INVALID_HANDLE_VALUE;
-					CString str;
-					str.Format("COM%d ERROR_ACCESS_DENIED，WaitCommEvent() Error Code:%d",port->m_nPortNr,GetLastError());
-					AfxMessageBox(str);
-					break;
-				}
+			{
+										 port->m_hComm = INVALID_HANDLE_VALUE;
+										 TCHAR Temp[200] = { 0 };
+										 _stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED，WaitCommEvent() Error Code:%d"), port->m_nPortNr, GetLastError());
+										 MessageBox(NULL, Temp, _T("COM WaitCommEvent Error"), MB_ICONERROR);
+										 break;
+			}
 			case ERROR_INVALID_HANDLE:///打开串口失败 erroe code:6
-				{
-					port->m_hComm = INVALID_HANDLE_VALUE;
-					break;
-				}
+			{
+										  port->m_hComm = INVALID_HANDLE_VALUE;
+										  break;
+			}
 			case ERROR_BAD_COMMAND:///连接过程中非法断开 erroe code:22
-				{
-					port->m_hComm = INVALID_HANDLE_VALUE;
-					CString str;
-					str.Format("COM%d ERROR_BAD_COMMAND，WaitCommEvent() Error Code:%d",port->m_nPortNr,GetLastError());
-					AfxMessageBox(str);
-					break;
-				}
+			{
+									   port->m_hComm = INVALID_HANDLE_VALUE;
+									   TCHAR Temp[200] = { 0 };
+									   _stprintf_s(Temp, 200, _T("COM%d ERROR_BAD_COMMAND，WaitCommEvent() Error Code:%d"), port->m_nPortNr, GetLastError());
+									   MessageBox(NULL, Temp, _T("COM WaitCommEvent Error"), MB_ICONERROR);
+									   break;
+			}
 			default:///发生其他错误，其中有串口读写中断开串口连接的错误（错误22）
-				{
-					// All other error codes indicate a serious error has
-					//发生错误时，将串口句柄置为无效句柄
-					port->m_hComm = INVALID_HANDLE_VALUE;
-					// occured.  Process this error.
-					port->ProcessErrorMessage("WaitCommEvent()");
-					break;
-				}
+			{
+						// All other error codes indicate a serious error has
+						//发生错误时，将串口句柄置为无效句柄
+						port->m_hComm = INVALID_HANDLE_VALUE;
+						// occured.  Process this error.
+						port->ProcessErrorMessage(_T("WaitCommEvent()"));
+						break;
+			}
 			}
 		}
 		else	///WaitCommEvent()能正确返回
@@ -573,64 +574,64 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 		switch (Event)
 		{
 		case 0:
-			{
-				// Shutdown event.  This is event zero so it will be
-				// the higest priority and be serviced first.
-				///关断事件，关闭串口
-				CloseHandle(port->m_hComm);
-				port->m_hComm=NULL;
-				port->m_bThreadAlive = FALSE;
+		{
+				  // Shutdown event.  This is event zero so it will be
+				  // the higest priority and be serviced first.
+				  ///关断事件，关闭串口
+				  CloseHandle(port->m_hComm);
+				  port->m_hComm = NULL;
+				  port->m_bThreadAlive = FALSE;
 
-				// Kill this thread.  break is not needed, but makes me feel better.
-				//AfxEndThread(100);
-				::ExitThread(100);
+				  // Kill this thread.  break is not needed, but makes me feel better.
+				  //AfxEndThread(100);
+				  ::ExitThread(100);
 
-				break;
-			}
+				  break;
+		}
 		case 1: // write event 发送数据
-			{
-				// Write character event from port
-				WriteChar(port);
-				break;
-			}
+		{
+					// Write character event from port
+					WriteChar(port);
+					break;
+		}
 		case 2:	// read event 将定义的各种消息发送出去
-			{
-				GetCommMask(port->m_hComm, &CommEvent);
-				if (CommEvent & EV_RXCHAR) //接收到字符，并置于输入缓冲区中
-				{
-					if (IsReceiveString == 1)
+		{
+					GetCommMask(port->m_hComm, &CommEvent);
+					if (CommEvent & EV_RXCHAR) //接收到字符，并置于输入缓冲区中
 					{
-						ReceiveStr(port);//多字符接收
+						if (IsReceiveString == 1)
+						{
+							ReceiveStr(port);//多字符接收
+						}
+						else if (IsReceiveString == 0)
+						{
+							ReceiveChar(port);//单字符接收
+						}
+						else
+						{
+							//默认多字符接收
+							ReceiveStr(port);//多字符接收
+						}
 					}
-					else if (IsReceiveString == 0)
-					{
-						ReceiveChar(port);//单字符接收
-					}
-					else
-					{
-						//默认多字符接收
-						ReceiveStr(port);//多字符接收
-					}
-				}
 
-				if (CommEvent & EV_CTS) //CTS信号状态发生变化
-					::SendMessage(port->m_pOwner, WM_COMM_CTS_DETECTED, (WPARAM) 0, (LPARAM) port->m_nPortNr);
-				if (CommEvent & EV_RXFLAG) //接收到事件字符，并置于输入缓冲区中 
-					::SendMessage(port->m_pOwner, WM_COMM_RXFLAG_DETECTED, (WPARAM) 0, (LPARAM) port->m_nPortNr);
-				if (CommEvent & EV_BREAK)  //输入中发生中断
-					::SendMessage(port->m_pOwner, WM_COMM_BREAK_DETECTED, (WPARAM) 0, (LPARAM) port->m_nPortNr);
-				if (CommEvent & EV_ERR) //发生线路状态错误，线路状态错误包括CE_FRAME,CE_OVERRUN和CE_RXPARITY 
-					::SendMessage(port->m_pOwner, WM_COMM_ERR_DETECTED, (WPARAM) 0, (LPARAM) port->m_nPortNr);
-				if (CommEvent & EV_RING) //检测到振铃指示
-					::SendMessage(port->m_pOwner, WM_COMM_RING_DETECTED, (WPARAM) 0, (LPARAM) port->m_nPortNr);
+					if (CommEvent & EV_CTS) //CTS信号状态发生变化
+						::SendMessage(port->m_pOwner, Wm_SerialPort_CTS_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+					if (CommEvent & EV_RXFLAG) //接收到事件字符，并置于输入缓冲区中 
+						::SendMessage(port->m_pOwner, Wm_SerialPort_RXFLAG_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+					if (CommEvent & EV_BREAK)  //输入中发生中断
+						::SendMessage(port->m_pOwner, Wm_SerialPort_BREAK_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+					if (CommEvent & EV_ERR) //发生线路状态错误，线路状态错误包括CE_FRAME,CE_OVERRUN和CE_RXPARITY 
+						::SendMessage(port->m_pOwner, Wm_SerialPort_ERR_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+					if (CommEvent & EV_RING) //检测到振铃指示
+						::SendMessage(port->m_pOwner, Wm_SerialPort_RING_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
 
-				break;
-			}  
+					break;
+		}
 		default:
-			{
-				AfxMessageBox("接收有问题!");
-				break;
-			}
+		{
+				   AfxMessageBox(_T("Receive Error!"));
+				   break;
+		}
 
 		} // end switch
 
@@ -646,7 +647,7 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 BOOL CSerialPort::StartMonitoring()
 {
 	//if (!(m_Thread = AfxBeginThread(CommThread, this)))
-	if (!(m_Thread = ::CreateThread (NULL, 0, CommThread, this, 0, NULL )))
+	if (!(m_Thread = ::CreateThread(NULL, 0, CommThread, this, 0, NULL)))
 		return FALSE;
 	//TRACE("Thread started\n");
 	return TRUE;
@@ -691,27 +692,26 @@ BOOL CSerialPort::IsThreadSuspend(HANDLE hThread)
 // If there is a error, give the right message
 ///如果有错误，给出提示
 //
-void CSerialPort::ProcessErrorMessage(char* ErrorText)
+void CSerialPort::ProcessErrorMessage(TCHAR* ErrorText)
 {
-	char *Temp = new char[200];
+	TCHAR Temp[200] = { 0 };
 
 	LPVOID lpMsgBuf;
 
-	FormatMessage( 
+	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 		NULL,
 		GetLastError(),
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-		(LPTSTR) &lpMsgBuf,
+		(LPTSTR)&lpMsgBuf,
 		0,
-		NULL 
+		NULL
 		);
 
-	sprintf_s(Temp,200,"WARNING:  %s Failed with the following error: \n%s\nPort: %d\n", (char*)ErrorText, lpMsgBuf, m_nPortNr); 
-	MessageBox(NULL, Temp, "Application Error", MB_ICONSTOP);
+	_stprintf_s(Temp, 200, _T("WARNING:  %s Failed with the following error: \n%s\nPort: %d\n"), ErrorText, (TCHAR*)lpMsgBuf, m_nPortNr);
+	MessageBox(NULL, Temp, _T("Application Error"), MB_ICONSTOP);
 
 	LocalFree(lpMsgBuf);
-	delete[] Temp;
 }
 
 //
@@ -723,7 +723,7 @@ void CSerialPort::WriteChar(CSerialPort* port)
 	BOOL bResult = TRUE;
 
 	DWORD BytesSent = 0;
-	DWORD SendLen   = port->m_nWriteSize;
+	DWORD SendLen = port->m_nWriteSize;
 	ResetEvent(port->m_hWriteEvent);
 
 
@@ -747,46 +747,46 @@ void CSerialPort::WriteChar(CSerialPort* port)
 			&port->m_ov);							// Overlapped structure
 
 		// deal with any error codes
-		if (!bResult)  
+		if (!bResult)
 		{
 			DWORD dwError = GetLastError();
 			switch (dwError)
 			{
 			case ERROR_IO_PENDING:
-				{
-					// continue to GetOverlappedResults()
-					BytesSent = 0;
-					bWrite = FALSE;
-					break;
-				}
-			case ERROR_ACCESS_DENIED:///拒绝访问 erroe code:5
-				{
-					port->m_hComm = INVALID_HANDLE_VALUE;
-					CString str;
-					str.Format("COM%d ERROR_ACCESS_DENIED，WriteFile() Error Code:%d",port->m_nPortNr,GetLastError());
-					AfxMessageBox(str);
-					break;
-				}
-			case ERROR_INVALID_HANDLE:///打开串口失败 erroe code:6
-				{
-					port->m_hComm = INVALID_HANDLE_VALUE;
-					break;
-				}
-			case ERROR_BAD_COMMAND:///连接过程中非法断开 erroe code:22
-				{
-					port->m_hComm = INVALID_HANDLE_VALUE;
-					CString str;
-					str.Format("COM%d ERROR_BAD_COMMAND，WriteFile() Error Code:%d",port->m_nPortNr,GetLastError());
-					AfxMessageBox(str);
-					break;
-				}
-			default:
-				{
-					// all other error codes
-					port->ProcessErrorMessage("WriteFile()");
-				}
+			{
+									 // continue to GetOverlappedResults()
+									 BytesSent = 0;
+									 bWrite = FALSE;
+									 break;
 			}
-		} 
+			case ERROR_ACCESS_DENIED:///拒绝访问 erroe code:5
+			{
+										 port->m_hComm = INVALID_HANDLE_VALUE;
+										 TCHAR Temp[200] = { 0 };
+										 _stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED，WriteFile() Error Code:%d"), port->m_nPortNr, GetLastError());
+										 MessageBox(NULL, Temp, _T("COM WriteFile Error"), MB_ICONERROR);
+										 break;
+			}
+			case ERROR_INVALID_HANDLE:///打开串口失败 erroe code:6
+			{
+										  port->m_hComm = INVALID_HANDLE_VALUE;
+										  break;
+			}
+			case ERROR_BAD_COMMAND:///连接过程中非法断开 erroe code:22
+			{
+									   port->m_hComm = INVALID_HANDLE_VALUE;
+									   TCHAR Temp[200] = { 0 };
+									   _stprintf_s(Temp, 200, _T("COM%d ERROR_BAD_COMMAND，WriteFile() Error Code:%d"), port->m_nPortNr, GetLastError());
+									   MessageBox(NULL, Temp, _T("COM WriteFile Error"), MB_ICONERROR);
+									   break;
+			}
+			default:
+			{
+					   // all other error codes
+					   port->ProcessErrorMessage(_T("WriteFile()"));
+			}
+			}
+		}
 		else
 		{
 			LeaveCriticalSection(&port->m_csCommunicationSync);
@@ -805,17 +805,17 @@ void CSerialPort::WriteChar(CSerialPort* port)
 		LeaveCriticalSection(&port->m_csCommunicationSync);
 
 		// deal with the error code 
-		if (!bResult)  
+		if (!bResult)
 		{
-			port->ProcessErrorMessage("GetOverlappedResults() in WriteFile()");
-		}	
+			port->ProcessErrorMessage(_T("GetOverlappedResults() in WriteFile()"));
+		}
 	} // end if (!bWrite)
 
 	// Verify that the data size send equals what we tried to send
-	if (BytesSent != SendLen /*strlen((char*)port->m_szWriteBuffer)*/)  // add by 
-	{
-		//TRACE("WARNING: WriteFile() error.. Bytes Sent: %d; Message Length: %d\n", BytesSent, strlen((char*)port->m_szWriteBuffer));
-	}
+	//if (BytesSent != SendLen /*strlen((char*)port->m_szWriteBuffer)*/)  // add by 
+	//{
+	//TRACE(_T("WARNING: WriteFile() error.. Bytes Sent: %d; Message Length: %d\n"), BytesSent, _tcsclen((TCHAR*)port->m_szWriteBuffer));
+	//}
 }
 
 //
@@ -823,17 +823,17 @@ void CSerialPort::WriteChar(CSerialPort* port)
 //
 void CSerialPort::ReceiveChar(CSerialPort* port)
 {
-	BOOL  bRead = TRUE; 
+	BOOL  bRead = TRUE;
 	BOOL  bResult = TRUE;
 	DWORD dwError = 0;
 	DWORD BytesRead = 0;
 	COMSTAT comstat;
 	unsigned char RXBuff;
 
-	for (;;) 
-	{ 
+	for (;;)
+	{
 		//add by liquanhai 2011-11-06  防止死锁
-		if(WaitForSingleObject(port->m_hShutdownEvent,0)==WAIT_OBJECT_0)
+		if (WaitForSingleObject(port->m_hShutdownEvent, 0) == WAIT_OBJECT_0)
 			return;
 
 		// Gain ownership of the comm port critical section.
@@ -879,46 +879,46 @@ void CSerialPort::ReceiveChar(CSerialPort* port)
 				&port->m_ov);		// pointer to the m_ov structure
 			// deal with the error code 
 			///若返回错误，错误处理
-			if (!bResult)  
-			{ 
-				switch (dwError = GetLastError()) 
-				{ 
-				case ERROR_IO_PENDING: 	
-					{ 
-						// asynchronous i/o is still in progress 
-						// Proceed on to GetOverlappedResults();
-						///异步IO仍在进行
-						bRead = FALSE;
-						break;
-					}
+			if (!bResult)
+			{
+				switch (dwError = GetLastError())
+				{
+				case ERROR_IO_PENDING:
+				{
+										 // asynchronous i/o is still in progress 
+										 // Proceed on to GetOverlappedResults();
+										 ///异步IO仍在进行
+										 bRead = FALSE;
+										 break;
+				}
 				case ERROR_ACCESS_DENIED:///拒绝访问 erroe code:5
-					{
-						port->m_hComm = INVALID_HANDLE_VALUE;
-						CString str;
-						str.Format("COM%d ERROR_ACCESS_DENIED，ReadFile() Error Code:%d",port->m_nPortNr,GetLastError());
-						AfxMessageBox(str);
-						break;
-					}
+				{
+											 port->m_hComm = INVALID_HANDLE_VALUE;
+											 TCHAR Temp[200] = { 0 };
+											 _stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED，ReadFile() Error Code:%d"), port->m_nPortNr, GetLastError());
+											 MessageBox(NULL, Temp, _T("COM ReadFile Error"), MB_ICONERROR);
+											 break;
+				}
 				case ERROR_INVALID_HANDLE:///打开串口失败 erroe code:6
-					{
-						port->m_hComm = INVALID_HANDLE_VALUE;
-						break;
-					}
+				{
+											  port->m_hComm = INVALID_HANDLE_VALUE;
+											  break;
+				}
 				case ERROR_BAD_COMMAND:///连接过程中非法断开 erroe code:22
-					{
-						port->m_hComm = INVALID_HANDLE_VALUE;
-						CString str;
-						str.Format("COM%d ERROR_BAD_COMMAND，ReadFile() Error Code:%d",port->m_nPortNr,GetLastError());
-						AfxMessageBox(str);
-						break;
-					}
+				{
+										   port->m_hComm = INVALID_HANDLE_VALUE;
+										   TCHAR Temp[200] = { 0 };
+										   _stprintf_s(Temp, 200, _T("COM%d ERROR_BAD_COMMAND，ReadFile() Error Code:%d"), port->m_nPortNr, GetLastError());
+										   MessageBox(NULL, Temp, _T("COM ReadFile Error"), MB_ICONERROR);
+										   break;
+				}
 				default:
-					{
-						// Another error has occured.  Process this error.
-						port->ProcessErrorMessage("ReadFile()");
-						break;
-						//return;///防止读写数据时，串口非正常断开导致死循环一直执行。add by itas109 2014-01-09 与上面liquanhai添加防死锁的代码差不多
-					} 
+				{
+						   // Another error has occured.  Process this error.
+						   port->ProcessErrorMessage(_T("ReadFile()"));
+						   break;
+						   //return;///防止读写数据时，串口非正常断开导致死循环一直执行。add by itas109 2014-01-09 与上面liquanhai添加防死锁的代码差不多
+				}
 				}
 			}
 			else///ReadFile返回TRUE
@@ -938,18 +938,18 @@ void CSerialPort::ReceiveChar(CSerialPort* port)
 				TRUE); 			// Wait flag
 
 			// deal with the error code 
-			if (!bResult)  
+			if (!bResult)
 			{
-				port->ProcessErrorMessage("GetOverlappedResults() in ReadFile()");
-			}	
+				port->ProcessErrorMessage(_T("GetOverlappedResults() in ReadFile()"));
+			}
 		}  // close if (!bRead)
 
 		LeaveCriticalSection(&port->m_csCommunicationSync);
 
 		// notify parent that a byte was received
 		//避免线程互相等待，产生死锁，使用PostMessage()代替SendMessage()
-		PostMessage(port->m_pOwner, WM_COMM_RXCHAR, (WPARAM)RXBuff, (LPARAM) port->m_nPortNr);
-		//::SendMessage((port->m_pOwner), WM_COMM_RXCHAR, (WPARAM) RXBuff, (LPARAM) port->m_nPortNr);
+		PostMessage(port->m_pOwner, Wm_SerialPort_RXCHAR, (WPARAM)RXBuff, (LPARAM)port->m_nPortNr);
+		//::SendMessage((port->m_pOwner), Wm_SerialPort_RXCHAR, (WPARAM) RXBuff, (LPARAM) port->m_nPortNr);
 	} // end forever loop
 
 }
@@ -959,16 +959,17 @@ void CSerialPort::ReceiveChar(CSerialPort* port)
 //
 void CSerialPort::ReceiveStr(CSerialPort* port)
 {
-	BOOL  bRead = TRUE; 
+	BOOL  bRead = TRUE;
 	BOOL  bResult = TRUE;
 	DWORD dwError = 0;
 	DWORD BytesRead = 0;
 	COMSTAT comstat;
+	serialPortInfo commInfo;
 
-	for (;;) 
-	{ 
+	for (;;)
+	{
 		//add by liquanhai 2011-11-06  防止死锁
-		if(WaitForSingleObject(port->m_hShutdownEvent,0)==WAIT_OBJECT_0)
+		if (WaitForSingleObject(port->m_hShutdownEvent, 0) == WAIT_OBJECT_0)
 			return;
 
 		// Gain ownership of the comm port critical section.
@@ -1004,8 +1005,8 @@ void CSerialPort::ReceiveStr(CSerialPort* port)
 		}
 
 		//如果遇到'\0'，那么数据会被截断，实际数据全部读取只是没有显示完全，这个时候使用memcpy才能全部获取
-		unsigned char* RXBuff = new unsigned char[comstat.cbInQue+1];
-		if(RXBuff == NULL)
+		unsigned char* RXBuff = new unsigned char[comstat.cbInQue + 1];
+		if (RXBuff == NULL)
 		{
 			return;
 		}
@@ -1023,46 +1024,46 @@ void CSerialPort::ReceiveStr(CSerialPort* port)
 				&port->m_ov);		// pointer to the m_ov structure
 			// deal with the error code 
 			///若返回错误，错误处理
-			if (!bResult)  
-			{ 
-				switch (dwError = GetLastError()) 
-				{ 
-				case ERROR_IO_PENDING: 	
-					{ 
-						// asynchronous i/o is still in progress 
-						// Proceed on to GetOverlappedResults();
-						///异步IO仍在进行
-						bRead = FALSE;
-						break;
-					}
+			if (!bResult)
+			{
+				switch (dwError = GetLastError())
+				{
+				case ERROR_IO_PENDING:
+				{
+										 // asynchronous i/o is still in progress 
+										 // Proceed on to GetOverlappedResults();
+										 ///异步IO仍在进行
+										 bRead = FALSE;
+										 break;
+				}
 				case ERROR_ACCESS_DENIED:///拒绝访问 erroe code:5
-					{
-						port->m_hComm = INVALID_HANDLE_VALUE;
-						CString str;
-						str.Format("COM%d ERROR_ACCESS_DENIED，ReadFile() Error Code:%d",port->m_nPortNr,GetLastError());
-						AfxMessageBox(str);
-						break;
-					}
+				{
+											 port->m_hComm = INVALID_HANDLE_VALUE;
+											 TCHAR Temp[200] = { 0 };
+											 _stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED，ReadFile() Error Code:%d"), port->m_nPortNr, GetLastError());
+											 MessageBox(NULL, Temp, _T("COM ReadFile Error"), MB_ICONERROR);
+											 break;
+				}
 				case ERROR_INVALID_HANDLE:///打开串口失败 erroe code:6
-					{
-						port->m_hComm = INVALID_HANDLE_VALUE;
-						break;
-					}
+				{
+											  port->m_hComm = INVALID_HANDLE_VALUE;
+											  break;
+				}
 				case ERROR_BAD_COMMAND:///连接过程中非法断开 erroe code:22
-					{
-						port->m_hComm = INVALID_HANDLE_VALUE;
-						CString str;
-						str.Format("COM%d ERROR_BAD_COMMAND，ReadFile() Error Code:%d",port->m_nPortNr,GetLastError());
-						AfxMessageBox(str);
-						break;
-					}
+				{
+										   port->m_hComm = INVALID_HANDLE_VALUE;
+										   TCHAR Temp[200] = { 0 };
+										   _stprintf_s(Temp, 200, _T("COM%d ERROR_BAD_COMMAND，ReadFile() Error Code:%d"), port->m_nPortNr, GetLastError());
+										   MessageBox(NULL, Temp, _T("COM ReadFile Error"), MB_ICONERROR);
+										   break;
+				}
 				default:
-					{
-						// Another error has occured.  Process this error.
-						port->ProcessErrorMessage("ReadFile()");
-						break;
-						//return;///防止读写数据时，串口非正常断开导致死循环一直执行。add by itas109 2014-01-09 与上面liquanhai添加防死锁的代码差不多
-					} 
+				{
+						   // Another error has occured.  Process this error.
+						   port->ProcessErrorMessage(_T("ReadFile()"));
+						   break;
+						   //return;///防止读写数据时，串口非正常断开导致死循环一直执行。add by itas109 2014-01-09 与上面liquanhai添加防死锁的代码差不多
+				}
 				}
 			}
 			else///ReadFile返回TRUE
@@ -1082,18 +1083,18 @@ void CSerialPort::ReceiveStr(CSerialPort* port)
 				TRUE); 			// Wait flag
 
 			// deal with the error code 
-			if (!bResult)  
+			if (!bResult)
 			{
-				port->ProcessErrorMessage("GetOverlappedResults() in ReadFile()");
-			}	
+				port->ProcessErrorMessage(_T("GetOverlappedResults() in ReadFile()"));
+			}
 		}  // close if (!bRead)
 
 		LeaveCriticalSection(&port->m_csCommunicationSync);
 
+		commInfo.portNr = port->m_nPortNr;
+		commInfo.bytesRead = BytesRead;
 		// notify parent that some byte was received
-		::SendMessage((port->m_pOwner), WM_COMM_RXSTR, (WPARAM) RXBuff, (LPARAM) port->m_nPortNr);
-		//如果只有一个串口收发数据，可以传输读取长度，因为RXBuff中可能包含'\0'，ASCII为00
-		//::SendMessage((port->m_pOwner), WM_COMM_RXSTR, (WPARAM) RXBuff, BytesRead);
+		::SendMessage((port->m_pOwner), Wm_SerialPort_RXSTR, (WPARAM)RXBuff, (LPARAM)&commInfo);
 
 		//释放
 		delete[] RXBuff;
@@ -1101,20 +1102,6 @@ void CSerialPort::ReceiveStr(CSerialPort* port)
 
 	} // end forever loop
 
-}
-
-//
-// Write a string to the port
-//
-void CSerialPort::WriteToPort(char* string)
-{		
-	assert(m_hComm != 0);
-
-	memset(m_szWriteBuffer, 0, sizeof(m_szWriteBuffer));
-	strcpy_s(m_szWriteBuffer,m_nWriteBufferSize,string);
-	m_nWriteSize=strlen(string); // add by mrlong
-	// set event for write
-	SetEvent(m_hWriteEvent);
 }
 
 //
@@ -1143,7 +1130,7 @@ DWORD CSerialPort::GetWriteBufferSize()
 
 BOOL CSerialPort::IsOpen()
 {
-	return m_hComm != NULL && m_hComm!= INVALID_HANDLE_VALUE;//m_hComm增加INVALID_HANDLE_VALUE的情况 add by itas109 2016-07-29
+	return m_hComm != NULL && m_hComm != INVALID_HANDLE_VALUE;//m_hComm增加INVALID_HANDLE_VALUE的情况 add by itas109 2016-07-29
 }
 
 void CSerialPort::ClosePort()
@@ -1151,13 +1138,13 @@ void CSerialPort::ClosePort()
 	MSG message;
 
 	//增加线程挂起判断，解决由于线程挂起导致串口关闭死锁的问题 add by itas109 2016-06-29
-	if(IsThreadSuspend(m_Thread))
+	if (IsThreadSuspend(m_Thread))
 	{
 		ResumeThread(m_Thread);
 	}
 
 	//串口句柄无效  add by itas109 2016-07-29
-	if(m_hComm == INVALID_HANDLE_VALUE)
+	if (m_hComm == INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(m_hComm);
 		m_hComm = NULL;
@@ -1168,7 +1155,7 @@ void CSerialPort::ClosePort()
 	{
 		SetEvent(m_hShutdownEvent);
 		//add by liquanhai  防止死锁  2011-11-06
-		if(::PeekMessage(&message,m_pOwner,0,0,PM_REMOVE))
+		if (::PeekMessage(&message, m_pOwner, 0, 0, PM_REMOVE))
 		{
 			::TranslateMessage(&message);
 			::DispatchMessage(&message);
@@ -1183,28 +1170,29 @@ void CSerialPort::ClosePort()
 	}
 
 	// Close Handles  
-	if(m_hShutdownEvent!=NULL)
+	if (m_hShutdownEvent != NULL)
 	{
 		ResetEvent(m_hShutdownEvent);
 	}
-	if(m_ov.hEvent!=NULL)
+	if (m_ov.hEvent != NULL)
 	{
 		ResetEvent(m_ov.hEvent);
 	}
-	if(m_hWriteEvent!=NULL)
+	if (m_hWriteEvent != NULL)
 	{
 		ResetEvent(m_hWriteEvent);
 		//CloseHandle(m_hWriteEvent);//开发者反映，这里会导致多个串口工作时，重新打开串口异常
 	}
 
-	if(m_szWriteBuffer != NULL)
+	if (m_szWriteBuffer != NULL)
 	{
-		delete [] m_szWriteBuffer;
+		delete[] m_szWriteBuffer;
 		m_szWriteBuffer = NULL;
 	}
 }
 
-void CSerialPort::WriteToPort(char* string,int n)
+
+void CSerialPort::WriteToPort(char* string, size_t n)
 {
 	assert(m_hComm != 0);
 	memset(m_szWriteBuffer, 0, sizeof(m_szWriteBuffer));
@@ -1215,72 +1203,36 @@ void CSerialPort::WriteToPort(char* string,int n)
 	SetEvent(m_hWriteEvent);
 }
 
-void CSerialPort::WriteToPort(LPCTSTR string)
+void CSerialPort::WriteToPort(BYTE* Buffer, size_t n)
 {
 	assert(m_hComm != 0);
 	memset(m_szWriteBuffer, 0, sizeof(m_szWriteBuffer));
-	strcpy_s(m_szWriteBuffer,m_nWriteBufferSize,string);
-	m_nWriteSize=strlen(string);
-	// set event for write
-	SetEvent(m_hWriteEvent);
-}
-
-void CSerialPort::WriteToPort(BYTE* Buffer, int n)
-{
-	assert(m_hComm != 0);
-	memset(m_szWriteBuffer, 0, sizeof(m_szWriteBuffer));
+	memcpy(m_szWriteBuffer, Buffer, n);
+	/*
 	int i;
 	for(i=0; i<n; i++)
 	{
-		m_szWriteBuffer[i] = Buffer[i];
+	m_szWriteBuffer[i] = Buffer[i];
 	}
-	m_nWriteSize=n;
+	*/
+	m_nWriteSize = n;
 
 	// set event for write
 	SetEvent(m_hWriteEvent);
 }
 
-
-//void CSerialPort::SendData(LPCTSTR lpszData, const int nLength)
-//{
-//	assert(m_hComm != 0);
-//	memset(m_szWriteBuffer, 0, nLength);
-//	strcpy_s(m_szWriteBuffer,m_nWriteBufferSize,lpszData);
-//	m_nWriteSize=nLength;
-//	// set event for write
-//	SetEvent(m_hWriteEvent);
-//}
-
-//BOOL CSerialPort::RecvData(LPTSTR lpszData, const int nSize)
-//{
-//	//
-//	//接收数据
-//	//
-//	assert(m_hComm!=0);
-//	memset(lpszData,0,nSize);
-//	DWORD mylen  = 0;
-//	DWORD mylen2 = 0;
-//	while (mylen < (DWORD)nSize) {
-//		if(!ReadFile(m_hComm,lpszData,nSize,&mylen2,NULL)) 
-//			return FALSE;
-//		mylen += mylen2;
-//	}
-//
-//	return TRUE;
-//}
-//
 ///查询注册表的串口号，将值存于数组中
 ///本代码参考于mingojiang的获取串口逻辑名代码
 //
-void CSerialPort::QueryKey(HKEY hKey) 
-{ 
+void CSerialPort::QueryKey(HKEY hKey)
+{
 #define MAX_KEY_LENGTH 255
 #define MAX_VALUE_NAME 16383
 	//	TCHAR    achKey[MAX_KEY_LENGTH];   // buffer for subkey name
 	//	DWORD    cbName;                   // size of name string 
 	TCHAR    achClass[MAX_PATH] = TEXT("");  // buffer for class name 
 	DWORD    cchClassName = MAX_PATH;  // size of class string 
-	DWORD    cSubKeys=0;               // number of subkeys 
+	DWORD    cSubKeys = 0;               // number of subkeys 
 	DWORD    cbMaxSubKey;              // longest subkey size 
 	DWORD    cchMaxClass;              // longest class string 
 	DWORD    cValues;              // number of values for key 
@@ -1289,10 +1241,10 @@ void CSerialPort::QueryKey(HKEY hKey)
 	DWORD    cbSecurityDescriptor; // size of security descriptor 
 	FILETIME ftLastWriteTime;      // last write time 
 
-	DWORD i, retCode; 
+	DWORD i, retCode;
 
-	TCHAR  achValue[MAX_VALUE_NAME]; 
-	DWORD cchValue = MAX_VALUE_NAME; 
+	TCHAR  achValue[MAX_VALUE_NAME];
+	DWORD cchValue = MAX_VALUE_NAME;
 
 	// Get the class name and the value count. 
 	retCode = RegQueryInfoKey(
@@ -1309,39 +1261,39 @@ void CSerialPort::QueryKey(HKEY hKey)
 		&cbSecurityDescriptor,   // security descriptor 
 		&ftLastWriteTime);       // last write time 
 
-	for (i=0;i<20;i++)///存放串口号的数组初始化
+	for (i = 0; i<20; i++)///存放串口号的数组初始化
 	{
 		m_nComArray[i] = -1;
 	}
 
 	// Enumerate the key values. 
 	if (cValues > 0) {
-		for (i=0, retCode=ERROR_SUCCESS; i<cValues; i++) 
-		{ 
-			cchValue = MAX_VALUE_NAME;  
-			achValue[0] = '\0'; 
-			if (ERROR_SUCCESS == RegEnumValue(hKey, i, achValue, &cchValue, NULL, NULL, NULL, NULL))  
-			{ 
-				BYTE strDSName[10]; 
+		for (i = 0, retCode = ERROR_SUCCESS; i < cValues; i++)
+		{
+			cchValue = MAX_VALUE_NAME;
+			achValue[0] = '\0';
+			if (ERROR_SUCCESS == RegEnumValue(hKey, i, achValue, &cchValue, NULL, NULL, NULL, NULL))
+			{
+				TCHAR strDSName[10];
 				memset(strDSName, 0, 10);
 				DWORD nValueType = 0, nBuffLen = 10;
-				if (ERROR_SUCCESS == RegQueryValueEx(hKey, (LPCTSTR)achValue, NULL, &nValueType, strDSName, &nBuffLen))
+				if (ERROR_SUCCESS == RegQueryValueEx(hKey, (LPCTSTR)achValue, NULL, &nValueType, (LPBYTE)strDSName, &nBuffLen))
 				{
 					int nIndex = -1;
-					while(++nIndex < MaxSerialPortNum)
+					while (++nIndex < MaxSerialPortNum)
 					{
-						if (-1 == m_nComArray[nIndex]) 
+						if (-1 == m_nComArray[nIndex])
 						{
-							m_nComArray[nIndex] = atoi((char*)(strDSName + 3));
+							m_nComArray[nIndex] = _tstoi((TCHAR*)(strDSName + 3));
 							break;
 						}
 					}
 				}
-			} 
+			}
 		}
 	}
 	else{
-		AfxMessageBox(_T("本机没有串口....."));
+		AfxMessageBox(_T("No Com In This Computer!"));
 	}
 
 }
@@ -1352,7 +1304,7 @@ void CSerialPort::Hkey2ComboBox(CComboBox& m_PortNO)
 	bool Flag = FALSE;
 
 	///仅是XP系统的注册表位置，其他系统根据实际情况做修改
-	if(ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, TEXT("HARDWARE\\DEVICEMAP\\SERIALCOMM"), 0, KEY_READ, &hTestKey) )
+	if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, TEXT("HARDWARE\\DEVICEMAP\\SERIALCOMM"), 0, KEY_READ, &hTestKey))
 	{
 		QueryKey(hTestKey);
 	}
@@ -1360,7 +1312,7 @@ void CSerialPort::Hkey2ComboBox(CComboBox& m_PortNO)
 
 	int i = 0;
 	m_PortNO.ResetContent();///刷新时，清空下拉列表内容
-	while(i < MaxSerialPortNum && -1 != m_nComArray[i])
+	while (i < MaxSerialPortNum && -1 != m_nComArray[i])
 	{
 		CString szCom;
 		szCom.Format(_T("COM%d"), m_nComArray[i]);
@@ -1370,5 +1322,4 @@ void CSerialPort::Hkey2ComboBox(CComboBox& m_PortNO)
 		if (Flag)///把第一个发现的串口设为下拉列表的默认值
 			m_PortNO.SetCurSel(0);
 	}
-
 }
