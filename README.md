@@ -95,3 +95,9 @@ https://github.com/itas109
 * 精简不必要的函数SendData和RecvData
 * 尽量的取消对 MFC 的依赖，Hkey2ComboBox函数暂时保留
 * 其他小问题修改
+
+by itas109 on 2017-03-12
+http://blog.csdn.net/itas109
+https://github.com/itas109
+* 增加宏定义_AFX，用于处理MFC的必要函数Hkey2ComboBox
+* 进一步去除MFC依赖，修改AfxMessageBox函数
