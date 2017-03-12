@@ -1,0 +1,12 @@
+/Demo/CSerialPortDemoWin32Console/CSerialPortDemoWin32Console/Debug
+/Demo/CSerialPortDemoWin32/ipch
+/Demo/CSerialPortDemoWin32/CSerialPortDemoWin32/Debug
+/Demo/CSerialPortDemoWin32/Debug/CSerialPortDemoWin32.ilk
+/Demo/CSerialPortDemoWin32/Debug/CSerialPortDemoWin32.pdb
+/Demo/CSerialPortDemoWin32/*.sdf
+/Demo/CSerialPortDemoWin32/CSerialPortDemoWin32.sdf
+/Demo/Comm/Comm/Debug
+/Demo/Comm/ipch
+/Demo/Comm/*.sdf
+/Demo/Comm/Debug/*.ilk
+/Demo/Comm/Debug/*.pdb
