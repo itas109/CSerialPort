@@ -101,10 +101,19 @@
 **  3)  精简不必要的函数SendData和RecvData
 **  4)  尽量的取消对 MFC 的依赖，Hkey2ComboBox函数暂时保留
 **  5)  其他小问题修改
+** ***************************************************************************************
+**  author: itas109  date:2017-03-12
+**  Blog：blog.csdn.net/itas109
+**  改进
+**  1)  增加宏定义_AFX，用于处理MFC的必要函数Hkey2ComboBox
+**  2)  进一步去除MFC依赖，修改AfxMessageBox函数
 */
 
 #ifndef __SERIALPORT_H__
 #define __SERIALPORT_H__
+
+#include "stdio.h"
+#include<windows.h>
 
 struct serialPortInfo
 {
@@ -168,7 +177,10 @@ public:
 	BOOL		IsOpen();
 
 	void QueryKey(HKEY hKey);///查询注册表的串口号，将值存于数组中
+
+#ifdef _AFX
 	void Hkey2ComboBox(CComboBox& m_PortNO);///将QueryKey查询到的串口号添加到CComboBox控件中
+#endif // _AFX
 
 protected:
 	// protected memberfunctions
