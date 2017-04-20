@@ -22,6 +22,7 @@
 **  2016-08-02 itas109   http://blog.csdn.net/itas109
 **  2016-08-10 itas109   http://blog.csdn.net/itas109
 **  2017-02-14 itas109   http://blog.csdn.net/itas109
+**  2017-03-12 itas109   http://blog.csdn.net/itas109
 */
 
 #include "stdafx.h"
@@ -629,7 +630,7 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 		}
 		default:
 		{
-				   AfxMessageBox(_T("Receive Error!"));
+				   MessageBox(NULL, _T("Receive Error!"), _T("COM Receive Error"), MB_ICONERROR);
 				   break;
 		}
 
@@ -1293,11 +1294,12 @@ void CSerialPort::QueryKey(HKEY hKey)
 		}
 	}
 	else{
-		AfxMessageBox(_T("No Com In This Computer!"));
+		MessageBox(NULL, _T("No Com In This Computer!"), _T("COM Query Error"), MB_ICONERROR);
 	}
 
 }
 
+#ifdef _AFX
 void CSerialPort::Hkey2ComboBox(CComboBox& m_PortNO)
 {
 	HKEY hTestKey;
@@ -1323,3 +1325,4 @@ void CSerialPort::Hkey2ComboBox(CComboBox& m_PortNO)
 			m_PortNO.SetCurSel(0);
 	}
 }
+#endif // _AFX
