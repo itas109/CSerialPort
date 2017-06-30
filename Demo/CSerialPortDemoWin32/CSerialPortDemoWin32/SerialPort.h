@@ -121,20 +121,20 @@ struct serialPortInfo
 	DWORD bytesRead;//读取的字节数
 };
 
-#ifndef Wm_SerialPort_MSG_BASE 
-#define Wm_SerialPort_MSG_BASE		WM_USER + 617		//!< 消息编号的基点  
+#ifndef WM_COMM_MSG_BASE 
+#define WM_COMM_MSG_BASE		    WM_USER + 617		//!< 消息编号的基点  
 #endif
 
-#define Wm_SerialPort_BREAK_DETECTED		Wm_SerialPort_MSG_BASE + 1	// A break was detected on input.
-#define Wm_SerialPort_CTS_DETECTED		Wm_SerialPort_MSG_BASE + 2	// The CTS (clear-to-send) signal changed state. 
-#define Wm_SerialPort_DSR_DETECTED		Wm_SerialPort_MSG_BASE + 3	// The DSR (data-set-ready) signal changed state. 
-#define Wm_SerialPort_ERR_DETECTED		Wm_SerialPort_MSG_BASE + 4	// A line-status error occurred. Line-status errors are CE_FRAME, CE_OVERRUN, and CE_RXPARITY. 
-#define Wm_SerialPort_RING_DETECTED		Wm_SerialPort_MSG_BASE + 5	// A ring indicator was detected. 
-#define Wm_SerialPort_RLSD_DETECTED		Wm_SerialPort_MSG_BASE + 6	// The RLSD (receive-line-signal-detect) signal changed state. 
-#define Wm_SerialPort_RXCHAR				Wm_SerialPort_MSG_BASE + 7	// A character was received and placed in the input buffer. 
-#define Wm_SerialPort_RXFLAG_DETECTED		Wm_SerialPort_MSG_BASE + 8	// The event character was received and placed in the input buffer.  
-#define Wm_SerialPort_TXEMPTY_DETECTED	Wm_SerialPort_MSG_BASE + 9	// The last character in the output buffer was sent.  
-#define Wm_SerialPort_RXSTR               Wm_SerialPort_MSG_BASE + 10   // Receive string
+#define WM_COMM_BREAK_DETECTED		WM_COMM_MSG_BASE + 1	// A break was detected on input.
+#define WM_COMM_CTS_DETECTED		WM_COMM_MSG_BASE + 2	// The CTS (clear-to-send) signal changed state. 
+#define WM_COMM_DSR_DETECTED		WM_COMM_MSG_BASE + 3	// The DSR (data-set-ready) signal changed state. 
+#define WM_COMM_ERR_DETECTED		WM_COMM_MSG_BASE + 4	// A line-status error occurred. Line-status errors are CE_FRAME, CE_OVERRUN, and CE_RXPARITY. 
+#define WM_COMM_RING_DETECTED		WM_COMM_MSG_BASE + 5	// A ring indicator was detected. 
+#define WM_COMM_RLSD_DETECTED		WM_COMM_MSG_BASE + 6	// The RLSD (receive-line-signal-detect) signal changed state. 
+#define WM_COMM_RXCHAR				WM_COMM_MSG_BASE + 7	// A character was received and placed in the input buffer. 
+#define WM_COMM_RXFLAG_DETECTED		WM_COMM_MSG_BASE + 8	// The event character was received and placed in the input buffer.  
+#define WM_COMM_TXEMPTY_DETECTED	WM_COMM_MSG_BASE + 9	// The last character in the output buffer was sent.  
+#define WM_COMM_RXSTR               WM_COMM_MSG_BASE + 10   // Receive string
 
 #define MaxSerialPortNum 200   ///有效的串口总个数，不是串口的号 //add by itas109 2014-01-09
 #define IsReceiveString  1     //采用何种方式接收：ReceiveString 1多字符串接收（对应响应函数为Wm_SerialPort_RXSTR），ReceiveString 0一个字符一个字符接收（对应响应函数为Wm_SerialPort_RXCHAR）

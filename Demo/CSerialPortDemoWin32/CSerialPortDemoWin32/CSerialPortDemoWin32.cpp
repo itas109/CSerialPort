@@ -163,7 +163,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
-	case Wm_SerialPort_RXSTR:
+	case WM_COMM_RXSTR:
 		OnReceiveStr(wParam, lParam);
 		break;
 	default:

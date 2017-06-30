@@ -616,15 +616,15 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 					}
 
 					if (CommEvent & EV_CTS) //CTS信号状态发生变化
-						::SendMessage(port->m_pOwner, Wm_SerialPort_CTS_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+						::SendMessage(port->m_pOwner, WM_COMM_CTS_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
 					if (CommEvent & EV_RXFLAG) //接收到事件字符，并置于输入缓冲区中 
-						::SendMessage(port->m_pOwner, Wm_SerialPort_RXFLAG_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+						::SendMessage(port->m_pOwner, WM_COMM_RXFLAG_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
 					if (CommEvent & EV_BREAK)  //输入中发生中断
-						::SendMessage(port->m_pOwner, Wm_SerialPort_BREAK_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+						::SendMessage(port->m_pOwner, WM_COMM_BREAK_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
 					if (CommEvent & EV_ERR) //发生线路状态错误，线路状态错误包括CE_FRAME,CE_OVERRUN和CE_RXPARITY 
-						::SendMessage(port->m_pOwner, Wm_SerialPort_ERR_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+						::SendMessage(port->m_pOwner, WM_COMM_ERR_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
 					if (CommEvent & EV_RING) //检测到振铃指示
-						::SendMessage(port->m_pOwner, Wm_SerialPort_RING_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+						::SendMessage(port->m_pOwner, WM_COMM_RING_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
 
 					break;
 		}
@@ -949,7 +949,7 @@ void CSerialPort::ReceiveChar(CSerialPort* port)
 
 		// notify parent that a byte was received
 		//避免线程互相等待，产生死锁，使用PostMessage()代替SendMessage()
-		PostMessage(port->m_pOwner, Wm_SerialPort_RXCHAR, (WPARAM)RXBuff, (LPARAM)port->m_nPortNr);
+		PostMessage(port->m_pOwner, WM_COMM_RXCHAR, (WPARAM)RXBuff, (LPARAM)port->m_nPortNr);
 		//::SendMessage((port->m_pOwner), Wm_SerialPort_RXCHAR, (WPARAM) RXBuff, (LPARAM) port->m_nPortNr);
 	} // end forever loop
 
@@ -1095,7 +1095,7 @@ void CSerialPort::ReceiveStr(CSerialPort* port)
 		commInfo.portNr = port->m_nPortNr;
 		commInfo.bytesRead = BytesRead;
 		// notify parent that some byte was received
-		::SendMessage((port->m_pOwner), Wm_SerialPort_RXSTR, (WPARAM)RXBuff, (LPARAM)&commInfo);
+		::SendMessage((port->m_pOwner), WM_COMM_RXSTR, (WPARAM)RXBuff, (LPARAM)&commInfo);
 
 		//释放
 		delete[] RXBuff;
