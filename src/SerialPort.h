@@ -107,13 +107,27 @@
 **  改进
 **  1)  增加宏定义_AFX，用于处理MFC的必要函数Hkey2ComboBox
 **  2)  进一步去除MFC依赖，修改AfxMessageBox函数
+** ***************************************************************************************
+**  author: itas109  date:2017-12-16
+**  Blog：blog.csdn.net/itas109
+**  改进
+**	1)	支持DLL输出
+**  2)  去除QueryKey和Hkey2ComboBox，采用CSerialPortInfo::availablePorts()函数代替
+**  3)  增加CSerialPortInfo类，目前只有availablePorts静态函数，用于获取活跃的串口到list
+**  4)  增加命名空间itas109
+**  5)  精简不必要的头文件
+**  6)	InitPort和~CSerialPort()中直接整合ClosePort()
 */
 
-#ifndef __SERIALPORT_H__
-#define __SERIALPORT_H__
+#ifndef __CSERIALPORT_H__
+#define __CSERIALPORT_H__
 
 #include "stdio.h"
-#include<windows.h>
+#include "tchar.h"
+#include "Windows.h"
+
+#include <string>
+#include <list>
 
 struct serialPortInfo
 {
@@ -122,7 +136,7 @@ struct serialPortInfo
 };
 
 #ifndef WM_COMM_MSG_BASE 
-#define WM_COMM_MSG_BASE		    WM_USER + 617		//!< 消息编号的基点  
+#define WM_COMM_MSG_BASE		    WM_USER + 109		//!< 消息编号的基点  
 #endif
 
 #define WM_COMM_BREAK_DETECTED		WM_COMM_MSG_BASE + 1	// A break was detected on input.
@@ -138,96 +152,105 @@ struct serialPortInfo
 
 #define MaxSerialPortNum 200   ///有效的串口总个数，不是串口的号 //add by itas109 2014-01-09
 #define IsReceiveString  1     //采用何种方式接收：ReceiveString 1多字符串接收（对应响应函数为Wm_SerialPort_RXSTR），ReceiveString 0一个字符一个字符接收（对应响应函数为Wm_SerialPort_RXCHAR）
-class CSerialPort
-{
-public:
-	// contruction and destruction
-	CSerialPort();
-	virtual		~CSerialPort();
 
-	// port initialisation		
-	// UINT stopsbits = ONESTOPBIT   stop is index 0 = 1 1=1.5 2=2 
-	// 切记：stopsbits = 1，不是停止位为1。
-	// by itas109 20160506
-	BOOL		InitPort(HWND pPortOwner, UINT portnr = 1, UINT baud = 9600,
-		TCHAR parity = _T('N'), UINT databits = 8, UINT stopsbits = ONESTOPBIT,
-		DWORD dwCommEvents = EV_RXCHAR | EV_CTS, UINT nBufferSize = 512,
+namespace itas109{
+	class _declspec(dllexport) CSerialPort
+	{
+	public:
+		// contruction and destruction
+		CSerialPort();
+		virtual ~CSerialPort();
 
-		DWORD ReadIntervalTimeout = 1000,
-		DWORD ReadTotalTimeoutMultiplier = 1000,
-		DWORD ReadTotalTimeoutConstant = 1000,
-		DWORD WriteTotalTimeoutMultiplier = 1000,
-		DWORD WriteTotalTimeoutConstant = 1000);
+		// port initialisation		
+		// UINT stopsbits = ONESTOPBIT   stop is index 0 = 1 1=1.5 2=2 
+		// 切记：stopsbits = 1，不是停止位为1。
+		// by itas109 20160506
+		BOOL		InitPort(HWND pPortOwner, UINT portnr = 1, UINT baud = 9600,
+			TCHAR parity = _T('N'), UINT databits = 8, UINT stopsbits = ONESTOPBIT,
+			DWORD dwCommEvents = EV_RXCHAR | EV_CTS, UINT nBufferSize = 512,
 
-	// start/stop comm watching
-	///控制串口监视线程
-	BOOL		 StartMonitoring();//开始监听
-	BOOL		 ResumeMonitoring();//恢复监听
-	BOOL		 SuspendMonitoring();//挂起监听
-	BOOL         IsThreadSuspend(HANDLE hThread);//判断线程是否挂起 //add by itas109 2016-06-29
+			DWORD ReadIntervalTimeout = 1000,
+			DWORD ReadTotalTimeoutMultiplier = 1000,
+			DWORD ReadTotalTimeoutConstant = 1000,
+			DWORD WriteTotalTimeoutMultiplier = 1000,
+			DWORD WriteTotalTimeoutConstant = 1000);
 
-	DWORD		 GetWriteBufferSize();///获取写缓冲大小
-	DWORD		 GetCommEvents();///获取事件
-	DCB			 GetDCB();///获取DCB
+		// start/stop comm watching
+		///控制串口监视线程
+		BOOL		 StartMonitoring();//开始监听
+		BOOL		 ResumeMonitoring();//恢复监听
+		BOOL		 SuspendMonitoring();//挂起监听
+		BOOL         IsThreadSuspend(HANDLE hThread);//判断线程是否挂起 //add by itas109 2016-06-29
 
-	///写数据到串口
-	void		WriteToPort(char* string, size_t n); // add by mrlong 2007-12-25
-	void		WriteToPort(PBYTE Buffer, size_t n);// add by mrlong
-	void		ClosePort();					 // add by mrlong 2007-12-2  
-	BOOL		IsOpen();
+		DWORD		 GetWriteBufferSize();///获取写缓冲大小
+		DWORD		 GetCommEvents();///获取事件
+		DCB			 GetDCB();///获取DCB
 
-	void QueryKey(HKEY hKey);///查询注册表的串口号，将值存于数组中
+		///写数据到串口
+		void		WriteToPort(char* string, size_t n); // add by mrlong 2007-12-25
+		void		WriteToPort(PBYTE Buffer, size_t n);// add by mrlong
+		void		ClosePort();					 // add by mrlong 2007-12-2  
+		BOOL		IsOpened();
 
-#ifdef _AFX
-	void Hkey2ComboBox(CComboBox& m_PortNO);///将QueryKey查询到的串口号添加到CComboBox控件中
-#endif // _AFX
+		std::string GetVersion();
 
-protected:
-	// protected memberfunctions
-	void		ProcessErrorMessage(TCHAR* ErrorText);///错误处理
-	static DWORD WINAPI CommThread(LPVOID pParam);///线程函数
-	static void	ReceiveChar(CSerialPort* port);
-	static void ReceiveStr(CSerialPort* port); //add by itas109 2016-06-22
-	static void	WriteChar(CSerialPort* port);
+	protected:
+		// protected memberfunctions
+		void		ProcessErrorMessage(TCHAR* ErrorText);///错误处理
+		static DWORD WINAPI CommThread(LPVOID pParam);///线程函数
+		static void	ReceiveChar(CSerialPort* port);
+		static void ReceiveStr(CSerialPort* port); //add by itas109 2016-06-22
+		static void	WriteChar(CSerialPort* port);
 
-	// thread
-	HANDLE			    m_Thread;
-	BOOL                m_bIsSuspened;///thread监视线程是否挂起
+	private:
+		// thread
+		HANDLE			    m_Thread;
+		BOOL                m_bIsSuspened;///thread监视线程是否挂起
 
-	// synchronisation objects
-	CRITICAL_SECTION	m_csCommunicationSync;///临界资源
-	BOOL				m_bThreadAlive;///监视线程运行标志
+		// synchronisation objects
+		CRITICAL_SECTION	m_csCommunicationSync;///临界资源
+		BOOL				m_bThreadAlive;///监视线程运行标志
 
-	// handles
-	HANDLE				m_hShutdownEvent;  //stop发生的事件
-	HANDLE				m_hComm;		   // 串口句柄 
-	HANDLE				m_hWriteEvent;	 // write
+		// handles
+		HANDLE				m_hShutdownEvent;  //stop发生的事件
+		HANDLE				m_hComm;		   // 串口句柄 
+		HANDLE				m_hWriteEvent;	 // write
 
-	// Event array. 
-	// One element is used for each event. There are two event handles for each port.
-	// A Write event and a receive character event which is located in the overlapped structure (m_ov.hEvent).
-	// There is a general shutdown when the port is closed. 
-	///事件数组，包括一个写事件，接收事件，关闭事件
-	///一个元素用于一个事件。有两个事件线程处理端口。
-	///写事件和接收字符事件位于overlapped结构体（m_ov.hEvent）中
-	///当端口关闭时，有一个通用的关闭。
-	HANDLE				m_hEventArray[3];
+		// Event array. 
+		// One element is used for each event. There are two event handles for each port.
+		// A Write event and a receive character event which is located in the overlapped structure (m_ov.hEvent).
+		// There is a general shutdown when the port is closed. 
+		///事件数组，包括一个写事件，接收事件，关闭事件
+		///一个元素用于一个事件。有两个事件线程处理端口。
+		///写事件和接收字符事件位于overlapped结构体（m_ov.hEvent）中
+		///当端口关闭时，有一个通用的关闭。
+		HANDLE				m_hEventArray[3];
 
-	// structures
-	OVERLAPPED			m_ov;///异步I/O
-	COMMTIMEOUTS		m_SerialPortTimeouts;///超时设置
-	DCB					m_dcb;///设备控制块
+		// structures
+		OVERLAPPED			m_ov;///异步I/O
+		COMMTIMEOUTS		m_SerialPortTimeouts;///超时设置
+		DCB					m_dcb;///设备控制块
 
-	// owner window
-	HWND				m_pOwner;
+		// owner window
+		HWND				m_pOwner;
 
-	// misc
-	UINT				m_nPortNr;		///串口号
-	PBYTE				m_szWriteBuffer;///写缓冲区
-	DWORD				m_dwCommEvents;
-	DWORD				m_nWriteBufferSize;///写缓冲大小
+		// misc
+		UINT				m_nPortNr;		///串口号
+		PBYTE				m_szWriteBuffer;///写缓冲区
+		DWORD				m_dwCommEvents;
+		DWORD				m_nWriteBufferSize;///写缓冲大小
 
-	size_t				m_nWriteSize;//写入字节数 //add by mrlong 2007-12-25
+		size_t				m_nWriteSize;//写入字节数 //add by mrlong 2007-12-25
+	};
+
+	class _declspec(dllexport) CSerialPortInfo
+	{
+	public:
+		CSerialPortInfo();
+		~CSerialPortInfo();
+
+		static std::list<std::string> availablePorts();
+	};
 };
 
-#endif __SERIALPORT_H__
+#endif __CSERIALPORT_H__

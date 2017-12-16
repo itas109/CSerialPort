@@ -23,14 +23,126 @@
 **  2016-08-10 itas109   http://blog.csdn.net/itas109
 **  2017-02-14 itas109   http://blog.csdn.net/itas109
 **  2017-03-12 itas109   http://blog.csdn.net/itas109
+**  2017-12-16 itas109   http://blog.csdn.net/itas109
 */
 
-#include "stdafx.h"
 #include "SerialPort.h"
+#include "assert.h"
 
-#include <assert.h>
+using namespace itas109;
 
-int m_nComArray[20];//存放活跃的串口号
+//获取注册表指定数据到list
+bool getRegKeyValues(std::string regKeyPath, std::list<std::string> & portsList)
+{
+#define MAX_KEY_LENGTH 255
+#define MAX_VALUE_NAME 16383
+
+	HKEY hKey;
+
+	TCHAR		achValue[MAX_VALUE_NAME];					// buffer for subkey name
+	DWORD		cchValue = MAX_VALUE_NAME;					// size of name string 
+	TCHAR		achClass[MAX_PATH] = TEXT("");				// buffer for class name 
+	DWORD		cchClassName = MAX_PATH;					// size of class string 
+	DWORD		cSubKeys = 0;								// number of subkeys 
+	DWORD		cbMaxSubKey;								// longest subkey size 
+	DWORD		cchMaxClass;								// longest class string 
+	DWORD		cKeyNum;									// number of values for key 
+	DWORD		cchMaxValue;								// longest value name 
+	DWORD		cbMaxValueData;								// longest value data 
+	DWORD		cbSecurityDescriptor;						// size of security descriptor 
+	FILETIME	ftLastWriteTime;							// last write time 
+
+	int iRet = -1;
+	bool bRet = false;
+
+	std::string m_keyValue;
+
+	TCHAR m_regKeyPath[MAX_KEY_LENGTH];
+
+	TCHAR strDSName[MAX_VALUE_NAME];
+	memset(strDSName, 0, MAX_VALUE_NAME);
+	DWORD nValueType = 0;
+	DWORD nBuffLen = 10;
+
+#ifdef UNICODE
+	int iLength;
+	const char * _char = regKeyPath.c_str();
+	iLength = MultiByteToWideChar(CP_ACP, 0, _char, strlen(_char) + 1, NULL, 0);
+	MultiByteToWideChar(CP_ACP, 0, _char, strlen(_char) + 1, m_regKeyPath, iLength);
+#else
+	strcpy_s(m_regKeyPath, MAX_KEY_LENGTH, regKeyPath.c_str());
+#endif
+
+	if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, m_regKeyPath, 0, KEY_READ, &hKey))
+	{
+		// Get the class name and the value count. 
+		iRet = RegQueryInfoKey(
+			hKey,                    // key handle 
+			achClass,                // buffer for class name 
+			&cchClassName,           // size of class string 
+			NULL,                    // reserved 
+			&cSubKeys,               // number of subkeys 
+			&cbMaxSubKey,            // longest subkey size 
+			&cchMaxClass,            // longest class string 
+			&cKeyNum,                // number of values for this key 
+			&cchMaxValue,            // longest value name 
+			&cbMaxValueData,         // longest value data 
+			&cbSecurityDescriptor,   // security descriptor 
+			&ftLastWriteTime);       // last write time 
+
+		if (!portsList.empty())
+		{
+			portsList.clear();
+		}
+
+		// Enumerate the key values. 
+		if (cKeyNum > 0 && ERROR_SUCCESS == iRet)
+		{
+			for (int i = 0; i < (int)cKeyNum; i++)
+			{
+				cchValue = MAX_VALUE_NAME;
+				achValue[0] = '\0';
+				if (ERROR_SUCCESS == RegEnumValue(hKey, i, achValue, &cchValue, NULL, NULL, NULL, NULL))
+				{
+					if (ERROR_SUCCESS == RegQueryValueEx(hKey, (LPCTSTR)achValue, NULL, &nValueType, (LPBYTE)strDSName, &nBuffLen))
+					{
+#ifdef UNICODE
+						int iLen = WideCharToMultiByte(CP_ACP, 0, strDSName, -1, NULL, 0, NULL, NULL);
+						char* chRtn = new char[iLen*sizeof(char)];
+						WideCharToMultiByte(CP_ACP, 0, strDSName, -1, chRtn, iLen, NULL, NULL);
+						m_keyValue = std::string(chRtn);
+						delete chRtn;
+						chRtn = NULL;
+#else
+						m_keyValue = std::string(strDSName);
+#endif
+						portsList.push_back(m_keyValue);
+
+					}
+				}
+			}
+		}
+		else
+		{
+
+		}
+	}
+
+	if (portsList.empty())
+	{
+		bRet = false;
+	}
+	else
+	{
+		bRet = true;
+	}
+
+
+	RegCloseKey(hKey);
+
+	return bRet;
+}
+
 //
 // Constructor
 //
@@ -53,6 +165,24 @@ CSerialPort::CSerialPort()
 	m_bThreadAlive = FALSE;
 	m_nWriteSize = 1;
 	m_bIsSuspened = FALSE;
+
+	// create events
+	m_ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	m_hWriteEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	m_hShutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+	// initialize the event objects
+	///事件数组初始化，设定优先级别
+	m_hEventArray[0] = m_hShutdownEvent;	// highest priority
+	//为避免有些串口设备无数据输入，但一直返回读事件，使监听线程阻塞，
+	//可以将读写放在两个线程中，或者修改读写事件优先级
+	//修改优先级有两个方案：
+	//方案一为监听线程中WaitCommEvent()后，添加如下两条语句：
+	//if (WAIT_OBJECT_O == WaitForSingleObject(port->m_hWriteEvent, 0))
+	//	ResetEvent(port->m_ov.hEvent);
+	//方案二为初始化时即修改，即下面两条语句：
+	m_hEventArray[1] = m_hWriteEvent;
+	m_hEventArray[2] = m_ov.hEvent;
 }
 
 //
@@ -60,53 +190,20 @@ CSerialPort::CSerialPort()
 //
 CSerialPort::~CSerialPort()
 {
-	MSG message;
+	ClosePort();
 
-	//增加线程挂起判断，解决由于线程挂起导致串口关闭死锁的问题 add by itas109 2016-06-29
-	if (IsThreadSuspend(m_Thread))
-	{
-		ResumeThread(m_Thread);
-	}
-
-	//串口句柄无效  add by itas109 2016-07-29
-	if (m_hComm == INVALID_HANDLE_VALUE)
-	{
-		CloseHandle(m_hComm);
-		m_hComm = NULL;
-		return;
-	}
-
-	do
-	{
-		SetEvent(m_hShutdownEvent);
-		//add by liquanhai  防止死锁  2011-11-06
-		if (::PeekMessage(&message, m_pOwner, 0, 0, PM_REMOVE))
-		{
-			::TranslateMessage(&message);
-			::DispatchMessage(&message);
-		}
-	} while (m_bThreadAlive);
-
-	// if the port is still opened: close it 
-	if (m_hComm != NULL)
-	{
-		CloseHandle(m_hComm);
-		m_hComm = NULL;
-	}
-	// Close Handles  
+	// close Handles  
 	if (m_hShutdownEvent != NULL)
-		CloseHandle(m_hShutdownEvent);
-	if (m_ov.hEvent != NULL)
-		CloseHandle(m_ov.hEvent);
-	if (m_hWriteEvent != NULL)
-		CloseHandle(m_hWriteEvent);
-
-	//TRACE("Thread ended\n");
-
-	if (m_szWriteBuffer != NULL)
 	{
-		delete[] m_szWriteBuffer;
-		m_szWriteBuffer = NULL;
+		CloseHandle(m_hShutdownEvent);
+	}
+	if (m_ov.hEvent != NULL)
+	{
+		CloseHandle(m_ov.hEvent);
+	}
+	if (m_hWriteEvent != NULL)
+	{
+		CloseHandle(m_hWriteEvent);
 	}
 }
 
@@ -144,62 +241,8 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 	assert(portnr > 0 && portnr < MaxSerialPortNum);
 	assert(pPortOwner != NULL);
 
-	MSG message;
-
-	//增加线程挂起判断，解决由于线程挂起导致串口关闭死锁的问题 add by itas109 2016-06-29
-	if (IsThreadSuspend(m_Thread))
-	{
-		ResumeThread(m_Thread);
-	}
-
-	// if the thread is alive: Kill
-	if (m_bThreadAlive)
-	{
-		do
-		{
-			SetEvent(m_hShutdownEvent);
-			//add by liquanhai  防止死锁  2011-11-06
-			if (::PeekMessage(&message, m_pOwner, 0, 0, PM_REMOVE))
-			{
-				::TranslateMessage(&message);
-				::DispatchMessage(&message);
-			}
-		} while (m_bThreadAlive);
-		//TRACE("Thread ended\n");
-		//此处的延时很重要，因为如果串口开着，发送关闭指令到彻底关闭需要一定的时间，这个延时应该跟电脑的性能相关
-		Sleep(50);//add by itas109 2016-08-02
-	}
-
-	// create events
-	if (m_ov.hEvent != NULL)
-		ResetEvent(m_ov.hEvent);
-	else
-		m_ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-	if (m_hWriteEvent != NULL)
-		ResetEvent(m_hWriteEvent);
-	else
-		m_hWriteEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-	if (m_hShutdownEvent != NULL)
-		ResetEvent(m_hShutdownEvent);
-	else
-		m_hShutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-	// initialize the event objects
-	///事件数组初始化，设定优先级别
-	m_hEventArray[0] = m_hShutdownEvent;	// highest priority
-	//为避免有些串口设备无数据输入，但一直返回读事件，使监听线程阻塞，
-	//可以将读写放在两个线程中，或者修改读写事件优先级
-	//修改优先级有两个方案：
-	//方案一为监听线程中WaitCommEvent()后，添加如下两条语句：
-	//if (WAIT_OBJECT_O == WaitForSingleObject(port->m_hWriteEvent, 0))
-	//	ResetEvent(port->m_ov.hEvent);
-	//方案二为初始化时即修改，即下面两条语句：
-	m_hEventArray[1] = m_hWriteEvent;
-	m_hEventArray[2] = m_ov.hEvent;
-
-
+	ClosePort();
+	
 	// initialize critical section
 	///初始化临界资源
 	InitializeCriticalSection(&m_csCommunicationSync);
@@ -1129,7 +1172,7 @@ DWORD CSerialPort::GetWriteBufferSize()
 	return m_nWriteBufferSize;
 }
 
-BOOL CSerialPort::IsOpen()
+BOOL CSerialPort::IsOpened()
 {
 	return m_hComm != NULL && m_hComm != INVALID_HANDLE_VALUE;//m_hComm增加INVALID_HANDLE_VALUE的情况 add by itas109 2016-07-29
 }
@@ -1163,6 +1206,9 @@ void CSerialPort::ClosePort()
 		}
 	} while (m_bThreadAlive);
 
+	//此处的延时很重要，因为如果串口开着，发送关闭指令到彻底关闭需要一定的时间，这个延时应该跟电脑的性能相关
+	Sleep(50);//add by itas109 2016-08-02
+
 	// if the port is still opened: close it 
 	if (m_hComm != NULL)
 	{
@@ -1170,7 +1216,7 @@ void CSerialPort::ClosePort()
 		m_hComm = NULL;
 	}
 
-	// Close Handles  
+	// Reset Handles  
 	if (m_hShutdownEvent != NULL)
 	{
 		ResetEvent(m_hShutdownEvent);
@@ -1182,7 +1228,6 @@ void CSerialPort::ClosePort()
 	if (m_hWriteEvent != NULL)
 	{
 		ResetEvent(m_hWriteEvent);
-		//CloseHandle(m_hWriteEvent);//开发者反映，这里会导致多个串口工作时，重新打开串口异常
 	}
 
 	if (m_szWriteBuffer != NULL)
@@ -1222,107 +1267,27 @@ void CSerialPort::WriteToPort(BYTE* Buffer, size_t n)
 	SetEvent(m_hWriteEvent);
 }
 
-///查询注册表的串口号，将值存于数组中
-///本代码参考于mingojiang的获取串口逻辑名代码
-//
-void CSerialPort::QueryKey(HKEY hKey)
+std::string CSerialPort::GetVersion()
 {
-#define MAX_KEY_LENGTH 255
-#define MAX_VALUE_NAME 16383
-	//	TCHAR    achKey[MAX_KEY_LENGTH];   // buffer for subkey name
-	//	DWORD    cbName;                   // size of name string 
-	TCHAR    achClass[MAX_PATH] = TEXT("");  // buffer for class name 
-	DWORD    cchClassName = MAX_PATH;  // size of class string 
-	DWORD    cSubKeys = 0;               // number of subkeys 
-	DWORD    cbMaxSubKey;              // longest subkey size 
-	DWORD    cchMaxClass;              // longest class string 
-	DWORD    cValues;              // number of values for key 
-	DWORD    cchMaxValue;          // longest value name 
-	DWORD    cbMaxValueData;       // longest value data 
-	DWORD    cbSecurityDescriptor; // size of security descriptor 
-	FILETIME ftLastWriteTime;      // last write time 
+	std::string m_version = "CSerialPort 3.0.0.171216";
+	return m_version;
+}
 
-	DWORD i, retCode;
-
-	TCHAR  achValue[MAX_VALUE_NAME];
-	DWORD cchValue = MAX_VALUE_NAME;
-
-	// Get the class name and the value count. 
-	retCode = RegQueryInfoKey(
-		hKey,                    // key handle 
-		achClass,                // buffer for class name 
-		&cchClassName,           // size of class string 
-		NULL,                    // reserved 
-		&cSubKeys,               // number of subkeys 
-		&cbMaxSubKey,            // longest subkey size 
-		&cchMaxClass,            // longest class string 
-		&cValues,                // number of values for this key 
-		&cchMaxValue,            // longest value name 
-		&cbMaxValueData,         // longest value data 
-		&cbSecurityDescriptor,   // security descriptor 
-		&ftLastWriteTime);       // last write time 
-
-	for (i = 0; i<20; i++)///存放串口号的数组初始化
-	{
-		m_nComArray[i] = -1;
-	}
-
-	// Enumerate the key values. 
-	if (cValues > 0) {
-		for (i = 0, retCode = ERROR_SUCCESS; i < cValues; i++)
-		{
-			cchValue = MAX_VALUE_NAME;
-			achValue[0] = '\0';
-			if (ERROR_SUCCESS == RegEnumValue(hKey, i, achValue, &cchValue, NULL, NULL, NULL, NULL))
-			{
-				TCHAR strDSName[10];
-				memset(strDSName, 0, 10);
-				DWORD nValueType = 0, nBuffLen = 10;
-				if (ERROR_SUCCESS == RegQueryValueEx(hKey, (LPCTSTR)achValue, NULL, &nValueType, (LPBYTE)strDSName, &nBuffLen))
-				{
-					int nIndex = -1;
-					while (++nIndex < MaxSerialPortNum)
-					{
-						if (-1 == m_nComArray[nIndex])
-						{
-							m_nComArray[nIndex] = _tstoi((TCHAR*)(strDSName + 3));
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
-	else{
-		MessageBox(NULL, _T("No Com In This Computer!"), _T("COM Query Error"), MB_ICONERROR);
-	}
+CSerialPortInfo::CSerialPortInfo()
+{
 
 }
 
-#ifdef _AFX
-void CSerialPort::Hkey2ComboBox(CComboBox& m_PortNO)
+CSerialPortInfo::~CSerialPortInfo()
 {
-	HKEY hTestKey;
-	bool Flag = FALSE;
 
-	///仅是XP系统的注册表位置，其他系统根据实际情况做修改
-	if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, TEXT("HARDWARE\\DEVICEMAP\\SERIALCOMM"), 0, KEY_READ, &hTestKey))
-	{
-		QueryKey(hTestKey);
-	}
-	RegCloseKey(hTestKey);
-
-	int i = 0;
-	m_PortNO.ResetContent();///刷新时，清空下拉列表内容
-	while (i < MaxSerialPortNum && -1 != m_nComArray[i])
-	{
-		CString szCom;
-		szCom.Format(_T("COM%d"), m_nComArray[i]);
-		m_PortNO.InsertString(i, szCom.GetBuffer(5));
-		++i;
-		Flag = TRUE;
-		if (Flag)///把第一个发现的串口设为下拉列表的默认值
-			m_PortNO.SetCurSel(0);
-	}
 }
-#endif // _AFX
+
+std::list<std::string> CSerialPortInfo::availablePorts()
+{
+	std::list<std::string> portsList;
+	///仅是XP/Win7系统的注册表位置，其他系统根据实际情况做修改
+	std::string m_regKeyPath = std::string("HARDWARE\\DEVICEMAP\\SERIALCOMM");
+	getRegKeyValues(m_regKeyPath, portsList);
+	return portsList;
+}
