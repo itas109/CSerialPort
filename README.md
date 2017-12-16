@@ -1,28 +1,53 @@
-CSerialPort
-===========
+# CSerialPort
 
-First Version by Remon Spekreijse on 2000-02-08
+a lightweight library of serial port, which can easy to read and write serical port on windows with C++
+
+# License
+since V3.0.0.171216 use LGPL v3 License
+
+---
+
+Blog : http://blog.csdn.net/itas109
+
+QQ Group : [12951803](http://shang.qq.com/wpa/qunwpa?idkey=2888fa15c4513e6bfb9347052f36e437d919b2377161862948b2a49576679fc6)
+
+# Last Modify
+## Version: 3.0.0.171216
+by itas109 on 2017-12-16
+
+http://blog.csdn.net/itas109
+
+https://github.com/itas109
+* 支持DLL输出
+* 去除QueryKey和Hkey2ComboBox，采用CSerialPortInfo::availablePorts()函数代替
+* 增加CSerialPortInfo类，目前只有availablePorts静态函数，用于获取活跃的串口到list
+* 增加命名空间itas109
+* 精简不必要的头文件
+* InitPort和~CSerialPort()中直接整合ClosePort()
+
+---
+
+## First Version by Remon Spekreijse on 2000-02-08
 http://www.codeguru.com/cpp/i-n/network/serialcommunications/article.php/c2483/A-communication-class-for-serial-port.htm
 
-
-Second Version by mrlong on 2007-12-25
+## Second Version by mrlong on 2007-12-25
 https://code.google.com/p/mycom/
 * 增加 ClosePort
 * 增加 WriteToPort 两个方法
 * 增加 SendData 与 RecvData 方法
 
 
-by liquanhai on 2011-11-04
+## by liquanhai on 2011-11-04
 http://blog.csdn.net/liquanhai/article/details/4955253
 * 增加 ClosePort 中交出控制权，防止死锁问题
 
 
-by liquanhai on 2011-11-06
+## by liquanhai on 2011-11-06
 http://blog.csdn.net/liquanhai/article/details/6941574
 * 增加 ReceiveChar 中防止线程死锁
 
 
-by viruscamp on 2013-12-04
+## by viruscamp on 2013-12-04
 https://github.com/viruscamp/CSerialPort
 * 增加 IsOpen 判断是否打开
 * 修正 InitPort 中 parity Odd Even 参数取值错误
@@ -31,18 +56,19 @@ https://github.com/viruscamp/CSerialPort
 * 增加用户消息编号自定义，方法来自 CnComm
 
 
-by itas109 on 2014-01-10
+## by itas109 on 2014-01-10
 http://blog.csdn.net/itas109/article/details/18358297
+
 https://github.com/itas109
 * 解决COM10以上端口无法显示的问题 
 * 扩展可选择端口，最大值MaxSerialPortNum可以自定义 
 * 添加QueryKey()和Hkey2ComboBox两个方法，用于自动查询当前有效的串口号。
 
 
-by liquanhai on 2014-12-18
+## by liquanhai on 2014-12-18
 * 增加一些处理措施，主要是对减少CPU占用率
 
-by itas109 on 2016-05-07
+## by itas109 on 2016-05-07
 http://blog.csdn.net/itas109
 https://github.com/itas109
 * 修复每次打开串口发送一次，当串口无应答时，需要关闭再打开或者接收完数据才能发送的问题。
@@ -51,14 +77,17 @@ https://github.com/itas109
 * 修复停止位在头文件中定义成1导致SetCommState报错的问题，应为1对应的停止位是1.5。UINT stopsbits = ONESTOPBIT
 * switch(stopbits)和switch(parity)增加默认情况，增强程序健壮性
 
-by itas109 on 2016-06-22
+## by itas109 on 2016-06-22
 http://blog.csdn.net/itas109
+
 https://github.com/itas109
+
 * 增加ReceiveStr方法，用于接收字符串（接收缓冲区有多少字符就接收多少字符）。
        解决ReceiveChar只能接收单个字符的问题。
 
-by itas109 on 2016-06-29
+## by itas109 on 2016-06-29
 http://blog.csdn.net/itas109
+
 https://github.com/itas109
 * 解决RestartMonitoring方法和StopMonitoring方法命令不准确引起的歧义，根据实际作用。
 		将RestartMonitoring更改为ResumeMonitoring，将StopMonitoring更改为SuspendMonitoring。
@@ -66,8 +95,9 @@ https://github.com/itas109
 * 改进ClosePort方法，增加线程挂起判断，解决由于线程挂起导致串口关闭死锁的问题。
 * 增加IsReceiveString宏定义，用于接收时采用单字节接收还是多字节接收
 
-by itas109 on 2016-08-02
+## by itas109 on 2016-08-02
 http://blog.csdn.net/itas109
+
 https://github.com/itas109
 * 改进IsOpen方法，m_hComm增加INVALID_HANDLE_VALUE的情况，因为CreateFile方法失败返回的是INVALID_HANDLE_VALUE，不是NULL
 * 改进ClosePort方法：增加串口句柄无效的判断(防止关闭死锁)；m_hWriteEvent不使用CloseHandle关闭
@@ -82,13 +112,15 @@ https://github.com/itas109
 * 规范了一些错误信息，参考winerror.h --  error code definitions for the Win32 API functions
 * 删除SendData和RecvData方法
 
-by itas109 on 2016-08-10
+## by itas109 on 2016-08-10
 http://blog.csdn.net/itas109
+
 https://github.com/itas109
 *  改进ReceiveStr方法，comstat.cbInQue = 0xcccccccc的情况（如串口异常断开），会导致RXBuff初始化失败
 
-by itas109 on 2017-02-14
+## by itas109 on 2017-02-14
 http://blog.csdn.net/itas109
+
 https://github.com/itas109
 * 兼容ASCII和UNICODE编码
 * ReceiveStr函数中发送函数SendMessage的第二个参数采用结构体形式，包括portNr串口号和bytesRead读取的字节数，可以处理16进制的时候0x00截断问题
@@ -96,8 +128,11 @@ https://github.com/itas109
 * 尽量的取消对 MFC 的依赖，Hkey2ComboBox函数暂时保留
 * 其他小问题修改
 
-by itas109 on 2017-03-12
+## by itas109 on 2017-03-12
 http://blog.csdn.net/itas109
+
 https://github.com/itas109
 * 增加宏定义_AFX，用于处理MFC的必要函数Hkey2ComboBox
 * 进一步去除MFC依赖，修改AfxMessageBox函数
+
+---
