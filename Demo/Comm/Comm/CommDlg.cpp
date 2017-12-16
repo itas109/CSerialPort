@@ -120,8 +120,25 @@ BOOL CCommDlg::OnInitDialog()
 	temp.Format(_T("%d"), 9600);
 	m_BaudRate.SetCurSel(m_BaudRate.FindString(0, temp));
 
-	m_SerialPort.Hkey2ComboBox(m_PortNr);
-
+	//»ñÈ¡´®¿ÚºÅ
+	CSerialPortInfo a;
+	list<string> m_portsList = CSerialPortInfo::availablePorts();
+	list<string>::iterator itor;
+	TCHAR m_regKeyValue[255];
+	for (itor = m_portsList.begin(); itor != m_portsList.end(); ++itor)
+	{
+#ifdef UNICODE
+		int iLength;
+		const char * _char = (*itor).c_str();
+		iLength = MultiByteToWideChar(CP_ACP, 0, _char, strlen(_char) + 1, NULL, 0);
+		MultiByteToWideChar(CP_ACP, 0, _char, strlen(_char) + 1, m_regKeyValue, iLength);
+#else
+		strcpy_s(m_regKeyValue, 255, (*itor).c_str());
+#endif
+		m_PortNr.AddString(m_regKeyValue);
+	}
+	m_PortNr.SetCurSel(0);
+	
 	OnBnClickedButtonOpenClose();
 
 	m_Send.SetWindowText(_T("http://blog.csdn.net/itas109"));

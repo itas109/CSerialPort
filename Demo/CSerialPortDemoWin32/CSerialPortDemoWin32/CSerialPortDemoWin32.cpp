@@ -5,6 +5,8 @@
 #include "CSerialPortDemoWin32.h"
 #include "SerialPort.h"
 
+using namespace itas109;
+
 CSerialPort m_SerialPort;
 
 #define MAX_LOADSTRING 100
@@ -181,8 +183,8 @@ LRESULT OnReceiveStr(WPARAM str, LPARAM commInfo)
 	}*pCommInfo;
 	pCommInfo = (serialPortInfo*)commInfo;
 
-	TCHAR Temp[200] = { 0 };
-	_stprintf_s(Temp, 200, _T("Received Data From Port : %d\n%s"), pCommInfo->portNr, (char*)str);
+	TCHAR Temp[1024] = { 0 };
+	_stprintf_s(Temp, 1024, _T("Received Data From Port : %d\n%s"), pCommInfo->portNr, (char*)str);
 	MessageBox(NULL, Temp, _T("Received"), MB_ICONINFORMATION);
 
 	TCHAR temp[256] = _T("Hello itas109\n");

@@ -33,7 +33,7 @@
     <ClInclude Include="CSerialPortDemoWin32.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SerialPort.h">
+    <ClInclude Include="..\..\..\src\SerialPort.h">
       <Filter>CSerialPort</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,7 +44,7 @@
     <ClCompile Include="CSerialPortDemoWin32.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SerialPort.cpp">
+    <ClCompile Include="..\..\..\src\SerialPort.cpp">
       <Filter>CSerialPort</Filter>
     </ClCompile>
   </ItemGroup>

@@ -5,9 +5,11 @@
 #pragma once
 #include "SerialPort.h"
 #include "afxwin.h"
-#include <tchar.h>
 
 #define WM_TEST 1000
+
+using namespace std;
+using namespace itas109;
 
 extern CSerialPort m_SerialPort;
 

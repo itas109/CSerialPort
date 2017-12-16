@@ -13,11 +13,8 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="comm">
-      <UniqueIdentifier>{829b2aa7-ced4-4c40-a3f2-c56a86c41309}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="log">
-      <UniqueIdentifier>{c9568bac-0c6e-44e5-b714-b8f524e57201}</UniqueIdentifier>
+    <Filter Include="com">
+      <UniqueIdentifier>{57952218-d557-4e7c-a792-c282f3b1715d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,8 +36,8 @@
     <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SerialPort.h">
-      <Filter>comm</Filter>
+    <ClInclude Include="..\..\..\src\SerialPort.h">
+      <Filter>com</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -53,8 +50,8 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SerialPort.cpp">
-      <Filter>comm</Filter>
+    <ClCompile Include="..\..\..\src\SerialPort.cpp">
+      <Filter>com</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
