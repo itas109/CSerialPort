@@ -1,5 +1,7 @@
 待解决问题
 1.连续发送不能全部相应问题 2017-04-20
+大概思路：
+进入写事件之后，采用多线程方式进行异步写入。目前采用的是ResetEvent(port->m_hWriteEvent) -> WriteFile ->ResetEvent(m_hWriteEvent)
 2.增加Debug模式的TRACE 2017-06-30
 3.增加流控制 2017-06-30
 4.编译为DLL，用于其他语言，如C#、Java等 2017-06-30
