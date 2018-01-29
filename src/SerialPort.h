@@ -124,7 +124,8 @@
 
 #include "stdio.h"
 #include "tchar.h"
-#include "Windows.h"
+
+#include <afx.h>
 
 #include <string>
 #include <list>
@@ -133,6 +134,12 @@ struct serialPortInfo
 {
 	UINT portNr;//串口号
 	DWORD bytesRead;//读取的字节数
+};
+
+struct serialPortBuffer
+{
+	int len;
+	PBYTE buffer;
 };
 
 #ifndef WM_COMM_MSG_BASE 
@@ -237,6 +244,8 @@ namespace itas109{
 		// misc
 		UINT				m_nPortNr;		///串口号
 		PBYTE				m_szWriteBuffer;///写缓冲区
+		std::list<serialPortBuffer> m_bufferList;
+		serialPortBuffer m_bufferStruct;
 		DWORD				m_dwCommEvents;
 		DWORD				m_nWriteBufferSize;///写缓冲大小
 

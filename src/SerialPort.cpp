@@ -183,6 +183,10 @@ CSerialPort::CSerialPort()
 	//方案二为初始化时即修改，即下面两条语句：
 	m_hEventArray[1] = m_hWriteEvent;
 	m_hEventArray[2] = m_ov.hEvent;
+
+	// initialize critical section
+	///初始化临界资源
+	InitializeCriticalSection(&m_csCommunicationSync);
 }
 
 //
@@ -205,6 +209,10 @@ CSerialPort::~CSerialPort()
 	{
 		CloseHandle(m_hWriteEvent);
 	}
+
+	// delete critical section
+	//释放临界资源
+	DeleteCriticalSection(&m_csCommunicationSync);
 }
 
 //
@@ -242,10 +250,6 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 	assert(pPortOwner != NULL);
 
 	ClosePort();
-	
-	// initialize critical section
-	///初始化临界资源
-	InitializeCriticalSection(&m_csCommunicationSync);
 
 	// set buffersize for writing and save the owner
 	m_pOwner = pPortOwner;
@@ -487,7 +491,10 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 	// Clear comm buffers at startup
 	///开始时清除串口缓冲
 	if (port->m_hComm)		// check if the port is opened
+	{
 		PurgeComm(port->m_hComm, PURGE_RXCLEAR | PURGE_TXCLEAR | PURGE_RXABORT | PURGE_TXABORT);
+		//TRACE("Clear comm buffers");
+	}
 
 	// begin forever loop.  This loop will run as long as the thread is alive.
 	///只要线程存在就不断读取数据
@@ -610,74 +617,100 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 		// Main wait function.  This function will normally block the thread
 		// until one of nine events occur that require action.
 		///等待3个事件：关断/读/写，有一个事件发生就返回
-		Event = WaitForMultipleObjects(3, ///3个事件
+		//if multiple objects signal it will get the index of the first one
+		//it means it lost some signal //by itas109 2017-12-17
+		Event = MsgWaitForMultipleObjects(3, ///3个事件
 			port->m_hEventArray, ///事件数组
 			FALSE, ///有一个事件发生就返回
-			INFINITE);///超时时间
+			INFINITE,
+			QS_ALLEVENTS);///超时时间
 
-		switch (Event)
+		//deal with mutil handle tigger at the same time	//by itas109 2017-12-17
+		if (Event >= WAIT_OBJECT_0 && Event < WAIT_OBJECT_0 + 3)
 		{
-		case 0:
-		{
-				  // Shutdown event.  This is event zero so it will be
-				  // the higest priority and be serviced first.
-				  ///关断事件，关闭串口
-				  CloseHandle(port->m_hComm);
-				  port->m_hComm = NULL;
-				  port->m_bThreadAlive = FALSE;
+			for (int i = Event - WAIT_OBJECT_0 - 1; i < 3; i++)
+			{
+				if (WaitForSingleObject(port->m_hEventArray[i], 0) == WAIT_OBJECT_0)
+				{
+					//TRACE("WaitForSingleObject : %d",i);
 
-				  // Kill this thread.  break is not needed, but makes me feel better.
-				  //AfxEndThread(100);
-				  ::ExitThread(100);
-
-				  break;
-		}
-		case 1: // write event 发送数据
-		{
-					// Write character event from port
-					WriteChar(port);
-					break;
-		}
-		case 2:	// read event 将定义的各种消息发送出去
-		{
-					GetCommMask(port->m_hComm, &CommEvent);
-					if (CommEvent & EV_RXCHAR) //接收到字符，并置于输入缓冲区中
+					switch (Event)
 					{
-						if (IsReceiveString == 1)
-						{
-							ReceiveStr(port);//多字符接收
-						}
-						else if (IsReceiveString == 0)
-						{
-							ReceiveChar(port);//单字符接收
-						}
-						else
-						{
-							//默认多字符接收
-							ReceiveStr(port);//多字符接收
-						}
+					case WAIT_OBJECT_0 + 0:
+					{
+											  // Shutdown event.  This is event zero so it will be
+											  // the higest priority and be serviced first.
+											  ///关断事件，关闭串口
+											  CloseHandle(port->m_hComm);
+											  port->m_hComm = NULL;
+											  port->m_bThreadAlive = FALSE;
+
+											  // Kill this thread.  break is not needed, but makes me feel better.
+											  //AfxEndThread(100);
+											  ::ExitThread(100);
+
+											  break;
+					}
+					case WAIT_OBJECT_0 + 1: // write event 发送数据
+					{
+												// Write character event from port
+												WriteChar(port);
+												break;
+					}
+					case WAIT_OBJECT_0 + 2:	// read event 将定义的各种消息发送出去
+					{
+												GetCommMask(port->m_hComm, &CommEvent);
+												if (CommEvent & EV_RXCHAR) //接收到字符，并置于输入缓冲区中
+												{
+													if (IsReceiveString == 1)
+													{
+														ReceiveStr(port);//多字符接收
+													}
+													else if (IsReceiveString == 0)
+													{
+														ReceiveChar(port);//单字符接收
+													}
+													else
+													{
+														//默认多字符接收
+														ReceiveStr(port);//多字符接收
+													}
+												}
+
+												if (CommEvent & EV_CTS) //CTS信号状态发生变化
+													::SendMessage(port->m_pOwner, WM_COMM_CTS_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+												if (CommEvent & EV_RXFLAG) //接收到事件字符，并置于输入缓冲区中 
+													::SendMessage(port->m_pOwner, WM_COMM_RXFLAG_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+												if (CommEvent & EV_BREAK)  //输入中发生中断
+													::SendMessage(port->m_pOwner, WM_COMM_BREAK_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+												if (CommEvent & EV_ERR) //发生线路状态错误，线路状态错误包括CE_FRAME,CE_OVERRUN和CE_RXPARITY 
+													::SendMessage(port->m_pOwner, WM_COMM_ERR_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+												if (CommEvent & EV_RING) //检测到振铃指示
+													::SendMessage(port->m_pOwner, WM_COMM_RING_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+
+												break;
+					}
+					case WAIT_FAILED:
+					{
+										// 函数呼叫失败
+										break;
+					}
+					case WAIT_TIMEOUT:
+					{
+										 // 超时
+										 //TRACE("WaitForMultipleObjects Timeout");
+										 break;
+					}
+					default:
+					{
+							   //MessageBox(NULL, _T("Receive Error!"), _T("COM Receive Error"), MB_ICONERROR);
+							   break;
 					}
 
-					if (CommEvent & EV_CTS) //CTS信号状态发生变化
-						::SendMessage(port->m_pOwner, WM_COMM_CTS_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
-					if (CommEvent & EV_RXFLAG) //接收到事件字符，并置于输入缓冲区中 
-						::SendMessage(port->m_pOwner, WM_COMM_RXFLAG_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
-					if (CommEvent & EV_BREAK)  //输入中发生中断
-						::SendMessage(port->m_pOwner, WM_COMM_BREAK_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
-					if (CommEvent & EV_ERR) //发生线路状态错误，线路状态错误包括CE_FRAME,CE_OVERRUN和CE_RXPARITY 
-						::SendMessage(port->m_pOwner, WM_COMM_ERR_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
-					if (CommEvent & EV_RING) //检测到振铃指示
-						::SendMessage(port->m_pOwner, WM_COMM_RING_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
-
-					break;
+					} // end switch
+				}
+			}
 		}
-		default:
-		{
-				   MessageBox(NULL, _T("Receive Error!"), _T("COM Receive Error"), MB_ICONERROR);
-				   break;
-		}
-
-		} // end switch
 
 	} // close forever loop
 
@@ -763,97 +796,147 @@ void CSerialPort::ProcessErrorMessage(TCHAR* ErrorText)
 //
 void CSerialPort::WriteChar(CSerialPort* port)
 {
-	BOOL bWrite = TRUE;
-	BOOL bResult = TRUE;
-
-	DWORD BytesSent = 0;
-	DWORD SendLen = port->m_nWriteSize;
-	ResetEvent(port->m_hWriteEvent);
-
+	if (port->m_bufferList.size() == 0)
+	{
+		return;
+	}
 
 	// Gain ownership of the critical section
 	EnterCriticalSection(&port->m_csCommunicationSync);
 
-	if (bWrite)
+	BOOL bWrite = TRUE;
+	BOOL bResult = TRUE;
+
+	DWORD BytesSent = 0;
+	//DWORD SendLen = port->m_nWriteSize;
+
+	ResetEvent(port->m_hWriteEvent);
+
+	//声明i为迭代器   
+	std::list<serialPortBuffer>::iterator i;
+
+	//in general, for mutil send data can deal once.
+	for (i = port->m_bufferList.begin(); i != port->m_bufferList.end(); )
 	{
-		// Initailize variables
-		port->m_ov.Offset = 0;
-		port->m_ov.OffsetHigh = 0;
+		//TRACE("port->m_bufferList size :%d", port->m_bufferList.size());
 
-		// Clear buffer
-		PurgeComm(port->m_hComm, PURGE_RXCLEAR | PURGE_TXCLEAR | PURGE_RXABORT | PURGE_TXABORT);
+		PBYTE sendData = (*i).buffer;
+		int sendLen = (*i).len;
 
-		bResult = WriteFile(port->m_hComm,							// Handle to COMM Port
-			port->m_szWriteBuffer,					// Pointer to message buffer in calling finction
-			SendLen,	// add by mrlong
-			//strlen((char*)port->m_szWriteBuffer),	// Length of message to send
-			&BytesSent,								// Where to store the number of bytes sent
-			&port->m_ov);							// Overlapped structure
-
-		// deal with any error codes
-		if (!bResult)
+		if (bWrite)
 		{
-			DWORD dwError = GetLastError();
-			switch (dwError)
+			// Initailize variables
+			port->m_ov.Offset = 0;
+			port->m_ov.OffsetHigh = 0;
+
+			// Clear buffer
+			PurgeComm(port->m_hComm, PURGE_RXCLEAR | PURGE_TXCLEAR | PURGE_RXABORT | PURGE_TXABORT);
+
+			//TRACE("m_szWriteBufferMap Data : %s, size : %d", (*i).buffer, (*i).len);
+
+			//bResult = WriteFile(port->m_hComm,							// Handle to COMM Port
+			//	port->m_szWriteBuffer,					// Pointer to message buffer in calling finction
+			//	SendLen,	// add by mrlong
+			//	//strlen((char*)port->m_szWriteBuffer),	// Length of message to send
+			//	&BytesSent,								// Where to store the number of bytes sent
+			//	&port->m_ov);							// Overlapped structure
+
+			bResult = WriteFile(port->m_hComm,							// Handle to COMM Port
+				sendData,					// Pointer to message buffer in calling finction
+				sendLen,	// add by mrlong
+				//strlen((char*)port->m_szWriteBuffer),	// Length of message to send
+				&BytesSent,								// Where to store the number of bytes sent
+				&port->m_ov);							// Overlapped structure
+
+			// deal with any error codes
+			if (!bResult)
 			{
-			case ERROR_IO_PENDING:
-			{
-									 // continue to GetOverlappedResults()
-									 BytesSent = 0;
-									 bWrite = FALSE;
-									 break;
-			}
-			case ERROR_ACCESS_DENIED:///拒绝访问 erroe code:5
-			{
-										 port->m_hComm = INVALID_HANDLE_VALUE;
-										 TCHAR Temp[200] = { 0 };
-										 _stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED，WriteFile() Error Code:%d"), port->m_nPortNr, GetLastError());
-										 MessageBox(NULL, Temp, _T("COM WriteFile Error"), MB_ICONERROR);
+				DWORD dwError = GetLastError();
+				switch (dwError)
+				{
+				case ERROR_IO_PENDING:
+				{
+										 // continue to GetOverlappedResults()
+										 BytesSent = 0;
+										 bWrite = FALSE;
 										 break;
+				}
+				case ERROR_ACCESS_DENIED:///拒绝访问 erroe code:5
+				{
+											 port->m_hComm = INVALID_HANDLE_VALUE;
+											 TCHAR Temp[200] = { 0 };
+											 _stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED，WriteFile() Error Code:%d"), port->m_nPortNr, GetLastError());
+											 MessageBox(NULL, Temp, _T("COM WriteFile Error"), MB_ICONERROR);
+											 break;
+				}
+				case ERROR_INVALID_HANDLE:///打开串口失败 erroe code:6
+				{
+											  port->m_hComm = INVALID_HANDLE_VALUE;
+											  break;
+				}
+				case ERROR_BAD_COMMAND:///连接过程中非法断开 erroe code:22
+				{
+										   port->m_hComm = INVALID_HANDLE_VALUE;
+										   TCHAR Temp[200] = { 0 };
+										   _stprintf_s(Temp, 200, _T("COM%d ERROR_BAD_COMMAND，WriteFile() Error Code:%d"), port->m_nPortNr, GetLastError());
+										   MessageBox(NULL, Temp, _T("COM WriteFile Error"), MB_ICONERROR);
+										   break;
+				}
+				default:
+				{
+						   // all other error codes
+						   port->ProcessErrorMessage(_T("WriteFile()"));
+				}
+				}
 			}
-			case ERROR_INVALID_HANDLE:///打开串口失败 erroe code:6
+			else
 			{
-										  port->m_hComm = INVALID_HANDLE_VALUE;
-										  break;
+				//LeaveCriticalSection(&port->m_csCommunicationSync);
+				//write ok
 			}
-			case ERROR_BAD_COMMAND:///连接过程中非法断开 erroe code:22
+		} // end if(bWrite)
+
+		if (!bWrite)
+		{
+			bWrite = TRUE;
+
+			bResult = GetOverlappedResult(port->m_hComm,	// Handle to COMM port 
+				&port->m_ov,		// Overlapped structure
+				&BytesSent,		// Stores number of bytes sent
+				TRUE); 			// Wait flag
+
+			//LeaveCriticalSection(&port->m_csCommunicationSync);
+
+			// deal with the error code 
+			if (!bResult)
 			{
-									   port->m_hComm = INVALID_HANDLE_VALUE;
-									   TCHAR Temp[200] = { 0 };
-									   _stprintf_s(Temp, 200, _T("COM%d ERROR_BAD_COMMAND，WriteFile() Error Code:%d"), port->m_nPortNr, GetLastError());
-									   MessageBox(NULL, Temp, _T("COM WriteFile Error"), MB_ICONERROR);
-									   break;
+				port->ProcessErrorMessage(_T("GetOverlappedResults() in WriteFile()"));
 			}
-			default:
+			else
 			{
-					   // all other error codes
-					   port->ProcessErrorMessage(_T("WriteFile()"));
+				//write ok
 			}
+		} // end if (!bWrite)
+
+		//release and remove the data sended ok  add by itas109 2018-01-29
+		if (bResult)
+		{
+			if (sendData)
+			{
+				delete sendData;
+				sendData = NULL;
 			}
+
+			i = port->m_bufferList.erase(i);
 		}
 		else
 		{
-			LeaveCriticalSection(&port->m_csCommunicationSync);
+			i++;
 		}
-	} // end if(bWrite)
 
-	if (!bWrite)
-	{
-		bWrite = TRUE;
+	}
 
-		bResult = GetOverlappedResult(port->m_hComm,	// Handle to COMM port 
-			&port->m_ov,		// Overlapped structure
-			&BytesSent,		// Stores number of bytes sent
-			TRUE); 			// Wait flag
-
-		LeaveCriticalSection(&port->m_csCommunicationSync);
-
-		// deal with the error code 
-		if (!bResult)
-		{
-			port->ProcessErrorMessage(_T("GetOverlappedResults() in WriteFile()"));
-		}
-	} // end if (!bWrite)
+	LeaveCriticalSection(&port->m_csCommunicationSync);
 
 	// Verify that the data size send equals what we tried to send
 	//if (BytesSent != SendLen /*strlen((char*)port->m_szWriteBuffer)*/)  // add by 
@@ -1241,9 +1324,19 @@ void CSerialPort::ClosePort()
 void CSerialPort::WriteToPort(char* string, size_t n)
 {
 	assert(m_hComm != 0);
-	memset(m_szWriteBuffer, 0, sizeof(m_szWriteBuffer));
-	memcpy(m_szWriteBuffer, string, n);
+	PBYTE m_bufferTemp = NULL;
+	m_bufferTemp = new BYTE[n];
+
+	//memset(m_szWriteBuffer, 0, n);
+	//memcpy(m_szWriteBuffer, string, n);
+	memset(m_bufferTemp, 0, n);
+	memcpy(m_bufferTemp, string, n);
 	m_nWriteSize = n;
+
+	//use list is duing to that the send data may same. but map's key can not same
+	m_bufferStruct.buffer = m_bufferTemp;
+	m_bufferStruct.len = n;
+	m_bufferList.push_back(m_bufferStruct);
 
 	// set event for write
 	SetEvent(m_hWriteEvent);
@@ -1252,16 +1345,18 @@ void CSerialPort::WriteToPort(char* string, size_t n)
 void CSerialPort::WriteToPort(BYTE* Buffer, size_t n)
 {
 	assert(m_hComm != 0);
-	memset(m_szWriteBuffer, 0, sizeof(m_szWriteBuffer));
-	memcpy(m_szWriteBuffer, Buffer, n);
-	/*
-	int i;
-	for(i=0; i<n; i++)
-	{
-	m_szWriteBuffer[i] = Buffer[i];
-	}
-	*/
+	PBYTE m_bufferTemp = NULL;
+	m_bufferTemp = new BYTE[n];
+
+	//memset(m_szWriteBuffer, 0, n);
+	//memcpy(m_szWriteBuffer, string, n);
+	memset(m_bufferTemp, 0, n);
+	memcpy(m_bufferTemp, Buffer, n);
 	m_nWriteSize = n;
+
+	m_bufferStruct.buffer = m_bufferTemp;
+	m_bufferStruct.len = n;
+	m_bufferList.push_back(m_bufferStruct);
 
 	// set event for write
 	SetEvent(m_hWriteEvent);
