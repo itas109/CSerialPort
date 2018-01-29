@@ -213,16 +213,8 @@ LRESULT CCommDlg::OnReceiveStr(WPARAM str, LPARAM commInfo)
 	//获取指定串口的数据
 	//if (pCommInfo->portNr == 2)
 	//{
-	int len = _tcslen(str1.GetBuffer(0));
-	if ( len == pCommInfo->bytesRead)
-		{
 			m_ReceiveCtrl.SetSel(-1, -1);
 			m_ReceiveCtrl.ReplaceSel(str1);
-		}
-		else
-		{
-			AfxMessageBox(_T("数据长度错误"));
-		}
 	//}
 	return TRUE;
 }
@@ -293,6 +285,8 @@ void CCommDlg::OnBnClickedButtonSend()
 #else
 	m_str = temp.GetBuffer(0);
 #endif
+	
+	m_SerialPort.WriteToPort("abc", 3);
 	m_SerialPort.WriteToPort(m_str, len);
 }
 
