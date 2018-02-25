@@ -12,18 +12,17 @@ Blog : http://blog.csdn.net/itas109
 QQ Group : [12951803](http://shang.qq.com/wpa/qunwpa?idkey=2888fa15c4513e6bfb9347052f36e437d919b2377161862948b2a49576679fc6)
 
 # Last Modify
-## Version: 3.0.0.171216
-by itas109 on 2017-12-16
+## Version: 3.0.1.180214
+by itas109 on 2018-02-14
 
 http://blog.csdn.net/itas109
 
 https://github.com/itas109
-* 支持DLL输出
-* 去除QueryKey和Hkey2ComboBox，采用CSerialPortInfo::availablePorts()函数代替
-* 增加CSerialPortInfo类，目前只有availablePorts静态函数，用于获取活跃的串口到list
-* 增加命名空间itas109
-* 精简不必要的头文件
-* InitPort和~CSerialPort()中直接整合ClosePort()
+* ★修复不能连续发送的问题 ★ fix can not continue send error
+* ★一次性写入尽可能多的数据到串口 ★ try best to send mutil data once in WriteChar funtion
+* 修复BYTE内存设置的问题 fix BYTE memset error
+* 在构造函数中初始化和释放临界区 initialize and delete critical section in Constructor
+* 精简代码
 
 ---
 
@@ -134,5 +133,18 @@ http://blog.csdn.net/itas109
 https://github.com/itas109
 * 增加宏定义_AFX，用于处理MFC的必要函数Hkey2ComboBox
 * 进一步去除MFC依赖，修改AfxMessageBox函数
+
+## by itas109 on 2017-12-16
+## Version: 3.0.0.171216
+
+http://blog.csdn.net/itas109
+
+https://github.com/itas109
+* 支持DLL输出
+* 去除QueryKey和Hkey2ComboBox，采用CSerialPortInfo::availablePorts()函数代替
+* 增加CSerialPortInfo类，目前只有availablePorts静态函数，用于获取活跃的串口到list
+* 增加命名空间itas109
+* 精简不必要的头文件
+* InitPort和~CSerialPort()中直接整合ClosePort()
 
 ---
