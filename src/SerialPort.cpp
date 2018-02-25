@@ -24,6 +24,7 @@
 **  2017-02-14 itas109   http://blog.csdn.net/itas109
 **  2017-03-12 itas109   http://blog.csdn.net/itas109
 **  2017-12-16 itas109   http://blog.csdn.net/itas109
+**  2017-02-14 itas109   http://blog.csdn.net/itas109
 */
 
 #include "SerialPort.h"
@@ -1364,7 +1365,7 @@ void CSerialPort::WriteToPort(BYTE* Buffer, size_t n)
 
 std::string CSerialPort::GetVersion()
 {
-	std::string m_version = "CSerialPort 3.0.0.171216";
+	std::string m_version = "CSerialPort 3.0.1.180214";
 	return m_version;
 }
 
