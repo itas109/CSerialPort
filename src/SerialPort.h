@@ -117,6 +117,15 @@
 **  4)  增加命名空间itas109
 **  5)  精简不必要的头文件
 **  6)	InitPort和~CSerialPort()中直接整合ClosePort()
+** ***************************************************************************************
+**  author: itas109  date:2018-02-14
+**  Blog：blog.csdn.net/itas109
+**  改进
+**	1)	★修复不能连续发送的问题 ★ fix can not continue send error
+**  2)  ★一次性写入尽可能多的数据到串口 ★ try best to send mutil data once in WriteChar funtion
+**  3)  修复BYTE内存设置的问题 fix BYTE memset error
+**  4)  在构造函数中初始化和释放临界区 initialize and delete critical section in Constructor
+**  5)  精简代码
 */
 
 #ifndef __CSERIALPORT_H__
