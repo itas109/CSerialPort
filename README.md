@@ -12,17 +12,13 @@ Blog : http://blog.csdn.net/itas109
 QQ Group : [12951803](http://shang.qq.com/wpa/qunwpa?idkey=2888fa15c4513e6bfb9347052f36e437d919b2377161862948b2a49576679fc6)
 
 # Last Modify
-## Version: 3.0.1.180214
-by itas109 on 2018-02-14
+## Version: 3.0.2.180615
+by itas109 on 2018-06-15
 
 http://blog.csdn.net/itas109
 
 https://github.com/itas109
-* ★修复不能连续发送的问题 ★ fix can not continue send error
-* ★一次性写入尽可能多的数据到串口 ★ try best to send mutil data once in WriteChar funtion
-* 修复BYTE内存设置的问题 fix BYTE memset error
-* 在构造函数中初始化和释放临界区 initialize and delete critical section in Constructor
-* 精简代码
+* 修复availablePorts函数不能枚举所有串口问题 fix function availablePorts can not enum all port error
 
 ---
 
@@ -147,4 +143,15 @@ https://github.com/itas109
 * 精简不必要的头文件
 * InitPort和~CSerialPort()中直接整合ClosePort()
 
+## by itas109 on 2018-02-14
+## Version: 3.0.1.180214
+
+http://blog.csdn.net/itas109
+
+https://github.com/itas109
+* ★修复不能连续发送的问题 ★ fix can not continue send error
+* ★一次性写入尽可能多的数据到串口 ★ try best to send mutil data once in WriteChar funtion
+* 修复BYTE内存设置的问题 fix BYTE memset error
+* 在构造函数中初始化和释放临界区 initialize and delete critical section in Constructor
+* 精简代码
 ---
