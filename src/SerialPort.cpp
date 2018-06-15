@@ -24,7 +24,8 @@
 **  2017-02-14 itas109   http://blog.csdn.net/itas109
 **  2017-03-12 itas109   http://blog.csdn.net/itas109
 **  2017-12-16 itas109   http://blog.csdn.net/itas109
-**  2017-02-14 itas109   http://blog.csdn.net/itas109
+**  2018-02-14 itas109   http://blog.csdn.net/itas109
+**  2018-06-15 itas109   http://blog.csdn.net/itas109
 */
 
 #include "SerialPort.h"
@@ -35,6 +36,8 @@ using namespace itas109;
 //获取注册表指定数据到list
 bool getRegKeyValues(std::string regKeyPath, std::list<std::string> & portsList)
 {
+//https://msdn.microsoft.com/en-us/library/ms724256
+
 #define MAX_KEY_LENGTH 255
 #define MAX_VALUE_NAME 16383
 
@@ -103,23 +106,22 @@ bool getRegKeyValues(std::string regKeyPath, std::list<std::string> & portsList)
 			{
 				cchValue = MAX_VALUE_NAME;
 				achValue[0] = '\0';
-				if (ERROR_SUCCESS == RegEnumValue(hKey, i, achValue, &cchValue, NULL, NULL, NULL, NULL))
-				{
-					if (ERROR_SUCCESS == RegQueryValueEx(hKey, (LPCTSTR)achValue, NULL, &nValueType, (LPBYTE)strDSName, &nBuffLen))
-					{
-#ifdef UNICODE
-						int iLen = WideCharToMultiByte(CP_ACP, 0, strDSName, -1, NULL, 0, NULL, NULL);
-						char* chRtn = new char[iLen*sizeof(char)];
-						WideCharToMultiByte(CP_ACP, 0, strDSName, -1, chRtn, iLen, NULL, NULL);
-						m_keyValue = std::string(chRtn);
-						delete chRtn;
-						chRtn = NULL;
-#else
-						m_keyValue = std::string(strDSName);
-#endif
-						portsList.push_back(m_keyValue);
+				nBuffLen = MAX_KEY_LENGTH;//防止 ERROR_MORE_DATA 234L 错误
 
-					}
+				if (ERROR_SUCCESS == RegEnumValue(hKey, i, achValue, &cchValue, NULL, NULL, (LPBYTE)strDSName, &nBuffLen))
+				{
+
+#ifdef UNICODE
+					int iLen = WideCharToMultiByte(CP_ACP, 0, strDSName, -1, NULL, 0, NULL, NULL);
+					char* chRtn = new char[iLen * sizeof(char)];
+					WideCharToMultiByte(CP_ACP, 0, strDSName, -1, chRtn, iLen, NULL, NULL);
+					m_keyValue = std::string(chRtn);
+					delete chRtn;
+					chRtn = NULL;
+#else
+					m_keyValue = std::string(strDSName);
+#endif
+					portsList.push_back(m_keyValue);
 				}
 			}
 		}
@@ -369,18 +371,18 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 			//串口不存在
 		case ERROR_FILE_NOT_FOUND:
 		{
-									 TCHAR Temp[200] = { 0 };
-									 _stprintf_s(Temp, 200, _T("COM%d ERROR_FILE_NOT_FOUND,Error Code:%d"), portnr, GetLastError());
-									 MessageBox(NULL, Temp, _T("COM InitPort Error"), MB_ICONERROR);
-									 break;
+			TCHAR Temp[200] = { 0 };
+			_stprintf_s(Temp, 200, _T("COM%d ERROR_FILE_NOT_FOUND,Error Code:%d"), portnr, GetLastError());
+			MessageBox(NULL, Temp, _T("COM InitPort Error"), MB_ICONERROR);
+			break;
 		}
-			//串口拒绝访问
+		//串口拒绝访问
 		case ERROR_ACCESS_DENIED:
 		{
-									TCHAR Temp[200] = { 0 };
-									_stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED,Error Code:%d"), portnr, GetLastError());
-									MessageBox(NULL, Temp, _T("COM InitPort Error"), MB_ICONERROR);
-									break;
+			TCHAR Temp[200] = { 0 };
+			_stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED,Error Code:%d"), portnr, GetLastError());
+			MessageBox(NULL, Temp, _T("COM InitPort Error"), MB_ICONERROR);
+			break;
 		}
 		default:
 			break;
@@ -532,47 +534,47 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 			{
 			case ERROR_IO_PENDING: 	///正常情况，没有字符可读 erroe code:997
 			{
-										// This is a normal return value if there are no bytes
-										// to read at the port.
-										// Do nothing and continue
-										break;
+				// This is a normal return value if there are no bytes
+				// to read at the port.
+				// Do nothing and continue
+				break;
 			}
 			case ERROR_INVALID_PARAMETER:///系统错误 erroe code:87
 			{
-											 // Under Windows NT, this value is returned for some reason.
-											 // I have not investigated why, but it is also a valid reply
-											 // Also do nothing and continue.
-											 break;
+				// Under Windows NT, this value is returned for some reason.
+				// I have not investigated why, but it is also a valid reply
+				// Also do nothing and continue.
+				break;
 			}
 			case ERROR_ACCESS_DENIED:///拒绝访问 erroe code:5
 			{
-										 port->m_hComm = INVALID_HANDLE_VALUE;
-										 TCHAR Temp[200] = { 0 };
-										 _stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED，WaitCommEvent() Error Code:%d"), port->m_nPortNr, GetLastError());
-										 MessageBox(NULL, Temp, _T("COM WaitCommEvent Error"), MB_ICONERROR);
-										 break;
+				port->m_hComm = INVALID_HANDLE_VALUE;
+				TCHAR Temp[200] = { 0 };
+				_stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED，WaitCommEvent() Error Code:%d"), port->m_nPortNr, GetLastError());
+				MessageBox(NULL, Temp, _T("COM WaitCommEvent Error"), MB_ICONERROR);
+				break;
 			}
 			case ERROR_INVALID_HANDLE:///打开串口失败 erroe code:6
 			{
-										  port->m_hComm = INVALID_HANDLE_VALUE;
-										  break;
+				port->m_hComm = INVALID_HANDLE_VALUE;
+				break;
 			}
 			case ERROR_BAD_COMMAND:///连接过程中非法断开 erroe code:22
 			{
-									   port->m_hComm = INVALID_HANDLE_VALUE;
-									   TCHAR Temp[200] = { 0 };
-									   _stprintf_s(Temp, 200, _T("COM%d ERROR_BAD_COMMAND，WaitCommEvent() Error Code:%d"), port->m_nPortNr, GetLastError());
-									   MessageBox(NULL, Temp, _T("COM WaitCommEvent Error"), MB_ICONERROR);
-									   break;
+				port->m_hComm = INVALID_HANDLE_VALUE;
+				TCHAR Temp[200] = { 0 };
+				_stprintf_s(Temp, 200, _T("COM%d ERROR_BAD_COMMAND，WaitCommEvent() Error Code:%d"), port->m_nPortNr, GetLastError());
+				MessageBox(NULL, Temp, _T("COM WaitCommEvent Error"), MB_ICONERROR);
+				break;
 			}
 			default:///发生其他错误，其中有串口读写中断开串口连接的错误（错误22）
 			{
-						// All other error codes indicate a serious error has
-						//发生错误时，将串口句柄置为无效句柄
-						port->m_hComm = INVALID_HANDLE_VALUE;
-						// occured.  Process this error.
-						port->ProcessErrorMessage(_T("WaitCommEvent()"));
-						break;
+				// All other error codes indicate a serious error has
+				//发生错误时，将串口句柄置为无效句柄
+				port->m_hComm = INVALID_HANDLE_VALUE;
+				// occured.  Process this error.
+				port->ProcessErrorMessage(_T("WaitCommEvent()"));
+				break;
 			}
 			}
 		}
@@ -639,73 +641,73 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 					{
 					case WAIT_OBJECT_0 + 0:
 					{
-											  // Shutdown event.  This is event zero so it will be
-											  // the higest priority and be serviced first.
-											  ///关断事件，关闭串口
-											  CloseHandle(port->m_hComm);
-											  port->m_hComm = NULL;
-											  port->m_bThreadAlive = FALSE;
+						// Shutdown event.  This is event zero so it will be
+						// the higest priority and be serviced first.
+						///关断事件，关闭串口
+						CloseHandle(port->m_hComm);
+						port->m_hComm = NULL;
+						port->m_bThreadAlive = FALSE;
 
-											  // Kill this thread.  break is not needed, but makes me feel better.
-											  //AfxEndThread(100);
-											  ::ExitThread(100);
+						// Kill this thread.  break is not needed, but makes me feel better.
+						//AfxEndThread(100);
+						::ExitThread(100);
 
-											  break;
+						break;
 					}
 					case WAIT_OBJECT_0 + 1: // write event 发送数据
 					{
-												// Write character event from port
-												WriteChar(port);
-												break;
+						// Write character event from port
+						WriteChar(port);
+						break;
 					}
 					case WAIT_OBJECT_0 + 2:	// read event 将定义的各种消息发送出去
 					{
-												GetCommMask(port->m_hComm, &CommEvent);
-												if (CommEvent & EV_RXCHAR) //接收到字符，并置于输入缓冲区中
-												{
-													if (IsReceiveString == 1)
-													{
-														ReceiveStr(port);//多字符接收
-													}
-													else if (IsReceiveString == 0)
-													{
-														ReceiveChar(port);//单字符接收
-													}
-													else
-													{
-														//默认多字符接收
-														ReceiveStr(port);//多字符接收
-													}
-												}
+						GetCommMask(port->m_hComm, &CommEvent);
+						if (CommEvent & EV_RXCHAR) //接收到字符，并置于输入缓冲区中
+						{
+							if (IsReceiveString == 1)
+							{
+								ReceiveStr(port);//多字符接收
+							}
+							else if (IsReceiveString == 0)
+							{
+								ReceiveChar(port);//单字符接收
+							}
+							else
+							{
+								//默认多字符接收
+								ReceiveStr(port);//多字符接收
+							}
+						}
 
-												if (CommEvent & EV_CTS) //CTS信号状态发生变化
-													::SendMessage(port->m_pOwner, WM_COMM_CTS_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
-												if (CommEvent & EV_RXFLAG) //接收到事件字符，并置于输入缓冲区中 
-													::SendMessage(port->m_pOwner, WM_COMM_RXFLAG_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
-												if (CommEvent & EV_BREAK)  //输入中发生中断
-													::SendMessage(port->m_pOwner, WM_COMM_BREAK_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
-												if (CommEvent & EV_ERR) //发生线路状态错误，线路状态错误包括CE_FRAME,CE_OVERRUN和CE_RXPARITY 
-													::SendMessage(port->m_pOwner, WM_COMM_ERR_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
-												if (CommEvent & EV_RING) //检测到振铃指示
-													::SendMessage(port->m_pOwner, WM_COMM_RING_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+						if (CommEvent & EV_CTS) //CTS信号状态发生变化
+							::SendMessage(port->m_pOwner, WM_COMM_CTS_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+						if (CommEvent & EV_RXFLAG) //接收到事件字符，并置于输入缓冲区中 
+							::SendMessage(port->m_pOwner, WM_COMM_RXFLAG_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+						if (CommEvent & EV_BREAK)  //输入中发生中断
+							::SendMessage(port->m_pOwner, WM_COMM_BREAK_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+						if (CommEvent & EV_ERR) //发生线路状态错误，线路状态错误包括CE_FRAME,CE_OVERRUN和CE_RXPARITY 
+							::SendMessage(port->m_pOwner, WM_COMM_ERR_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
+						if (CommEvent & EV_RING) //检测到振铃指示
+							::SendMessage(port->m_pOwner, WM_COMM_RING_DETECTED, (WPARAM)0, (LPARAM)port->m_nPortNr);
 
-												break;
+						break;
 					}
 					case WAIT_FAILED:
 					{
-										// 函数呼叫失败
-										break;
+						// 函数呼叫失败
+						break;
 					}
 					case WAIT_TIMEOUT:
 					{
-										 // 超时
-										 //TRACE("WaitForMultipleObjects Timeout");
-										 break;
+						// 超时
+						//TRACE("WaitForMultipleObjects Timeout");
+						break;
 					}
 					default:
 					{
-							   //MessageBox(NULL, _T("Receive Error!"), _T("COM Receive Error"), MB_ICONERROR);
-							   break;
+						//MessageBox(NULL, _T("Receive Error!"), _T("COM Receive Error"), MB_ICONERROR);
+						break;
 					}
 
 					} // end switch
@@ -784,7 +786,7 @@ void CSerialPort::ProcessErrorMessage(TCHAR* ErrorText)
 		(LPTSTR)&lpMsgBuf,
 		0,
 		NULL
-		);
+	);
 
 	_stprintf_s(Temp, 200, _T("WARNING:  %s Failed with the following error: \n%s\nPort: %d\n"), ErrorText, (TCHAR*)lpMsgBuf, m_nPortNr);
 	MessageBox(NULL, Temp, _T("Application Error"), MB_ICONSTOP);
@@ -857,36 +859,36 @@ void CSerialPort::WriteChar(CSerialPort* port)
 				{
 				case ERROR_IO_PENDING:
 				{
-										 // continue to GetOverlappedResults()
-										 BytesSent = 0;
-										 bWrite = FALSE;
-										 break;
+					// continue to GetOverlappedResults()
+					BytesSent = 0;
+					bWrite = FALSE;
+					break;
 				}
 				case ERROR_ACCESS_DENIED:///拒绝访问 erroe code:5
 				{
-											 port->m_hComm = INVALID_HANDLE_VALUE;
-											 TCHAR Temp[200] = { 0 };
-											 _stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED，WriteFile() Error Code:%d"), port->m_nPortNr, GetLastError());
-											 MessageBox(NULL, Temp, _T("COM WriteFile Error"), MB_ICONERROR);
-											 break;
+					port->m_hComm = INVALID_HANDLE_VALUE;
+					TCHAR Temp[200] = { 0 };
+					_stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED，WriteFile() Error Code:%d"), port->m_nPortNr, GetLastError());
+					MessageBox(NULL, Temp, _T("COM WriteFile Error"), MB_ICONERROR);
+					break;
 				}
 				case ERROR_INVALID_HANDLE:///打开串口失败 erroe code:6
 				{
-											  port->m_hComm = INVALID_HANDLE_VALUE;
-											  break;
+					port->m_hComm = INVALID_HANDLE_VALUE;
+					break;
 				}
 				case ERROR_BAD_COMMAND:///连接过程中非法断开 erroe code:22
 				{
-										   port->m_hComm = INVALID_HANDLE_VALUE;
-										   TCHAR Temp[200] = { 0 };
-										   _stprintf_s(Temp, 200, _T("COM%d ERROR_BAD_COMMAND，WriteFile() Error Code:%d"), port->m_nPortNr, GetLastError());
-										   MessageBox(NULL, Temp, _T("COM WriteFile Error"), MB_ICONERROR);
-										   break;
+					port->m_hComm = INVALID_HANDLE_VALUE;
+					TCHAR Temp[200] = { 0 };
+					_stprintf_s(Temp, 200, _T("COM%d ERROR_BAD_COMMAND，WriteFile() Error Code:%d"), port->m_nPortNr, GetLastError());
+					MessageBox(NULL, Temp, _T("COM WriteFile Error"), MB_ICONERROR);
+					break;
 				}
 				default:
 				{
-						   // all other error codes
-						   port->ProcessErrorMessage(_T("WriteFile()"));
+					// all other error codes
+					port->ProcessErrorMessage(_T("WriteFile()"));
 				}
 				}
 			}
@@ -1013,39 +1015,39 @@ void CSerialPort::ReceiveChar(CSerialPort* port)
 				{
 				case ERROR_IO_PENDING:
 				{
-										 // asynchronous i/o is still in progress 
-										 // Proceed on to GetOverlappedResults();
-										 ///异步IO仍在进行
-										 bRead = FALSE;
-										 break;
+					// asynchronous i/o is still in progress 
+					// Proceed on to GetOverlappedResults();
+					///异步IO仍在进行
+					bRead = FALSE;
+					break;
 				}
 				case ERROR_ACCESS_DENIED:///拒绝访问 erroe code:5
 				{
-											 port->m_hComm = INVALID_HANDLE_VALUE;
-											 TCHAR Temp[200] = { 0 };
-											 _stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED，ReadFile() Error Code:%d"), port->m_nPortNr, GetLastError());
-											 MessageBox(NULL, Temp, _T("COM ReadFile Error"), MB_ICONERROR);
-											 break;
+					port->m_hComm = INVALID_HANDLE_VALUE;
+					TCHAR Temp[200] = { 0 };
+					_stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED，ReadFile() Error Code:%d"), port->m_nPortNr, GetLastError());
+					MessageBox(NULL, Temp, _T("COM ReadFile Error"), MB_ICONERROR);
+					break;
 				}
 				case ERROR_INVALID_HANDLE:///打开串口失败 erroe code:6
 				{
-											  port->m_hComm = INVALID_HANDLE_VALUE;
-											  break;
+					port->m_hComm = INVALID_HANDLE_VALUE;
+					break;
 				}
 				case ERROR_BAD_COMMAND:///连接过程中非法断开 erroe code:22
 				{
-										   port->m_hComm = INVALID_HANDLE_VALUE;
-										   TCHAR Temp[200] = { 0 };
-										   _stprintf_s(Temp, 200, _T("COM%d ERROR_BAD_COMMAND，ReadFile() Error Code:%d"), port->m_nPortNr, GetLastError());
-										   MessageBox(NULL, Temp, _T("COM ReadFile Error"), MB_ICONERROR);
-										   break;
+					port->m_hComm = INVALID_HANDLE_VALUE;
+					TCHAR Temp[200] = { 0 };
+					_stprintf_s(Temp, 200, _T("COM%d ERROR_BAD_COMMAND，ReadFile() Error Code:%d"), port->m_nPortNr, GetLastError());
+					MessageBox(NULL, Temp, _T("COM ReadFile Error"), MB_ICONERROR);
+					break;
 				}
 				default:
 				{
-						   // Another error has occured.  Process this error.
-						   port->ProcessErrorMessage(_T("ReadFile()"));
-						   break;
-						   //return;///防止读写数据时，串口非正常断开导致死循环一直执行。add by itas109 2014-01-09 与上面liquanhai添加防死锁的代码差不多
+					// Another error has occured.  Process this error.
+					port->ProcessErrorMessage(_T("ReadFile()"));
+					break;
+					//return;///防止读写数据时，串口非正常断开导致死循环一直执行。add by itas109 2014-01-09 与上面liquanhai添加防死锁的代码差不多
 				}
 				}
 			}
@@ -1158,39 +1160,39 @@ void CSerialPort::ReceiveStr(CSerialPort* port)
 				{
 				case ERROR_IO_PENDING:
 				{
-										 // asynchronous i/o is still in progress 
-										 // Proceed on to GetOverlappedResults();
-										 ///异步IO仍在进行
-										 bRead = FALSE;
-										 break;
+					// asynchronous i/o is still in progress 
+					// Proceed on to GetOverlappedResults();
+					///异步IO仍在进行
+					bRead = FALSE;
+					break;
 				}
 				case ERROR_ACCESS_DENIED:///拒绝访问 erroe code:5
 				{
-											 port->m_hComm = INVALID_HANDLE_VALUE;
-											 TCHAR Temp[200] = { 0 };
-											 _stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED，ReadFile() Error Code:%d"), port->m_nPortNr, GetLastError());
-											 MessageBox(NULL, Temp, _T("COM ReadFile Error"), MB_ICONERROR);
-											 break;
+					port->m_hComm = INVALID_HANDLE_VALUE;
+					TCHAR Temp[200] = { 0 };
+					_stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED，ReadFile() Error Code:%d"), port->m_nPortNr, GetLastError());
+					MessageBox(NULL, Temp, _T("COM ReadFile Error"), MB_ICONERROR);
+					break;
 				}
 				case ERROR_INVALID_HANDLE:///打开串口失败 erroe code:6
 				{
-											  port->m_hComm = INVALID_HANDLE_VALUE;
-											  break;
+					port->m_hComm = INVALID_HANDLE_VALUE;
+					break;
 				}
 				case ERROR_BAD_COMMAND:///连接过程中非法断开 erroe code:22
 				{
-										   port->m_hComm = INVALID_HANDLE_VALUE;
-										   TCHAR Temp[200] = { 0 };
-										   _stprintf_s(Temp, 200, _T("COM%d ERROR_BAD_COMMAND，ReadFile() Error Code:%d"), port->m_nPortNr, GetLastError());
-										   MessageBox(NULL, Temp, _T("COM ReadFile Error"), MB_ICONERROR);
-										   break;
+					port->m_hComm = INVALID_HANDLE_VALUE;
+					TCHAR Temp[200] = { 0 };
+					_stprintf_s(Temp, 200, _T("COM%d ERROR_BAD_COMMAND，ReadFile() Error Code:%d"), port->m_nPortNr, GetLastError());
+					MessageBox(NULL, Temp, _T("COM ReadFile Error"), MB_ICONERROR);
+					break;
 				}
 				default:
 				{
-						   // Another error has occured.  Process this error.
-						   port->ProcessErrorMessage(_T("ReadFile()"));
-						   break;
-						   //return;///防止读写数据时，串口非正常断开导致死循环一直执行。add by itas109 2014-01-09 与上面liquanhai添加防死锁的代码差不多
+					// Another error has occured.  Process this error.
+					port->ProcessErrorMessage(_T("ReadFile()"));
+					break;
+					//return;///防止读写数据时，串口非正常断开导致死循环一直执行。add by itas109 2014-01-09 与上面liquanhai添加防死锁的代码差不多
 				}
 				}
 			}
@@ -1365,7 +1367,7 @@ void CSerialPort::WriteToPort(BYTE* Buffer, size_t n)
 
 std::string CSerialPort::GetVersion()
 {
-	std::string m_version = "CSerialPort 3.0.1.180214";
+	std::string m_version = "CSerialPort 3.0.2.180615";
 	return m_version;
 }
 

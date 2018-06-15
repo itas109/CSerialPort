@@ -126,6 +126,11 @@
 **  3)  修复BYTE内存设置的问题 fix BYTE memset error
 **  4)  在构造函数中初始化和释放临界区 initialize and delete critical section in Constructor
 **  5)  精简代码
+** ***************************************************************************************
+**  author: itas109  date:2018-06-15
+**  Blog：blog.csdn.net/itas109
+**  改进
+**	1)	修复availablePorts函数不能枚举所有串口问题 fix function availablePorts can not enum all port error
 */
 
 #ifndef __CSERIALPORT_H__
