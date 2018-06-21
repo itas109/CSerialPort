@@ -143,6 +143,8 @@ BOOL CCommDlg::OnInitDialog()
 
 	m_Send.SetWindowText(_T("http://blog.csdn.net/itas109"));
 
+	m_SerialPort.sendMessageSignal.connect(this, &CCommDlg::OnSendMessage);
+
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -193,6 +195,14 @@ void CCommDlg::OnPaint()
 HCURSOR CCommDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
+}
+
+void CCommDlg::OnSendMessage(unsigned char* str, int port, int str_len)
+{
+	CString str1((char*)str);
+
+	m_ReceiveCtrl.SetSel(-1, -1);
+	m_ReceiveCtrl.ReplaceSel(str1);
 }
 
 LRESULT CCommDlg::OnReceiveStr(WPARAM str, LPARAM commInfo)
