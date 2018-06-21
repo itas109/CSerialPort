@@ -14,7 +14,7 @@ using namespace itas109;
 extern CSerialPort m_SerialPort;
 
 // CCommDlg 对话框
-class CCommDlg : public CDialogEx
+class CCommDlg : public CDialogEx,public has_slots<>
 {
 // 构造
 public:
@@ -26,6 +26,7 @@ public:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
+	void OnSendMessage(unsigned char* str, int port, int str_len);
 
 // 实现
 protected:
