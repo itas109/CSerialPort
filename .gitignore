@@ -48,3 +48,14 @@
 /Demo/CSerialPortDemoWin32/Debug/CSerialPortDemoWin32.lib
 /Demo/CSerialPortDemoWin32/Debug
 /Demo/CSerialPortDemoWin32/CSerialPortDemoWin32.v12.suo
+/Demo/CSerialPortDemoWin32Console/*.opensdf
+/Demo/CSerialPortDemoWin32Console/*.sdf
+/Demo/CSerialPortDemoWin32Console/*.suo
+/Demo/CSerialPortDemoWin32Console/Debug/CSerialPortDemoWin32Console.exe
+/Demo/CSerialPortDemoWin32Console/Debug/*.exp
+/Demo/CSerialPortDemoWin32Console/Debug/*.ilk
+/Demo/CSerialPortDemoWin32Console/Debug/*.lib
+/Demo/CSerialPortDemoWin32Console/Debug/*.pdb
+/Demo/CSerialPortDemoWin32Console/ipch/cserialportdemowin32console-48694deb/*.ipch
+/Demo/CSerialPortDemoWin32Console/Debug
+/Demo/CSerialPortDemoWin32Console/ipch
