@@ -14,7 +14,11 @@ using namespace itas109;
 extern CSerialPort m_SerialPort;
 
 // CCommDlg 对话框
-class CCommDlg : public CDialogEx,public has_slots<>
+#ifdef _SEND_DATA_WITH_SIGSLOT
+	class CCommDlg : public CDialogEx, public has_slots<>
+#else
+	class CCommDlg : public CDialogEx
+#endif
 {
 // 构造
 public:

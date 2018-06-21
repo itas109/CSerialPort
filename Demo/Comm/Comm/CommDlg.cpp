@@ -143,8 +143,10 @@ BOOL CCommDlg::OnInitDialog()
 
 	m_Send.SetWindowText(_T("http://blog.csdn.net/itas109"));
 
+#ifdef _SEND_DATA_WITH_SIGSLOT
 	m_SerialPort.sendMessageSignal.connect(this, &CCommDlg::OnSendMessage);
-
+#endif
+	
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
