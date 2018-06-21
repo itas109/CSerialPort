@@ -131,6 +131,13 @@
 **  Blog：blog.csdn.net/itas109
 **  改进
 **	1)	修复availablePorts函数不能枚举所有串口问题 fix function availablePorts can not enum all port error
+** ***************************************************************************************
+**  author: itas109  date:2018-06-21
+**  Blog：blog.csdn.net/itas109
+**  改进
+**  1)  增加信号与槽机制传输数据 add sigslot.h to send data
+**  2)  修复handle初始化问题，全部初始化为INVALID_HANDLE_VALUE modify handle init INVALID_HANDLE_VALUE
+**  3)  修复串口打开失败,再次成功打开串口后,不能正常读写问题 fix can not read and write when the port open failed
 */
 
 #ifndef __CSERIALPORT_H__
