@@ -33,6 +33,11 @@
 
 using namespace itas109;
 
+#ifdef _SEND_DATA_WITH_SIGSLOT
+	signal3<unsigned char*, int, int> CSerialPort::sendMessageSignal;//类中的静态成员，除了在头文件中定义以外，还应在类外重新定义一次
+#endif
+
+
 //获取注册表指定数据到list
 bool getRegKeyValues(std::string regKeyPath, std::list<std::string> & portsList)
 {
@@ -151,7 +156,7 @@ bool getRegKeyValues(std::string regKeyPath, std::list<std::string> & portsList)
 //
 CSerialPort::CSerialPort()
 {
-	m_hComm = NULL;
+	m_hComm = INVALID_HANDLE_VALUE;
 
 	// initialize overlapped structure members to zero
 	///初始化异步结构体
@@ -284,10 +289,10 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 
 	// if the port is already opened: close it
 	///串口已打开就关掉
-	if (m_hComm != NULL)
+	if (m_hComm != INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(m_hComm);
-		m_hComm = NULL;
+		m_hComm = INVALID_HANDLE_VALUE;
 	}
 
 	// prepare port strings
@@ -390,6 +395,10 @@ BOOL CSerialPort::InitPort(HWND pPortOwner,	// the owner (CWnd) of the port (rec
 		// port not found
 		delete[] szPort;
 		delete[] szBaud;
+
+		// release critical section
+		///释放临界资源
+		LeaveCriticalSection(&m_csCommunicationSync);
 
 		return FALSE;
 	}
@@ -645,7 +654,7 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 						// the higest priority and be serviced first.
 						///关断事件，关闭串口
 						CloseHandle(port->m_hComm);
-						port->m_hComm = NULL;
+						port->m_hComm = INVALID_HANDLE_VALUE;
 						port->m_bThreadAlive = FALSE;
 
 						// Kill this thread.  break is not needed, but makes me feel better.
@@ -1076,10 +1085,15 @@ void CSerialPort::ReceiveChar(CSerialPort* port)
 
 		LeaveCriticalSection(&port->m_csCommunicationSync);
 
+#ifdef _SEND_DATA_WITH_SIGSLOT
+		
+#else
 		// notify parent that a byte was received
 		//避免线程互相等待，产生死锁，使用PostMessage()代替SendMessage()
 		PostMessage(port->m_pOwner, WM_COMM_RXCHAR, (WPARAM)RXBuff, (LPARAM)port->m_nPortNr);
 		//::SendMessage((port->m_pOwner), Wm_SerialPort_RXCHAR, (WPARAM) RXBuff, (LPARAM) port->m_nPortNr);
+#endif
+
 	} // end forever loop
 
 }
@@ -1094,7 +1108,6 @@ void CSerialPort::ReceiveStr(CSerialPort* port)
 	DWORD dwError = 0;
 	DWORD BytesRead = 0;
 	COMSTAT comstat;
-	serialPortInfo commInfo;
 
 	for (;;)
 	{
@@ -1221,10 +1234,16 @@ void CSerialPort::ReceiveStr(CSerialPort* port)
 
 		LeaveCriticalSection(&port->m_csCommunicationSync);
 
+#ifdef _SEND_DATA_WITH_SIGSLOT
+		sendMessageSignal(RXBuff, port->m_nPortNr, BytesRead);
+#else
+		serialPortInfo commInfo;
 		commInfo.portNr = port->m_nPortNr;
 		commInfo.bytesRead = BytesRead;
 		// notify parent that some byte was received
 		::SendMessage((port->m_pOwner), WM_COMM_RXSTR, (WPARAM)RXBuff, (LPARAM)&commInfo);
+#endif
+
 
 		//释放
 		delete[] RXBuff;
@@ -1260,7 +1279,7 @@ DWORD CSerialPort::GetWriteBufferSize()
 
 BOOL CSerialPort::IsOpened()
 {
-	return m_hComm != NULL && m_hComm != INVALID_HANDLE_VALUE;//m_hComm增加INVALID_HANDLE_VALUE的情况 add by itas109 2016-07-29
+	return m_hComm != INVALID_HANDLE_VALUE;//m_hComm增加INVALID_HANDLE_VALUE的情况 add by itas109 2016-07-29
 }
 
 void CSerialPort::ClosePort()
@@ -1277,7 +1296,7 @@ void CSerialPort::ClosePort()
 	if (m_hComm == INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(m_hComm);
-		m_hComm = NULL;
+		m_hComm = INVALID_HANDLE_VALUE;
 		return;
 	}
 
@@ -1296,10 +1315,10 @@ void CSerialPort::ClosePort()
 	Sleep(50);//add by itas109 2016-08-02
 
 	// if the port is still opened: close it 
-	if (m_hComm != NULL)
+	if (m_hComm != INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(m_hComm);
-		m_hComm = NULL;
+		m_hComm = INVALID_HANDLE_VALUE;
 	}
 
 	// Reset Handles  
@@ -1326,7 +1345,7 @@ void CSerialPort::ClosePort()
 
 void CSerialPort::WriteToPort(char* string, size_t n)
 {
-	assert(m_hComm != 0);
+	assert(m_hComm != INVALID_HANDLE_VALUE);
 	PBYTE m_bufferTemp = NULL;
 	m_bufferTemp = new BYTE[n];
 
@@ -1347,7 +1366,7 @@ void CSerialPort::WriteToPort(char* string, size_t n)
 
 void CSerialPort::WriteToPort(BYTE* Buffer, size_t n)
 {
-	assert(m_hComm != 0);
+	assert(m_hComm != INVALID_HANDLE_VALUE);
 	PBYTE m_bufferTemp = NULL;
 	m_bufferTemp = new BYTE[n];
 

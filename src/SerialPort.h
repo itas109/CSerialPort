@@ -144,12 +144,6 @@
 #include <string>
 #include <list>
 
-struct serialPortInfo
-{
-	UINT portNr;//串口号
-	DWORD bytesRead;//读取的字节数
-};
-
 struct serialPortBuffer
 {
 	int len;
@@ -171,8 +165,20 @@ struct serialPortBuffer
 #define WM_COMM_TXEMPTY_DETECTED	WM_COMM_MSG_BASE + 9	// The last character in the output buffer was sent.  
 #define WM_COMM_RXSTR               WM_COMM_MSG_BASE + 10   // Receive string
 
-#define MaxSerialPortNum 200   ///有效的串口总个数，不是串口的号 //add by itas109 2014-01-09
-#define IsReceiveString  1     //采用何种方式接收：ReceiveString 1多字符串接收（对应响应函数为Wm_SerialPort_RXSTR），ReceiveString 0一个字符一个字符接收（对应响应函数为Wm_SerialPort_RXCHAR）
+#define MaxSerialPortNum 200    ///有效的串口总个数，不是串口的号 //add by itas109 2014-01-09
+#define IsReceiveString  1      //采用何种方式接收：ReceiveString 1多字符串接收（对应响应函数为Wm_SerialPort_RXSTR），ReceiveString 0一个字符一个字符接收（对应响应函数为Wm_SerialPort_RXCHAR）
+#define _SEND_DATA_WITH_SIGSLOT //使用sigslot传输接收的数据
+
+#ifdef _SEND_DATA_WITH_SIGSLOT
+	#include "sigslot.h"
+#else
+	//will remove on V4.0
+	struct serialPortInfo
+	{
+		UINT portNr;//串口号
+		DWORD bytesRead;//读取的字节数
+	};
+#endif
 
 namespace itas109{
 	class _declspec(dllexport) CSerialPort
@@ -213,6 +219,11 @@ namespace itas109{
 		void		ClosePort();					 // add by mrlong 2007-12-2  
 		BOOL		IsOpened();
 
+#ifdef _SEND_DATA_WITH_SIGSLOT
+		//sigslot
+		static signal3<unsigned char*, int, int> sendMessageSignal;
+#endif
+		
 		std::string GetVersion();
 
 	protected:
