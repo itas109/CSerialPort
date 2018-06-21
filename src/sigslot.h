@@ -234,7 +234,12 @@ class has_slots : public mt_policy
 {
 private:
 	typedef std::set<_signal_base<mt_policy> *> sender_set;
-	typedef typename sender_set::const_iterator const_iterator;
+	//Visual Studio 2003
+#if _MSC_VER > 1310 
+	typedef typename sender_set::const_iterator const_iterator;//vs must has typename
+#else
+	typedef sender_set::const_iterator const_iterator;
+#endif
 
 public:
 	has_slots()
