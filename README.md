@@ -11,13 +11,6 @@ Blog : http://blog.csdn.net/itas109
 
 QQ Group : [129518033](http://shang.qq.com/wpa/qunwpa?idkey=2888fa15c4513e6bfb9347052f36e437d919b2377161862948b2a49576679fc6)
 
-**  author: itas109  date:2018-06-21
-**  Blog：blog.csdn.net/itas109
-**  改进
-**  1)  增加信号与槽机制传输数据 add sigslot.h to send data
-**  2)  修复handle初始化问题，全部初始化为INVALID_HANDLE_VALUE modify handle init INVALID_HANDLE_VALUE
-**  3)  修复串口打开失败,再次成功打开串口后,不能正常读写问题 fix can not read and write when the port open failed
-
 # Last Modify
 ## Version: 3.0.3.180621
 by itas109 on 2018-06-21
