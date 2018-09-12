@@ -11,3 +11,4 @@ b.setEvent发送两次，但是WaitForMultipleObjects只触发了一次
 5.add std:funtion() C++ 11 feature 2017-12-25 
 6.m_Thread has memeory leak 2017-12-25
 7.add communicating protocol 2017-12-25
+8.support windows and linux first 2018-09-12
