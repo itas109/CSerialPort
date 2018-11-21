@@ -23,6 +23,12 @@ https://github.com/itas109
 * 修复handle初始化问题，全部初始化为INVALID_HANDLE_VALUE modify handle init INVALID_HANDLE_VALUE
 * 修复串口打开失败,再次成功打开串口后,不能正常读写问题 fix can not read and write when the port open failed
 
+# Todo List
+* 1.support windows and linux first
+* 2.add communicating protocol
+* 3.support hot swap
+* 4.use new notify module
+
 ---
 
 ## First Version by Remon Spekreijse on 2000-02-08
