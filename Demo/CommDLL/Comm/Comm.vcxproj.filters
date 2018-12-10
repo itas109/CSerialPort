@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="log">
-      <UniqueIdentifier>{c9568bac-0c6e-44e5-b714-b8f524e57201}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="com">
-      <UniqueIdentifier>{57952218-d557-4e7c-a792-c282f3b1715d}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

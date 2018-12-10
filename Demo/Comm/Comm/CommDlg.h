@@ -4,9 +4,8 @@
 
 #pragma once
 #include "SerialPort.h"
+#include "SerialPortInfo.h"
 #include "afxwin.h"
-
-#define WM_TEST 1000
 
 using namespace std;
 using namespace itas109;
@@ -14,11 +13,8 @@ using namespace itas109;
 extern CSerialPort m_SerialPort;
 
 // CCommDlg 对话框
-#ifdef _SEND_DATA_WITH_SIGSLOT
+
 	class CCommDlg : public CDialogEx, public has_slots<>
-#else
-	class CCommDlg : public CDialogEx
-#endif
 {
 // 构造
 public:
@@ -31,6 +27,7 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
 	void OnSendMessage(unsigned char* str, int port, int str_len);
+	void OnReceive();
 
 // 实现
 protected:
@@ -53,4 +50,12 @@ public:
 	CEdit m_Send;
 	CEdit m_ReceiveCtrl;
 	afx_msg void OnClose();
+//	LONGLONG m_recvCount;
+	CStatic m_recvCountCtrl;
+	CStatic m_sendCountCtrl;
+	afx_msg void OnBnClickedButtonClear();
+
+private:
+	int rx; 
+	int tx;
 };

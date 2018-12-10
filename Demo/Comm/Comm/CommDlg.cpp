@@ -11,7 +11,7 @@
 #define new DEBUG_NEW
 #endif
 
-int BaudRate[] = { 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 56000, 57600, 115200 };
+int BaudRateArray[] = { 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 56000, 57600, 115200 };
 
 CSerialPort m_SerialPort;
 
@@ -64,16 +64,18 @@ void CCommDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_OPEN_CLOSE, m_OpenCloseCtrl);
 	DDX_Control(pDX, IDC_SendEdit, m_Send);
 	DDX_Control(pDX, IDC_ReceiveEdit, m_ReceiveCtrl);
+	DDX_Control(pDX, IDC_STATIC_RECV_COUNT_VALUE, m_recvCountCtrl);
+	DDX_Control(pDX, IDC_STATIC_SEND_COUNT_VALUE, m_sendCountCtrl);
 }
 
 BEGIN_MESSAGE_MAP(CCommDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_MESSAGE(WM_COMM_RXSTR, &CCommDlg::OnReceiveStr)
 	ON_BN_CLICKED(IDC_BUTTON_OPEN_CLOSE, &CCommDlg::OnBnClickedButtonOpenClose)
 	ON_BN_CLICKED(IDC_BUTTON_SEND, &CCommDlg::OnBnClickedButtonSend)
 	ON_WM_CLOSE()
+	ON_BN_CLICKED(IDC_BUTTON_CLEAR, &CCommDlg::OnBnClickedButtonClear)
 END_MESSAGE_MAP()
 
 
@@ -109,11 +111,17 @@ BOOL CCommDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO:  在此添加额外的初始化代码
+
+	rx = 0;
+	tx = 0;
+	m_recvCountCtrl.SetWindowText(CString("0"));
+	m_sendCountCtrl.SetWindowText(CString("0"));
+
 	CString temp;
 	//添加波特率到下拉列表
-	for (int i = 0; i < sizeof(BaudRate) / sizeof(int); i++)
+	for (int i = 0; i < sizeof(BaudRateArray) / sizeof(int); i++)
 	{
-		temp.Format(_T("%d"), BaudRate[i]);
+		temp.Format(_T("%d"), BaudRateArray[i]);
 		m_BaudRate.AddString((LPCTSTR)temp);
 	}
 
@@ -121,7 +129,6 @@ BOOL CCommDlg::OnInitDialog()
 	m_BaudRate.SetCurSel(m_BaudRate.FindString(0, temp));
 
 	//获取串口号
-	CSerialPortInfo a;
 	list<string> m_portsList = CSerialPortInfo::availablePorts();
 	list<string>::iterator itor;
 	TCHAR m_regKeyValue[255];
@@ -143,9 +150,7 @@ BOOL CCommDlg::OnInitDialog()
 
 	m_Send.SetWindowText(_T("http://blog.csdn.net/itas109"));
 
-#ifdef _SEND_DATA_WITH_SIGSLOT
-	m_SerialPort.sendMessageSignal.connect(this, &CCommDlg::OnSendMessage);
-#endif
+	m_SerialPort.readReady.connect(this, &CCommDlg::OnReceive);
 	
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -240,26 +245,27 @@ void CCommDlg::OnBnClickedButtonOpenClose()
 	UpdateData(true);
 	if (temp == _T("关闭串口"))///表示点击后是"关闭串口"，也就是已经关闭了串口
 	{
-		m_SerialPort.ClosePort();
+		m_SerialPort.close();
 		m_OpenCloseCtrl.SetWindowText(_T("打开串口"));///设置按钮文字为"打开串口"
 	}
 	///打开串口操作
 	else if (m_PortNr.GetCount() > 0)///当前列表的内容个数
 	{
 
-		int SelPortNO, SelBaudRate;
+		int SelBaudRate;
+
 		UpdateData(true);
 		m_PortNr.GetWindowText(temp);///CString temp
-		temp.Delete(0, 3);
-		SelPortNO = _tstoi(temp);
+		string portName = CW2A(temp.GetString());
 
 		m_BaudRate.GetWindowText(temp);
-		SelBaudRate = _tstoi(temp);
+		SelBaudRate = _tstoi(temp);	
 
-		if (m_SerialPort.InitPort(this->GetSafeHwnd(), SelPortNO, SelBaudRate))
+		m_SerialPort.init(portName, SelBaudRate);
+		m_SerialPort.open();
+
+		if (m_SerialPort.isOpened())
 		{
-
-			m_SerialPort.StartMonitoring();
 			m_OpenCloseCtrl.SetWindowText(_T("关闭串口"));
 		}
 		else
@@ -298,14 +304,47 @@ void CCommDlg::OnBnClickedButtonSend()
 	m_str = temp.GetBuffer(0);
 #endif
 	
-	m_SerialPort.WriteToPort("abc", 3);
-	m_SerialPort.WriteToPort(m_str, len);
+	m_SerialPort.writeData(m_str, len);
+
+	tx += len - 1;
+
+	CString str2;
+	str2.Format(_T("%d"), tx);
+	m_sendCountCtrl.SetWindowText(str2);
 }
 
 
 void CCommDlg::OnClose()
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
-	m_SerialPort.ClosePort();
+	m_SerialPort.close();
 	CDialogEx::OnClose();
+}
+
+void CCommDlg::OnReceive()
+{
+	char * str = NULL;
+	str = new char[256];
+	m_SerialPort.readAllData(str);
+
+	CString str1((char*)str);
+
+	rx += str1.GetLength();
+
+	m_ReceiveCtrl.SetSel(-1, -1);
+	m_ReceiveCtrl.ReplaceSel(str1);
+
+	CString str2;
+	str2.Format(_T("%d"), rx);
+	m_recvCountCtrl.SetWindowText(str2);
+}
+
+
+void CCommDlg::OnBnClickedButtonClear()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	rx = 0;
+	tx = 0;
+	m_recvCountCtrl.SetWindowText(CString("0"));
+	m_sendCountCtrl.SetWindowText(CString("0"));
 }

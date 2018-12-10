@@ -4,9 +4,8 @@
 
 #pragma once
 #include "SerialPort.h"
+#include "SerialPortInfo.h"
 #include "afxwin.h"
-
-#define WM_TEST 1000
 
 using namespace std;
 using namespace itas109;
@@ -14,7 +13,7 @@ using namespace itas109;
 extern CSerialPort m_SerialPort;
 
 // CCommDlg 对话框
-class CCommDlg : public CDialogEx
+class CCommDlg : public CDialogEx, public has_slots<>
 {
 // 构造
 public:
@@ -26,6 +25,7 @@ public:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
+	void OnReceive();
 
 // 实现
 protected:

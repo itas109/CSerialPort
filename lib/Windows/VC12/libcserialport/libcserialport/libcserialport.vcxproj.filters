@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="com">
+      <UniqueIdentifier>{2935e885-f1b8-4443-af3d-df96d5c4bcd7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -24,8 +27,23 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\SerialPortBase.h">
+      <Filter>com</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\SerialPort.h">
-      <Filter>头文件</Filter>
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\SerialPortWinBase.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\SerialPortInfo.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\SerialPortInfoBase.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\SerialPortInfoWinBase.h">
+      <Filter>com</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -38,8 +56,23 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\SerialPortBase.cpp">
+      <Filter>com</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\SerialPort.cpp">
-      <Filter>源文件</Filter>
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\SerialPortWinBase.cpp">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\SerialPortInfo.cpp">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\SerialPortInfoBase.cpp">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\SerialPortInfoWinBase.cpp">
+      <Filter>com</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

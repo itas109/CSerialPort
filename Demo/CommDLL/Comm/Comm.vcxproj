@@ -44,12 +44,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(ProjectDir)..\..\..\src;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)..\..\..\vsprojects\Windows\VC12\libcserialport\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)..\..\..\lib\Windows\VC12\libcserialport\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(ProjectDir)..\..\..\src;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)..\..\..\vsprojects\Windows\VC12\libcserialport\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)..\..\..\..\lib\Windows\VC12\libcserialport\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -62,7 +62,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libcserialport.lib</AdditionalDependencies>
+      <AdditionalDependencies>libcserialportd.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>

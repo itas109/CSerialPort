@@ -59,3 +59,9 @@
 /Demo/CSerialPortDemoWin32Console/ipch/cserialportdemowin32console-48694deb/*.ipch
 /Demo/CSerialPortDemoWin32Console/Debug
 /Demo/CSerialPortDemoWin32Console/ipch
+/lib/Windows/VC12/libcserialport/*.sdf
+/lib/Windows/VC12/libcserialport/*
+/lib/Windows/VC12/libcserialport/*.opensdf
+/lib/Windows/VC12/libcserialport/libcserialport/*.txt
+/lib/Windows/VC12/libcserialport/libcserialport/*
+/lib/Windows/VC12/libcserialport/libcserialport/*.user

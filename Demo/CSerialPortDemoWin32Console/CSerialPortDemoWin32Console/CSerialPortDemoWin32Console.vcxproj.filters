@@ -30,6 +30,36 @@
     <ClInclude Include="..\..\..\src\SerialPort.h">
       <Filter>com</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\osplatformutil.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SerialPort_global.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SerialPortBase.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SerialPortInfo.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SerialPortInfoBase.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SerialPortInfoUnixBase.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SerialPortInfoWinBase.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SerialPortUnixBase.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SerialPortWinBase.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\sigslot.h">
+      <Filter>com</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -39,6 +69,27 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\SerialPort.cpp">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SerialPortBase.cpp">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SerialPortInfo.cpp">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SerialPortInfoBase.cpp">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SerialPortInfoUnixBase.cpp">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SerialPortInfoWinBase.cpp">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SerialPortUnixBase.cpp">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\SerialPortWinBase.cpp">
       <Filter>com</Filter>
     </ClCompile>
   </ItemGroup>

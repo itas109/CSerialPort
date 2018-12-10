@@ -1,57 +1,61 @@
-// CSerialPortDemoWin32Console.cpp : 定义控制台应用程序的入口点。
+// SerialPortDemo.cpp : 定义控制台应用程序的入口点。
 //
 
-#include "stdafx.h"
+//#include "stdafx.h"
 
-#include "tchar.h"
-
-#include "SerialPort.h"
 #include <iostream>
 
-using namespace std;
+#include "sigslot.h"
+
+#include "SerialPort.h"
+//#pragma comment(lib,"CSerialPort.lib")
+
 using namespace itas109;
+using namespace std;
+
+CSerialPort sp;
+int countRead = 0;
 
 class mySlot : public has_slots<>
 {
 public:
-	void OnSendMessage(unsigned char* str, int port, int str_len)
+	void OnSendMessage()
 	{
-		std::cout << "port : " << port << ", str_len : " << str_len << ", data : " << str << endl;
+		//std::cout << "port : " << port << ", str_len : " << str_len << ", data : " << str << endl;
+		sp.writeData("test", 4);
+
+		countRead++;
+
+		cout << " +++ " << countRead << endl;
+
+		if (countRead == 100)
+		{
+			cout << " --- stop " << endl;
+			sp.close();
+		}
 	};
 };
 
-int _tmain(int argc, _TCHAR* argv[])
+int main()
 {
-	CSerialPort m_SerialPort;
+	countRead = 0;
+
 	mySlot receive;
 
-	HWND m_handle = GetConsoleWindow();
+	sp.init("COM2");
 
-	int port = 2;
+	sp.open();
 
-	int i = m_SerialPort.InitPort(m_handle, port);
-	m_SerialPort.StartMonitoring();
+	cout << sp.isOpened() << endl;
 
-	std::cout << "port : " << port << ", IsOpened : " << m_SerialPort.IsOpened() << endl;
+	sp.readReady.connect(&receive, &mySlot::OnSendMessage);
 
-#ifdef _SEND_DATA_WITH_SIGSLOT
-	m_SerialPort.sendMessageSignal.connect(&receive, &mySlot::OnSendMessage);
-#endif
-
-	TCHAR temp[256] = _T("Hello itas109\n");
-	size_t len = _tcsclen(temp) + 1;;
-	char* m_str = NULL;
-	size_t* converted = 0;
-	m_str = new char[len];
-#ifdef UNICODE
-	wcstombs_s(converted, m_str, len, temp, _TRUNCATE);
-#else
-	m_str = temp;
-#endif
-	m_SerialPort.WriteToPort(m_str, len);
+	for (int i = 0; i < 50; i++)
+	{
+		sp.writeData("write", 5);
+	}
 
 	while (1);
 
 	return 0;
 }
-
