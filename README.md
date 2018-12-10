@@ -29,5 +29,13 @@ https://github.com/itas109
 * 4.use new notify module
 
 ---
+# Other branches
+
+Remon Spekreijse's serial library has had a profound impact on me, thanks again to Remon Spekreijse
+http://www.codeguru.com/cpp/i-n/network/serialcommunications/article.php/c2483/A-communication-class-for-serial-port.htm
+
+
+only for windows branches : 
+https://github.com/itas109/CSerialPort/tree/CSerialPort_win_3.0.3
 
 ---
