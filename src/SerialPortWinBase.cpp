@@ -59,7 +59,7 @@ void CSerialPortWinBase::init(int port, int baudRate /*= itas109::BaudRate9600*/
 {
 	char sPort[32]; 
 	_itoa_s(port, sPort, 10); 
-	std::string portName = "\\\\.\\";//support COM10 above \\\\.\\COM10
+	std::string portName = "\\\\.\\COM";//support COM10 above \\\\.\\COM10
 	portName += sPort;
 
 	init(portName, baudRate, parity, dataBits, stopbits, flowConctrol, readBufferSize);
