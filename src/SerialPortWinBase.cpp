@@ -257,13 +257,10 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
 
 					// solve 线程中循环的低效率问题
 					ClearCommError(m_mainHandle, &dwError, &comstat);
-					if (comstat.cbInQue > 4) //设定字符数
+					if (comstat.cbInQue > 1) //设定字符数
 					{
 						readReady.emit();
 					}
-
-					//if (sender() != this)
-					//	emit readyRead();
 				}
 
 				if (eventMask & EV_TXEMPTY)
@@ -271,22 +268,11 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
 					DWORD numBytes;
 					GetOverlappedResult(m_mainHandle, &m_overlapMonitor, &numBytes, true);
 					std::cout << "EV_TXEMPTY" << std::endl;
-
-					//bytesToWriteLock->lockForWrite();
-					//if (sender() != this)
-					//	emit bytesWritten(bytesToWrite());
-					//_bytesToWrite = 0;
-					//bytesToWriteLock->unlock();
 				}
 
 				if (eventMask & EV_DSR)
 				{
 					std::cout << "EV_DSR" << std::endl;
-
-					//if (lineStatus() & LS_DSR)
-					//	emit dsrChanged(true);
-					//else
-					//	emit dsrChanged(false);
 				}
 			}
 		}
