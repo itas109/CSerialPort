@@ -256,7 +256,14 @@ void CCommDlg::OnBnClickedButtonOpenClose()
 
 		UpdateData(true);
 		m_PortNr.GetWindowText(temp);///CString temp
-		string portName = CW2A(temp.GetString());
+		string portName;
+#ifdef UNICODE
+		portName = CW2A(temp.GetString());
+#else
+		portName = temp.GetString();
+#endif // UNICODE
+
+		
 
 		m_BaudRate.GetWindowText(temp);
 		SelBaudRate = _tstoi(temp);	
