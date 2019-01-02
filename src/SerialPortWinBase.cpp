@@ -48,8 +48,9 @@ void CSerialPortWinBase::construct()
 void CSerialPortWinBase::init(std::string portName, int baudRate /*= itas109::BaudRate::BaudRate9600*/, itas109::Parity parity /*= itas109::Parity::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/, itas109::FlowConctrol flowConctrol /*= itas109::FlowConctrol::FlowNone*/, int64 readBufferSize /*= 512*/)
 {
 	m_portName = "\\\\.\\" + portName;//support COM10 above \\\\.\\COM10
-	m_baudRate = m_baudRate;
+	m_baudRate = baudRate;
 	m_parity = parity;
+	m_dataBits = dataBits;
 	m_stopbits = stopbits;
 	m_flowConctrol = flowConctrol;
 	m_readBufferSize = readBufferSize;
