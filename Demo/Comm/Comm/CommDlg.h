@@ -58,4 +58,8 @@ public:
 private:
 	int rx; 
 	int tx;
-};
+public:
+	CComboBox m_Parity;
+	CComboBox m_Stop;
+	CComboBox m_DataBits;
+	};

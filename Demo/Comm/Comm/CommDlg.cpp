@@ -13,6 +13,12 @@
 
 int BaudRateArray[] = { 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 56000, 57600, 115200 };
 
+string ParityArray[] = { "None", "Odd", "Even", "Mark", "Space" };
+
+string DataBitsArray[] = { "5", "6", "7","8" };
+
+string StopArray[] = { "1", "1.5", "2"};
+
 CSerialPort m_SerialPort;
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
@@ -66,6 +72,9 @@ void CCommDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_ReceiveEdit, m_ReceiveCtrl);
 	DDX_Control(pDX, IDC_STATIC_RECV_COUNT_VALUE, m_recvCountCtrl);
 	DDX_Control(pDX, IDC_STATIC_SEND_COUNT_VALUE, m_sendCountCtrl);
+	DDX_Control(pDX, IDC_COMBO_PARITY, m_Parity);
+	DDX_Control(pDX, IDC_COMBO_STOP, m_Stop);
+	DDX_Control(pDX, IDC_COMBO_DATABITS, m_DataBits);
 }
 
 BEGIN_MESSAGE_MAP(CCommDlg, CDialogEx)
@@ -122,11 +131,47 @@ BOOL CCommDlg::OnInitDialog()
 	for (int i = 0; i < sizeof(BaudRateArray) / sizeof(int); i++)
 	{
 		temp.Format(_T("%d"), BaudRateArray[i]);
-		m_BaudRate.AddString((LPCTSTR)temp);
+		m_BaudRate.InsertString(i, temp);
 	}
 
 	temp.Format(_T("%d"), 9600);
 	m_BaudRate.SetCurSel(m_BaudRate.FindString(0, temp));
+
+	//校验位
+	for (int i = 0; i < sizeof(ParityArray) / sizeof(string); i++)
+	{
+#ifdef UNICODE
+		temp.Format(_T("%S"), ParityArray[i].c_str());
+#else
+		temp.Format(_T("%s"), ParityArray[i].c_str());
+#endif
+		m_Parity.InsertString(i, temp);
+	}
+	m_Parity.SetCurSel(0);
+
+	//数据位
+	for (int i = 0; i < sizeof(DataBitsArray) / sizeof(string); i++)
+	{
+#ifdef UNICODE
+		temp.Format(_T("%S"), DataBitsArray[i].c_str());
+#else
+		temp.Format(_T("%s"), DataBitsArray[i].c_str());
+#endif
+		m_DataBits.InsertString(i, temp);
+	}
+	m_DataBits.SetCurSel(3);
+
+	//停止位
+	for (int i = 0; i < sizeof(StopArray) / sizeof(string); i++)
+	{
+#ifdef UNICODE
+		temp.Format(_T("%S"), StopArray[i].c_str());
+#else
+		temp.Format(_T("%s"), StopArray[i].c_str());
+#endif
+		m_Stop.InsertString(i, temp);
+	}
+	m_Stop.SetCurSel(0);
 
 	//获取串口号
 	list<string> m_portsList = CSerialPortInfo::availablePorts();
@@ -251,17 +296,31 @@ void CCommDlg::OnBnClickedButtonOpenClose()
 	///打开串口操作
 	else if (m_PortNr.GetCount() > 0)///当前列表的内容个数
 	{
-
+		string portName;
 		int SelBaudRate;
+		int SelParity;
+		int SelDataBits;
+		int SelStop;
 
 		UpdateData(true);
 		m_PortNr.GetWindowText(temp);///CString temp
-		string portName = CW2A(temp.GetString());
+#ifdef UNICODE
+		portName = CW2A(temp.GetString());
+#else
+		portName = temp.GetBuffer();
+#endif
 
 		m_BaudRate.GetWindowText(temp);
 		SelBaudRate = _tstoi(temp);	
 
-		m_SerialPort.init(portName, SelBaudRate);
+		SelParity = m_Parity.GetCurSel();
+
+		m_DataBits.GetWindowText(temp);
+		SelDataBits = _tstoi(temp);
+
+		SelStop = m_Stop.GetCurSel();
+
+		m_SerialPort.init(portName, SelBaudRate, itas109::Parity(SelParity), itas109::DataBits(SelDataBits), itas109::StopBits(SelStop));
 		m_SerialPort.open();
 
 		if (m_SerialPort.isOpened())
