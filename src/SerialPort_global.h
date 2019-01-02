@@ -35,8 +35,14 @@ namespace itas109
 			BaudRate115200 = 115200,
 		};
 
+		//by QextSerialPort
+		// 5 data bits cannot be used with 2 stop bits
+		// 1.5 stop bits can only be used with 5 data bits
+		// 8 data bits cannot be used with space parity on POSIX systems
+
 		enum DataBits
 		{
+			//windows Number of bits/byte, 4-8 
 			DataBits5 = 5,			//5 data bits
 			DataBits6 = 6,			//6 data bits
 			DataBits7 = 7,			//7 data bits
@@ -45,16 +51,17 @@ namespace itas109
 
 		enum Parity
 		{
+			//windows 0-4=None,Odd,Even,Mark,Space
 			ParityNone  = 0,			//No Parity
-			ParityOdd   = 2,			//Odd Parity
-			ParityEven  = 3,			//Even Parity
-			ParitySpace = 4,			//Space Parity
-			ParityMark  = 5,            //Mark Parity
-
+			ParityOdd   = 1,			//Odd Parity
+			ParityEven  = 2,			//Even Parity
+			ParityMark  = 3,            //Mark Parity
+			ParitySpace = 4,			//Space Parity	
 		};
 
 		enum StopBits
 		{
+			//windows 0,1,2 = 1, 1.5, 2
 			StopOne = 0,				//1 stop bit
 			StopOneAndHalf = 1,			//1.5 stop bit - This is only for the Windows platform
 			StopTwo = 2					//2 stop bit
