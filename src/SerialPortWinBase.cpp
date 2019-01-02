@@ -60,7 +60,7 @@ void CSerialPortWinBase::init(int port, int baudRate /*= itas109::BaudRate9600*/
 {
 	char sPort[32]; 
 	_itoa_s(port, sPort, 10); 
-	std::string portName = "\\\\.\\";//support COM10 above \\\\.\\COM10
+	std::string portName = "\\\\.\\COM";//support COM10 above \\\\.\\COM10
 	portName += sPort;
 
 	init(portName, baudRate, parity, dataBits, stopbits, flowConctrol, readBufferSize);
@@ -171,7 +171,11 @@ bool CSerialPortWinBase::open()
 			case ERROR_FILE_NOT_FOUND:
 			{
 										 TCHAR Temp[200] = { 0 };
-										 _stprintf_s(Temp, 200, _T("COM%d ERROR_FILE_NOT_FOUND,Error Code:%d"), GetLastError());
+#ifdef UNICODE
+										 _stprintf_s(Temp, 200, _T("%S ERROR_FILE_NOT_FOUND,Error Code:%d"), m_portName.c_str(), GetLastError());
+#else
+										 _stprintf_s(Temp, 200, _T("%s ERROR_FILE_NOT_FOUND,Error Code:%d"), m_portName.c_str(), GetLastError());
+#endif // UNICODE										 
 										 MessageBox(NULL, Temp, _T("COM InitPort Error"), MB_ICONERROR);
 										 break;
 			}
@@ -179,7 +183,11 @@ bool CSerialPortWinBase::open()
 			case ERROR_ACCESS_DENIED:
 			{
 										TCHAR Temp[200] = { 0 };
-										_stprintf_s(Temp, 200, _T("COM%d ERROR_ACCESS_DENIED,Error Code:%d"), GetLastError());
+#ifdef UNICODE
+										_stprintf_s(Temp, 200, _T("%S ERROR_ACCESS_DENIED,Error Code:%d"), m_portName.c_str(), GetLastError());
+#else
+										_stprintf_s(Temp, 200, _T("%s ERROR_ACCESS_DENIED,Error Code:%d"), m_portName.c_str(), GetLastError());
+#endif // UNICODE
 										MessageBox(NULL, Temp, _T("COM InitPort Error"), MB_ICONERROR);
 										break;
 			}
@@ -258,13 +266,10 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
 
 					// solve 线程中循环的低效率问题
 					ClearCommError(m_mainHandle, &dwError, &comstat);
-					if (comstat.cbInQue > 4) //设定字符数
+					if (comstat.cbInQue > 1) //设定字符数
 					{
 						readReady.emit();
 					}
-
-					//if (sender() != this)
-					//	emit readyRead();
 				}
 
 				if (eventMask & EV_TXEMPTY)
@@ -272,22 +277,11 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
 					DWORD numBytes;
 					GetOverlappedResult(m_mainHandle, &m_overlapMonitor, &numBytes, true);
 					std::cout << "EV_TXEMPTY" << std::endl;
-
-					//bytesToWriteLock->lockForWrite();
-					//if (sender() != this)
-					//	emit bytesWritten(bytesToWrite());
-					//_bytesToWrite = 0;
-					//bytesToWriteLock->unlock();
 				}
 
 				if (eventMask & EV_DSR)
 				{
 					std::cout << "EV_DSR" << std::endl;
-
-					//if (lineStatus() & LS_DSR)
-					//	emit dsrChanged(true);
-					//else
-					//	emit dsrChanged(false);
 				}
 			}
 		}

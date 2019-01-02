@@ -308,7 +308,7 @@ void CCommDlg::OnBnClickedButtonOpenClose()
 		portName = CW2A(temp.GetString());
 #else
 		portName = temp.GetBuffer();
-#endif
+#endif	
 
 		m_BaudRate.GetWindowText(temp);
 		SelBaudRate = _tstoi(temp);	
