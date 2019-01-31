@@ -164,10 +164,10 @@ bool CSerialPortWinBase::open()
 		}
 		else
 		{
-			//´®¿Ú´ò¿ªÊ§°Ü£¬Ôö¼ÓÌáÊ¾ĞÅÏ¢
+			//ä¸²å£æ‰“å¼€å¤±è´¥ï¼Œå¢åŠ æç¤ºä¿¡æ¯
 			switch (GetLastError())
 			{
-				//´®¿Ú²»´æÔÚ
+				//ä¸²å£ä¸å­˜åœ¨
 			case ERROR_FILE_NOT_FOUND:
 			{
 										 TCHAR Temp[200] = { 0 };
@@ -179,7 +179,7 @@ bool CSerialPortWinBase::open()
 										 MessageBox(NULL, Temp, _T("COM InitPort Error"), MB_ICONERROR);
 										 break;
 			}
-				//´®¿Ú¾Ü¾ø·ÃÎÊ
+				//ä¸²å£æ‹’ç»è®¿é—®
 			case ERROR_ACCESS_DENIED:
 			{
 										TCHAR Temp[200] = { 0 };
@@ -264,9 +264,9 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
 
 					std::cout << "EV_RXCHAR" << std::endl;
 
-					// solve Ïß³ÌÖĞÑ­»·µÄµÍĞ§ÂÊÎÊÌâ
+					// solve çº¿ç¨‹ä¸­å¾ªç¯çš„ä½æ•ˆç‡é—®é¢˜
 					ClearCommError(m_mainHandle, &dwError, &comstat);
-					if (comstat.cbInQue > 1) //Éè¶¨×Ö·ûÊı
+					if (comstat.cbInQue > 1) //è®¾å®šå­—ç¬¦æ•°
 					{
 						readReady.emit();
 					}

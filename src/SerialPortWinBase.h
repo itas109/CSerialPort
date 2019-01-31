@@ -1,3 +1,13 @@
+/**
+ * @file SerialPortWinBase.h
+ * @author itas109 (itas109@gmail.com)
+ * @brief 
+ * @version 4.0.0.181210
+ * @date 2018-12-20
+ * 
+ * @copyright Copyright (c) 2019
+ * 
+ */
 #ifndef __CSERIALPORTWINBASE_H__
 #define __CSERIALPORTWINBASE_H__
 
@@ -13,14 +23,15 @@
 
 /***************************************
 
-* 1. ���߳��ڲ��ӹܣ����迪���߹���
-* 2. ʹ���Զ����������̻߳����������
-* 3. ���Ϊ�麯���������߿��Լ̳��޸�
-* 4. ֧���Ȳ��
-* 5. ֧��ͨ��ͨ��Э��:֡ͷ + ���� + У�� + ֡β
-* 6. ֧�ֻ���ʱ��Ƭ��������װ
-* 7. ����ʱ��������ݻ������ - ���ݴ浽�������������ʱ��� �����߰���һ�����Ի�ȡ����װ����
-* 8. ��дwindows��ReadFile��WriteFile
+
+* 1. 多线程内部接管，无需开发者关心
+* 2. 使用自动锁处理多线程互斥访问问题
+* 3. 设计为虚函数，开发者可以继承修改
+* 4. 支持热插拔
+* 5. 支持通用通信协议:帧头 + 数据 + 校验 + 帧尾
+* 6. 支持基于时间片的数据组装
+* 7. 基于时间戳的数据缓存队列 - 数据存到缓冲区，并标记时间戳 开发者按照一定策略获取及组装数据
+* 8. 重写windows下ReadFile、WriteFile
 
 */
 

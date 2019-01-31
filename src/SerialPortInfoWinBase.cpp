@@ -17,7 +17,7 @@ CSerialPortInfoWinBase::~CSerialPortInfoWinBase()
 std::list<std::string> CSerialPortInfoWinBase::availablePorts()
 {
 	std::list<std::string> portsList;
-	///仅是XP/Win7系统的注册表位置，其他系统根据实际情况做修改
+	///浠呮槸XP/Win7绯荤粺鐨勬敞鍐岃〃浣嶇疆锛屽叾浠栫郴缁熸牴鎹疄闄呮儏鍐靛仛淇敼
 	std::string m_regKeyPath = std::string("HARDWARE\\DEVICEMAP\\SERIALCOMM");
 	p_serialPortInfoWinBase->getRegKeyValues(m_regKeyPath, portsList);
 	return portsList;
@@ -95,7 +95,7 @@ bool CSerialPortInfoWinBase::getRegKeyValues(std::string regKeyPath, std::list<s
 			{
 				cchValue = MAX_VALUE_NAME;
 				achValue[0] = '\0';
-				nBuffLen = MAX_KEY_LENGTH;//防止 ERROR_MORE_DATA 234L 错误
+				nBuffLen = MAX_KEY_LENGTH;//闃叉 ERROR_MORE_DATA 234L 閿欒
 
 				if (ERROR_SUCCESS == RegEnumValue(hKey, i, achValue, &cchValue, NULL, NULL, (LPBYTE)strDSName, &nBuffLen))
 				{
