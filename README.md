@@ -23,10 +23,12 @@ https://github.com/itas109
 * higher efficiency
 
 # Todo List
-* 1.support windows and linux first
-* 2.add communicating protocol
-* 3.support hot swap
-* 4.use new notify module
+
+- [ ] 1.support windows and linux first
+- [ ] 2.add communicating protocol
+- [ ] 3.support hot swap
+- [ ] 4.use new notify module
+- [ ] 5.support other language,such as C, C#, Python, Java, Golang
 
 ---
 # Other branches
