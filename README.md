@@ -29,6 +29,11 @@ https://github.com/itas109
 - [ ] 3.support hot swap
 - [ ] 4.use new notify module
 - [ ] 5.support other language,such as C, C#, Python, Java, Golang
+- [ ] 6.sync serial port communication
+
+# Test
+* VS2013 update 5
+* VS2015 update 3
 
 # directory List
 
