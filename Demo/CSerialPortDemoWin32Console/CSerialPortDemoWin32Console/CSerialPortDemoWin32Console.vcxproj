@@ -85,9 +85,7 @@
     <ClInclude Include="..\..\..\src\SerialPortBase.h" />
     <ClInclude Include="..\..\..\src\SerialPortInfo.h" />
     <ClInclude Include="..\..\..\src\SerialPortInfoBase.h" />
-    <ClInclude Include="..\..\..\src\SerialPortInfoUnixBase.h" />
     <ClInclude Include="..\..\..\src\SerialPortInfoWinBase.h" />
-    <ClInclude Include="..\..\..\src\SerialPortUnixBase.h" />
     <ClInclude Include="..\..\..\src\SerialPortWinBase.h" />
     <ClInclude Include="..\..\..\src\SerialPort_global.h" />
     <ClInclude Include="..\..\..\src\sigslot.h" />
@@ -107,13 +105,7 @@
     <ClCompile Include="..\..\..\src\SerialPortInfoBase.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\SerialPortInfoUnixBase.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\SerialPortInfoWinBase.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\SerialPortUnixBase.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\src\SerialPortWinBase.cpp">

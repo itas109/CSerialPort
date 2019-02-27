@@ -45,13 +45,7 @@
     <ClInclude Include="..\..\..\src\SerialPortInfoBase.h">
       <Filter>com</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\SerialPortInfoUnixBase.h">
-      <Filter>com</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\SerialPortInfoWinBase.h">
-      <Filter>com</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\SerialPortUnixBase.h">
       <Filter>com</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\SerialPortWinBase.h">
@@ -80,13 +74,7 @@
     <ClCompile Include="..\..\..\src\SerialPortInfoBase.cpp">
       <Filter>com</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\SerialPortInfoUnixBase.cpp">
-      <Filter>com</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\SerialPortInfoWinBase.cpp">
-      <Filter>com</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\SerialPortUnixBase.cpp">
       <Filter>com</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\SerialPortWinBase.cpp">
