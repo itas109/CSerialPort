@@ -31,9 +31,9 @@ https://github.com/itas109
 - [ ] 5.support other language,such as C, C#, Python, Java, Golang
 - [ ] 6.sync serial port communication
 
-# Test
-* VS2013 update 5
-* VS2015 update 3
+# Tested Machine
+* VS2013 update 5 - Win7 64bit
+* VS2015 update 3 - Win7 64bit
 
 # directory List
 
