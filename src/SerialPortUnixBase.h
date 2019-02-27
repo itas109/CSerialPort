@@ -26,6 +26,27 @@
 // g++ SerialPort.cpp SerialPortBase.cpp SerialPortUnixBase.cpp -fPIC -shared -o libss.so
 // g++ t.cpp -o tt -L. -lss 
 
+//t.cpp
+/*
+#include <iostream>
+#include "sigslot.h"
+#include "SerialPort.h"
+
+using namespace itas109;
+using namespace std;
+
+int main()
+{
+	CSerialPort sp;
+	sp.init("/dev/ttyS0");
+	sp.open();
+	cout << sp.isOpened() <<endl;
+
+	while (1);
+	return 0;
+}
+*/
+
 /**
  * @brief the CSerialPort unix Base class unix串口基类
  * @see inherit 继承 CSerialPortBase
