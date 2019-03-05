@@ -32,9 +32,10 @@ https://github.com/itas109
 - [ ] 6.sync serial port communication
 
 # Tested Machine
-* VS2013 update 5 - Win7 Ultimate 64bit 2019-02-27
-* VS2015 update 3 - Win7 Ultimate 64bit 2019-02-27
-* VS2015 update 3 - Win10 Enterprise 64bit 2019-02-28
+* VS2013 update 5 - Win7 Ultimate 64bit CN - 2019-02-27
+* VS2015 update 3 - Win7 Ultimate 64bit CN - 2019-02-27
+* VS2015 update 3 - Win10 Enterprise 64bit CN - 2019-02-28
+* GCC 5.4.0 20160609 - Ubuntu 16.04 64bit En  - 2019-03-05
 
 # directory List
 
