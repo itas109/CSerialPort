@@ -400,7 +400,7 @@
             </size>
            </property>
            <property name="text">
-            <string>close</string>
+            <string>open</string>
            </property>
           </widget>
          </item>

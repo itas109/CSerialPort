@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     //ui
-    ui->pushButtonOpen->setText(tr("close"));
+    ui->pushButtonOpen->setText(tr("open"));
 
     rx = 0;
     tx = 0;
@@ -69,7 +69,7 @@ void MainWindow::OnReceive()
 
 void MainWindow::on_pushButtonOpen_clicked()
 {
-    if(ui->pushButtonOpen->text() == tr("close"))
+    if(ui->pushButtonOpen->text() == tr("open"))
     {
         if(ui->comboBoxPortName->count() > 0)
         {
@@ -81,12 +81,12 @@ void MainWindow::on_pushButtonOpen_clicked()
 
             if(m_SerialPort.open())
             {
-                ui->pushButtonOpen->setText(tr("open"));
+                ui->pushButtonOpen->setText(tr("close"));
             }
             else
             {
                 QMessageBox::information(NULL,tr("information"),tr("open port error"));
-                ui->pushButtonOpen->setText(tr("close"));
+                ui->pushButtonOpen->setText(tr("open"));
             }
         }
         else
@@ -99,7 +99,7 @@ void MainWindow::on_pushButtonOpen_clicked()
     {
         m_SerialPort.close();
 
-        ui->pushButtonOpen->setText(tr("close"));
+        ui->pushButtonOpen->setText(tr("open"));
     }
 }
 
