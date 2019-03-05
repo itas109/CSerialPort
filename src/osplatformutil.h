@@ -1,4 +1,4 @@
-#ifndef OSPLATFORMUTIL_H
+﻿#ifndef OSPLATFORMUTIL_H
 #define OSPLATFORMUTIL_H
 
 /*
