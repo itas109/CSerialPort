@@ -36,6 +36,7 @@ https://github.com/itas109
 * VS2015 update 3 - Win7 Ultimate 64bit CN - 2019-02-27
 * VS2015 update 3 - Win10 Enterprise 64bit CN - 2019-02-28
 * GCC 5.4.0 20160609 - Ubuntu 16.04 64bit En  - 2019-03-05
+* VS2013 update 5 - Win7 Ultimate 64bit En - 2019-03-07
 
 # directory List
 
@@ -53,6 +54,7 @@ https://github.com/itas109
     |   |       |-- Comm.exe
     |   |-- CommDLL # CSerialPort MFC Demo use Win32 Dll win32动态库MFC程序示例
     |   |   |-- Comm
+    |-- CommQT # CSerialPort QT win/linux Demo QT win/linux 程序示例
     |   |-- CSerialPortDemoWin32Console # CSerialPort Demo for Win32 Console win32控制台程序示例
     |       |-- CSerialPortDemoWin32Console
     |-- doc # document 文档目录
