@@ -30,6 +30,7 @@ https://github.com/itas109
 - [ ] 4.use new notify module
 - [ ] 5.support other language,such as C, C#, Python, Java, Golang
 - [ ] 6.sync serial port communication
+- [ ] 7.new cross-platform gui serial port tool
 
 # Tested Machine
 * VS2013 update 5 - Win7 Ultimate 64bit CN - 2019-02-27
@@ -88,6 +89,10 @@ https://github.com/itas109
         |-- SerialPort_global.h # Global difine of CSerialPort 串口全局定义 
         |-- sigslot.h # signal and slot 信号与槽
 ```
+
+# Error Guide
+
+[Error Guide Document](https://github.com/itas109/CSerialPort/tree/master/doc/error_guide.md)
 
 ---
 # Other branches
