@@ -31,6 +31,7 @@ https://github.com/itas109
 - [ ] 5.support other language,such as C, C#, Python, Java, Golang
 - [ ] 6.sync serial port communication
 - [ ] 7.new cross-platform gui serial port tool
+- [ ] 8.add a video description of this class
 
 # Tested Machine
 * VS2013 update 5 - Win7 Ultimate 64bit CN - 2019-02-27
