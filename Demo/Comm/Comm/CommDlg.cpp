@@ -19,7 +19,8 @@ string DataBitsArray[] = { "5", "6", "7","8" };
 
 string StopArray[] = { "1", "1.5", "2"};
 
-CSerialPort m_SerialPort;
+// 2019-07-21 itas109
+//CSerialPort m_SerialPortError;//this->m_mutex-> is nullptr 引起VS2015崩溃，需要定义为类内对象
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 

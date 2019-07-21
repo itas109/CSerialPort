@@ -3,18 +3,19 @@
 //
 
 #pragma once
+
+//About CSerialPort start
 #include "SerialPort.h"
 #include "SerialPortInfo.h"
-#include "afxwin.h"
+using namespace itas109;
+//About CSerialPort end
 
 using namespace std;
-using namespace itas109;
 
-extern CSerialPort m_SerialPort;
 
 // CCommDlg 对话框
 
-	class CCommDlg : public CDialogEx, public has_slots<>
+	class CCommDlg : public CDialogEx, public has_slots<>//About CSerialPort 
 {
 // 构造
 public:
@@ -27,7 +28,7 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
 	void OnSendMessage(unsigned char* str, int port, int str_len);
-	void OnReceive();
+	void OnReceive();//About CSerialPort 
 
 // 实现
 protected:
@@ -56,6 +57,8 @@ public:
 	afx_msg void OnBnClickedButtonClear();
 
 private:
+	CSerialPort m_SerialPort;//About CSerialPort 
+
 	int rx; 
 	int tx;
 public:
