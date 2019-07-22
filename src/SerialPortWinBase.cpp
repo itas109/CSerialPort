@@ -32,7 +32,7 @@ void CSerialPortWinBase::construct()
 	m_flowConctrol = itas109::FlowNone;
 	m_readBufferSize = 512;
 
-	m_operateMode = itas109::AsynchronousOperate;
+    m_operateMode = itas109::AsynchronousOperate;
 
 	overlapMonitor.Internal = 0;
 	overlapMonitor.InternalHigh = 0;
@@ -125,7 +125,17 @@ bool CSerialPortWinBase::open()
 			//setParity(m_parity);
 
 			setFlowConctrol(m_flowConctrol); // @todo
-			//setTimeout(Settings.Timeout_Millisec); // @todo
+
+//            COMMTIMEOUTS m_commTimeouts;
+//            //set read timeout
+//            m_commTimeouts.ReadIntervalTimeout = MAXWORD;
+//            m_commTimeouts.ReadTotalTimeoutMultiplier = 0;
+//            m_commTimeouts.ReadTotalTimeoutConstant = 0;
+//            //set write timeout
+//            m_commTimeouts.WriteTotalTimeoutConstant = 500;
+//            m_commTimeouts.WriteTotalTimeoutMultiplier = 100;
+//            SetCommTimeouts(m_handle,&m_commTimeouts); // @todo for test
+
 			if (SetCommConfig(m_handle, &m_comConfigure, configSize))
 			{
 				// @todo 
@@ -159,6 +169,17 @@ bool CSerialPortWinBase::open()
 						bRet = false;
 					}
 				}
+                else
+                {
+                    m_comTimeout.ReadIntervalTimeout = MAXDWORD;
+                    m_comTimeout.ReadTotalTimeoutMultiplier = 0;
+                    m_comTimeout.ReadTotalTimeoutConstant = 0;
+                    m_comTimeout.WriteTotalTimeoutMultiplier = 100;
+                    m_comTimeout.WriteTotalTimeoutConstant = 500;
+                    SetCommTimeouts(m_handle, &m_comTimeout);
+
+                    bRet = true;
+                }
 			}
 			else
 			{
@@ -364,12 +385,20 @@ int CSerialPortWinBase::readData(char *data, int maxSize)
 int CSerialPortWinBase::readAllData(char *data)
 {
 	int maxSize = 0;
-	DWORD dwError = 0;
-	COMSTAT comstat;
-	ClearCommError(m_handle, &dwError, &comstat);
-	maxSize = comstat.cbInQue;
 
-	return readData(data, comstat.cbInQue);
+    if (m_operateMode == itas109::OperateMode::AsynchronousOperate)
+    {
+        DWORD dwError = 0;
+        COMSTAT comstat;
+        ClearCommError(m_handle, &dwError, &comstat);
+        maxSize = comstat.cbInQue;
+    }
+    else
+    {
+        maxSize = 1024;//Synchronous ClearCommError not work
+    }
+
+    return readData(data, maxSize);
 }
 
 int CSerialPortWinBase::readLineData(char *data, int maxSize)
