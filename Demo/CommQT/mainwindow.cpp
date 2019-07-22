@@ -13,6 +13,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //hide pushButtonReadSync
+    ui->pushButtonReadSync->hide();
+
     //ui
     ui->pushButtonOpen->setText(tr("open"));
 
@@ -33,6 +36,9 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     m_SerialPort.readReady.connect(this, &MainWindow::OnReceive);
+
+    ui->comboBoxBaudrate->setCurrentText("9600");
+    ui->comboBoxDataBit->setCurrentText("8");
 }
 
 MainWindow::~MainWindow()
@@ -42,29 +48,39 @@ MainWindow::~MainWindow()
 
 void MainWindow::OnReceive()
 {
+    int iRet = -1;
     char * str = NULL;
     str = new char[256];
-    m_SerialPort.readAllData(str);
+    iRet = m_SerialPort.readAllData(str);
 
-    QString m_str = QString::fromLocal8Bit(str);
+    qDebug() << "read length : " << iRet;
 
-    qDebug() << "receive : " << m_str;
-
-    //追加文本（plainTextEditReceive是一个QPlainTextEdit对象）
-    auto workCursor = ui->plainTextEditReceive->textCursor();
-    workCursor.movePosition(QTextCursor::End);
-    workCursor.insertText(m_str);
-    workCursor.insertBlock();
-
-    //移动滚动条到底部
-    QScrollBar *scrollbar = ui->plainTextEditReceive->verticalScrollBar();
-    if (scrollbar)
+    if(iRet != -1)
     {
-        scrollbar->setSliderPosition(scrollbar->maximum());
-    }
+        QString m_str = QString::fromLocal8Bit(str,iRet);
 
-    rx += m_str.length();
-    ui->labelRXValue->setText(QString::number(rx));
+        qDebug() << "receive : " << m_str;
+
+        //追加文本（plainTextEditReceive是一个QPlainTextEdit对象）
+        auto workCursor = ui->plainTextEditReceive->textCursor();
+        workCursor.movePosition(QTextCursor::End);
+        workCursor.insertText(m_str);
+        workCursor.insertBlock();
+
+        //移动滚动条到底部
+        QScrollBar *scrollbar = ui->plainTextEditReceive->verticalScrollBar();
+        if (scrollbar)
+        {
+            scrollbar->setSliderPosition(scrollbar->maximum());
+        }
+
+        rx += m_str.length();
+        ui->labelRXValue->setText(QString::number(rx));
+    }
+    else
+    {
+
+    }
 }
 
 void MainWindow::on_pushButtonOpen_clicked()
@@ -87,6 +103,7 @@ void MainWindow::on_pushButtonOpen_clicked()
             {
                 QMessageBox::information(NULL,tr("information"),tr("open port error"));
                 ui->pushButtonOpen->setText(tr("open"));
+                qDebug()<< m_SerialPort.getLastError();
             }
         }
         else
@@ -129,4 +146,40 @@ void MainWindow::on_pushButtonClear_clicked()
 
     ui->labelTXValue->setText(QString::number(tx));
     ui->labelRXValue->setText(QString::number(rx));
+}
+
+void MainWindow::on_checkBoxSync_stateChanged(int arg1)
+{
+    //not checked
+    if(arg1 == 0)
+    {
+        m_SerialPort.close();
+    }
+    else
+    {
+        m_SerialPort.close();
+    }
+}
+
+void MainWindow::on_pushButtonReadSync_clicked()
+{
+    OnReceive();
+}
+
+void MainWindow::on_checkBoxSync_clicked(bool checked)
+{
+    //AsynchronousOperate
+    if(checked)
+    {
+        m_SerialPort.setOperateMode(itas109::SynchronousOperate);
+
+        ui->pushButtonReadSync->show();
+    }
+    else
+    {
+        m_SerialPort.setOperateMode(itas109::AsynchronousOperate);
+
+        ui->pushButtonReadSync->hide();
+    }
+
 }

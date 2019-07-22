@@ -29,6 +29,12 @@ private slots:
 
     void on_pushButtonClear_clicked();
 
+    void on_checkBoxSync_stateChanged(int arg1);
+
+    void on_pushButtonReadSync_clicked();
+
+    void on_checkBoxSync_clicked(bool checked);
+
 private:
     Ui::MainWindow *ui;
 

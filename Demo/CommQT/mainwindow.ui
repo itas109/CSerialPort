@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>539</width>
-    <height>471</height>
+    <width>716</width>
+    <height>548</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,7 +25,7 @@
         <property name="title">
          <string>SerialPort Setting</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_2" stretch="7,0,1">
+        <layout class="QVBoxLayout" name="verticalLayout_2" stretch="7,0,0,1">
          <item>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
@@ -386,6 +386,13 @@
           </spacer>
          </item>
          <item>
+          <widget class="QCheckBox" name="checkBoxSync">
+           <property name="text">
+            <string>SynchronousOperate</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="pushButtonOpen">
            <property name="minimumSize">
             <size>
@@ -467,6 +474,19 @@
            </property>
            <property name="text">
             <string>Send</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonReadSync">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>50</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Read Sync</string>
            </property>
           </widget>
          </item>
@@ -602,7 +622,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>539</width>
+     <width>716</width>
      <height>23</height>
     </rect>
    </property>
