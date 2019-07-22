@@ -29,11 +29,15 @@ CSerialPort::CSerialPort()
 itas109::CSerialPort::CSerialPort(const std::string & portName)
 {
 	p_serialPortBase = new CSERIALPORTBASE(portName);
+
+    ((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
 }
 
 
 CSerialPort::~CSerialPort()
 {
+    ((CSERIALPORTBASE *)p_serialPortBase)->readReady.disconnect_all();
+
 	p_serialPortBase->~CSerialPortBase();
 }
 
@@ -44,7 +48,12 @@ void itas109::CSerialPort::init(std::string portName, int baudRate /*= itas109::
 
 void itas109::CSerialPort::init(int port, int baudRate /*= itas109::BaudRate9600*/, itas109::Parity parity /*= itas109::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopOne*/, itas109::FlowConctrol flowConctrol /*= itas109::FlowNone*/, int64 readBufferSize /*= 512*/)
 {
-	p_serialPortBase->init(port, baudRate, parity, dataBits, stopbits, flowConctrol, readBufferSize);
+    p_serialPortBase->init(port, baudRate, parity, dataBits, stopbits, flowConctrol, readBufferSize);
+}
+
+void CSerialPort::setOperateMode(OperateMode operateMode)
+{
+    p_serialPortBase->setOperateMode(operateMode);
 }
 
 bool itas109::CSerialPort::open()

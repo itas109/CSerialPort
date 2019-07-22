@@ -73,6 +73,13 @@ namespace itas109
 		 */
 		void init(int port, int baudRate = itas109::BaudRate9600, itas109::Parity parity = itas109::ParityNone, itas109::DataBits dataBits = itas109::DataBits8, itas109::StopBits stopbits = itas109::StopOne, itas109::FlowConctrol flowConctrol = itas109::FlowNone, int64 readBufferSize = 512);
 
+        /**
+         * @brief Set the Operate Mode object 设置串口操作模式
+         *
+         * @param operateMode [in] the operate mode 串口操作模式 {@link itas109::OperateMode}
+         */
+        void setOperateMode(itas109::OperateMode operateMode = itas109::AsynchronousOperate);
+
 		/**
 		 * @brief open serial port 打开串口
 		 * 
