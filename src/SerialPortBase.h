@@ -86,12 +86,12 @@ public:
 	* @retval true open success 打开成功
 	* @retval false open failed 打开失败
 	*/
-	virtual bool open() = 0;
+    virtual bool openPort() = 0;
 	/**
 	* @brief close 关闭串口
 	*
 	*/
-	virtual void close() = 0;
+    virtual void closePort() = 0;
 
 	/**
 	* @brief if serial port is open success 串口是否打开成功
