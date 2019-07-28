@@ -26,20 +26,20 @@ https://github.com/itas109
 
 # Todo List
 
-- [ x ] 1.support windows and linux first
+- [x] 1.support windows and linux first
 - [ ] 2.add communicating protocol
 - [ ] 3.support hot swap
 - [ ] 4.use new notify module
 - [ ] 5.support other language,such as C, C#, Python, Java, Golang
-- [ x ] 6.sync serial port communication
+- [x] 6.sync serial port communication
 - [ ] 7.new cross-platform gui serial port tool
 - [ ] 8.add a video description of this class
 
 # Tested Machine
-* VS2013 update 5 - Win7 Ultimate 64bit CN - 2019-02-27
+* VS2013 update 5 - Win7 Ultimate 64bit CN - 2019-07-28
 * VS2015 update 3 - Win7 Ultimate 64bit CN - 2019-02-27
 * VS2015 update 3 - Win10 Enterprise 64bit CN - 2019-02-28
-* GCC 5.4.0 20160609 - Ubuntu 16.04 64bit En  - 2019-03-05
+* GCC 5.4.0 20160609 - Ubuntu 16.04 64bit En  - 2019-07-28
 * VS2013 update 5 - Win7 Ultimate 64bit En - 2019-03-07
 
 # directory List
