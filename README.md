@@ -97,6 +97,23 @@ https://github.com/itas109
 
 [Error Guide Document](https://github.com/itas109/CSerialPort/tree/master/doc/error_guide.md)
 
+# Result
+
+windows:
+![image](https://github.com/itas109/CSerialPort/raw/master/pic/win.jpg)
+
+linux：
+![image](https://github.com/itas109/CSerialPort/raw/master/pic/linux.jpg)
+
+# Contacting
+
+* Email : itas109@qq.com
+* QQ Group : 129518033
+
+## Links
+
+* [itas109 Blog](http://blog.csdn.net/itas109)
+
 ---
 # Other branches
 
