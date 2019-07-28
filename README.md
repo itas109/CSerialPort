@@ -99,10 +99,12 @@ https://github.com/itas109
 
 # Result
 
-windows:
+* windows:
+
 ![image](https://github.com/itas109/CSerialPort/raw/master/pic/win.jpg)
 
-linux：
+* linux：
+
 ![image](https://github.com/itas109/CSerialPort/raw/master/pic/linux.jpg)
 
 # Contacting
