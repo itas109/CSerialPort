@@ -26,6 +26,9 @@ public:
 	CSerialPortInfoUnixBase();
 	~CSerialPortInfoUnixBase();
 
-	static std::list<std::string> availablePorts();
+    static std::list<std::string> availablePorts();
+private:
+    //https://stackoverflow.com/questions/2530096/how-to-find-all-serial-devices-ttys-ttyusb-on-linux-without-opening-them
+    static std::list<std::string> getComList();
 };
 #endif//__CSERIALPORTINFOUNIXBASE_H__
