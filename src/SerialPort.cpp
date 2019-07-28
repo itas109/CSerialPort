@@ -58,12 +58,12 @@ void CSerialPort::setOperateMode(OperateMode operateMode)
 
 bool itas109::CSerialPort::open()
 {
-	return p_serialPortBase->open();
+    return p_serialPortBase->openPort();
 }
 
 void itas109::CSerialPort::close()
 {
-	p_serialPortBase->close();
+    p_serialPortBase->closePort();
 }
 
 bool itas109::CSerialPort::isOpened()
@@ -195,7 +195,7 @@ void itas109::CSerialPort::setRts(bool set /*= true*/)
 
 std::string itas109::CSerialPort::getVersion()
 {
-	return "CSerialPort V4.0.0.181208";
+	return "CSerialPort V4.0.1.190728";
 }
 
 void itas109::CSerialPort::onReadReady()
