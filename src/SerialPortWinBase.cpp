@@ -66,7 +66,7 @@ void CSerialPortWinBase::init(int port, int baudRate /*= itas109::BaudRate9600*/
 	init(portName, baudRate, parity, dataBits, stopbits, flowConctrol, readBufferSize);
 }
 
-bool CSerialPortWinBase::open()
+bool CSerialPortWinBase::openPort()
 {
 	lock();
 
@@ -230,7 +230,7 @@ bool CSerialPortWinBase::open()
 	return bRet;
 }
 
-void CSerialPortWinBase::close()
+void CSerialPortWinBase::closePort()
 {
 	//Finished
 	if (isOpened())
