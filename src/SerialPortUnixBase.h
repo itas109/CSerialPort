@@ -5,7 +5,6 @@
  * Github : https://github.com/itas109 \n
  * QQ Group : 12951803
  * @brief the CSerialPort unix Base class unix串口基类
- * @todo Not implemented 未实现
  * @date 2018-12-10
  * 
  * @copyright Copyright (c) 2019 - itas109
@@ -15,6 +14,19 @@
 #define __CSERIALPORTUNIXBASE_H__
 
 #include "SerialPortBase.h"
+
+#include <stdio.h> /* Standard input/output definitions */
+#include <string.h> /* String function definitions */
+#include <unistd.h> /* UNIX standard function definitions */
+#include <fcntl.h> /* File control definitions */
+#include <errno.h> /* Error number definitions */
+#include <termios.h> /* POSIX terminal control definitions */
+
+#include <sys/ioctl.h> //ioctl
+
+//Serial Programming Guide for POSIX Operating Systems
+//https://digilander.libero.it/robang/rubrica/serial.htm
+//https://blog.csdn.net/u014650722/article/details/51610587
 
 // sigslot
 // https://sourceforge.net/p/sigslot/bugs/8/
@@ -110,12 +122,12 @@ public:
 	 * @retval true open success 打开成功
 	 * @retval false open failed 打开失败
 	 */
-	virtual bool open();
+    virtual bool openPort();
 	/**
 	 * @brief close 关闭串口
 	 *
 	 */
-	virtual void close();
+    virtual void closePort();
 
 	/**
 	 * @brief if serial port is open success 串口是否打开成功
@@ -310,10 +322,6 @@ public:
 	std::string getVersion();
 
 private:
-	//static unsigned int __stdcall commThreadMonitor(LPVOID pParam);//thread monitor
-	//bool startThreadMonitor();
-	//bool stopThreadMonitor();
-
 	/**
 	 * @brief lock 锁
 	 *
@@ -324,6 +332,41 @@ private:
 	 *
 	 */
 	void unlock();
+
+    /**
+     * @brief uart_set
+     * @param fd
+     * @param baude
+     * @param c_flow
+     * @param bits
+     * @param parity
+     * @param stop
+     * @return 0 success -1 error
+     */
+    int uart_set(int fd, int baudRate = itas109::BaudRate9600, itas109::Parity parity = itas109::ParityNone, itas109::DataBits dataBits = itas109::DataBits8, itas109::StopBits stopbits = itas109::StopOne, itas109::FlowConctrol flowConctrol = itas109::FlowNone);
+
+    /**
+     * @brief thread monitor 多线程监视器
+     *
+     */
+    static void * commThreadMonitor(void * pParam);
+
+    /**
+     * @brief start thread monitor 启动多线程监视器
+     *
+     * @return
+     * @retval true start success 启动成功
+     * @retval false start failed 启动失败
+     */
+    bool startThreadMonitor();
+    /**
+     * @brief stop thread monitor 停止多线程监视器
+     *
+     * @return
+     * @retval true stop success 停止成功
+     * @retval false stop failed 停止失败
+     */
+    bool stopThreadMonitor();
 
 public:
 	static sigslot::signal0<> readReady;///< sigslot for read 读数据信号
@@ -336,5 +379,14 @@ private:
 	itas109::StopBits m_stopbits;
 	itas109::FlowConctrol m_flowConctrol;
 	int64 m_readBufferSize;
+
+    int fd; /* File descriptor for the port */
+
+private:
+    pthread_t m_monitorThread;  /**< read thread */
+
+    static bool isThreadRunning;
+
+    pthread_mutex_t m_communicationMutex;///< mutex
 };
 #endif //__CSERIALPORTUNIXBASE_H__
