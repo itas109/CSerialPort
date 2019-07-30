@@ -8,20 +8,12 @@ a lightweight library of serial port, which can easy to read and write serical p
 since V3.0.0.171216 use LGPL v3 License
 
 ---
-
-Blog : http://blog.csdn.net/itas109
-
-QQ Group : [129518033](http://shang.qq.com/wpa/qunwpa?idkey=2888fa15c4513e6bfb9347052f36e437d919b2377161862948b2a49576679fc6)
-
 # Last Modify
 ## Version: 4.0.1.190728 beta
 by itas109 on 2019-07-28
 
-http://blog.csdn.net/itas109
-https://github.com/itas109
-
 * Cross-platform design
-* Simplify the use process
+* Easy use
 * higher efficiency
 
 # Todo List
@@ -97,6 +89,11 @@ https://github.com/itas109
 
 [Error Guide Document](https://github.com/itas109/CSerialPort/tree/master/doc/error_guide.md)
 
+# Common Problems
+
+[Common Problems Document](https://github.com/itas109/CSerialPort/tree/master/doc/common_problems.md)
+
+
 # Result
 
 * windows:
@@ -110,7 +107,8 @@ https://github.com/itas109
 # Contacting
 
 * Email : itas109@qq.com
-* QQ Group : 129518033
+
+* QQ Group : [129518033](http://shang.qq.com/wpa/qunwpa?idkey=2888fa15c4513e6bfb9347052f36e437d919b2377161862948b2a49576679fc6)
 
 ## Links
 
