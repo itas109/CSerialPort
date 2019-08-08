@@ -71,28 +71,28 @@ int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, 
     //设置输入输出波特率
     switch(baudRate)
     {
-        case itas109::BaudRate::BaudRate1200:
+        case itas109::BaudRate1200:
             cfsetispeed(&options,B1200);
             cfsetospeed(&options,B1200);
             break;
-        case itas109::BaudRate::BaudRate2400:
+        case itas109::BaudRate2400:
             cfsetispeed(&options,B2400);
             cfsetospeed(&options,B2400);
             break;
-        case itas109::BaudRate::BaudRate4800:
+        case itas109::BaudRate4800:
             cfsetispeed(&options,B4800);
             cfsetospeed(&options,B4800);
             break;
             break;
-        case itas109::BaudRate::BaudRate9600:
+        case itas109::BaudRate9600:
             cfsetispeed(&options,B9600);
             cfsetospeed(&options,B9600);
             break;
-        case itas109::BaudRate::BaudRate19200:
+        case itas109::BaudRate19200:
             cfsetispeed(&options,B19200);
             cfsetospeed(&options,B19200);
             break;
-        case itas109::BaudRate::BaudRate38400:
+        case itas109::BaudRate38400:
             cfsetispeed(&options,B38400);
             cfsetospeed(&options,B38400);
             break;
@@ -105,27 +105,27 @@ int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, 
     switch(parity)
     {
         /*无奇偶校验位*/
-        case itas109::Parity::ParityNone:
+        case itas109::ParityNone:
         case 'N':
             options.c_cflag &= ~PARENB;//PARENB：产生奇偶位，执行奇偶校验
             options.c_cflag &= ~INPCK;//INPCK：使奇偶校验起作用
             break;
         /*设置奇校验*/
-        case itas109::Parity::ParityOdd:
+        case itas109::ParityOdd:
             options.c_cflag |= PARENB;//PARENB：产生奇偶位，执行奇偶校验
             options.c_cflag |= PARODD;//PARODD：若设置则为奇校验,否则为偶校验
             options.c_cflag |= INPCK;//INPCK：使奇偶校验起作用
             options.c_cflag |= ISTRIP;//ISTRIP：若设置则有效输入数字被剥离7个字节，否则保留全部8位
             break;
         /*设置偶校验*/
-        case itas109::Parity::ParityEven:
+        case itas109::ParityEven:
             options.c_cflag |= PARENB;//PARENB：产生奇偶位，执行奇偶校验
             options.c_cflag &= ~PARODD;//PARODD：若设置则为奇校验,否则为偶校验
             options.c_cflag |= INPCK;//INPCK：使奇偶校验起作用
             options.c_cflag |= ISTRIP;//ISTRIP：若设置则有效输入数字被剥离7个字节，否则保留全部8位
             break;
             /*设为空格,即停止位为2位*/
-        case itas109::Parity::ParitySpace:
+        case itas109::ParitySpace:
             options.c_cflag &= ~PARENB;//PARENB：产生奇偶位，执行奇偶校验
             options.c_cflag &= ~CSTOPB;//CSTOPB：使用两位停止位
             break;
@@ -137,19 +137,19 @@ int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, 
     //设置数据位
     switch(dataBits)
     {
-        case itas109::DataBits::DataBits5:
+        case itas109::DataBits5:
             options.c_cflag &= ~CSIZE;//屏蔽其它标志位
             options.c_cflag |= CS5;
             break;
-        case itas109::DataBits::DataBits6:
+        case itas109::DataBits6:
             options.c_cflag &= ~CSIZE;//屏蔽其它标志位
             options.c_cflag |= CS6;
             break;
-        case itas109::DataBits::DataBits7:
+        case itas109::DataBits7:
             options.c_cflag &= ~CSIZE;//屏蔽其它标志位
             options.c_cflag |= CS7;
             break;
-        case itas109::DataBits::DataBits8:
+        case itas109::DataBits8:
             options.c_cflag &= ~CSIZE;//屏蔽其它标志位
             options.c_cflag |= CS8;
             break;
@@ -161,13 +161,13 @@ int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, 
     //停止位
     switch(stopbits)
     {
-        case itas109::StopBits::StopOne:
+        case itas109::StopOne:
             options.c_cflag &= ~CSTOPB;//CSTOPB：使用两位停止位
             break;
-        case itas109::StopBits::StopOneAndHalf:
+        case itas109::StopOneAndHalf:
             fprintf(stderr,"POSIX does not support 1.5 stop bits!\n");
             return -1;
-        case itas109::StopBits::StopTwo:
+        case itas109::StopTwo:
             options.c_cflag |= CSTOPB;//CSTOPB：使用两位停止位
             break;
         default:
@@ -182,13 +182,13 @@ int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, 
     //流控制
     switch(flowConctrol)
     {
-        case itas109::FlowConctrol::FlowNone:///< No flow control 无流控制
+        case itas109::FlowNone:///< No flow control 无流控制
             options.c_cflag &= ~CRTSCTS;
             break;
-        case itas109::FlowConctrol::FlowHardware:///< Hardware(RTS / CTS) flow control 硬件流控制
+        case itas109::FlowHardware:///< Hardware(RTS / CTS) flow control 硬件流控制
             options.c_cflag |= CRTSCTS;
             break;
-        case itas109::FlowConctrol::FlowSoftware:///< Software(XON / XOFF) flow control 软件流控制
+        case itas109::FlowSoftware:///< Software(XON / XOFF) flow control 软件流控制
             options.c_cflag |= IXON|IXOFF|IXANY;
             break;
         default:

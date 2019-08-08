@@ -34,13 +34,20 @@
 
 //https://blog.csdn.net/u010317005/article/details/52384890
 
-// Linux compile
-// g++ SerialPort.cpp SerialPortBase.cpp SerialPortUnixBase.cpp -fPIC -shared -o libss.so
-// g++ t.cpp -o tt -L. -lss 
+// Linux compile 1
+// g++ SerialPort.cpp SerialPortBase.cpp SerialPortUnixBase.cpp -fPIC -lpthread -shared -o libsp.so
+// g++ t.cpp -o sp -L. -lsp
+// export LD_LIBRARY_PATH=./
+// ./sp
 
-//t.cpp
+// Linux compile 2
+// g++ sp.cpp SerialPort.cpp SerialPortBase.cpp SerialPortUnixBase.cpp -lpthread -o sp
+// ./sp
+
+//sp.cpp
 /*
 #include <iostream>
+
 #include "sigslot.h"
 #include "SerialPort.h"
 
