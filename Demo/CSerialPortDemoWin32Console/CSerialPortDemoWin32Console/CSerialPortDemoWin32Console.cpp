@@ -53,6 +53,8 @@ int main()
 
 	list<string> m_availablePortsList;
 
+	cout << "Version : " << sp.getVersion() << endl;
+
 	mySlot receive(sp);
 
 	m_availablePortsList = CSerialPortInfo::availablePorts();
