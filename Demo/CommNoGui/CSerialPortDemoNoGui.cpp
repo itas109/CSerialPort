@@ -16,76 +16,82 @@ int countRead = 0;
 class mySlot : public has_slots<>
 {
 public:
-    mySlot(CSerialPort & sp){ m_sp = sp; };
+	mySlot(CSerialPort & sp){ m_sp = sp; };
 
-    void OnSendMessage()
-    {
-        //read
-        recLen = m_sp.readAllData(str);
-        cout << "receive data : " << str  << ", receive size : " << recLen<< endl;
+	void OnSendMessage()
+	{
+		//read
+		recLen = m_sp.readAllData(str);
+		cout << "receive data : " << str << ", receive size : " << recLen << endl;
 
-        //write for test
-        m_sp.writeData("test", 4);
-        countRead++;
-        cout << " +++ " << countRead << endl;
-        if (countRead == 100)
-        {
-            cout << " --- stop " << endl;
-            m_sp.close();
-        }
-    };
-
-private:
-    mySlot(){};
+		//write for test
+		m_sp.writeData("test", 4);
+		countRead++;
+		cout << "receive count : " << countRead << endl;
+		if (countRead == 100)
+		{
+			cout << " --- stop " << endl;
+			m_sp.close();
+		}
+	};
 
 private:
-    CSerialPort m_sp;
+	mySlot(){};
 
-    char str[256];
-    int recLen;
+private:
+	CSerialPort m_sp;
+
+	char str[256];
+	int recLen;
 };
 
 int main()
 {
-    CSerialPort sp;
+	CSerialPort sp;
 
-    countRead = 0;
+	countRead = 0;
 
-    list<string> m_availablePortsList;
+	list<string> m_availablePortsList;
 
-    mySlot receive(sp);
+	mySlot receive(sp);
 
-    m_availablePortsList = CSerialPortInfo::availablePorts();
+	m_availablePortsList = CSerialPortInfo::availablePorts();
 
-    cout << "availablePorts : " << endl;
+	cout << "availablePorts : " << endl;
 
-    list<string>::iterator it;
-    for(it = m_availablePortsList.begin();it != m_availablePortsList.end(); it++)
-    {
-        cout << *it << endl;;
-    }
+	list<string>::iterator it;
+	for (it = m_availablePortsList.begin(); it != m_availablePortsList.end(); it++)
+	{
+		cout << *it << endl;;
+	}
 
-    if(m_availablePortsList.size() == 0)
-    {
-        cout << "No valid port" << endl;;
-    }
+	if (m_availablePortsList.size() == 0)
+	{
+		cout << "No valid port" << endl;;
+	}
 
-    sp.init("/dev/ttyUSB0");
+#ifdef I_OS_WIN
+	sp.init("COM1");
+#elif defined I_OS_UNIX
+	sp.init("/dev/ttyS0");
+#else
+	//Not support
+#endif // I_OS_WIN
 
-    sp.open();
+	sp.open();
 
-    cout << " open status : " <<  sp.isOpened() << endl;
+	cout << " open status : " << sp.isOpened() << endl;
 
-    //connect for read
-    sp.readReady.connect(&receive, &mySlot::OnSendMessage);
+	//connect for read
+	sp.readReady.connect(&receive, &mySlot::OnSendMessage);
 
-    //write
-    for (int i = 0; i < 50; i++)
-    {
-        sp.writeData("write", 5);
-    }
+	//write
+	for (int i = 0; i < 50; i++)
+	{
+		sp.writeData("write", 5);
+	}
 
-    while (1);
+	while (1);
 
-    return 0;
+	return 0;
 }
