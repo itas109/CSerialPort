@@ -17,18 +17,11 @@ using namespace itas109;
 
 CSerialPortInfo::CSerialPortInfo()
 {
-	//p_serialPortInfoBase = NULL;
-	//p_serialPortInfoBase = new CSERIALPORTINFOBASE();
 }
 
 
 CSerialPortInfo::~CSerialPortInfo()
 {
-	//if (p_serialPortInfoBase)
-	//{
-	//	delete p_serialPortInfoBase;
-	//	p_serialPortInfoBase = NULL;
-	//}
 }
 
 std::list<std::string> CSerialPortInfo::availablePorts()
