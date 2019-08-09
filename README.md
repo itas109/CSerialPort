@@ -68,6 +68,9 @@ update : 2019-08-10
     |   |-- How To Use.txt
     |   |-- suspending.txt
     |-- lib # lib 库目录
+    |   |-- Linux # windows lib windows库目录
+    |       |-- compile.sh # sh compile 命令编译
+    |       |-- Makefile # Makefile compile Makefile编译
     |   |-- Windows # windows lib windows库目录
     |       |-- VC12 # windows lib for vs2013 windows vs2013库目录
     |           |-- libcserialport
