@@ -1,3 +1,3 @@
-#！/bin/bash
+#! /bin/bash
 
 g++ CSerialPortDemoNoGui.cpp ../../src/SerialPortInfo.cpp ../../src/SerialPortInfoBase.cpp ../../src/SerialPortInfoUnixBase.cpp ../../src/SerialPort.cpp ../../src/SerialPortBase.cpp ../../src/SerialPortUnixBase.cpp -lpthread -I../../src -o CSerialPortDemoNoGui
