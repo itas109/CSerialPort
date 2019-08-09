@@ -49,7 +49,7 @@ int main()
 {
 	CSerialPort sp;
 
-	countRead = 0;
+	cout << "Version : " << sp.getVersion() << endl << endl;
 
 	list<string> m_availablePortsList;
 
@@ -62,13 +62,15 @@ int main()
 	list<string>::iterator it;
 	for (it = m_availablePortsList.begin(); it != m_availablePortsList.end(); it++)
 	{
-		cout << *it << endl;;
+		cout << *it << endl;
 	}
 
 	if (m_availablePortsList.size() == 0)
 	{
-		cout << "No valid port" << endl;;
+		cout << "No valid port" << endl;
 	}
+
+	cout << endl;
 
 #ifdef I_OS_WIN
 	sp.init("COM1");
@@ -80,7 +82,7 @@ int main()
 
 	sp.open();
 
-	cout << " open status : " << sp.isOpened() << endl;
+	cout << "open status : " << sp.isOpened() << endl;
 
 	//connect for read
 	sp.readReady.connect(&receive, &mySlot::OnSendMessage);
