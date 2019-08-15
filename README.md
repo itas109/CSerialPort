@@ -1,44 +1,60 @@
-# CSerialPort
+<p align="center">CSerialPort</p>
+
+<p align="center">
+<a href="https://github.com/itas109/CSerialPort/releases"><img alt="Version" src="https://img.shields.io/github/release/itas109/CSerialPort"/></a>
+<a href="https://github.com/itas109/CSerialPort/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/itas109/CSerialPort"/></a>
+<a href="https://github.com/itas109/CSerialPort/network/members"><img alt="Forks" src="https://img.shields.io/github/forks/itas109/CSerialPort"/></a>
+<a href="https://github.com/itas109/CSerialPort/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/itas109/CSerialPort"/></a>
+<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/itas109/CSerialPort">
+<img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/itas109/CSerialPort">
+</p>
+
+<p align="center">
+Language: <strong>English</strong> / <a href="README-CN.md">Chinese 中文</a>
+</p>
 
 a lightweight library of serial port, which can easy to read and write serical port on windows and linux with C++
 
-一个使用C++实现的轻量级串口类库，可以轻松在windows和linux下进行串口读写
-
-# License 开源协议
-since V3.0.0.171216 use LGPL v3 License
-
-自 V3.0.0.171216版本后采用LGPL v3协议
-
 ---
-# Last Modify 最新版本
-## Version: 4.0.1.190728 beta
-by itas109 on 2019-07-28
 
-# Design Principles 设计原则
+# Design Principles
 
-* Cross-platform 跨平台
-* Easy use 简单易用
-* higher efficiency 高效
+* Cross-platform
+* Easy use
+* higher efficiency
 
-# Todo List 待处理事项
+# Todo List
+
+## Strategic Goal
 
 - [x] 1.support windows and linux first
 - [ ] 2.add communicating protocol
 - [ ] 3.support hot swap
-- [ ] 4.use new notify module
+- [ ] 4.higher efficiency notify module
 - [ ] 5.support other language,such as C, C#, Python, Java, Golang
 - [x] 6.sync serial port communication
 - [ ] 7.new cross-platform gui serial port tool
 - [ ] 8.add a video description of this class
 
-# Tested Machine 测试机器
+## Short-term Goal
+
+- [x] 1.cross-platform OS identify class
+- [] 2.cross-platform Thread class
+- [] 3.cross-platform Lock class
+- [] 4.cross-platform higher efficiency Timer class
+
+# Last Modify
+## Version: 4.0.1.190728 beta
+by itas109 on 2019-07-28
+
+# Tested Machine
 * VS2013 update 5 - Win7 Ultimate 64bit CN - 2019-07-28
 * VS2015 update 3 - Win7 Ultimate 64bit CN - 2019-02-27
 * VS2015 update 3 - Win10 Enterprise 64bit CN - 2019-02-28
 * GCC 5.4.0 20160609 - Ubuntu 16.04 64bit En  - 2019-07-28
 * VS2013 update 5 - Win7 Ultimate 64bit En - 2019-03-07
 
-# directory List 目录列表
+# directory List
 
 update : 2019-08-10
 
@@ -98,26 +114,26 @@ update : 2019-08-10
         |-- sigslot.h # signal and slot 信号与槽
 ```
 
-# Error Guide 错误指南文档
+# Error Guide
 
 [Error Guide Document](https://github.com/itas109/CSerialPort/tree/master/doc/error_guide.md)
 
-# Common Problems 问答文档
+# Common Problems
 
 [Common Problems Document](https://github.com/itas109/CSerialPort/tree/master/doc/common_problems.md)
 
 
-# Result 结果
+# Result
 
 ## linux：
 
-## Gui 界面
+## Gui
 
 Demo Path: CSerialPort/Demo/CommQT
 
 ![image](https://github.com/itas109/CSerialPort/raw/master/pic/linux.jpg)
 
-## No Gui 无界面
+## No Gui
 
 Demo Path 1: CSerialPort/Demo/CommNoGui
 
@@ -163,13 +179,13 @@ export LD_LIBRARY_PATH=./
 
 ## windows:
 
-## Gui 界面
+## Gui
 
 Demo Path: CSerialPort/Demo/CommQT
 
 ![image](https://github.com/itas109/CSerialPort/raw/master/pic/win.jpg)
 
-## No Gui 无界面
+## No Gui
 
 Demo Path 1: CSerialPort/Demo/CSerialPortDemoWin32Console
 
@@ -177,20 +193,26 @@ Demo Path 2: CSerialPort/Demo/CommNoGui
 
 ![image](https://github.com/itas109/CSerialPort/raw/master/pic/win_no_gui.jpg)
 
-# Contacting 联系方式
+# Contacting
 
 * Email : itas109@qq.com
 
 * QQ Group : [129518033](http://shang.qq.com/wpa/qunwpa?idkey=2888fa15c4513e6bfb9347052f36e437d919b2377161862948b2a49576679fc6)
 
-# Links 链接
+# Links
 
 * [CSDN Blog](http://blog.csdn.net/itas109)
 * [Github](https://github.com/itas109/CSerialPort)
 * [Gitee](https://gitee.com/itas109/CSerialPort)
 
+# Donate
+
+**If you think this project is helpful to you, you can donate this project, thank you!**
+
+![image](https://github.com/itas109/CSerialPort/raw/master/pic/wx_zfb_paypal.jpg)
+
 ---
-# Other branches 其他分支
+# Other branches
 
 Remon Spekreijse's serial library has had a profound impact on me, thanks again to Remon Spekreijse
 http://www.codeguru.com/cpp/i-n/network/serialcommunications/article.php/c2483/A-communication-class-for-serial-port.htm
@@ -199,7 +221,8 @@ http://www.codeguru.com/cpp/i-n/network/serialcommunications/article.php/c2483/A
 only for windows branches : 
 https://github.com/itas109/CSerialPort/tree/CSerialPort_win_3.0.3
 
-仅支持windows版本分支 : 
-https://github.com/itas109/CSerialPort/tree/CSerialPort_win_3.0.3
-
 ---
+
+# License
+
+since V3.0.0.171216 use [GNU Lesser General Public License v3.0](https://github.com/itas109/CSerialPort/blob/master/LICENSE)
