@@ -6,7 +6,6 @@
 <a href="https://github.com/itas109/CSerialPort/network/members"><img alt="Forks" src="https://img.shields.io/github/forks/itas109/CSerialPort"/></a>
 <a href="https://github.com/itas109/CSerialPort/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/itas109/CSerialPort"/></a>
 <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/itas109/CSerialPort">
-<img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/itas109/CSerialPort">
 </p>
 
 <p align="center">
@@ -39,9 +38,9 @@ a lightweight library of serial port, which can easy to read and write serical p
 ## Short-term Goal
 
 - [x] 1.cross-platform OS identify class
-- [] 2.cross-platform Thread class
-- [] 3.cross-platform Lock class
-- [] 4.cross-platform higher efficiency Timer class
+- [ ] 2.cross-platform Thread class
+- [ ] 3.cross-platform Lock class
+- [ ] 4.cross-platform higher efficiency Timer class
 
 # Last Modify
 ## Version: 4.0.1.190728 beta

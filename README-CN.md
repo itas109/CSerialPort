@@ -6,7 +6,6 @@
 <a href="https://github.com/itas109/CSerialPort/network/members"><img alt="Forks" src="https://img.shields.io/github/forks/itas109/CSerialPort"/></a>
 <a href="https://github.com/itas109/CSerialPort/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/itas109/CSerialPort"/></a>
 <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/itas109/CSerialPort">
-<img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/itas109/CSerialPort">
 </p>
 
 <p align="center">
@@ -38,9 +37,9 @@
 ## Short-term Goal 短期目标
 
 - [x] 1.跨平台操作系统识别库
-- [] 2.跨平台多线程类库
-- [] 3.跨平台锁类库
-- [] 4.跨平台高效定时器类库
+- [ ] 2.跨平台多线程类库
+- [ ] 3.跨平台锁类库
+- [ ] 4.跨平台高效定时器类库
 
 # Last Modify 最新版本
 
