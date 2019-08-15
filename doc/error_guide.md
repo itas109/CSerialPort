@@ -61,3 +61,35 @@ CSerialPort : 4.0.0.181210 beta
 
 ## 解决方案solution
 在MFC自动生成的类内定义CSerialPort成员变量
+
+# 3.CommQT连续接收数据是程序崩溃
+
+## 错误信息error info
+
+```
+QTextLine: Can't set a line width while not layouting.
+QTextLayout::createLine: Called without layouting
+QTextLayout::endLayout: Called without beginLayout()
+```
+
+## 原因分析analysis
+
+## 解决方案solution
+
+# 4.
+
+## 错误信息error info
+
+```
+QObject::connect: Cannot queue arguments of type 'QTextBlock'
+(Make sure 'QTextBlock' is registered using qRegisterMetaType().)
+QObject: Cannot create children for a parent that is in a different thread.
+(Parent is QTextDocument(0x966ae0), parent's thread is QThread(0x93a328), current thread is QThread(0x25f5d88)
+QObject::connect: Cannot queue arguments of type 'QTextCursor'
+(Make sure 'QTextCursor' is registered using qRegisterMetaType().)
+```
+
+
+## 原因分析analysis
+
+## 解决方案solution
