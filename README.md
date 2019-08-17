@@ -117,9 +117,9 @@ update : 2019-08-10
 
 [Error Guide Document](https://github.com/itas109/CSerialPort/tree/master/doc/error_guide.md)
 
-# Common Problems
+# Frequently Asked Questions
 
-[Common Problems Document](https://github.com/itas109/CSerialPort/tree/master/doc/common_problems.md)
+[Frequently Asked Questions](https://github.com/itas109/CSerialPort/tree/master/doc/FAQ.md)
 
 
 # Result
