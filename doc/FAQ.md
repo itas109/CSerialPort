@@ -1,4 +1,4 @@
-# Common Problems
+# Frequently Asked Questions
 
 
 Q1 : CSerialPort可以在一个程序中定义多个对象吗？
