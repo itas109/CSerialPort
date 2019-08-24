@@ -93,3 +93,30 @@ QObject::connect: Cannot queue arguments of type 'QTextCursor'
 ## 原因分析analysis
 
 ## 解决方案solution
+
+# 5.fatal error C1010预编译头错误
+
+## 错误信息error info
+
+```
+fatal error C1010: 在查找预编译头时遇到意外的文件结尾。是否忘记了向源中添加“#include "stdafx.h"”?
+
+fatal error C1010: unexpected end of file while looking for precompiled header. Did you forget to add '#include "stdafx.h"' to your source?
+```
+
+
+## 原因分析analysis
+建立工程时默认勾选了`预编译头`选项导致的
+
+## 解决方案solution
+
+关闭相应cpp的预处理头 : 
+
+`cpp文件右键属性 -> C/C++ -> 预编译头`
+
+设置`预编译头`选项为`不使用预编译头`
+
+
+`cpp Properties -> C/C++ -> Precompiled Headers`
+
+set `Precompiled Header` to `Not Using Precompiled Header`
