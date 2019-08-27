@@ -41,3 +41,10 @@ linux下将生成的libcserialport.so文件拷贝到CSerialPort\Demo\CommNoGui�
     ./CSerialPortDemoNoGui
 ```
 
+Q6 : 为何只发送一个字符，串口没有接收？
+
+A : 
+
+默认情况下，只有当收到的字符数大于1时，才会触发读取信号。
+
+可以调用setMinByteReadNoify函数设置读取触发的最小字符数，该设置即时生效。
