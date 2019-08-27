@@ -157,6 +157,12 @@ public:
 	*/
 	virtual void setReadTimeInterval(int msecs) = 0;
 
+    /**
+     * @brief setMinByteReadNoify set minimum byte of read notify 设置读取通知触发最小字节数
+     * @param minByteReadNoify minimum byte of read notify 读取通知触发最小字节数
+     */
+    virtual void setMinByteReadNoify(int minByteReadNoify) = 0;
+
 	/**
 	* @brief Get the Last Error object 获取最后的错误代码
 	*
@@ -295,6 +301,7 @@ protected:
 protected:
 	int lastError;///< last error code 最后的错误代码
 	itas109::OperateMode m_operateMode;///< operate mode 串口操作类型
+    int m_minByteReadNoify;///< minimum byte of read notify 读取通知触发最小字节数
 private:
 
 };

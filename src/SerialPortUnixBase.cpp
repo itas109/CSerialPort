@@ -31,6 +31,8 @@ void CSerialPortUnixBase::construct()
 
     m_operateMode = itas109::AsynchronousOperate;
 
+    setMinByteReadNoify(1);
+
     pthread_mutex_init(&m_communicationMutex,NULL);
 }
 
@@ -239,7 +241,7 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
 
             //read前获取可读的字节数,不区分阻塞和非阻塞
             ioctl(p_base->fd, FIONREAD, &readbytes);
-            if (readbytes > 1) //设定字符数
+            if (readbytes > p_base->m_minByteReadNoify) //设定字符数，默认为1
             {
                 readReady._emit();
             }
@@ -397,12 +399,17 @@ int CSerialPortUnixBase::writeData(const char * data, int maxSize)
 
 void CSerialPortUnixBase::setDebugModel(bool isDebug)
 {
-
+    //@todo
 }
 
 void CSerialPortUnixBase::setReadTimeInterval(int msecs)
 {
+    //@todo
+}
 
+void CSerialPortUnixBase::setMinByteReadNoify(int minByteReadNoify)
+{
+    m_minByteReadNoify = minByteReadNoify;
 }
 
 int CSerialPortUnixBase::getLastError() const

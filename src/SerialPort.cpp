@@ -64,9 +64,8 @@ void itas109::CSerialPort::close()
 
 bool itas109::CSerialPort::isOpened()
 {
-	return p_serialPortBase->isOpened();
+    return p_serialPortBase->isOpened();
 }
-
 
 int itas109::CSerialPort::readData(char *data, int maxSize)
 {
@@ -97,6 +96,11 @@ void itas109::CSerialPort::setDebugModel(bool isDebug)
 void itas109::CSerialPort::setReadTimeInterval(int msecs)
 {
 	p_serialPortBase->setReadTimeInterval(msecs);
+}
+
+void CSerialPort::setMinByteReadNoify(int minByteReadNoify)
+{
+    p_serialPortBase->setMinByteReadNoify(minByteReadNoify);
 }
 
 int itas109::CSerialPort::getLastError() const
