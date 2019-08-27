@@ -1,7 +1,5 @@
 ﻿#include "SerialPort.h"
 
-//#include "osplatformutil.h"
-//
 #ifdef I_OS_WIN
 #include "SerialPortWinBase.h"
 #define CSERIALPORTBASE CSerialPortWinBase
@@ -16,8 +14,6 @@
 #include <iostream>
 
 using namespace itas109;
-
-//sigslot::signal0<> CSerialPort::readReady;//sigslot
 
 CSerialPort::CSerialPort()
 {
@@ -201,16 +197,4 @@ std::string itas109::CSerialPort::getVersion()
 void itas109::CSerialPort::onReadReady()
 {
     readReady._emit();
-	/*	char * receiveData = new char[256];
-		int size = readData(receiveData, 256);
-		if (size == 0 || size == -1)
-		{
-		std::cout << "received NULL" << std::endl;
-		}
-		else
-		{
-		receiveData[size + 1] = '\0';
-		std::cout << "received : " << receiveData << std::endl;
-		readReady.emit();
-		}*/
 }

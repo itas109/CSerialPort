@@ -56,13 +56,13 @@ using namespace std;
 
 int main()
 {
-	CSerialPort sp;
-	sp.init("/dev/ttyS0");
-	sp.open();
-	cout << sp.isOpened() <<endl;
+    CSerialPort sp;
+    sp.init("/dev/ttyS0");
+    sp.open();
+    cout << sp.isOpened() <<endl;
 
-	while (1);
-	return 0;
+    while (1);
+    return 0;
 }
 */
 
