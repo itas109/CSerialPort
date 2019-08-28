@@ -42,8 +42,6 @@ void CSerialPortWinBase::construct()
 
 	isThreadRunning = true;
 
-    setMinByteReadNoify(1);
-
 	InitializeCriticalSection(&m_communicationMutex);
 }
 
@@ -292,7 +290,7 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
 
 					// solve 线程中循环的低效率问题
 					ClearCommError(m_mainHandle, &dwError, &comstat);
-                    if (comstat.cbInQue > p_base->m_minByteReadNoify) //设定字符数,默认为1
+                    if (comstat.cbInQue >= p_base->m_minByteReadNoify) //设定字符数,默认为2
 					{
                         readReady._emit();
 					}
@@ -488,7 +486,7 @@ void CSerialPortWinBase::setReadTimeInterval(int msecs)
     //@todo
 }
 
-void CSerialPortWinBase::setMinByteReadNoify(int minByteReadNoify)
+void CSerialPortWinBase::setMinByteReadNoify(unsigned int minByteReadNoify)
 {
     m_minByteReadNoify = minByteReadNoify;
 }
