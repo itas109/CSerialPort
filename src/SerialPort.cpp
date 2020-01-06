@@ -28,7 +28,7 @@ itas109::CSerialPort::CSerialPort(const std::string & portName)
 {
 	p_serialPortBase = new CSERIALPORTBASE(portName);
 
-    p_serialPortBase->setMinByteReadNoify(2);
+    p_serialPortBase->setMinByteReadNoify(1);
 
     ((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
 }
