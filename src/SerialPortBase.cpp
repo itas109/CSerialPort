@@ -3,6 +3,7 @@
 
 CSerialPortBase::CSerialPortBase()
 {
+	m_minByteReadNoify = 1;
 }
 
 CSerialPortBase::CSerialPortBase(const std::string & portName)

@@ -19,7 +19,7 @@ CSerialPort::CSerialPort()
 {
 	p_serialPortBase = new CSERIALPORTBASE();
 
-    p_serialPortBase->setMinByteReadNoify(2);
+	p_serialPortBase->setMinByteReadNoify(1);
 
 	((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
 }
