@@ -41,6 +41,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->comboBoxBaudrate->setCurrentText("9600");
     ui->comboBoxDataBit->setCurrentText("8");
+
+    qDebug() << QString::fromStdString(m_SerialPort.getVersion());
 }
 
 MainWindow::~MainWindow()
