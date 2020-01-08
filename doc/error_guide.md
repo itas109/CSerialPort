@@ -76,7 +76,7 @@ QTextLayout::endLayout: Called without beginLayout()
 
 ## 解决方案solution
 
-# 4.
+# 4.QT的ui控件写数据异常
 
 ## 错误信息error info
 
@@ -89,10 +89,60 @@ QObject::connect: Cannot queue arguments of type 'QTextCursor'
 (Make sure 'QTextCursor' is registered using qRegisterMetaType().)
 ```
 
-
 ## 原因分析analysis
 
+不能在不用线程中操作UI
+
 ## 解决方案solution
+
+```
+// mainwindow.h
+class MainWindow : public QMainWindow, public has_slots<>
+{
+    Q_OBJECT
+
+public:
+    explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
+
+private slots:
+    void OnReceive();
+
+    void OnUpdateReceive(QString str);
+
+signals:
+    void emitUpdateReceive(QString str);
+
+	...
+};
+```
+
+```
+// mainwindow.cpp
+
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+
+    connect(this,&MainWindow::emitUpdateReceive,this,&MainWindow::OnUpdateReceive,Qt::QueuedConnection);
+
+	...
+}
+
+void MainWindow::OnReceive()
+{
+	...    
+	emitUpdateReceive(m_str);
+	...
+}
+
+void MainWindow::OnUpdateReceive(QString str)
+{
+	// update ui
+}
+```
 
 # 5.fatal error C1010预编译头错误
 
@@ -120,3 +170,41 @@ fatal error C1010: unexpected end of file while looking for precompiled header. 
 `cpp Properties -> C/C++ -> Precompiled Headers`
 
 set `Precompiled Header` to `Not Using Precompiled Header`
+
+## 6.接收数据缺少
+
+## 错误信息error info
+
+仅测试了windows
+
+A.数据缺少
+CSerialPort::CSerialPort()
+{
+	p_serialPortBase = new CSERIALPORTBASE();
+
+    p_serialPortBase->setMinByteReadNoify(2);
+	//p_serialPortBase->setMinByteReadNoify(1);
+
+	((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
+}
+
+B.数据正常
+{
+	p_serialPortBase = new CSERIALPORTBASE();
+
+    //p_serialPortBase->setMinByteReadNoify(2);
+	p_serialPortBase->setMinByteReadNoify(1);
+
+	((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
+}
+
+## 原因分析analysis
+
+可能原因：
+单个字符每次都触发
+但是2个及2个以上字符，只有超过最小数才能触发，所以数据会少，只有等待下次满足条件能触发。
+
+## 解决方案solution
+
+合理的优化：
+设置等待超时，例如最小数设置为2，但是如果两次接收间隔超过50ms，则认为已经不会再来数据，同样要触发接收。
