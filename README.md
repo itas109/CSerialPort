@@ -41,17 +41,21 @@
 - [ ] 3.跨平台锁类库
 - [ ] 4.跨平台高效定时器类库
 
+
 # Last Modify 最新版本
 
-## Version: 4.0.1.190728 beta
-by itas109 on 2019-07-28
+## Version: 4.0.2.200108
+by itas109 on 2020-01-08
 
 # Tested Machine 测试机器
-* VS2013 update 5 - Win7 Ultimate 64bit CN - 2019-07-28
-* VS2015 update 3 - Win7 Ultimate 64bit CN - 2019-02-27
-* VS2015 update 3 - Win10 Enterprise 64bit CN - 2019-02-28
-* GCC 5.4.0 20160609 - Ubuntu 16.04 64bit En  - 2019-07-28
+* QT 5.6.2 MSVC2013u5 32bit - Win7 Ultimate 64bit CN - 2020-01-08
+* QT 5.12.1 MSVC2017 64bit - Win7 Ultimate 64bit CN - 2020-01-08
+* VS2013 update 5 - Win7 Ultimate 64bit CN - 2020-01-08
+* VS2015 update 3 - Win7 Ultimate 64bit CN - 2020-01-08
+* VS2015 update 3 - Win10 Enterprise 64bit CN - 2020-01-08
+* QT 5.6.2 GCC 5.4.0 20160609 - Ubuntu 16.04 64bit En  - 2019-07-28
 * VS2013 update 5 - Win7 Ultimate 64bit En - 2019-03-07
+* QT 5.6.2 GCC 6.3.0 20170516 - DeepIn 15.11 64bit CN  - 2020-01-08
 
 # directory List 目录列表
 
@@ -189,7 +193,6 @@ export LD_LIBRARY_PATH=./
 示例路径 1: CSerialPort/Demo/CSerialPortDemoWin32Console
 
 示例路径 2: CSerialPort/Demo/CommNoGui
-
 ![image](https://github.com/itas109/CSerialPort/raw/master/pic/win_no_gui.jpg)
 
 # Contacting 联系方式
@@ -223,4 +226,4 @@ https://github.com/itas109/CSerialPort/tree/CSerialPort_win_3.0.3
 
 # License 开源协议
 
-自 V3.0.0.171216 版本后采用[GNU Lesser General Public License v3.0](https://github.com/itas109/CSerialPort/blob/master/LICENSE)
+自 V3.0.0.171216 版本后采用[GNU Lesser General Public License v3.0](https://github.com/itas109/CSerialPort/raw/master/LICENSE)

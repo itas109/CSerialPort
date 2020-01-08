@@ -43,15 +43,19 @@ a lightweight library of serial port, which can easy to read and write serical p
 - [ ] 4.cross-platform higher efficiency Timer class
 
 # Last Modify
-## Version: 4.0.1.190728 beta
-by itas109 on 2019-07-28
+
+## Version: 4.0.2.200108
+by itas109 on 2020-01-08
 
 # Tested Machine
-* VS2013 update 5 - Win7 Ultimate 64bit CN - 2019-07-28
-* VS2015 update 3 - Win7 Ultimate 64bit CN - 2019-02-27
-* VS2015 update 3 - Win10 Enterprise 64bit CN - 2019-02-28
-* GCC 5.4.0 20160609 - Ubuntu 16.04 64bit En  - 2019-07-28
+* QT 5.6.2 MSVC2013u5 32bit - Win7 Ultimate 64bit CN - 2020-01-08
+* QT 5.12.1 MSVC2017 64bit - Win7 Ultimate 64bit CN - 2020-01-08
+* VS2013 update 5 - Win7 Ultimate 64bit CN - 2020-01-08
+* VS2015 update 3 - Win7 Ultimate 64bit CN - 2020-01-08
+* VS2015 update 3 - Win10 Enterprise 64bit CN - 2020-01-08
+* QT 5.6.2 GCC 5.4.0 20160609 - Ubuntu 16.04 64bit En  - 2019-07-28
 * VS2013 update 5 - Win7 Ultimate 64bit En - 2019-03-07
+* QT 5.6.2 GCC 6.3.0 20170516 - DeepIn 15.11 64bit CN  - 2020-01-08
 
 # directory List
 
