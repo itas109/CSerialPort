@@ -23,6 +23,8 @@ public:
 private slots:
     void OnReceive();
 
+    void OnUpdateReceive(QString str);
+
     void on_pushButtonOpen_clicked();
 
     void on_pushButtonSend_clicked();
@@ -34,6 +36,9 @@ private slots:
     void on_pushButtonReadSync_clicked();
 
     void on_checkBoxSync_clicked(bool checked);
+
+signals:
+    void emitUpdateReceive(QString str);
 
 private:
     Ui::MainWindow *ui;

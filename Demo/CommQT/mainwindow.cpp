@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    connect(this,&MainWindow::emitUpdateReceive,this,&MainWindow::OnUpdateReceive,Qt::QueuedConnection);
+
     //hide pushButtonReadSync
     ui->pushButtonReadSync->hide();
 
@@ -50,37 +52,45 @@ void MainWindow::OnReceive()
 {
     int iRet = -1;
     char * str = NULL;
-    str = new char[256];
+    str = new char[512];
     iRet = m_SerialPort.readAllData(str);
 
-    qDebug() << "read length : " << iRet;
+//    qDebug() << "read length : " << iRet;
 
     if(iRet != -1)
     {
         QString m_str = QString::fromLocal8Bit(str,iRet);
 
-        qDebug() << "receive : " << m_str;
+//        qDebug() << "receive : " << m_str;
 
-        //追加文本（plainTextEditReceive是一个QPlainTextEdit对象）
-        auto workCursor = ui->plainTextEditReceive->textCursor();
-        workCursor.movePosition(QTextCursor::End);
-        workCursor.insertText(m_str);
-        workCursor.insertBlock();
-
-        //移动滚动条到底部
-        QScrollBar *scrollbar = ui->plainTextEditReceive->verticalScrollBar();
-        if (scrollbar)
-        {
-            scrollbar->setSliderPosition(scrollbar->maximum());
-        }
-
-        rx += m_str.length();
-        ui->labelRXValue->setText(QString::number(rx));
-    }
+        emitUpdateReceive(m_str);
+	}
     else
     {
 
     }
+
+    delete str;
+    str = NULL;
+
+}
+
+void MainWindow::OnUpdateReceive(QString str)
+{
+    rx += str.length();
+//    qDebug() << "receive : " << rx;
+    ui->labelRXValue->setText(QString::number(rx));
+
+    //追加文本
+    ui->plainTextEditReceive->moveCursor (QTextCursor::End);
+    ui->plainTextEditReceive->insertPlainText(str);
+
+    //移动滚动条到底部
+//    QScrollBar *scrollbar = ui->plainTextEditReceive->verticalScrollBar();
+//    if (scrollbar)
+//    {
+//        scrollbar->setSliderPosition(scrollbar->maximum());
+//    }
 }
 
 void MainWindow::on_pushButtonOpen_clicked()
@@ -142,7 +152,7 @@ void MainWindow::on_pushButtonSend_clicked()
 void MainWindow::on_pushButtonClear_clicked()
 {
     tx = 0;
-    tx = 0;
+    rx = 0;
 
     ui->labelTXValue->setText(QString::number(tx));
     ui->labelRXValue->setText(QString::number(rx));
