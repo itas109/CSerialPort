@@ -210,10 +210,6 @@ Demo Path 2: CSerialPort/Demo/CommNoGui
 
 # Donate
 
-**If you think this project is helpful to you, you can donate this project, thank you!**
-
-![image](https://github.com/itas109/CSerialPort/raw/master/pic/wx_zfb_paypal.jpg)
-
 ---
 # Other branches
 

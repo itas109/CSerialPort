@@ -209,10 +209,6 @@ export LD_LIBRARY_PATH=./
 
 # Donate 捐助
 
-**如果您觉得本项目对您有帮助，可以捐助本项目，谢谢！**
-
-![image](https://github.com/itas109/CSerialPort/raw/master/pic/wx_zfb_paypal.jpg)
-
 ---
 # Other branches 其他分支
 
