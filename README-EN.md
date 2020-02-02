@@ -41,6 +41,7 @@ a lightweight library of serial port, which can easy to read and write serical p
 - [ ] 2.cross-platform Thread class
 - [ ] 3.cross-platform Lock class
 - [ ] 4.cross-platform higher efficiency Timer class
+- [ ] 5.Performance test report 
 
 # Last Modify
 
