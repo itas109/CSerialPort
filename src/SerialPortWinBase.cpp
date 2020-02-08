@@ -17,6 +17,11 @@ CSerialPortWinBase::CSerialPortWinBase(const std::string & portName)
 
 CSerialPortWinBase::~CSerialPortWinBase()
 {
+    if (isOpened())
+    {
+        closePort();
+    }
+
     DeleteCriticalSection(&m_communicationMutex);
 }
 
@@ -237,11 +242,19 @@ void CSerialPortWinBase::closePort()
     {
         stopThreadMonitor();
 
-        //Discards all characters from the output or input buffer of a specified communications resource. It can also terminate pending read or write operations on the resource.
-        ::PurgeComm(m_handle, PURGE_TXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_RXABORT);
+        if (m_handle != INVALID_HANDLE_VALUE)
+        {
+            // stop all event
+            SetCommMask(m_handle,0);//SetCommMask(m_handle,0) stop WaitCommEvent()
 
-        ::CloseHandle(m_handle);
-        m_handle = INVALID_HANDLE_VALUE;
+            //Discards all characters from the output or input buffer of a specified communications resource. It can also terminate pending read or write operations on the resource.
+            PurgeComm(m_handle, PURGE_TXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_RXABORT);
+
+            CloseHandle(m_handle);
+            m_handle = INVALID_HANDLE_VALUE;
+        }
+
+        ResetEvent(overlapMonitor.hEvent);
     }
 }
 
