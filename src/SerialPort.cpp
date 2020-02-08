@@ -38,7 +38,11 @@ CSerialPort::~CSerialPort()
 {
     ((CSERIALPORTBASE *)p_serialPortBase)->readReady.disconnect_all();
 
-	p_serialPortBase->~CSerialPortBase();
+    if(p_serialPortBase)
+    {
+        delete p_serialPortBase;
+        p_serialPortBase = NULL;
+    }
 }
 
 void itas109::CSerialPort::init(std::string portName, int baudRate /*= itas109::BaudRate::BaudRate9600*/, itas109::Parity parity /*= itas109::Parity::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/, itas109::FlowConctrol flowConctrol /*= itas109::FlowConctrol::FlowNone*/, int64 readBufferSize /*= 512*/)
