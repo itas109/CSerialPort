@@ -41,7 +41,7 @@ a lightweight library of serial port, which can easy to read and write serical p
 - [ ] 2.cross-platform Thread class
 - [ ] 3.cross-platform Lock class
 - [ ] 4.cross-platform higher efficiency Timer class
-- [ ] 5.Performance test report 
+- [ ] 5.Performance test report(Throughput && delay && packet dropout rates)
 
 # Last Modify
 
@@ -51,6 +51,7 @@ by itas109 on 2020-01-08
 # Tested Machine
 * QT 5.6.2 MSVC2013u5 32bit - Win7 Ultimate 64bit CN - 2020-01-08
 * QT 5.12.1 MSVC2017 64bit - Win7 Ultimate 64bit CN - 2020-01-08
+* QT 5.12.7 mingw73 32bit - Win7 Ultimate 64bit CN - 2020-03-11
 * VS2013 update 5 - Win7 Ultimate 64bit CN - 2020-01-08
 * VS2015 update 3 - Win7 Ultimate 64bit CN - 2020-01-08
 * VS2015 update 3 - Win10 Enterprise 64bit CN - 2020-01-08

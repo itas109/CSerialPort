@@ -40,7 +40,7 @@
 - [ ] 2.跨平台多线程类库
 - [ ] 3.跨平台锁类库
 - [ ] 4.跨平台高效定时器类库
-- [ ] 5.性能测试报告
+- [ ] 5.性能测试报告(吞吐量、时延、丢包率)
 
 
 # Last Modify 最新版本
@@ -51,6 +51,7 @@ by itas109 on 2020-01-08
 # Tested Machine 测试机器
 * QT 5.6.2 MSVC2013u5 32bit - Win7 Ultimate 64bit CN - 2020-01-08
 * QT 5.12.1 MSVC2017 64bit - Win7 Ultimate 64bit CN - 2020-01-08
+* QT 5.12.7 mingw73 32bit - Win7 Ultimate 64bit CN - 2020-03-11
 * VS2013 update 5 - Win7 Ultimate 64bit CN - 2020-01-08
 * VS2015 update 3 - Win7 Ultimate 64bit CN - 2020-01-08
 * VS2015 update 3 - Win10 Enterprise 64bit CN - 2020-01-08
