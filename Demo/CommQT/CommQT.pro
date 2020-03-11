@@ -24,7 +24,8 @@ DEFINES += _UNICODE
 
 include($$PWD/commqt.pri)
 
+#qmake -query => QMAKE_SPEC(msvc):win32-msvc2013 QMAKE_SPEC(mingw):win32-g++
 #about windows reg
-win32:LIBS += Advapi32.lib
+win32-msvc*:LIBS += Advapi32.lib
 #about window message
-win32:LIBS += User32.lib
+win32-msvc*:LIBS += User32.lib
