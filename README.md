@@ -49,15 +49,19 @@
 by itas109 on 2020-01-08
 
 # Tested Machine 测试机器
-* QT 5.6.2 MSVC2013u5 32bit - Win7 Ultimate 64bit CN - 2020-01-08
-* QT 5.12.1 MSVC2017 64bit - Win7 Ultimate 64bit CN - 2020-01-08
-* QT 5.12.7 mingw73 32bit - Win7 Ultimate 64bit CN - 2020-03-11
-* VS2013 update 5 - Win7 Ultimate 64bit CN - 2020-01-08
-* VS2015 update 3 - Win7 Ultimate 64bit CN - 2020-01-08
-* VS2015 update 3 - Win10 Enterprise 64bit CN - 2020-01-08
-* QT 5.6.2 GCC 5.4.0 20160609 - Ubuntu 16.04 64bit En  - 2019-07-28
-* VS2013 update 5 - Win7 Ultimate 64bit En - 2019-03-07
-* QT 5.6.2 GCC 6.3.0 20170516 - DeepIn 15.11 64bit CN  - 2020-01-08
+
+| 系统版本 | Gui | 编译器 | 测试时间 |
+| :-----:| :----: | :----: | :----: |
+| Win7 Ultimate 64bit CN | QT 5.6.2 | MSVC2013u5 32bit |2020-01-08|
+| Win7 Ultimate 64bit CN | QT 5.12.1 | MSVC2017 64bit | 2020-01-08 |
+| Win7 Ultimate 64bit CN | QT 5.12.7 | MinGW73 32bit | 2020-03-11 |
+| Win7 Ultimate 64bit CN | MFC | MSVC2013u5 32bit | 2020-01-08 |
+| Win7 Ultimate 64bit CN | MFC | MSVC2015u3 32bit | 2020-01-08 |
+| Win7 Ultimate 64bit En | MFC | MSVC2013u5 32bit | 2019-03-07 |
+| Win10 Enterprise 64bit CN | MFC | MSVC2015u3 32bit | 2020-01-08 |
+| Win10 Enterprise 64bit CN | QT 5.12.7 | MinGW73 64bit | 2020-03-12 |
+| Ubuntu 16.04 64bit En | QT 5.6.2 | GCC 5.4.0 | 2019-07-28 |
+| DeepIn 15.11 64bit CN | QT 5.6.2 | GCC 6.3.0 | 2020-01-08 |
 
 # directory List 目录列表
 
