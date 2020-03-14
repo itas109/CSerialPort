@@ -121,7 +121,8 @@ namespace itas109
 		 */
 		enum SerialPortError
 		{
-			NoError,							///< No error occurred 没有错误
+            SystemError = -1,                   ///< system error 系统错误(如空指针、内存访问异常等)
+            NoError = 0,	    				///< No error occurred 没有错误
 			DeviceNotFoundError,				///< device not found 未找到设备
 			PermissionError,					///< permission error 权限错误
 			OpenError,							///< open error 打开串口错误

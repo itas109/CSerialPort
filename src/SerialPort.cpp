@@ -17,16 +17,16 @@ using namespace itas109;
 
 CSerialPort::CSerialPort()
 {
-	p_serialPortBase = new CSERIALPORTBASE();
+    p_serialPortBase = new CSERIALPORTBASE();
 
-	p_serialPortBase->setMinByteReadNoify(1);
+    p_serialPortBase->setMinByteReadNoify(1);
 
-	((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
+    ((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
 }
 
 itas109::CSerialPort::CSerialPort(const std::string & portName)
 {
-	p_serialPortBase = new CSERIALPORTBASE(portName);
+    p_serialPortBase = new CSERIALPORTBASE(portName);
 
     p_serialPortBase->setMinByteReadNoify(1);
 
@@ -47,158 +47,311 @@ CSerialPort::~CSerialPort()
 
 void itas109::CSerialPort::init(std::string portName, int baudRate /*= itas109::BaudRate::BaudRate9600*/, itas109::Parity parity /*= itas109::Parity::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/, itas109::FlowConctrol flowConctrol /*= itas109::FlowConctrol::FlowNone*/, int64 readBufferSize /*= 512*/)
 {
-	p_serialPortBase->init(portName, baudRate, parity, dataBits, stopbits, flowConctrol, readBufferSize);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->init(portName, baudRate, parity, dataBits, stopbits, flowConctrol, readBufferSize);
+    }
 }
 
 void itas109::CSerialPort::init(int port, int baudRate /*= itas109::BaudRate9600*/, itas109::Parity parity /*= itas109::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopOne*/, itas109::FlowConctrol flowConctrol /*= itas109::FlowNone*/, int64 readBufferSize /*= 512*/)
 {
-    p_serialPortBase->init(port, baudRate, parity, dataBits, stopbits, flowConctrol, readBufferSize);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->init(port, baudRate, parity, dataBits, stopbits, flowConctrol, readBufferSize);
+    }
 }
 
 void CSerialPort::setOperateMode(OperateMode operateMode)
 {
-    p_serialPortBase->setOperateMode(operateMode);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->setOperateMode(operateMode);}
 }
 
 bool itas109::CSerialPort::open()
 {
-    return p_serialPortBase->openPort();
+    if(p_serialPortBase)
+    {
+        return p_serialPortBase->openPort();
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void itas109::CSerialPort::close()
 {
-    p_serialPortBase->closePort();
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->closePort();
+    }
 }
 
 bool itas109::CSerialPort::isOpened()
 {
-    return p_serialPortBase->isOpened();
+    if(p_serialPortBase)
+    {
+        return p_serialPortBase->isOpened();
+    }
+    else
+    {
+        return false;
+    }
 }
 
 int itas109::CSerialPort::readData(char *data, int maxSize)
 {
-	return p_serialPortBase->readData(data,maxSize);
+    if(p_serialPortBase)
+    {
+        return p_serialPortBase->readData(data,maxSize);
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 
 int itas109::CSerialPort::readAllData(char *data)
 {
-	return p_serialPortBase->readAllData(data);
+    if(p_serialPortBase)
+    {
+        return p_serialPortBase->readAllData(data);
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 int itas109::CSerialPort::readLineData(char *data, int maxSize)
 {
-	return p_serialPortBase->readLineData(data,maxSize);
+    if(p_serialPortBase)
+    {
+        return p_serialPortBase->readLineData(data,maxSize);
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 int itas109::CSerialPort::writeData(const char * data, int maxSize)
 {
-	return p_serialPortBase->writeData(data,maxSize);
+    if(p_serialPortBase)
+    {
+        return p_serialPortBase->writeData(data,maxSize);
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 void itas109::CSerialPort::setDebugModel(bool isDebug)
 {
-	p_serialPortBase->setDebugModel(isDebug);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->setDebugModel(isDebug);
+    }
 }
 
 void itas109::CSerialPort::setReadTimeInterval(int msecs)
 {
-	p_serialPortBase->setReadTimeInterval(msecs);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->setReadTimeInterval(msecs);
+    }
 }
 
 void CSerialPort::setMinByteReadNoify(unsigned int minByteReadNoify)
 {
-    p_serialPortBase->setMinByteReadNoify(minByteReadNoify);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->setMinByteReadNoify(minByteReadNoify);
+    }
 }
 
 int itas109::CSerialPort::getLastError() const
 {
-	return p_serialPortBase->getLastError();
+    if(p_serialPortBase)
+    {
+        return p_serialPortBase->getLastError();
+    }
+    else
+    {
+        // null error
+        return itas109::SerialPortError::SystemError;
+    }
 }
 
 void itas109::CSerialPort::clearError()
 {
-	p_serialPortBase->clearError();
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->clearError();
+    }
 }
 
 void itas109::CSerialPort::setPortName(std::string portName)
 {
-	p_serialPortBase->setPortName(portName);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->setPortName(portName);
+    }
 }
 
 std::string itas109::CSerialPort::getPortName() const
 {
-	return p_serialPortBase->getPortName();
+    if(p_serialPortBase)
+    {
+        return p_serialPortBase->getPortName();
+    }
+    else
+    {
+        return "";
+    }
 }
 
 void itas109::CSerialPort::setBaudRate(int baudRate)
 {
-	p_serialPortBase->setBaudRate(baudRate);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->setBaudRate(baudRate);
+    }
 }
 
 int itas109::CSerialPort::getBaudRate() const
 {
-	return p_serialPortBase->getBaudRate();
+    if(p_serialPortBase)
+    {
+        return p_serialPortBase->getBaudRate();
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 void itas109::CSerialPort::setParity(itas109::Parity parity)
 {
-	p_serialPortBase->setParity(parity);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->setParity(parity);
+    }
 }
 
 itas109::Parity itas109::CSerialPort::getParity() const
 {
-	return  p_serialPortBase->getParity();
+    if(p_serialPortBase)
+    {
+        return  p_serialPortBase->getParity();
+    }
+    else
+    {
+        // should retrun error
+        return itas109::Parity::ParityNone;
+    }
 }
 
 void itas109::CSerialPort::setDataBits(itas109::DataBits dataBits)
 {
-	p_serialPortBase->setDataBits(dataBits);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->setDataBits(dataBits);
+    }
 }
 
 itas109::DataBits itas109::CSerialPort::getDataBits() const
 {
-	return p_serialPortBase->getDataBits();
+    if(p_serialPortBase)
+    {
+        return p_serialPortBase->getDataBits();
+    }
+    else
+    {
+        // should retrun error
+        return itas109::DataBits::DataBits8;
+    }
 }
 
 void itas109::CSerialPort::setStopBits(itas109::StopBits stopbits)
 {
-	p_serialPortBase->setStopBits(stopbits);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->setStopBits(stopbits);
+    }
 }
 
 itas109::StopBits itas109::CSerialPort::getStopBits() const
 {
-	return p_serialPortBase->getStopBits();
+    if(p_serialPortBase)
+    {
+        return p_serialPortBase->getStopBits();
+    }
+    else
+    {
+        // should retrun error
+        return itas109::StopBits::StopOne;
+    }
 }
 
 void itas109::CSerialPort::setFlowConctrol(itas109::FlowConctrol flowConctrol)
 {
-	p_serialPortBase->setFlowConctrol(flowConctrol);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->setFlowConctrol(flowConctrol);
+    }
 }
 
 itas109::FlowConctrol itas109::CSerialPort::getFlowConctrol() const
 {
-	return p_serialPortBase->getFlowConctrol();
+    if(p_serialPortBase)
+    {
+        return p_serialPortBase->getFlowConctrol();
+    }
+    else
+    {
+        // should retrun error
+        return itas109::FlowConctrol::FlowNone;
+    }
 }
 
 void itas109::CSerialPort::setReadBufferSize(int64 size)
 {
-	p_serialPortBase->setReadBufferSize(size);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->setReadBufferSize(size);
+    }
 }
 
 int64 itas109::CSerialPort::getReadBufferSize() const
 {
-	return p_serialPortBase->getReadBufferSize();
+    if(p_serialPortBase)
+    {
+        return p_serialPortBase->getReadBufferSize();
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 void itas109::CSerialPort::setDtr(bool set /*= true*/)
 {
-	p_serialPortBase->setDtr(set);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->setDtr(set);
+    }
 }
 
 void itas109::CSerialPort::setRts(bool set /*= true*/)
 {
-	p_serialPortBase->setRts(set);
+    if(p_serialPortBase)
+    {
+        p_serialPortBase->setRts(set);
+    }
 }
 
 std::string itas109::CSerialPort::getVersion()
