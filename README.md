@@ -48,6 +48,55 @@
 ## Version: 4.0.2.200108
 by itas109 on 2020-01-08
 
+# Quick Start 快速开始
+## Windows
+* MSVC
+
+批处理需要根据自己安装的MSVC编译器版本和位置修改
+这里MSVC编译器版本为VS2013，安装位置为"D:\Program Files (x86)\Microsoft Visual Studio 12.0"
+```
+git clone https://github.com/itas109/CSerialPort.git
+
+cd CSerialPort\Demo\CommNoGui
+
+compile-MSVC.bat
+
+CSerialPortDemoNoGui-MSVC.exe
+```
+
+* MinGW
+```
+git clone https://github.com/itas109/CSerialPort.git
+
+cd CSerialPort\Demo\CommNoGui
+
+compile-MinGW.bat
+
+CSerialPortDemoNoGui-MinGW.exe
+```
+
+## Linux
+```
+git clone https://github.com/itas109/CSerialPort.git
+cd CSerialPort\Demo\CommNoGui
+
+make
+./CSerialPortDemoNoGui
+
+chmod +x compile.sh
+./compile.sh
+./CSerialPortDemoNoGui
+```
+or
+```
+git clone https://github.com/itas109/CSerialPort.git
+cd CSerialPort\Demo\CommNoGui
+
+chmod +x compile.sh
+./compile.sh
+./CSerialPortDemoNoGui
+```
+
 # Tested Machine 测试机器
 
 | 系统版本 | Gui | 编译器 | 测试时间 |

@@ -48,6 +48,58 @@ a lightweight library of serial port, which can easy to read and write serical p
 ## Version: 4.0.2.200108
 by itas109 on 2020-01-08
 
+# Quick Start
+## Windows
+
+* MSVC
+
+The batch needs to be modified according to the version and location of the MSVC compiler installed.
+My MSVC compiler version is VS2013 and the installation location is "D:\Program Files (x86)\Microsoft Visual Studio 12.0"
+
+```
+git clone https://github.com/itas109/CSerialPort.git
+
+cd CSerialPort\Demo\CommNoGui
+
+compile-MSVC.bat
+
+CSerialPortDemoNoGui-MSVC.exe
+```
+
+* MinGW
+```
+git clone https://github.com/itas109/CSerialPort.git
+
+cd CSerialPort\Demo\CommNoGui
+
+compile-MinGW.bat
+
+CSerialPortDemoNoGui-MinGW.exe
+```
+
+## Linux
+```
+git clone https://github.com/itas109/CSerialPort.git
+cd CSerialPort\Demo\CommNoGui
+
+make
+./CSerialPortDemoNoGui
+
+chmod +x compile.sh
+./compile.sh
+./CSerialPortDemoNoGui
+```
+or
+```
+git clone https://github.com/itas109/CSerialPort.git
+cd CSerialPort\Demo\CommNoGui
+
+chmod +x compile.sh
+./compile.sh
+./CSerialPortDemoNoGui
+```
+
+
 # Tested Machine
 
 | OS | Gui | compiler | testing time |
