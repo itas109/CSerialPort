@@ -84,10 +84,6 @@ cd CSerialPort\Demo\CommNoGui
 
 make
 ./CSerialPortDemoNoGui
-
-chmod +x compile.sh
-./compile.sh
-./CSerialPortDemoNoGui
 ```
 or
 ```
