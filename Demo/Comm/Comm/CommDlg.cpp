@@ -354,13 +354,15 @@ void CCommDlg::OnBnClickedButtonSend()
 	}
 
 	m_Send.GetWindowText(temp);
-	size_t len = _tcsclen(temp) + 1;;
+	size_t len = 0;
 	char* m_str = NULL;
-	size_t* converted = 0;
-	m_str = new char[len];
 #ifdef UNICODE
-	wcstombs_s(converted, m_str, len, temp.GetBuffer(0), _TRUNCATE);
+	// ¼æÈÝÖÐÎÄ
+	CStringA strA(temp);
+	len = strA.GetLength();
+	m_str = strA.GetBuffer();
 #else
+	len = temp.GetLength();
 	m_str = temp.GetBuffer(0);
 #endif
 	
