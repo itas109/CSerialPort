@@ -46,6 +46,12 @@ std::list<std::string> CSerialPortInfoUnixBase::availablePorts()
     return getComList();
 }
 
+std::list<std::string> CSerialPortInfoUnixBase::availableFriendlyPorts()
+{
+    // Not Support,so it is equal to availablePorts()
+    return availablePorts();
+}
+
 static std::string get_driver(const std::string& tty)
 {
     struct stat st;

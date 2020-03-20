@@ -26,5 +26,10 @@ CSerialPortInfo::~CSerialPortInfo()
 
 std::list<std::string> CSerialPortInfo::availablePorts()
 {
-	return CSERIALPORTINFOBASE::availablePorts();
+    return CSERIALPORTINFOBASE::availablePorts();
+}
+
+std::list<std::string> CSerialPortInfo::availableFriendlyPorts()
+{
+    return CSERIALPORTINFOBASE::availableFriendlyPorts();
 }
