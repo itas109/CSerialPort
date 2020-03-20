@@ -272,7 +272,7 @@ itas109::DataBits itas109::CSerialPort::getDataBits() const
     else
     {
         // should retrun error
-        return itas109::DataBits::DataBits8;
+        return itas109::/*DataBits::*/DataBits8;
     }
 }
 
