@@ -1,8 +1,8 @@
 ﻿#include "SerialPortInfoUnixBase.h"
 
-//#include <stdlib.h>
+#include <stdlib.h> // free
 #include <dirent.h>   //scandir
-//#include <stdio.h>
+#include <stdio.h> // perror
 //#include <sys/types.h>
 #include <sys/stat.h>   //S_ISLNK
 #include <unistd.h>     // readlink close

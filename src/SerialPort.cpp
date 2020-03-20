@@ -182,7 +182,7 @@ int itas109::CSerialPort::getLastError() const
     else
     {
         // null error
-        return itas109::SerialPortError::SystemError;
+        return itas109::/*SerialPortError::*/SystemError;
     }
 }
 
@@ -251,7 +251,7 @@ itas109::Parity itas109::CSerialPort::getParity() const
     else
     {
         // should retrun error
-        return itas109::Parity::ParityNone;
+        return itas109::/*Parity::*/ParityNone;
     }
 }
 
@@ -293,7 +293,7 @@ itas109::StopBits itas109::CSerialPort::getStopBits() const
     else
     {
         // should retrun error
-        return itas109::StopBits::StopOne;
+        return itas109::/*StopBits::*/StopOne;
     }
 }
 
@@ -314,7 +314,7 @@ itas109::FlowConctrol itas109::CSerialPort::getFlowConctrol() const
     else
     {
         // should retrun error
-        return itas109::FlowConctrol::FlowNone;
+        return itas109::/*FlowConctrol::*/FlowNone;
     }
 }
 
