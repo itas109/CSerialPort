@@ -4,6 +4,7 @@
 #include "SerialPort.h"
 #include "SerialPortInfo.h"
 
+#include <vector>
 using namespace itas109;
 using namespace std;
 
@@ -22,15 +23,15 @@ public:
 	{
 		//read
 		recLen = m_sp.readAllData(str);
-		cout << "receive data : " << str << ", receive size : " << recLen << endl;
+		std::cout << "receive data : " << str << ", receive size : " << recLen << std::endl;
 
 		//write for test
 		m_sp.writeData("test", 4);
 		countRead++;
-		cout << "receive count : " << countRead << endl;
+		std::cout << "receive count : " << countRead << std::endl;
 		if (countRead == 100)
 		{
-			cout << " --- stop " << endl;
+			std::cout << " --- stop " << std::endl;
 			m_sp.close();
 		}
 	};
@@ -47,53 +48,78 @@ private:
 
 int main()
 {
+	int index = -1;
+	int i = 0;
+	std::string portName = "";
+	std::string friendlyPortName = "";
+	std::list<std::string>::iterator it;
+	std::list<std::string> m_availablePortsList;
+	vector<std::string> m_availablePortsVector;
 	CSerialPort sp;
 
-	cout << "Version : " << sp.getVersion() << endl << endl;
-
-	list<string> m_availablePortsList;
+	std::cout << "Version : " << sp.getVersion() << std::endl << std::endl;
 
 	mySlot receive(sp);
 
-	m_availablePortsList = CSerialPortInfo::availablePorts();
+	m_availablePortsList = CSerialPortInfo::availableFriendlyPorts();
 
-	cout << "availablePorts : " << endl;
-
-	list<string>::iterator it;
+	std::cout << "availableFriendlyPorts : " << std::endl;
+	
+	std::copy(m_availablePortsList.begin(), m_availablePortsList.end(), std::back_inserter(m_availablePortsVector));
+	
 	for (it = m_availablePortsList.begin(); it != m_availablePortsList.end(); it++)
 	{
-		cout << *it << endl;
+		std::cout << i++ << " - " << *it << std::endl;
 	}
 
 	if (m_availablePortsList.size() == 0)
 	{
-		cout << "No valid port" << endl;
+		std::cout << "No valid port" << std::endl;
 	}
-
-	cout << endl;
-
-#ifdef I_OS_WIN
-	sp.init("COM1");
-#elif defined I_OS_UNIX
-	sp.init("/dev/ttyS0");
-#else
-	//Not support
-#endif // I_OS_WIN
-
-	sp.open();
-
-	cout << "open status : " << sp.isOpened() << endl;
-
-	//connect for read
-	sp.readReady.connect(&receive, &mySlot::OnSendMessage);
-
-	//write
-	for (int i = 0; i < 50; i++)
+	else
 	{
-		sp.writeData("write", 5);
-	}
+		std::cout << std::endl;
+		
+		do
+		{
+			std::cout << "Please input index of the port(0 - " << i - 1 << " ) : " << std::endl;
+		
+			std::cin >> index;
+			
+			if(index >=0 && index < i)
+			{
+				break;
+			}
+		}while(true);
+			
+		std::string friendlyPortName = m_availablePortsVector[index];
+		portName = friendlyPortName.substr(0, friendlyPortName.find(" "));
+		std::cout << "select port name : " << friendlyPortName << std::endl;
 
-	while (1);
+		sp.init(portName);//windows:COM1 Linux:/dev/ttyS0
+
+		sp.open();
+		
+		if(sp.isOpened())
+		{
+			std::cout << "open " << portName << " success" << std::endl;	
+		}
+		else
+		{
+			std::cout << "open " <<  portName << " failed" << std::endl;
+		}		
+
+		//connect for read
+		sp.readReady.connect(&receive, &mySlot::OnSendMessage);
+
+		//write
+		for (int i = 0; i < 50; i++)
+		{
+			sp.writeData("write", 5);
+		}
+
+		while (true);
+	}
 
 	return 0;
 }
