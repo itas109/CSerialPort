@@ -171,11 +171,11 @@ update : 2019-08-10
 
 # Error Guide 错误指南文档
 
-[错误指南文档](https://github.com/itas109/CSerialPort/tree/master/doc/error_guide.md)
+[错误指南文档](./doc/error_guide.md)
 
 # Frequently Asked Questions 常见问题回答
 
-[常见问题回答](https://github.com/itas109/CSerialPort/tree/master/doc/FAQ.md)
+[常见问题回答](./doc/FAQ.md)
 
 
 # Result 结果
@@ -277,4 +277,4 @@ https://github.com/itas109/CSerialPort/tree/CSerialPort_win_3.0.3
 
 # License 开源协议
 
-自 V3.0.0.171216 版本后采用[GNU Lesser General Public License v3.0](https://github.com/itas109/CSerialPort/raw/master/LICENSE)
+自 V3.0.0.171216 版本后采用[LICENSE)

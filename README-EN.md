@@ -174,11 +174,11 @@ update : 2019-08-10
 
 # Error Guide
 
-[Error Guide Document](https://github.com/itas109/CSerialPort/tree/master/doc/error_guide.md)
+[Error Guide Document](./doc/error_guide.md)
 
 # Frequently Asked Questions
 
-[Frequently Asked Questions](https://github.com/itas109/CSerialPort/tree/master/doc/FAQ.md)
+[Frequently Asked Questions](./doc/FAQ.md)
 
 
 # Result
@@ -189,17 +189,17 @@ update : 2019-08-10
 
 Demo Path: CSerialPort/Demo/CommQT
 
-![image](https://github.com/itas109/CSerialPort/raw/master/pic/linux.jpg)
+![image](./pic/linux.jpg)
 
 ## No Gui
 
 Demo Path 1: CSerialPort/Demo/CommNoGui
 
-![image](https://github.com/itas109/CSerialPort/raw/master/pic/linux_no_gui.jpg)
+![image](./pic/linux_no_gui.jpg)
 
 Demo 2 is as follows :
 
-![image](https://github.com/itas109/CSerialPort/raw/master/pic/linux_no_gui_2.jpg)
+![image](./pic/linux_no_gui_2.jpg)
 
 * code
 
@@ -241,7 +241,7 @@ export LD_LIBRARY_PATH=./
 
 Demo Path: CSerialPort/Demo/CommQT
 
-![image](https://github.com/itas109/CSerialPort/raw/master/pic/win.jpg)
+![image](./pic/win.jpg)
 
 ## No Gui
 
@@ -249,7 +249,7 @@ Demo Path 1: CSerialPort/Demo/CSerialPortDemoWin32Console
 
 Demo Path 2: CSerialPort/Demo/CommNoGui
 
-![image](https://github.com/itas109/CSerialPort/raw/master/pic/win_no_gui.jpg)
+![image](./pic/win_no_gui.jpg)
 
 # Contacting
 
@@ -279,4 +279,4 @@ https://github.com/itas109/CSerialPort/tree/CSerialPort_win_3.0.3
 
 # License
 
-since V3.0.0.171216 use [GNU Lesser General Public License v3.0](https://github.com/itas109/CSerialPort/blob/master/LICENSE)
+since V3.0.0.171216 use [GNU Lesser General Public License v3.0](LICENSE)
