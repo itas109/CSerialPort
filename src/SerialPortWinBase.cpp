@@ -64,7 +64,7 @@ void CSerialPortWinBase::init(std::string portName, int baudRate /*= itas109::Ba
 void CSerialPortWinBase::init(int port, int baudRate /*= itas109::BaudRate9600*/, itas109::Parity parity /*= itas109::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopOne*/, itas109::FlowConctrol flowConctrol /*= itas109::FlowNone*/, int64 readBufferSize /*= 512*/)
 {
     char sPort[32];
-    _itoa_s(port, sPort, 10);
+    _itoa_s(port, sPort, 32, 10);
     std::string portName = "\\\\.\\COM";//support COM10 above \\\\.\\COM10
     portName += sPort;
 
@@ -299,7 +299,7 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
                 if (eventMask & EV_RXCHAR)
                 {
 
-                    std::cout << "EV_RXCHAR" << std::endl;
+                    //std::cout << "EV_RXCHAR" << std::endl;
 
                     // solve 线程中循环的低效率问题
                     ClearCommError(m_mainHandle, &dwError, &comstat);
@@ -313,12 +313,12 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
                 {
                     DWORD numBytes;
                     GetOverlappedResult(m_mainHandle, &m_overlapMonitor, &numBytes, true);
-                    std::cout << "EV_TXEMPTY" << std::endl;
+                    //std::cout << "EV_TXEMPTY" << std::endl;
                 }
 
                 if (eventMask & EV_DSR)
                 {
-                    std::cout << "EV_DSR" << std::endl;
+                    //std::cout << "EV_DSR" << std::endl;
                 }
             }
         }
