@@ -186,17 +186,17 @@ update : 2019-08-10
 
 示例路径: CSerialPort/Demo/CommQT
 
-![image](https://github.com/itas109/CSerialPort/raw/master/pic/linux.jpg)
+![image](./pic/linux.jpg)
 
 ## No Gui 无界面
 
 示例路径 1: CSerialPort/Demo/CommNoGui
 
-![image](https://github.com/itas109/CSerialPort/raw/master/pic/linux_no_gui.jpg)
+![image](./pic/linux_no_gui.jpg)
 
 示例2如下所示 :
 
-![image](https://github.com/itas109/CSerialPort/raw/master/pic/linux_no_gui_2.jpg)
+![image](./pic/linux_no_gui_2.jpg)
 
 * 示例代码
 
@@ -238,14 +238,17 @@ export LD_LIBRARY_PATH=./
 
 示例路径: CSerialPort/Demo/CommQT
 
-![image](https://github.com/itas109/CSerialPort/raw/master/pic/win.jpg)
+![image](./pic/win.jpg)
+![image][win_no_gui]
+
+
 
 ## No Gui 无界面
 
 示例路径 1: CSerialPort/Demo/CSerialPortDemoWin32Console
 
 示例路径 2: CSerialPort/Demo/CommNoGui
-![image](https://github.com/itas109/CSerialPort/raw/master/pic/win_no_gui.jpg)
+![image](./pic/win_no_gui.jpg)
 
 # Contacting 联系方式
 
