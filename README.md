@@ -277,4 +277,4 @@ https://github.com/itas109/CSerialPort/tree/CSerialPort_win_3.0.3
 
 # License 开源协议
 
-自 V3.0.0.171216 版本后采用[GNU Lesser General Public License v3.0][LICENSE)
+自 V3.0.0.171216 版本后采用[GNU Lesser General Public License v3.0](LICENSE)
