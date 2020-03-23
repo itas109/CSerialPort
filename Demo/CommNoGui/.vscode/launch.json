@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [{
+        "name": "g++ build and debug active file",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${fileDirname}/${fileBasenameNoExtension}",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": false,
+        "linux": {
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "preLaunchTask": "linuxG++Build"
+        },
+        "osx": {
+            "MIMode": "lldb",
+            "preLaunchTask": "osxG++Build"
+        },
+        "windows": {
+            "MIMode": "gdb",
+            "miDebuggerPath": "D:\\mingw64\\bin\\gdb.exe",
+            "preLaunchTask": "winMinGWBuild"
+        }
+    }]
+}

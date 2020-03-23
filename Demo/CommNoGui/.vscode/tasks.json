@@ -1,0 +1,86 @@
+{
+    "version": "2.0.0",
+    "tasks": [{
+            "type": "shell",
+            "label": "winMinGWBuild",
+            "command": "g++",
+            "args": [
+                "-g",
+                "${workspaceFolder}/CSerialPortDemoNoGui.cpp",
+                "${workspaceFolder}/../../src/SerialPortInfo.cpp",
+                "${workspaceFolder}/../../src/SerialPortInfoBase.cpp",
+                "${workspaceFolder}/../../src/SerialPortInfoWinBase.cpp",
+                "${workspaceFolder}/../../src/SerialPort.cpp",
+                "${workspaceFolder}/../../src/SerialPortBase.cpp",
+                "${workspaceFolder}/../../src/SerialPortWinBase.cpp",
+                "-lpthread",
+                "-lsetupapi",
+                "-I",
+                "${workspaceFolder}/../../src",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "D:\\mingw64\\bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "linuxG++Build",
+            "command": "g++",
+            "args": [
+                "-g",
+                "${workspaceFolder}/CSerialPortDemoNoGui.cpp",
+                "${workspaceFolder}/../../src/SerialPortInfo.cpp",
+                "${workspaceFolder}/../../src/SerialPortInfoBase.cpp",
+                "${workspaceFolder}/../../src/SerialPortInfoUnixBase.cpp",
+                "${workspaceFolder}/../../src/SerialPort.cpp",
+                "${workspaceFolder}/../../src/SerialPortBase.cpp",
+                "${workspaceFolder}/../../src/SerialPortUnixBase.cpp",
+                "-lpthread",
+                "-I",
+                "${workspaceFolder}/../../src",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "osxG++Build",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-g",
+                "${workspaceFolder}/CSerialPortDemoNoGui.cpp",
+                "${workspaceFolder}/../../src/SerialPortInfo.cpp",
+                "${workspaceFolder}/../../src/SerialPortInfoBase.cpp",
+                "${workspaceFolder}/../../src/SerialPortInfoUnixBase.cpp",
+                "${workspaceFolder}/../../src/SerialPort.cpp",
+                "${workspaceFolder}/../../src/SerialPortBase.cpp",
+                "${workspaceFolder}/../../src/SerialPortUnixBase.cpp",
+                "-lpthread",
+                "-I",
+                "${workspaceFolder}/../../src",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        }
+    ]
+}
