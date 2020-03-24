@@ -5,6 +5,7 @@
 #include "SerialPortInfo.h"
 
 #include <vector>
+#include <iterator>
 using namespace itas109;
 using namespace std;
 
@@ -65,7 +66,7 @@ int main()
 
 	std::cout << "availableFriendlyPorts : " << std::endl;
 	
-	std::copy(m_availablePortsList.begin(), m_availablePortsList.end(), std::back_inserter(m_availablePortsVector));
+	std::copy(m_availablePortsList.begin(), m_availablePortsList.end(), back_inserter(m_availablePortsVector));
 	
 	for (it = m_availablePortsList.begin(); it != m_availablePortsList.end(); it++)
 	{
