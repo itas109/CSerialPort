@@ -6,9 +6,8 @@
 #undef PHYSICAL_ADDRESS
 #define PHYSICAL_ADDRESS LARGE_INTEGER
 
-#include <initguid.h>//GUID
+#include <initguid.h>//GUID GUID_DEVINTERFACE_COMPORT
 #include <Setupapi.h>//SetupDiGetClassDevs Setup*
-#include <ntddser.h>//GUID_DEVINTERFACE_COMPORT
 #include <tchar.h>//_T
 /********************* EnumDetailsSerialPorts ****************************************/
 
