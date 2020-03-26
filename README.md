@@ -97,6 +97,8 @@ chmod +x compile.sh
 
 | 系统版本 | CPU架构 |Gui | 编译器 | 测试时间 |
 | :-----:| :----: | :----: | :----: | :----: |
+| DeepIn 15.11 64bit CN | x86_64 | QT 5.12.6 | GCC 6.3.0 | 2020-03-21 |
+| NeoKylin Server 7.0 CN| x86_64 | NoGui | GCC 4.8.5 | 2020-03-26 |
 | Win7 Ultimate 64bit CN | x86_64 | QT 5.6.2 | MSVC2013u5 32bit |2020-01-08|
 | Win7 Ultimate 64bit CN | x86_64 | QT 5.12.1 | MSVC2017 64bit | 2020-01-08 |
 | Win7 Ultimate 64bit CN | x86_64 | QT 5.12.7 | MinGW73 32bit | 2020-03-11 |
@@ -106,7 +108,6 @@ chmod +x compile.sh
 | Win10 Enterprise 64bit CN | x86_64 | MFC | MSVC2015u3 32bit | 2020-01-08 |
 | Win10 Enterprise 64bit CN | x86_64 | QT 5.12.7 | MinGW73 64bit | 2020-03-12 |
 | Ubuntu 16.04 64bit En | x86_64 | QT 5.6.2 | GCC 5.4.0 | 2019-07-28 |
-| DeepIn 15.11 64bit CN | x86_64 | QT 5.12.6 | GCC 6.3.0 | 2020-03-21 |
 | Linux raspberrypi 4.9.70 | armv7l | NoGUi | GCC 4.9.2 | 2020-03-21 |
 
 # directory List 目录列表
