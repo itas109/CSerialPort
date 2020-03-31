@@ -6,16 +6,15 @@ MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 
 include_directories(../src)
 
-aux_source_directory(../src DIR_SRCS)
+file(GLOB_RECURSE COMMON_SOURCES ../src/SerialPort.cpp ../src/SerialPortBase.cpp ../src/SerialPortInfo.cpp ../src/SerialPortInfoBase.cpp)
 
 IF (CMAKE_HOST_WIN32)
-	list(REMOVE_ITEM DIR_SRCS ../src/SerialPortInfoUnixBase.cpp)
-	list(REMOVE_ITEM DIR_SRCS ../src/SerialPortUnixBase.cpp)
+	file(GLOB_RECURSE OS_ABOUT_SOURCES ../src/SerialPortInfoWinBase.cpp ../src/SerialPortWinBase.cpp)
 ELSEIF (CMAKE_HOST_UNIX)
-	list(REMOVE_ITEM DIR_SRCS ../src/SerialPortInfoWinBase.cpp)
-	list(REMOVE_ITEM DIR_SRCS ../src/SerialPortWinBase.cpp)
+	file(GLOB_RECURSE OS_ABOUT_SOURCES ../src/SerialPortInfoUnixBase.cpp ../src/SerialPortUnixBase.cpp)
 ENDIF ()
-add_library( cserialport SHARED ${DIR_SRCS})
+
+add_library( cserialport SHARED ${COMMON_SOURCES} ${OS_ABOUT_SOURCES})
 
 IF (CMAKE_HOST_WIN32)
 	# for function availableFriendlyPorts
