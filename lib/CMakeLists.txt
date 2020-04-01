@@ -14,11 +14,15 @@ ELSEIF (CMAKE_HOST_UNIX)
 	file(GLOB_RECURSE OS_ABOUT_SOURCES ../src/SerialPortInfoUnixBase.cpp ../src/SerialPortUnixBase.cpp)
 ENDIF ()
 
-add_library( cserialport SHARED ${COMMON_SOURCES} ${OS_ABOUT_SOURCES})
+# add_library( libcserialport STATIC ${COMMON_SOURCES} ${OS_ABOUT_SOURCES})
+add_library( libcserialport SHARED ${COMMON_SOURCES} ${OS_ABOUT_SOURCES})
+
+# remove prefix
+set_target_properties( libcserialport PROPERTIES PREFIX "")
 
 IF (CMAKE_HOST_WIN32)
 	# for function availableFriendlyPorts
-	target_link_libraries( cserialport setupapi )
+	target_link_libraries( libcserialport setupapi )
 ELSEIF (CMAKE_HOST_UNIX)
-	target_link_libraries( cserialport pthread )
+	target_link_libraries( libcserialport pthread )
 ENDIF ()
