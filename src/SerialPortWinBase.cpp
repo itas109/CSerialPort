@@ -199,28 +199,19 @@ bool CSerialPortWinBase::openPort()
             //串口不存在
             case ERROR_FILE_NOT_FOUND:
             {
-                TCHAR Temp[200] = { 0 };
-#ifdef UNICODE
-                _stprintf_s(Temp, 200, _T("%S ERROR_FILE_NOT_FOUND,Error Code:%d"), m_portName.c_str(), GetLastError());
-#else
-                _stprintf_s(Temp, 200, _T("%s ERROR_FILE_NOT_FOUND,Error Code:%d"), m_portName.c_str(), GetLastError());
-#endif // UNICODE
-                MessageBox(NULL, Temp, _T("COM InitPort Error"), MB_ICONERROR);
+                lastError = itas109::/*SerialPortError::*/DeviceNotFoundError;
+
                 break;
             }
                 //串口拒绝访问
             case ERROR_ACCESS_DENIED:
             {
-                TCHAR Temp[200] = { 0 };
-#ifdef UNICODE
-                _stprintf_s(Temp, 200, _T("%S ERROR_ACCESS_DENIED,Error Code:%d"), m_portName.c_str(), GetLastError());
-#else
-                _stprintf_s(Temp, 200, _T("%s ERROR_ACCESS_DENIED,Error Code:%d"), m_portName.c_str(), GetLastError());
-#endif // UNICODE
-                MessageBox(NULL, Temp, _T("COM InitPort Error"), MB_ICONERROR);
+                lastError = itas109::/*SerialPortError::*/PermissionError;
+
                 break;
             }
             default:
+                lastError = itas109::/*SerialPortError::*/UnknownError;
                 break;
             }
         }
