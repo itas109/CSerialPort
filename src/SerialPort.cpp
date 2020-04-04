@@ -45,19 +45,19 @@ CSerialPort::~CSerialPort()
     }
 }
 
-void itas109::CSerialPort::init(std::string portName, int baudRate /*= itas109::BaudRate::BaudRate9600*/, itas109::Parity parity /*= itas109::Parity::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/, itas109::FlowConctrol flowConctrol /*= itas109::FlowConctrol::FlowNone*/, int64 readBufferSize /*= 512*/)
+void itas109::CSerialPort::init(std::string portName, int baudRate /*= itas109::BaudRate::BaudRate9600*/, itas109::Parity parity /*= itas109::Parity::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/, itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/, int64 readBufferSize /*= 512*/)
 {
     if(p_serialPortBase)
     {
-        p_serialPortBase->init(portName, baudRate, parity, dataBits, stopbits, flowConctrol, readBufferSize);
+        p_serialPortBase->init(portName, baudRate, parity, dataBits, stopbits, flowControl, readBufferSize);
     }
 }
 
-void itas109::CSerialPort::init(int port, int baudRate /*= itas109::BaudRate9600*/, itas109::Parity parity /*= itas109::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopOne*/, itas109::FlowConctrol flowConctrol /*= itas109::FlowNone*/, int64 readBufferSize /*= 512*/)
+void itas109::CSerialPort::init(int port, int baudRate /*= itas109::BaudRate9600*/, itas109::Parity parity /*= itas109::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopOne*/, itas109::FlowControl flowControl /*= itas109::FlowNone*/, int64 readBufferSize /*= 512*/)
 {
     if(p_serialPortBase)
     {
-        p_serialPortBase->init(port, baudRate, parity, dataBits, stopbits, flowConctrol, readBufferSize);
+        p_serialPortBase->init(port, baudRate, parity, dataBits, stopbits, flowControl, readBufferSize);
     }
 }
 
@@ -297,24 +297,24 @@ itas109::StopBits itas109::CSerialPort::getStopBits() const
     }
 }
 
-void itas109::CSerialPort::setFlowConctrol(itas109::FlowConctrol flowConctrol)
+void itas109::CSerialPort::setFlowControl(itas109::FlowControl flowControl)
 {
     if(p_serialPortBase)
     {
-        p_serialPortBase->setFlowConctrol(flowConctrol);
+        p_serialPortBase->setFlowControl(flowControl);
     }
 }
 
-itas109::FlowConctrol itas109::CSerialPort::getFlowConctrol() const
+itas109::FlowControl itas109::CSerialPort::getFlowControl() const
 {
     if(p_serialPortBase)
     {
-        return p_serialPortBase->getFlowConctrol();
+        return p_serialPortBase->getFlowControl();
     }
     else
     {
         // should retrun error
-        return itas109::/*FlowConctrol::*/FlowNone;
+        return itas109::/*FlowControl::*/FlowNone;
     }
 }
 

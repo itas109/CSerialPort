@@ -105,10 +105,10 @@ namespace itas109
 		};
 
 		/**
-		 * @brief the FlowConctrol enum 流控制
+         * @brief the FlowControl enum 流控制
 		 * 
 		 */
-		enum FlowConctrol
+        enum FlowControl
 		{
 			FlowNone = 0,		///< No flow control 无流控制
 			FlowHardware = 1,	///< Hardware(RTS / CTS) flow control 硬件流控制

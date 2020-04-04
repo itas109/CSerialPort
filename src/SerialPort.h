@@ -56,10 +56,10 @@ namespace itas109
 		 * @param parity [in] the parity 校验位
 		 * @param dataBits [in] the dataBits 数据位
 		 * @param stopbits [in] the stopbits 停止位
-		 * @param flowConctrol [in] flowConctrol type 流控制
+         * @param flowControl [in] flowControl type 流控制
 		 * @param readBufferSize [in] the read buffer size 读取缓冲区大小
 		 */
-		void init(std::string portName, int baudRate = itas109::BaudRate9600, itas109::Parity parity = itas109::ParityNone, itas109::DataBits dataBits = itas109::DataBits8, itas109::StopBits stopbits = itas109::StopOne, itas109::FlowConctrol flowConctrol = itas109::FlowNone, int64 readBufferSize = 512);
+                void init(std::string portName, int baudRate = itas109::BaudRate9600, itas109::Parity parity = itas109::ParityNone, itas109::DataBits dataBits = itas109::DataBits8, itas109::StopBits stopbits = itas109::StopOne, itas109::FlowControl flowControl = itas109::FlowNone, int64 readBufferSize = 512);
 		/**
 		 * @brief  init 初始化函数
 		 * 
@@ -68,10 +68,10 @@ namespace itas109
 		 * @param parity [in] the parity 校验位
 		 * @param dataBits [in] the dataBits 数据位
 		 * @param stopbits [in] the stopbits 停止位
-		 * @param flowConctrol [in] flowConctrol type 流控制
+         * @param flowControl [in] flowControl type 流控制
 		 * @param readBufferSize [in] the read buffer size 读取缓冲区大小
 		 */
-		void init(int port, int baudRate = itas109::BaudRate9600, itas109::Parity parity = itas109::ParityNone, itas109::DataBits dataBits = itas109::DataBits8, itas109::StopBits stopbits = itas109::StopOne, itas109::FlowConctrol flowConctrol = itas109::FlowNone, int64 readBufferSize = 512);
+                void init(int port, int baudRate = itas109::BaudRate9600, itas109::Parity parity = itas109::ParityNone, itas109::DataBits dataBits = itas109::DataBits8, itas109::StopBits stopbits = itas109::StopOne, itas109::FlowControl flowControl = itas109::FlowNone, int64 readBufferSize = 512);
 
         /**
          * @brief Set the Operate Mode object 设置串口操作模式
@@ -243,19 +243,19 @@ namespace itas109
 		itas109::StopBits getStopBits() const;
 
 		/**
-		 * @brief Set the Flow Conctrol object 设置流控制
+        * @brief Set the Flow Control object 设置流控制
 		 * @todo Not implemented 未实现
 		 * 
-		 * @param flowConctrol [in]
+         * @param flowControl [in]
 		 */
-		void setFlowConctrol(itas109::FlowConctrol flowConctrol);
+         void setFlowControl(itas109::FlowControl flowControl);
 		/**
-		 * @brief Get the Flow Conctrol object 获取流控制
+        * @brief Get the Flow Control object 获取流控制
 		 * @todo Not implemented 未实现
 		 * 
-		 * @return itas109::FlowConctrol 
+         * @return itas109::FlowControl
 		 */
-		itas109::FlowConctrol getFlowConctrol() const;
+                itas109::FlowControl getFlowControl() const;
 
 		/**
 		 * @brief Set the Read Buffer Size object

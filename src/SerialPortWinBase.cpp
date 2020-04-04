@@ -34,7 +34,7 @@ void CSerialPortWinBase::construct()
     m_parity = itas109::ParityNone;
     m_dataBits = itas109::DataBits8;
     m_stopbits = itas109::StopOne;
-    m_flowConctrol = itas109::FlowNone;
+    m_flowControl = itas109::FlowNone;
     m_readBufferSize = 512;
 
     m_operateMode = itas109::AsynchronousOperate;
@@ -50,25 +50,25 @@ void CSerialPortWinBase::construct()
     InitializeCriticalSection(&m_communicationMutex);
 }
 
-void CSerialPortWinBase::init(std::string portName, int baudRate /*= itas109::BaudRate::BaudRate9600*/, itas109::Parity parity /*= itas109::Parity::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/, itas109::FlowConctrol flowConctrol /*= itas109::FlowConctrol::FlowNone*/, int64 readBufferSize /*= 512*/)
+void CSerialPortWinBase::init(std::string portName, int baudRate /*= itas109::BaudRate::BaudRate9600*/, itas109::Parity parity /*= itas109::Parity::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/, itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/, int64 readBufferSize /*= 512*/)
 {
     m_portName = "\\\\.\\" + portName;//support COM10 above \\\\.\\COM10
     m_baudRate = baudRate;
     m_parity = parity;
     m_dataBits = dataBits;
     m_stopbits = stopbits;
-    m_flowConctrol = flowConctrol;
+    m_flowControl = flowControl;
     m_readBufferSize = readBufferSize;
 }
 
-void CSerialPortWinBase::init(int port, int baudRate /*= itas109::BaudRate9600*/, itas109::Parity parity /*= itas109::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopOne*/, itas109::FlowConctrol flowConctrol /*= itas109::FlowNone*/, int64 readBufferSize /*= 512*/)
+void CSerialPortWinBase::init(int port, int baudRate /*= itas109::BaudRate9600*/, itas109::Parity parity /*= itas109::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopOne*/, itas109::FlowControl flowControl /*= itas109::FlowNone*/, int64 readBufferSize /*= 512*/)
 {
     char sPort[32];
     _itoa_s(port, sPort, 32, 10);
     std::string portName = "\\\\.\\COM";//support COM10 above \\\\.\\COM10
     portName += sPort;
 
-    init(portName, baudRate, parity, dataBits, stopbits, flowConctrol, readBufferSize);
+    init(portName, baudRate, parity, dataBits, stopbits, flowControl, readBufferSize);
 }
 
 bool CSerialPortWinBase::openPort()
@@ -129,7 +129,7 @@ bool CSerialPortWinBase::openPort()
             //setStopBits(m_stopbits);
             //setParity(m_parity);
 
-            setFlowConctrol(m_flowConctrol); // @todo
+            setFlowControl(m_flowControl); // @todo
 
             //            COMMTIMEOUTS m_commTimeouts;
             //            //set read timeout
@@ -734,17 +734,17 @@ itas109::StopBits CSerialPortWinBase::getStopBits() const
     return m_stopbits;
 }
 
-void CSerialPortWinBase::setFlowConctrol(itas109::FlowConctrol flowConctrol)
+void CSerialPortWinBase::setFlowControl(itas109::FlowControl flowControl)
 {
     lock();
 
-    m_flowConctrol = flowConctrol;
+    m_flowControl = flowControl;
 
     if (isOpened())
     {
-        switch (m_flowConctrol)
+        switch (m_flowControl)
         {
-        case itas109::FlowConctrol::FlowNone://No flow control
+        case itas109::FlowControl::FlowNone://No flow control
 
             m_comConfigure.dcb.fOutxCtsFlow = FALSE;
             m_comConfigure.dcb.fRtsControl = RTS_CONTROL_DISABLE;
@@ -753,7 +753,7 @@ void CSerialPortWinBase::setFlowConctrol(itas109::FlowConctrol flowConctrol)
             SetCommConfig(m_handle, &m_comConfigure, sizeof(COMMCONFIG));
             break;
 
-        case itas109::FlowConctrol::FlowSoftware://Software(XON / XOFF) flow control
+        case itas109::FlowControl::FlowSoftware://Software(XON / XOFF) flow control
             m_comConfigure.dcb.fOutxCtsFlow = FALSE;
             m_comConfigure.dcb.fRtsControl = RTS_CONTROL_DISABLE;
             m_comConfigure.dcb.fInX = TRUE;
@@ -761,7 +761,7 @@ void CSerialPortWinBase::setFlowConctrol(itas109::FlowConctrol flowConctrol)
             SetCommConfig(m_handle, &m_comConfigure, sizeof(COMMCONFIG));
             break;
 
-        case itas109::FlowConctrol::FlowHardware://Hardware(RTS / CTS) flow control
+        case itas109::FlowControl::FlowHardware://Hardware(RTS / CTS) flow control
             m_comConfigure.dcb.fOutxCtsFlow = TRUE;
             m_comConfigure.dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
             m_comConfigure.dcb.fInX = FALSE;
@@ -774,9 +774,9 @@ void CSerialPortWinBase::setFlowConctrol(itas109::FlowConctrol flowConctrol)
     unlock();
 }
 
-itas109::FlowConctrol CSerialPortWinBase::getFlowConctrol() const
+itas109::FlowControl CSerialPortWinBase::getFlowControl() const
 {
-    return m_flowConctrol;
+    return m_flowControl;
 }
 
 void CSerialPortWinBase::setReadBufferSize(int64 size)

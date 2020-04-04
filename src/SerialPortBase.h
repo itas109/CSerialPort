@@ -54,10 +54,10 @@ public:
 	* @param parity [in] the parity 校验位
 	* @param dataBits [in] the dataBits 数据位
 	* @param stopbits [in] the stopbits 停止位
-	* @param flowConctrol [in] flowConctrol type 流控制
+    * @param flowControl [in] flowControl type 流控制
 	* @param readBufferSize [in] the read buffer size 读取缓冲区大小
 	*/
-	virtual void init(std::string portName, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowConctrol flowConctrol, int64 readBufferSize) = 0;
+        virtual void init(std::string portName, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl, int64 readBufferSize) = 0;
 
 	/**
 	* @brief  init 初始化函数
@@ -67,10 +67,10 @@ public:
 	* @param parity [in] the parity 校验位
 	* @param dataBits [in] the dataBits 数据位
 	* @param stopbits [in] the stopbits 停止位
-	* @param flowConctrol [in] flowConctrol type 流控制
+    * @param flowControl [in] flowControl type 流控制
 	* @param readBufferSize [in] the read buffer size 读取缓冲区大小
 	*/
-	virtual void init(int port, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowConctrol flowConctrol, int64 readBufferSize) = 0;
+        virtual void init(int port, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl, int64 readBufferSize) = 0;
 
 	/**
 	 * @brief Set the Operate Mode object 设置串口操作模式
@@ -129,7 +129,7 @@ public:
 	* @param maxSize
 	* @return int
 	*/
-	virtual int	readLineData(char *data, int maxSize) = 0;
+    virtual int readLineData(char *data, int maxSize) = 0;
 	/**
 	* @brief write specified lenfth data 写入指定长度数据
 	*
@@ -241,17 +241,17 @@ public:
 	virtual itas109::StopBits getStopBits() const = 0;
 
 	/**
-	* @brief Set the Flow Conctrol object 设置流控制
+    * @brief Set the Flow Control object 设置流控制
 	*
-	* @param flowConctrol [in]
+    * @param flowControl [in]
 	*/
-	virtual void setFlowConctrol(itas109::FlowConctrol flowConctrol) = 0;
+    virtual void setFlowControl(itas109::FlowControl flowControl) = 0;
 	/**
-	* @brief Get the Flow Conctrol object 获取流控制
+    * @brief Get the Flow Control object 获取流控制
 	*
-	* @return itas109::FlowConctrol
+    * @return itas109::FlowControl
 	*/
-	virtual itas109::FlowConctrol getFlowConctrol() const = 0;
+    virtual itas109::FlowControl getFlowControl() const = 0;
 
 	/**
 	* @brief Set the Read Buffer Size object 设置读取缓冲区大小

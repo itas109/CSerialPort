@@ -26,7 +26,7 @@ void CSerialPortUnixBase::construct()
     m_parity = itas109::ParityNone;
     m_dataBits = itas109::DataBits8;
     m_stopbits = itas109::StopOne;
-    m_flowConctrol = itas109::FlowNone;
+    m_flowControl = itas109::FlowNone;
     m_readBufferSize = 512;
 
     m_operateMode = itas109::AsynchronousOperate;
@@ -34,29 +34,29 @@ void CSerialPortUnixBase::construct()
     pthread_mutex_init(&m_communicationMutex,NULL);
 }
 
-void CSerialPortUnixBase::init(std::string portName, int baudRate /*= itas109::BaudRate::BaudRate9600*/, itas109::Parity parity /*= itas109::Parity::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/, itas109::FlowConctrol flowConctrol /*= itas109::FlowConctrol::FlowNone*/, int64 readBufferSize /*= 512*/)
+void CSerialPortUnixBase::init(std::string portName, int baudRate /*= itas109::BaudRate::BaudRate9600*/, itas109::Parity parity /*= itas109::Parity::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/, itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/, int64 readBufferSize /*= 512*/)
 {
     m_portName = portName;//portName;//串口 /dev/ttySn, USB /dev/ttyUSBn
     m_baudRate = baudRate;
     m_parity = parity;
     m_dataBits = dataBits;
     m_stopbits = stopbits;
-    m_flowConctrol = flowConctrol;
+    m_flowControl = flowControl;
     m_readBufferSize = readBufferSize;
 }
 
-void CSerialPortUnixBase::init(int port, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowConctrol flowConctrol, int64 readBufferSize)
+void CSerialPortUnixBase::init(int port, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl, int64 readBufferSize)
 {
     char sPort[32];
     //_itoa_s(port, sPort, 10);
     std::string portName = "/dev/ttyS";//unix not recommend use port init
     portName += sPort;
 
-    init(portName, baudRate, parity, dataBits, stopbits, flowConctrol, readBufferSize);
+    init(portName, baudRate, parity, dataBits, stopbits, flowControl, readBufferSize);
 
 }
 
-int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowConctrol flowConctrol)
+int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl)
 {
     struct termios options;
 
@@ -180,7 +180,7 @@ int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, 
     options.c_cflag |= CREAD;//保证程序可以从串口中读取数据
 
     //流控制
-    switch(flowConctrol)
+    switch(flowControl)
     {
         case itas109::FlowNone:///< No flow control 无流控制
             options.c_cflag &= ~CRTSCTS;
@@ -294,7 +294,7 @@ bool CSerialPortUnixBase::openPort()
         if(fcntl(fd, F_SETFL, 0) >= 0)// 阻塞，即使前面在open串口设备时设置的是非阻塞的，这里设为阻塞后，以此为准
         {
             //set param
-            if(uart_set(fd,m_baudRate,m_parity,m_dataBits,m_stopbits,m_flowConctrol) == -1)
+            if(uart_set(fd,m_baudRate,m_parity,m_dataBits,m_stopbits,m_flowControl) == -1)
             {
                 fprintf(stderr,"uart set failed!\n");
                 //exit(EXIT_FAILURE);
@@ -470,14 +470,14 @@ itas109::StopBits CSerialPortUnixBase::getStopBits() const
     return m_stopbits;
 }
 
-void CSerialPortUnixBase::setFlowConctrol(itas109::FlowConctrol flowConctrol)
+void CSerialPortUnixBase::setFlowControl(itas109::FlowControl flowControl)
 {
-    m_flowConctrol = flowConctrol;
+    m_flowControl = flowControl;
 }
 
-itas109::FlowConctrol CSerialPortUnixBase::getFlowConctrol() const
+itas109::FlowControl CSerialPortUnixBase::getFlowControl() const
 {
-    return m_flowConctrol;
+    return m_flowControl;
 }
 
 void CSerialPortUnixBase::setReadBufferSize(int64 size)
