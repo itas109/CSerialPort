@@ -166,6 +166,7 @@ bool CSerialPortWinBase::openPort()
                         if (!bRet)
                         {
                             isThreadRunning = false;
+                            lastError = itas109::/*SerialPortError::*/SystemError;
                         }
                     }
                     else
