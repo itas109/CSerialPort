@@ -172,6 +172,7 @@ bool CSerialPortWinBase::openPort()
                     {
                         //Failed to set Comm Mask
                         bRet = false;
+                        lastError = itas109::/*SerialPortError::*/InvalidParameterError;
                     }
                 }
                 else
@@ -189,6 +190,8 @@ bool CSerialPortWinBase::openPort()
             else
             {
                 //set com configure error
+                bRet = false;
+                lastError = itas109::/*SerialPortError::*/InvalidParameterError;
             }
         }
         else
@@ -219,6 +222,7 @@ bool CSerialPortWinBase::openPort()
     else
     {
         bRet = false;
+        lastError = itas109::/*SerialPortError::*/NotOpenError;
     }
 
     unlock();
