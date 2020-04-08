@@ -300,6 +300,7 @@ bool CSerialPortUnixBase::openPort()
                 //exit(EXIT_FAILURE);
 
                 bRet = false;
+                lastError = itas109::/*SerialPortError::*/InvalidParameterError;
             }
             else
             {
@@ -309,12 +310,14 @@ bool CSerialPortUnixBase::openPort()
                 if (!bRet)
                 {
                     isThreadRunning = false;
+                    lastError = itas109::/*SerialPortError::*/SystemError;
                 }
             }
         }
         else
         {
             bRet = false;
+            lastError = itas109::/*SerialPortError::*/SystemError;
         }
 
     }
@@ -326,6 +329,12 @@ bool CSerialPortUnixBase::openPort()
         perror(str);
 
         bRet = false;
+        lastError = itas109::/*SerialPortError::*/OpenError;
+    }
+
+    if(!bRet)
+    {
+        closePort();
     }
 
     unlock();
@@ -355,7 +364,15 @@ int CSerialPortUnixBase::readData(char *data, int maxSize)
     int iRet = -1;
     lock();
 
-    iRet = read(fd,data,maxSize);
+    if (isOpened())
+    {
+        iRet = read(fd,data,maxSize);
+    }
+    else
+    {
+        lastError = itas109::SerialPortError::NotOpenError;
+        iRet = -1;
+    }
 
     unlock();
 
@@ -377,6 +394,15 @@ int CSerialPortUnixBase::readLineData(char *data, int maxSize)
     int iRet = -1;
     lock();
 
+    if (isOpened())
+    {
+    }
+    else
+    {
+        lastError = itas109::SerialPortError::NotOpenError;
+        iRet = -1;
+    }
+
     unlock();
 
     return iRet;
@@ -387,8 +413,16 @@ int CSerialPortUnixBase::writeData(const char * data, int maxSize)
     int iRet = -1;
     lock();
 
-    //Write N bytes of BUF to FD.  Return the number written, or -1
-    iRet = write(fd, data, maxSize);
+    if (isOpened())
+    {
+        //Write N bytes of BUF to FD.  Return the number written, or -1
+        iRet = write(fd, data, maxSize);
+    }
+    else
+    {
+        lastError = itas109::SerialPortError::NotOpenError;
+        iRet = -1;
+    }
 
     unlock();
 
