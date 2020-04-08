@@ -222,7 +222,12 @@ bool CSerialPortWinBase::openPort()
     else
     {
         bRet = false;
-        lastError = itas109::/*SerialPortError::*/NotOpenError;
+        lastError = itas109::/*SerialPortError::*/OpenError;
+    }
+
+    if(!bRet)
+    {
+        closePort();
     }
 
     unlock();
