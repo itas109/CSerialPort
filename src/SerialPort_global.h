@@ -135,7 +135,8 @@ namespace itas109
 			UnsupportedOperationError,			///< 
 			UnknownError,						///< unknown error 未知错误
 			TimeoutError,						///< time out error 超时
-			NotOpenError						///< not open serial port error 串口未打开	
+            NotOpenError,						///< not open serial port error 串口未打开
+            InvalidParameterError               ///< invalid parameter error 无效的参数
 		};
 }
 
