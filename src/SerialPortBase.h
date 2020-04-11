@@ -163,6 +163,12 @@ public:
      */
     virtual void setMinByteReadNoify(unsigned int minByteReadNoify) = 0;
 
+    /**
+     * @brief getMinByteReadNoify get minimum byte of read notify 获取读取通知触发最小字节数
+     * @return minimum byte of read notify 读取通知触发最小字节数
+     */
+    virtual unsigned int getMinByteReadNoify();
+
 	/**
 	* @brief Get the Last Error object 获取最后的错误代码
 	*

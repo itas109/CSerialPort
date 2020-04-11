@@ -17,7 +17,12 @@ CSerialPortBase::~CSerialPortBase()
 
 void CSerialPortBase::setOperateMode(itas109::OperateMode operateMode)
 {
-	m_operateMode = operateMode;
+    m_operateMode = operateMode;
+}
+
+unsigned int CSerialPortBase::getMinByteReadNoify()
+{
+    return m_minByteReadNoify;
 }
 
 int CSerialPortBase::getLastError() const
