@@ -1,8 +1,5 @@
 ﻿#include "SerialPortUnixBase.h"
 
-sigslot::signal0<> CSerialPortUnixBase::readReady;//sigslot
-bool CSerialPortUnixBase::isThreadRunning = false;
-
 CSerialPortUnixBase::CSerialPortUnixBase()
 {
     construct();
@@ -28,6 +25,8 @@ void CSerialPortUnixBase::construct()
     m_stopbits = itas109::StopOne;
     m_flowControl = itas109::FlowNone;
     m_readBufferSize = 512;
+
+    m_isThreadRunning = false;
 
     m_operateMode = itas109::AsynchronousOperate;
 
@@ -233,7 +232,7 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
 
     if(p_base)
     {
-        while (isThreadRunning)
+        while (p_base->isThreadRunning())
         {
             int readbytes = 0;
 
@@ -241,7 +240,7 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
             ioctl(p_base->fd, FIONREAD, &readbytes);
             if (readbytes >= p_base->m_minByteReadNoify) //设定字符数，默认为2
             {
-                readReady._emit();
+                p_base->readReady._emit();
             }
         }
     }
@@ -271,7 +270,7 @@ bool CSerialPortUnixBase::startThreadMonitor()
 
 bool CSerialPortUnixBase::stopThreadMonitor()
 {
-    isThreadRunning = false;
+    m_isThreadRunning = false;
 
     pthread_join( m_monitorThread, NULL );
 
@@ -304,12 +303,12 @@ bool CSerialPortUnixBase::openPort()
             }
             else
             {
-                isThreadRunning = true;
+                m_isThreadRunning = true;
                 bRet = startThreadMonitor();
 
                 if (!bRet)
                 {
-                    isThreadRunning = false;
+                    m_isThreadRunning = false;
                     lastError = itas109::/*SerialPortError::*/SystemError;
                 }
             }
@@ -538,6 +537,11 @@ std::string CSerialPortUnixBase::getVersion()
 {
     std::string m_version = "CSerialPortUnixBase V1.0.1.190728";
     return m_version;
+}
+
+bool CSerialPortUnixBase::isThreadRunning()
+{
+    return m_isThreadRunning;
 }
 
 void CSerialPortUnixBase::lock()

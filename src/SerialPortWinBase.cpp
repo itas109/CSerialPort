@@ -2,9 +2,6 @@
 
 #include <iostream>
 
-sigslot::signal0<> CSerialPortWinBase::readReady;//sigslot
-bool CSerialPortWinBase::isThreadRunning = false;
-
 CSerialPortWinBase::CSerialPortWinBase()
 {
     construct();
@@ -45,7 +42,7 @@ void CSerialPortWinBase::construct()
     overlapMonitor.OffsetHigh = 0;
     overlapMonitor.hEvent = CreateEvent(NULL, true, false, NULL);
 
-    isThreadRunning = true;
+    m_isThreadRunning = false;
 
     InitializeCriticalSection(&m_communicationMutex);
 }
@@ -160,12 +157,12 @@ bool CSerialPortWinBase::openPort()
                     //set comm event
                     if (SetCommMask(m_handle, EV_TXEMPTY | EV_RXCHAR | EV_DSR)) // @todo mask need modify
                     {
-                        isThreadRunning = true;
+                        m_isThreadRunning = true;
                         bRet = startThreadMonitor();
 
                         if (!bRet)
                         {
-                            isThreadRunning = false;
+                            m_isThreadRunning = false;
                             lastError = itas109::/*SerialPortError::*/SystemError;
                         }
                     }
@@ -279,7 +276,7 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
 
         ResetEvent(m_mainHandle);
 
-        while (isThreadRunning)
+        while (p_base->isThreadRunning())
         {
             if (!WaitCommEvent(m_mainHandle, &eventMask, &m_overlapMonitor))
                 if (GetLastError() != ERROR_IO_PENDING)
@@ -306,7 +303,7 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
                     ClearCommError(m_mainHandle, &dwError, &comstat);
                     if (comstat.cbInQue >= p_base->m_minByteReadNoify) //设定字符数,默认为2
                     {
-                        readReady._emit();
+                        p_base->readReady._emit();
                     }
                 }
 
@@ -857,6 +854,11 @@ HANDLE CSerialPortWinBase::getMainHandle()
     return m_handle;
 }
 
+bool CSerialPortWinBase::isThreadRunning()
+{
+    return m_isThreadRunning;
+}
+
 void CSerialPortWinBase::lock()
 {
     //Finished
@@ -894,7 +896,7 @@ bool CSerialPortWinBase::stopThreadMonitor()
     //Finished
 
     SetCommMask(m_monitorThread, 0);
-    isThreadRunning = false;
+    m_isThreadRunning = false;
     //_endthreadex(0);//not recommend
 
     return true;

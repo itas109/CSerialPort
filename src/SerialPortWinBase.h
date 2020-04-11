@@ -314,6 +314,14 @@ public:
 	 */
 	HANDLE getMainHandle();
 
+    /**
+     * @brief isThreadRunning 是否启动多线程
+     * @return
+     * @retval true thread running 多线程已启动
+     * @retval false thread not running 多线程未启动
+     */
+    bool isThreadRunning();
+
 protected:
 	/**
 	 * @brief lock 锁
@@ -331,7 +339,7 @@ private:
 	 * @brief thread monitor 多线程监视器
 	 *
 	 */
-	static unsigned int __stdcall commThreadMonitor(LPVOID pParam);
+    static unsigned int __stdcall commThreadMonitor(LPVOID pParam);
 	/**
 	 * @brief start thread monitor 启动多线程监视器
 	 *
@@ -350,7 +358,7 @@ private:
 	bool stopThreadMonitor();
 
 public:
-    static sigslot::signal0<> readReady;///< sigslot for read 读数据信号
+    sigslot::signal0<> readReady;///< sigslot for read 读数据信号
 
 private:
 	std::string m_portName;
@@ -358,7 +366,7 @@ private:
 	itas109::Parity m_parity;
 	itas109::DataBits m_dataBits;
 	itas109::StopBits m_stopbits;
-        enum itas109::FlowControl m_flowControl;
+    enum itas109::FlowControl m_flowControl;
 	int64 m_readBufferSize;
 
 private:
@@ -375,6 +383,6 @@ private:
 
 	CRITICAL_SECTION m_communicationMutex;///< mutex
 
-	static bool isThreadRunning;
+    bool m_isThreadRunning;
 };
 #endif //__CSERIALPORTWINBASE_H__

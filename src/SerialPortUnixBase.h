@@ -334,6 +334,15 @@ public:
 	 */
 	std::string getVersion();
 
+public:
+    /**
+     * @brief isThreadRunning 是否启动多线程
+     * @return
+     * @retval true thread running 多线程已启动
+     * @retval false thread not running 多线程未启动
+     */
+    bool isThreadRunning();
+
 private:
 	/**
 	 * @brief lock 锁
@@ -382,7 +391,7 @@ private:
     bool stopThreadMonitor();
 
 public:
-	static sigslot::signal0<> readReady;///< sigslot for read 读数据信号
+    sigslot::signal0<> readReady;///< sigslot for read 读数据信号
 
 private:
 	std::string m_portName;
@@ -398,7 +407,7 @@ private:
 private:
     pthread_t m_monitorThread;  /**< read thread */
 
-    static bool isThreadRunning;
+    bool m_isThreadRunning;
 
     pthread_mutex_t m_communicationMutex;///< mutex
 };
