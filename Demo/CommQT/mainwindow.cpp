@@ -24,6 +24,9 @@ MainWindow::MainWindow(QWidget *parent) :
     rx = 0;
     tx = 0;
 
+
+    setWindowTitle(this->windowTitle() + " " +QString::fromStdString(m_SerialPort.getVersion()));
+
     //init
 
     std::list<std::string> portNameList = CSerialPortInfo::availablePorts();
