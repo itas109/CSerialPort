@@ -238,7 +238,7 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
 
             //read前获取可读的字节数,不区分阻塞和非阻塞
             ioctl(p_base->fd, FIONREAD, &readbytes);
-            if (readbytes >= p_base->getMinByteReadNoify()) //设定字符数，默认为2
+            if (readbytes >= p_base->getMinByteReadNotify()) //设定字符数，默认为2
             {
                 p_base->readReady._emit();
             }
@@ -438,9 +438,9 @@ void CSerialPortUnixBase::setReadTimeInterval(int msecs)
     //@todo
 }
 
-void CSerialPortUnixBase::setMinByteReadNoify(unsigned int minByteReadNoify)
+void CSerialPortUnixBase::setMinByteReadNotify(unsigned int minByteReadNotify)
 {
-    m_minByteReadNoify = minByteReadNoify;
+    m_minByteReadNotify = minByteReadNotify;
 }
 
 int CSerialPortUnixBase::getLastError() const

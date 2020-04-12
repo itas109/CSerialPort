@@ -301,7 +301,7 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
 
                     // solve 线程中循环的低效率问题
                     ClearCommError(m_mainHandle, &dwError, &comstat);
-                    if (comstat.cbInQue >= p_base->getMinByteReadNoify()) //设定字符数,默认为2
+                    if (comstat.cbInQue >= p_base->getMinByteReadNotify()) //设定字符数,默认为2
                     {
                         p_base->readReady._emit();
                     }
@@ -548,9 +548,9 @@ void CSerialPortWinBase::setReadTimeInterval(int msecs)
     //@todo
 }
 
-void CSerialPortWinBase::setMinByteReadNoify(unsigned int minByteReadNoify)
+void CSerialPortWinBase::setMinByteReadNotify(unsigned int minByteReadNotify)
 {
-    m_minByteReadNoify = minByteReadNoify;
+    m_minByteReadNotify = minByteReadNotify;
 }
 
 int CSerialPortWinBase::getLastError() const

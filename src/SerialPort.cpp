@@ -19,7 +19,7 @@ CSerialPort::CSerialPort()
 {
     p_serialPortBase = new CSERIALPORTBASE();
 
-    p_serialPortBase->setMinByteReadNoify(1);
+    p_serialPortBase->setMinByteReadNotify(1);
 
     ((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
 }
@@ -28,7 +28,7 @@ itas109::CSerialPort::CSerialPort(const std::string & portName)
 {
     p_serialPortBase = new CSERIALPORTBASE(portName);
 
-    p_serialPortBase->setMinByteReadNoify(1);
+    p_serialPortBase->setMinByteReadNotify(1);
 
     ((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
 }
@@ -165,11 +165,11 @@ void itas109::CSerialPort::setReadTimeInterval(int msecs)
     }
 }
 
-void CSerialPort::setMinByteReadNoify(unsigned int minByteReadNoify)
+void CSerialPort::setMinByteReadNotify(unsigned int minByteReadNotify)
 {
     if(p_serialPortBase)
     {
-        p_serialPortBase->setMinByteReadNoify(minByteReadNoify);
+        p_serialPortBase->setMinByteReadNotify(minByteReadNotify);
     }
 }
 

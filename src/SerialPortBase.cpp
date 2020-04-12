@@ -3,7 +3,7 @@
 
 CSerialPortBase::CSerialPortBase()
 {
-	m_minByteReadNoify = 1;
+    m_minByteReadNotify = 1;
 }
 
 CSerialPortBase::CSerialPortBase(const std::string & portName)
@@ -20,9 +20,9 @@ void CSerialPortBase::setOperateMode(itas109::OperateMode operateMode)
     m_operateMode = operateMode;
 }
 
-unsigned int CSerialPortBase::getMinByteReadNoify()
+unsigned int CSerialPortBase::getMinByteReadNotify()
 {
-    return m_minByteReadNoify;
+    return m_minByteReadNotify;
 }
 
 int CSerialPortBase::getLastError() const
