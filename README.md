@@ -33,6 +33,7 @@
 - [x] 6.同步串口通信
 - [ ] 7.全新的跨平台串口调试助手
 - [ ] 8.增加一个类库的介绍和使用视频
+- [ ] 9.串口侦听hook
 
 ## Short-term Goal 短期目标
 
@@ -50,10 +51,20 @@ by itas109 on 2020-01-08
 
 # Quick Start 快速开始
 ## Windows
+* cmake(**recommend**)
+```
+git clone https://github.com/itas109/CSerialPort.git
+
+cd CSerialPort\Demo\CommNoGui
+
+mkdir bin
+
+cd bin
+
+cmake ..
+```
 * MSVC
 
-批处理需要根据自己安装的MSVC编译器版本和位置修改
-这里MSVC编译器版本为VS2013，安装位置为"D:\Program Files (x86)\Microsoft Visual Studio 12.0"
 ```
 git clone https://github.com/itas109/CSerialPort.git
 
@@ -76,6 +87,23 @@ CSerialPortDemoNoGui-MinGW.exe
 ```
 
 ## Linux
+* cmake(**recommend**)
+```
+git clone https://github.com/itas109/CSerialPort.git
+
+cd CSerialPort\Demo\CommNoGui
+
+mkdir bin
+
+cd bin
+
+cmake ..
+
+make
+
+./CSerialPortDemoNoGui
+```
+* makefile
 ```
 git clone https://github.com/itas109/CSerialPort.git
 cd CSerialPort\Demo\CommNoGui
@@ -83,7 +111,7 @@ cd CSerialPort\Demo\CommNoGui
 make
 ./CSerialPortDemoNoGui
 ```
-or
+* shell
 ```
 git clone https://github.com/itas109/CSerialPort.git
 cd CSerialPort\Demo\CommNoGui
@@ -110,65 +138,40 @@ chmod +x compile.sh
 | Ubuntu 16.04 64bit En | x86_64 | QT 5.6.2 | GCC 5.4.0 | 2019-07-28 |
 | Linux raspberrypi 4.9.70 | armv7l | NoGUi | GCC 4.9.2 | 2020-03-21 |
 
-# directory List 目录列表
+# Result 结果
 
-update : 2019-08-10
+## Linux：
 
-```
-|-- CSerialPort # root
-    |-- .gitattributes
-    |-- .gitignore
-    |-- LICENSE # LGPL3.0 license
-    |-- README.md 
-    |-- VERSION # version 版本号
-    |-- Demo # example 示例目录
-    |   |-- Comm # CSerialPort MFC Demo use source code win32直接调用源码MFC程序示例
-    |   |   |-- Comm
-    |   |   |-- Release # CSerialPort Release Application 可以直接运行的Release程序
-    |   |       |-- Comm.exe
-    |   |-- CommDLL # CSerialPort MFC Demo use Win32 Dll win32动态库MFC程序示例
-    |   |   |-- Comm
-    |   |-- CommQT # CSerialPort QT win/linux Demo QT win/linux 程序示例
-    |   |-- CommNoGui # CSerialPort No Gui win/linux Demo win/linux无界面程序示例
-    |   |-- CSerialPortDemoWin32Console # CSerialPort Demo for Win32 Console win32控制台程序示例
-    |       |-- CSerialPortDemoWin32Console
-    |-- doc # document 文档目录
-    |   |-- common_problems.md # common problems 问答文档
-    |   |-- CSerialPort_doc_cn.chm # Chinese documnet 简体中文说明书
-    |   |-- CSerialPort_doc_en.chm # English documnet 英文说明书
-    |   |-- error_guide.md # error guide 错误指南文档
-    |   |-- How To Use.txt
-    |   |-- suspending.txt
-    |-- lib # lib 库目录
-    |   |-- Linux # windows lib windows库目录
-    |       |-- compile.sh # sh compile 命令编译
-    |       |-- Makefile # Makefile compile Makefile编译
-    |   |-- Windows # windows lib windows库目录
-    |       |-- VC12 # windows lib for vs2013 windows vs2013库目录
-    |           |-- libcserialport
-    |               |-- libcserialport
-    |-- pic # picture 图片
-    |-- src # source 源代码
-        |-- osplatformutil.h # os platform define 操作系统定义
-        |-- SerialPort.cpp
-        |-- SerialPort.h # Lightweight library of serial port, which can easy to read and write serical port on windows and linux with C++ 轻量级跨平台串口读写类库
-        |-- SerialPortBase.cpp
-        |-- SerialPortBase.h # CSerialPort Base class 串口基类 
-        |-- SerialPortInfo.cpp
-        |-- SerialPortInfo.h # CSerialPortInfo class 串口信息辅助类 
-        |-- SerialPortInfoBase.cpp
-        |-- SerialPortInfoBase.h # CSerialPortInfo Base class 串口信息辅助类基类 
-        |-- SerialPortInfoUnixBase.cpp
-        |-- SerialPortInfoUnixBase.h # CSerialPortInfo unix class unix串口信息辅助类基类 
-        |-- SerialPortInfoWinBase.cpp
-        |-- SerialPortInfoWinBase.h # CSerialPortInfo windows class windows串口信息辅助类基类 
-        |-- SerialPortUnixBase.cpp
-        |-- SerialPortUnixBase.h # CSerialPort unix Base class unix串口基类 
-        |-- SerialPortWinBase.cpp
-        |-- SerialPortWinBase.h # CSerialPort Windows Base class windows串口基类 
-        |-- SerialPort_global.h # Global difine of CSerialPort 串口全局定义 
-        |-- sigslot.h # signal and slot 信号与槽
-```
+### Gui 界面
+
+示例路径: CSerialPort/Demo/CommQT
+
+![image](./pic/linux.jpg)
+
+### No Gui 无界面
+
+示例路径: CSerialPort/Demo/CommNoGui
+
+![image](./pic/linux_no_gui.jpg)
+
+
+## Windows:
+
+### Gui 界面
+
+示例路径: CSerialPort/Demo/CommQT
+
+![image](./pic/win.jpg)
+
+
+### No Gui 无界面
+
+示例路径: CSerialPort/Demo/CommNoGui
+![image](./pic/win_no_gui.jpg)
+
+# Directory List 目录列表
+
+[目录列表文档](./doc/directory_list.md)
 
 # Error Guide 错误指南文档
 
@@ -177,79 +180,6 @@ update : 2019-08-10
 # Frequently Asked Questions 常见问题回答
 
 [常见问题回答](./doc/FAQ.md)
-
-
-# Result 结果
-
-## linux：
-
-## Gui 界面
-
-示例路径: CSerialPort/Demo/CommQT
-
-![image](./pic/linux.jpg)
-
-## No Gui 无界面
-
-示例路径 1: CSerialPort/Demo/CommNoGui
-
-![image](./pic/linux_no_gui.jpg)
-
-示例2如下所示 :
-
-![image](./pic/linux_no_gui_2.jpg)
-
-* 示例代码
-
-```
-//sp.cpp
-
-#include <iostream>
-#include "SerialPort.h"
-
-int main()
-{
-        itas109::CSerialPort sp;
-        std::cout << "Version : " << sp.getVersion() << std::endl;
-	sp.init("/dev/ttyS0");
-	sp.open();
-	std::cout << " open status : " << sp.isOpened() << std::endl;
-	
-	return 0;
-}
-```
-
-* compile 编译
-
-```
-Linux源码编译
-g++ sp.cpp SerialPort.cpp SerialPortBase.cpp SerialPortUnixBase.cpp -lpthread -o sp
-./sp
-
-Linux 动态库编译
-g++ SerialPort.cpp SerialPortBase.cpp SerialPortUnixBase.cpp -fPIC -lpthread -shared -o libsp.so
-g++ sp.cpp -o sp -L. -lsp
-export LD_LIBRARY_PATH=./
-./sp
-```
-
-## windows:
-
-## Gui 界面
-
-示例路径: CSerialPort/Demo/CommQT
-
-![image](./pic/win.jpg)
-![image][win_no_gui]
-
-
-
-## No Gui 无界面
-
-示例路径 1: CSerialPort/Demo/CSerialPortDemoWin32Console
-
-示例路径 2: CSerialPort/Demo/CommNoGui
-![image](./pic/win_no_gui.jpg)
 
 # Contacting 联系方式
 
@@ -262,6 +192,9 @@ export LD_LIBRARY_PATH=./
 * [CSDN博客](http://blog.csdn.net/itas109)
 * [Github](https://github.com/itas109/CSerialPort)
 * [Gitee码云](https://gitee.com/itas109/CSerialPort)
+
+# CSerialPort-based Applications 基于CSerialPort的应用
+欢迎补充
 
 # Donate 捐助
 
