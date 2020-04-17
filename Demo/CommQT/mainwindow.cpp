@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
     int i = 0;
     for (itor = portNameList.begin(); itor != portNameList.end(); ++itor)
     {
-        ui->comboBoxPortName->insertItem(i,QString::fromStdString(*itor));
+        ui->comboBoxPortName->insertItem(i,QString::fromLocal8Bit(string(*itor).c_str()));
         i++;
     }
 
@@ -64,6 +64,7 @@ void MainWindow::OnReceive()
 
     if(iRet != -1)
     {
+        // TODO: 中文需要由两个字符拼接，否则显示为空""
         QString m_str = QString::fromLocal8Bit(str,iRet);
 
 //        qDebug() << "receive : " << m_str;
@@ -141,7 +142,11 @@ void MainWindow::on_pushButtonSend_clicked()
     {
         QString sendStr = ui->plainTextEditSend->toPlainText();
 
-        m_SerialPort.writeData(sendStr.toStdString().c_str(),sendStr.length());
+        QByteArray ba = sendStr.toLocal8Bit();
+        const char *s = ba.constData();
+
+        // 支持中文并获取正确的长度
+        m_SerialPort.writeData(s,ba.length());
 
         tx += sendStr.length();
 

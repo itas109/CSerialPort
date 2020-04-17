@@ -138,7 +138,7 @@ BOOL CCommDlg::OnInitDialog()
 	}
 	m_PortNr.SetCurSel(0);
 	
-	OnBnClickedButtonOpenClose();
+	//OnBnClickedButtonOpenClose();
 
 	m_Send.SetWindowText(_T("http://blog.csdn.net/itas109"));
 
@@ -309,11 +309,16 @@ void CCommDlg::OnClose()
 void CCommDlg::OnReceive()
 {
 	char * str = NULL;
-	str = new char[256];
-	m_SerialPort.readAllData(str);
+	str = new char[1024];
+	int iRet = m_SerialPort.readAllData(str);
 
-	CString str1((char*)str);
+	if (iRet > 0)
+	{
+		str[iRet] = '\0';
 
-	m_ReceiveCtrl.SetSel(-1, -1);
-	m_ReceiveCtrl.ReplaceSel(str1);
+		CString str1((char*)str);
+
+		m_ReceiveCtrl.SetSel(-1, -1);
+		m_ReceiveCtrl.ReplaceSel(str1);
+	}
 }

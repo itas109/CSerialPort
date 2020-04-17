@@ -24,16 +24,24 @@ public:
 	{
 		//read
 		recLen = m_sp.readAllData(str);
-		std::cout << "receive data : " << str << ", receive size : " << recLen << std::endl;
 
-		//write for test
-		m_sp.writeData("test", 4);
-		countRead++;
-		std::cout << "receive count : " << countRead << std::endl;
-		if (countRead == 100)
+		if(recLen > 0)
 		{
-			std::cout << " --- stop " << std::endl;
-			m_sp.close();
+			countRead++;
+
+			str[recLen] = '\0';
+			std::cout << "receive data : " << str << ", receive size : " << recLen << ", receive count : " << countRead << std::endl;
+
+			if(countRead > 10)
+			{
+				std::cout << "close serial port when receive count > 10" << std::endl;
+				m_sp.close();
+			}
+			else
+			{		
+				// return receive data
+				m_sp.writeData(str, recLen);
+			}
 		}
 	};
 
@@ -43,7 +51,7 @@ private:
 private:
 	CSerialPort m_sp;
 
-	char str[256];
+	char str[1024];
 	int recLen;
 };
 
@@ -114,10 +122,7 @@ int main()
 		sp.readReady.connect(&receive, &mySlot::OnSendMessage);
 
 		//write
-		for (int i = 0; i < 50; i++)
-		{
-			sp.writeData("write", 5);
-		}
+		sp.writeData("ping", 4);
 
 		while (true);
 	}

@@ -353,7 +353,7 @@ int CSerialPortWinBase::readData(char *data, int maxSize)
             m_overlapRead.hEvent = CreateEvent(NULL, true, false, NULL);
             if (ReadFile(m_handle, (void*)data, (DWORD)maxSize, &dRet, &m_overlapRead))
             {
-                data[dRet] = '\0';
+                //data[dRet] = '\0';
             }
             else
             {
