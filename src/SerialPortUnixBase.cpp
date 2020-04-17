@@ -207,6 +207,15 @@ int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, 
      *ISIG：允许信号
      */
 
+    options.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+    /*
+     *BRKINT：如果设置了IGNBRK，BREAK键输入将被忽略
+     *ICRNL：将输入的回车转化成换行（如果IGNCR未设置的情况下）(0x0d => 0x0a)
+     *INPCK：允许输入奇偶校验
+     *ISTRIP：去除字符的第8个比特
+     *IXON：允许输出时对XON/XOFF流进行控制 (0x11 0x13)
+     */
+
     //设置等待时间和最小接受字符
     options.c_cc[VTIME] = 0;//可以在select中设置
     options.c_cc[VMIN] = 1;//最少读取一个字符
