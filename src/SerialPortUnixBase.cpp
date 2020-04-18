@@ -66,38 +66,20 @@ int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, 
         return -1;
     }
 
-
     //设置输入输出波特率
-    switch(baudRate)
+    int baudRateConstant = 0;
+    baudRateConstant = rate2Constant(baudRate);
+
+    if(0 != baudRateConstant)
     {
-        case itas109::BaudRate1200:
-            cfsetispeed(&options,B1200);
-            cfsetospeed(&options,B1200);
-            break;
-        case itas109::BaudRate2400:
-            cfsetispeed(&options,B2400);
-            cfsetospeed(&options,B2400);
-            break;
-        case itas109::BaudRate4800:
-            cfsetispeed(&options,B4800);
-            cfsetospeed(&options,B4800);
-            break;
-            break;
-        case itas109::BaudRate9600:
-            cfsetispeed(&options,B9600);
-            cfsetospeed(&options,B9600);
-            break;
-        case itas109::BaudRate19200:
-            cfsetispeed(&options,B19200);
-            cfsetospeed(&options,B19200);
-            break;
-        case itas109::BaudRate38400:
-            cfsetispeed(&options,B38400);
-            cfsetospeed(&options,B38400);
-            break;
-        default:
-            fprintf(stderr,"Unkown baude!\n");
-            return -1;
+        cfsetispeed(&options,baudRateConstant);
+        cfsetospeed(&options,baudRateConstant);
+    }
+    else
+    {
+        // TODO: custom baudrate
+        fprintf(stderr,"Unkown baudrate!\n");
+        return -1;
     }
 
     //设置校验位
@@ -561,4 +543,24 @@ void CSerialPortUnixBase::lock()
 void CSerialPortUnixBase::unlock()
 {
     pthread_mutex_unlock(&m_communicationMutex);
+}
+
+int CSerialPortUnixBase::rate2Constant(int baudrate)
+{
+    // https://jim.sh/ftx/files/linux-custom-baudrate.c
+
+#define B(x) case x: return B##x
+
+    switch(baudrate)
+    {
+        B(50);     B(75);     B(110);    B(134);    B(150);
+        B(200);    B(300);    B(600);    B(1200);   B(1800);
+        B(2400);   B(4800);   B(9600);   B(19200);  B(38400);
+        B(57600);  B(115200); B(230400); B(460800); B(500000);
+        B(576000); B(921600); B(1000000);B(1152000);B(1500000);
+        B(2000000); B(2500000); B(3000000);B(3500000);B(4000000);
+    default: return 0;
+    }
+
+#undef B
 }

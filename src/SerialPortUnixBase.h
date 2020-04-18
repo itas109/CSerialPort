@@ -356,6 +356,13 @@ private:
 	void unlock();
 
     /**
+     * @brief rate2Constant baudrate to constant 波特率转为unix常量
+     * @param baudrate 波特率
+     * @return constant unix常量
+     */
+    int rate2Constant(int baudrate);
+
+    /**
      * @brief uart_set
      * @param fd
      * @param baude
