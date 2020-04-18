@@ -32,9 +32,9 @@ public:
 			str[recLen] = '\0';
 			std::cout << "receive data : " << str << ", receive size : " << recLen << ", receive count : " << countRead << std::endl;
 
-			if(countRead > 10)
+			if(countRead > 7)
 			{
-				std::cout << "close serial port when receive count > 10" << std::endl;
+				std::cout << "close serial port when receive count > 7" << std::endl;
 				m_sp.close();
 			}
 			else
@@ -122,7 +122,7 @@ int main()
 		sp.readReady.connect(&receive, &mySlot::OnSendMessage);
 
 		//write
-		sp.writeData("ping", 4);
+		sp.writeData("itas109", 7);
 
 		while (true);
 	}
