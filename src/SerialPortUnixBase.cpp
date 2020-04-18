@@ -378,7 +378,7 @@ int CSerialPortUnixBase::readData(char *data, int maxSize)
     }
     else
     {
-        lastError = itas109::SerialPortError::NotOpenError;
+        lastError = itas109::/*SerialPortError::*/NotOpenError;
         iRet = -1;
     }
 
@@ -407,7 +407,7 @@ int CSerialPortUnixBase::readLineData(char *data, int maxSize)
     }
     else
     {
-        lastError = itas109::SerialPortError::NotOpenError;
+        lastError = itas109::/*SerialPortError::*/NotOpenError;
         iRet = -1;
     }
 
@@ -428,7 +428,7 @@ int CSerialPortUnixBase::writeData(const char * data, int maxSize)
     }
     else
     {
-        lastError = itas109::SerialPortError::NotOpenError;
+        lastError = itas109::/*SerialPortError::*/NotOpenError;
         iRet = -1;
     }
 
