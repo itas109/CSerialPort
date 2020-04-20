@@ -8,10 +8,12 @@ using namespace itas109;
 #include <vector>
 using namespace std;
 
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__)) || (defined(WIN64) || defined(_WIN64) || defined(__WIN64__))
+#ifdef I_OS_WIN
     #define imsleep(x) Sleep(x)
-#else   // unix
+#elif defined I_OS_UNIX   // unix
     #define imsleep(x) usleep(1000*x)
+#else
+    #define imsleep(x)
 #endif
 
 namespace
@@ -39,9 +41,18 @@ protected:
             // 防止太快导致串口没有被释放
             imsleep(100);
         }
+
+        if(m_serialport2.isOpened())
+        {
+            m_serialport2.close();
+
+            // 防止太快导致串口没有被释放
+            imsleep(100);
+        }
     }
 
     CSerialPort m_serialport;
+    CSerialPort m_serialport2;
     std::list<std::string> m_availablePortsList;
     vector<std::string> m_availablePortsVector;
 };
@@ -68,7 +79,6 @@ TEST_F(CSerialPortTests, open_1_1)
 // #1_2 open port 打开占用的串口
 TEST_F(CSerialPortTests, open_1_2)
 {
-    CSerialPort m_serialport2;
     m_serialport2.init(m_availablePortsVector[0]);
     ASSERT_TRUE(m_serialport2.open()) << m_availablePortsVector[0] << " Used error";
 
@@ -82,8 +92,6 @@ TEST_F(CSerialPortTests, open_1_3)
     ASSERT_TRUE(m_availablePortsList.size() > 1) << "port count < 2";
 
     m_serialport.init(m_availablePortsVector[0]);
-
-    CSerialPort m_serialport2;
     m_serialport2.init(m_availablePortsVector[1]);
 
     EXPECT_TRUE(m_serialport.open()) << m_availablePortsVector[0] << " open error, error code: " << m_serialport.getLastError();
@@ -101,7 +109,6 @@ TEST_F(CSerialPortTests, isOpened_2_1)
 // #2_2 被占用的串口,isOpened()是否与open()返回值一致
 TEST_F(CSerialPortTests, isOpened_2_2)
 {
-    CSerialPort m_serialport2;
     m_serialport2.init(m_availablePortsVector[0]);
     ASSERT_TRUE(m_serialport2.open()) << m_availablePortsVector[0] << " Used error";
 
@@ -138,6 +145,8 @@ TEST_F(CSerialPortTests, open_close_3_2)
 // #3_3 打开并关闭串口(9600,N,1)，切换串口，再次打开串口(9600,N,1)	
 TEST_F(CSerialPortTests, open_close_3_3)
 {
+    ASSERT_TRUE(m_availablePortsList.size() > 1) << "port count < 2";
+
     m_serialport.init(m_availablePortsVector[0]);
     m_serialport.open();
     EXPECT_TRUE(m_serialport.isOpened()) << m_availablePortsVector[0] << " open error, error code: " << m_serialport.getLastError();
@@ -182,7 +191,12 @@ int main(int argc, char **argv)
         std::cerr << "Unhandled Exception: " << e.what() << std::endl;
     }
 
+#ifdef I_OS_WIN
     system("pause");
-
+#elif defined I_OS_UNIX   // unix
+    printf("Press any key to continue...");
+    fgetc(stdin);
+#endif
+    
     return 0;
 }
