@@ -29,15 +29,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //init
 
-    std::list<std::string> portNameList = CSerialPortInfo::availablePorts();
+    vector<SerialPortInfo> portNameList = CSerialPortInfo::availablePortInfos();
 
-    list<string>::iterator itor;
-
-    int i = 0;
-    for (itor = portNameList.begin(); itor != portNameList.end(); ++itor)
+    for (int i = 0; i < portNameList.size(); i++)
     {
-        ui->comboBoxPortName->insertItem(i,QString::fromLocal8Bit(string(*itor).c_str()));
-        i++;
+        ui->comboBoxPortName->insertItem(i,QString::fromLocal8Bit(portNameList[i].portName.c_str()));
     }
 
     m_SerialPort.readReady.connect(this, &MainWindow::OnReceive);

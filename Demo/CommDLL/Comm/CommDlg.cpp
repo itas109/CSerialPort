@@ -120,19 +120,17 @@ BOOL CCommDlg::OnInitDialog()
 	m_BaudRate.SetCurSel(m_BaudRate.FindString(0, temp));
 
 	//»ñÈ¡´®¿ÚºÅ
-	CSerialPortInfo a;
-	list<string> m_portsList = CSerialPortInfo::availablePorts();
-	list<string>::iterator itor;
+	vector<SerialPortInfo> m_portsList = CSerialPortInfo::availablePortInfos();
 	TCHAR m_regKeyValue[255];
-	for (itor = m_portsList.begin(); itor != m_portsList.end(); ++itor)
+	for (int i = 0; i < m_portsList.size(); i++)
 	{
 #ifdef UNICODE
 		int iLength;
-		const char * _char = (*itor).c_str();
+		const char * _char = m_portsList[i].portName.c_str();
 		iLength = MultiByteToWideChar(CP_ACP, 0, _char, strlen(_char) + 1, NULL, 0);
 		MultiByteToWideChar(CP_ACP, 0, _char, strlen(_char) + 1, m_regKeyValue, iLength);
 #else
-		strcpy_s(m_regKeyValue, 255, (*itor).c_str());
+		strcpy_s(m_regKeyValue, 255, m_portsList[i].portName.c_str());
 #endif
 		m_PortNr.AddString(m_regKeyValue);
 	}

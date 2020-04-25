@@ -1,11 +1,9 @@
 #include <iostream>
 
-#include "sigslot.h"
 #include "SerialPort.h"
 #include "SerialPortInfo.h"
 
 #include <vector>
-#include <iterator>
 using namespace itas109;
 using namespace std;
 
@@ -58,27 +56,21 @@ private:
 int main()
 {
 	int index = -1;
-	int i = 0;
-	std::string portName = "";
-	std::string friendlyPortName = "";
-	std::list<std::string>::iterator it;
-	std::list<std::string> m_availablePortsList;
-	vector<std::string> m_availablePortsVector;
+	std::string portName;
+	vector<SerialPortInfo> m_availablePortsList;
 	CSerialPort sp;
 
 	std::cout << "Version : " << sp.getVersion() << std::endl << std::endl;
 
 	mySlot receive(sp);
 
-	m_availablePortsList = CSerialPortInfo::availableFriendlyPorts();
+	m_availablePortsList = CSerialPortInfo::availablePortInfos();
 
 	std::cout << "availableFriendlyPorts : " << std::endl;
-	
-	std::copy(m_availablePortsList.begin(), m_availablePortsList.end(), back_inserter(m_availablePortsVector));
-	
-	for (it = m_availablePortsList.begin(); it != m_availablePortsList.end(); it++)
+		
+	for (int i = 0; i < m_availablePortsList.size(); i++)
 	{
-		std::cout << i++ << " - " << *it << std::endl;
+		std::cout << i << " - " << m_availablePortsList[i].portName << " " << m_availablePortsList[i].description << std::endl;
 	}
 
 	if (m_availablePortsList.size() == 0)
@@ -91,19 +83,18 @@ int main()
 		
 		do
 		{
-			std::cout << "Please input index of the port(0 - " << i - 1 << " ) : " << std::endl;
+			std::cout << "Please input index of the port(0 - " << (m_availablePortsList.size() - 1 )<< " ) : " << std::endl;
 		
 			std::cin >> index;
 			
-			if(index >=0 && index < i)
+			if(index >=0 && index < m_availablePortsList.size())
 			{
 				break;
 			}
 		}while(true);
-			
-		std::string friendlyPortName = m_availablePortsVector[index];
-		portName = friendlyPortName.substr(0, friendlyPortName.find(" "));
-		std::cout << "select port name : " << friendlyPortName << std::endl;
+		
+		portName = m_availablePortsList[index].portName;
+		std::cout << "select port name : " << portName << std::endl;
 
 		sp.init(portName);//windows:COM1 Linux:/dev/ttyS0
 
