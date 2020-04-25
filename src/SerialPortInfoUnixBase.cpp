@@ -52,6 +52,13 @@ std::list<std::string> CSerialPortInfoUnixBase::availableFriendlyPorts()
     return availablePorts();
 }
 
+vector<SerialPortInfo> CSerialPortInfoUnixBase::availablePortInfos()
+{
+    vector<SerialPortInfo> portInfoList;
+
+    return portInfoList;
+}
+
 static std::string get_driver(const std::string& tty)
 {
     struct stat st;

@@ -11,8 +11,6 @@
 #define CSERIALPORTBASE
 #endif // I_OS_WIN
 
-#include "SerialPortInfoBase.h"
-
 using namespace itas109;
 
 CSerialPortInfo::CSerialPortInfo()
@@ -32,4 +30,9 @@ std::list<std::string> CSerialPortInfo::availablePorts()
 std::list<std::string> CSerialPortInfo::availableFriendlyPorts()
 {
     return CSERIALPORTINFOBASE::availableFriendlyPorts();
+}
+
+vector<SerialPortInfo> CSerialPortInfo::availablePortInfos()
+{
+    return CSERIALPORTINFOBASE::availablePortInfos();
 }

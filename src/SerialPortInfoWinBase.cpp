@@ -12,41 +12,7 @@
 #include <tchar.h>//_T
 /********************* EnumDetailsSerialPorts ****************************************/
 
-CSerialPortInfoWinBase* CSerialPortInfoWinBase::p_serialPortInfoWinBase;
-
-CSerialPortInfoWinBase::CSerialPortInfoWinBase()
-{
-    p_serialPortInfoWinBase = this;
-}
-
-
-CSerialPortInfoWinBase::~CSerialPortInfoWinBase()
-{
-}
-
-
-
-std::list<std::string> CSerialPortInfoWinBase::availablePorts()
-{
-    std::list<std::string> portsList;
-    ///XP/Win7/Win10系统的注册表位置，其他系统根据实际情况做修改
-    std::string m_regKeyPath = std::string("HARDWARE\\DEVICEMAP\\SERIALCOMM");
-    p_serialPortInfoWinBase->getRegKeyValues(m_regKeyPath, portsList);
-    return portsList;
-}
-
-std::list<std::string> CSerialPortInfoWinBase::availableFriendlyPorts()
-{
-    std::list<std::string> portsList;
-
-    // Win2k and later support a standard API for
-    // enumerating hardware devices.
-    p_serialPortInfoWinBase->enumDetailsSerialPorts(portsList);
-
-    return portsList;
-}
-
-bool CSerialPortInfoWinBase::getRegKeyValues(std::string regKeyPath, std::list<std::string> & portsList)
+bool getRegKeyValues(std::string regKeyPath, std::list<std::string> & portsList)
 {
     //https://msdn.microsoft.com/en-us/library/ms724256
 
@@ -158,7 +124,7 @@ bool CSerialPortInfoWinBase::getRegKeyValues(std::string regKeyPath, std::list<s
     return bRet;
 }
 
-bool CSerialPortInfoWinBase::enumDetailsSerialPorts(std::list<std::string> &portsList)
+bool enumDetailsSerialPorts(std::list<std::string> &portsList)
 {
     // https://docs.microsoft.com/en-us/windows/win32/api/setupapi/
 
@@ -284,5 +250,40 @@ bool CSerialPortInfoWinBase::enumDetailsSerialPorts(std::list<std::string> &port
     }
 
     return bRet;
+}
+
+CSerialPortInfoWinBase::CSerialPortInfoWinBase()
+{
+}
+
+CSerialPortInfoWinBase::~CSerialPortInfoWinBase()
+{
+}
+
+std::list<std::string> CSerialPortInfoWinBase::availablePorts()
+{
+    std::list<std::string> portsList;
+    ///XP/Win7/Win10系统的注册表位置，其他系统根据实际情况做修改
+    std::string m_regKeyPath = std::string("HARDWARE\\DEVICEMAP\\SERIALCOMM");
+    getRegKeyValues(m_regKeyPath, portsList);
+    return portsList;
+}
+
+std::list<std::string> CSerialPortInfoWinBase::availableFriendlyPorts()
+{
+    std::list<std::string> portsList;
+
+    // Win2k and later support a standard API for
+    // enumerating hardware devices.
+    enumDetailsSerialPorts(portsList);
+
+    return portsList;
+}
+
+vector<SerialPortInfo> CSerialPortInfoWinBase::availablePortInfos()
+{
+    vector<SerialPortInfo> portInfoList;
+
+    return portInfoList;
 }
 
