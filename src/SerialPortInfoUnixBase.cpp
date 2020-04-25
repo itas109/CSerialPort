@@ -149,6 +149,26 @@ vector<std::string> getPortInfoListLinux()
     // serial8250-devices must be probe to check for validity
     probe_serial8250_comports(comList, comList8250);
 
+    // 2.Scan through /dev/pts/- it contains all pseudo terminal(such as telnet, ssh etc.) in the system
+    n = scandir(ptsDir, &namelist, NULL, NULL);
+    if (n >= 0)
+    {
+        while (n--)
+        {
+            if (strcmp(namelist[n]->d_name,"..") && strcmp(namelist[n]->d_name,".") && strcmp(namelist[n]->d_name,"ptmx"))
+            {
+                // Construct full absolute file path
+                std::string ptsName = ptsDir ;
+                ptsName += namelist[n]->d_name;
+
+                comList.push_back(ptsName);
+
+            }
+            free(namelist[n]);
+        }
+        free(namelist);
+    }
+
     // Return the lsit of detected comports
     return comList;
 }
