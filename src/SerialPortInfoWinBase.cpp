@@ -10,125 +10,35 @@
 #include <Setupapi.h>//SetupDiGetClassDevs Setup*
 #include <ntddser.h>//GUID_DEVINTERFACE_COMPORT
 #include <tchar.h>//_T
-/********************* EnumDetailsSerialPorts ****************************************/
 
-bool getRegKeyValues(std::string regKeyPath, std::list<std::string> & portsList)
+std::string wstringToString(const std::wstring &wstr)
 {
-    //https://msdn.microsoft.com/en-us/library/ms724256
-
-#define MAX_KEY_LENGTH 255
-#define MAX_VALUE_NAME 16383
-
-    HKEY hKey;
-
-    TCHAR		achValue[MAX_VALUE_NAME];					// buffer for subkey name
-    DWORD		cchValue = MAX_VALUE_NAME;					// size of name string
-    TCHAR		achClass[MAX_PATH] = TEXT("");				// buffer for class name
-    DWORD		cchClassName = MAX_PATH;					// size of class string
-    DWORD		cSubKeys = 0;								// number of subkeys
-    DWORD		cbMaxSubKey;								// longest subkey size
-    DWORD		cchMaxClass;								// longest class string
-    DWORD		cKeyNum;									// number of values for key
-    DWORD		cchMaxValue;								// longest value name
-    DWORD		cbMaxValueData;								// longest value data
-    DWORD		cbSecurityDescriptor;						// size of security descriptor
-    FILETIME	ftLastWriteTime;							// last write time
-
-    int iRet = -1;
-    bool bRet = false;
-
-    std::string m_keyValue;
-
-    TCHAR m_regKeyPath[MAX_KEY_LENGTH];
-
-    TCHAR strDSName[MAX_VALUE_NAME];
-    memset(strDSName, 0, MAX_VALUE_NAME);
-    DWORD nValueType = 0;
-    DWORD nBuffLen = 10;
-
-#ifdef UNICODE
-    int iLength;
-    const char * _char = regKeyPath.c_str();
-    iLength = MultiByteToWideChar(CP_ACP, 0, _char, strlen(_char) + 1, NULL, 0);
-    MultiByteToWideChar(CP_ACP, 0, _char, strlen(_char) + 1, m_regKeyPath, iLength);
-#else
-    strcpy_s(m_regKeyPath, MAX_KEY_LENGTH, regKeyPath.c_str());
-#endif
-
-    if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, m_regKeyPath, 0, KEY_READ, &hKey))
+    // https://stackoverflow.com/questions/4804298/how-to-convert-wstring-into-string
+    if (wstr.empty())
     {
-        // Get the class name and the value count.
-        iRet = RegQueryInfoKey(
-                    hKey,                    // key handle
-                    achClass,                // buffer for class name
-                    &cchClassName,           // size of class string
-                    NULL,                    // reserved
-                    &cSubKeys,               // number of subkeys
-                    &cbMaxSubKey,            // longest subkey size
-                    &cchMaxClass,            // longest class string
-                    &cKeyNum,                // number of values for this key
-                    &cchMaxValue,            // longest value name
-                    &cbMaxValueData,         // longest value data
-                    &cbSecurityDescriptor,   // security descriptor
-                    &ftLastWriteTime);       // last write time
-
-        if (!portsList.empty())
-        {
-            portsList.clear();
-        }
-
-        // Enumerate the key values.
-        if (cKeyNum > 0 && ERROR_SUCCESS == iRet)
-        {
-            for (int i = 0; i < (int)cKeyNum; i++)
-            {
-                cchValue = MAX_VALUE_NAME;
-                achValue[0] = '\0';
-                nBuffLen = MAX_KEY_LENGTH;//防止 ERROR_MORE_DATA 234L 错误
-
-                if (ERROR_SUCCESS == RegEnumValue(hKey, i, achValue, &cchValue, NULL, NULL, (LPBYTE)strDSName, &nBuffLen))
-                {
-
-#ifdef UNICODE
-                    int iLen = WideCharToMultiByte(CP_ACP, 0, strDSName, -1, NULL, 0, NULL, NULL);
-                    char* chRtn = new char[iLen * sizeof(char)];
-                    WideCharToMultiByte(CP_ACP, 0, strDSName, -1, chRtn, iLen, NULL, NULL);
-                    m_keyValue = std::string(chRtn);
-                    delete chRtn;
-                    chRtn = NULL;
-#else
-                    m_keyValue = std::string(strDSName);
-#endif
-                    portsList.push_back(m_keyValue);
-                }
-            }
-        }
-        else
-        {
-
-        }
+        return std::string();
     }
 
-    if (portsList.empty())
-    {
-        bRet = false;
-    }
-    else
-    {
-        bRet = true;
-    }
+    int size = WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+    std::string ret = std::string(size, 0);
+	WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), &ret[0], size, NULL, NULL);//CP_UTF8
 
-
-    RegCloseKey(hKey);
-
-    return bRet;
+    return ret;
 }
 
-bool enumDetailsSerialPorts(std::list<std::string> &portsList)
+/**
+ * @brief enumDetailsSerialPorts 通过setapi.lib枚举串口详细信息
+ * @param portInfoList [out] port info list 串口信息列表
+ * @return
+ * @retval true true if excute success 执行成功返回true
+ * @retval false false if excute failed 执行失败返回false
+ */
+bool enumDetailsSerialPorts(vector<SerialPortInfo> &portInfoList)
 {
     // https://docs.microsoft.com/en-us/windows/win32/api/setupapi/
 
     bool bRet = false;
+    SerialPortInfo m_serialPortInfo;
 
     std::string strFriendlyName;
     std::string strPortName;
@@ -192,32 +102,19 @@ bool enumDetailsSerialPorts(std::list<std::string> &portsList)
 
                         if (bSuccess)
                         {
-
 #ifdef UNICODE
-                            int iLen = WideCharToMultiByte(CP_ACP, 0, portName, -1, NULL, 0, NULL, NULL);
-                            char* chRtn = new char[iLen * sizeof(char)];
-                            WideCharToMultiByte(CP_ACP, 0, portName, -1, chRtn, iLen, NULL, NULL);
-                            strPortName = std::string(chRtn);
-                            delete chRtn;
-                            chRtn = NULL;
+                            strPortName = wstringToString(portName);
+                            strFriendlyName = wstringToString(fname);
 #else
                             strPortName = std::string(portName);
-#endif
-
-#ifdef UNICODE
-                            int iLen2 = WideCharToMultiByte(CP_ACP, 0, fname, -1, NULL, 0, NULL, NULL);
-                            char* chRtn2 = new char[iLen2 * sizeof(char)];
-                            WideCharToMultiByte(CP_ACP, 0, fname, -1, chRtn2, iLen2, NULL, NULL);
-                            strFriendlyName = std::string(chRtn2);
-                            delete chRtn2;
-                            chRtn2 = NULL;
-#else
                             strFriendlyName = std::string(fname);
 #endif
                             // remove (COMxx)
                             strFriendlyName = strFriendlyName.substr(0, strFriendlyName.find(("(COM")));
-                            // compose string => COM1 Prolific USB-to-Serial Comm Port
-                            portsList.push_back(strPortName + " " + strFriendlyName);
+
+                            m_serialPortInfo.portName = strPortName;
+                            m_serialPortInfo.description = strFriendlyName;
+                            portInfoList.push_back(m_serialPortInfo);
 
                             bRet = true;
                         }
@@ -251,10 +148,13 @@ bool enumDetailsSerialPorts(std::list<std::string> &portsList)
 
     return bRet;
 }
+/********************* EnumDetailsSerialPorts ****************************************/
+
 
 CSerialPortInfoWinBase::CSerialPortInfoWinBase()
 {
 }
+
 
 CSerialPortInfoWinBase::~CSerialPortInfoWinBase()
 {
@@ -263,9 +163,15 @@ CSerialPortInfoWinBase::~CSerialPortInfoWinBase()
 std::list<std::string> CSerialPortInfoWinBase::availablePorts()
 {
     std::list<std::string> portsList;
-    ///XP/Win7/Win10系统的注册表位置，其他系统根据实际情况做修改
-    std::string m_regKeyPath = std::string("HARDWARE\\DEVICEMAP\\SERIALCOMM");
-    getRegKeyValues(m_regKeyPath, portsList);
+
+    vector<SerialPortInfo> portInfoList = availablePortInfos();
+
+    int count = portInfoList.size();
+
+    for (int i = 0; i < count; i++)
+    {
+        portsList.push_back(portInfoList[i].portName);
+    }
     return portsList;
 }
 
@@ -273,9 +179,15 @@ std::list<std::string> CSerialPortInfoWinBase::availableFriendlyPorts()
 {
     std::list<std::string> portsList;
 
-    // Win2k and later support a standard API for
-    // enumerating hardware devices.
-    enumDetailsSerialPorts(portsList);
+    vector<SerialPortInfo> portInfoList = availablePortInfos();
+
+    int count = portInfoList.size();
+
+    for (int i = 0; i < count; i++)
+    {
+        // compose string => COM1 Prolific USB-to-Serial Comm Port
+        portsList.push_back(portInfoList[i].portName + " " + portInfoList[i].description);
+    }
 
     return portsList;
 }
@@ -283,6 +195,7 @@ std::list<std::string> CSerialPortInfoWinBase::availableFriendlyPorts()
 vector<SerialPortInfo> CSerialPortInfoWinBase::availablePortInfos()
 {
     vector<SerialPortInfo> portInfoList;
+    enumDetailsSerialPorts(portInfoList);
 
     return portInfoList;
 }
