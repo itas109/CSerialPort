@@ -553,65 +553,95 @@ int CSerialPortUnixBase::rate2Constant(int baudrate)
 
     switch(baudrate)
     {
-#ifdef B50 B(50); 
+#ifdef B50
+    B(50);
 #endif
-#ifdef B75 B(75);
+#ifdef B75
+    B(75);
 #endif
-#ifdef B110 B(110);
+#ifdef B110
+    B(110);
 #endif
-#ifdef B134 B(134);
+#ifdef B134
+    B(134);
 #endif
-#ifdef B150 B(150);
+#ifdef B150
+    B(150);
 #endif
-#ifdef B200 B(200);
+#ifdef B200
+    B(200);
 #endif
-#ifdef B300 B(300);
+#ifdef B300
+    B(300);
 #endif
-#ifdef B600 B(600);
+#ifdef B600
+    B(600);
 #endif
-#ifdef B1200 B(1200);
+#ifdef B1200
+    B(1200);
 #endif
-#ifdef B1800 B(1800);
+#ifdef B1800
+    B(1800);
 #endif
-#ifdef B2400 B(2400);
+#ifdef B2400
+    B(2400);
 #endif
-#ifdef B4800 B(4800);
+#ifdef B4800
+    B(4800);
 #endif
-#ifdef B9600 B(9600);
+#ifdef B9600
+    B(9600);
 #endif
-#ifdef B19200 B(19200);
+#ifdef B19200
+    B(19200);
 #endif
-#ifdef B38400 B(38400);
+#ifdef B38400
+    B(38400);
 #endif
-#ifdef B57600 B(57600);
+#ifdef B57600
+    B(57600);
 #endif
-#ifdef B115200 B(115200);
+#ifdef B115200
+    B(115200);
 #endif
-#ifdef B230400 B(230400);
+#ifdef B230400
+    B(230400);
 #endif
-#ifdef B460800 B(460800);
+#ifdef B460800
+    B(460800);
 #endif
-#ifdef B500000 B(500000);
+#ifdef B500000
+    B(500000);
 #endif
-#ifdef B576000 B(576000);
+#ifdef B576000
+    B(576000);
 #endif
-#ifdef B921600 B(921600);
+#ifdef B921600
+    B(921600);
 #endif
-#ifdef B1000000 B(1000000);
+#ifdef B1000000
+    B(1000000);
 #endif
-#ifdef B1152000 B(1152000);
+#ifdef B1152000
+    B(1152000);
 #endif
-#ifdef B1500000 B(1500000);
+#ifdef B1500000
+    B(1500000);
 #endif
-#ifdef B2000000 B(2000000);
+#ifdef B2000000
+    B(2000000);
 #endif
-#ifdef B2500000 B(2500000);
+#ifdef B2500000
+    B(2500000);
 #endif
-#ifdef B3000000 B(3000000);
+#ifdef B3000000
+    B(3000000);
 #endif
-#ifdef B3500000 B(3500000);
+#ifdef B3500000
+    B(3500000);
 #endif
-#ifdef B4000000 B(4000000);
+#ifdef B4000000
+    B(4000000);
 #endif
 
     default: return 0;
