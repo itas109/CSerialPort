@@ -1,65 +1,31 @@
 ﻿#include "SerialPortInfoUnixBase.h"
 
-#include <stdlib.h> // free
-#include <dirent.h>   //scandir
-#include <stdio.h> // perror
-//#include <sys/types.h>
-#include <sys/stat.h>   //S_ISLNK
-#include <unistd.h>     // readlink close
+#include "osplatformutil.h"
 
-#include <string.h>     //basename memset strcmp
+#ifdef I_OS_LINUX
+    #include <stdlib.h> // free
+    #include <dirent.h>   //scandir
+//    #include <stdio.h> // perror
+    //#include <sys/types.h>
+    #include <sys/stat.h>   //S_ISLNK
+    #include <unistd.h>     // readlink close
 
-#include <fcntl.h>
-#include <termios.h>
-#include <sys/ioctl.h>      //ioctl
-#include <linux/serial.h> //struct serial_struct
+    #include <string.h>     //basename memset strcmp
 
-//#include <iostream>
+    #include <fcntl.h>
+    #include <termios.h>
+    #include <sys/ioctl.h>      //ioctl
+    #include <linux/serial.h> //struct serial_struct
+#elif defined I_OS_MAC
+    #include <sys/param.h>
 
-CSerialPortInfoUnixBase::CSerialPortInfoUnixBase()
-{
-}
+    #include <CoreFoundation/CoreFoundation.h>
+    #include <IOKit/IOKitLib.h>
+    #include <IOKit/serial/IOSerialKeys.h>
+#endif
 
-
-CSerialPortInfoUnixBase::~CSerialPortInfoUnixBase()
-{
-}
-
-std::list<std::string> CSerialPortInfoUnixBase::availablePorts()
-{
-    // ttyS*    // Standard UART 8250 and etc
-    // ttyO*    // OMAP UART 8250 and etc
-    // ttyUSB*  // Usb/serial converters PL2303 and etc
-    // ttyACM*  // CDC_ACM converters (i.e. Mobile Phones)
-    // ttyGS*   // Gadget serial device (i.e. Mobile Phones with gadget serial driver)
-    // ttyMI*   // MOXA pci/serial converters
-    // ttymxc*  // Motorola IMX serial ports (i.e. Freescale i.MX)
-    // ttyAMA*  // AMBA serial device for embedded platform on ARM (i.e. Raspberry Pi)
-    // ttyTHS*  // Serial device for embedded platform on ARM (i.e. Tegra Jetson TK1)
-    // rfcomm*  // Bluetooth serial device
-    // ircomm*  // IrDA serial device
-    // tnt*     // Virtual tty0tty serial device
-    // pts/*    // Virtual pty serial device
-
-    //need add virtual serial port support 19-07-28
-
-    return getComList();
-}
-
-std::list<std::string> CSerialPortInfoUnixBase::availableFriendlyPorts()
-{
-    // Not Support,so it is equal to availablePorts()
-    return availablePorts();
-}
-
-vector<SerialPortInfo> CSerialPortInfoUnixBase::availablePortInfos()
-{
-    vector<SerialPortInfo> portInfoList;
-
-    return portInfoList;
-}
-
-static std::string get_driver(const std::string& tty)
+#ifdef I_OS_LINUX
+std::string get_driver(const std::string& tty)
 {
     struct stat st;
     std::string devicedir = tty;
@@ -97,7 +63,7 @@ static std::string get_driver(const std::string& tty)
     return "";
 }
 
-static void register_comport( std::list<std::string>& comList, std::list<std::string>& comList8250, const std::string& dir) {
+void register_comport( vector<std::string>& comList, vector<std::string>& comList8250, const std::string& dir) {
     // Get the driver the device is using
     std::string driver = get_driver(dir);
 
@@ -118,9 +84,9 @@ static void register_comport( std::list<std::string>& comList, std::list<std::st
     }
 }
 
-static void probe_serial8250_comports(std::list<std::string>& comList, std::list<std::string> comList8250) {
+void probe_serial8250_comports(vector<std::string>& comList, vector<std::string> comList8250) {
     struct serial_struct serinfo;
-    std::list<std::string>::iterator it = comList8250.begin();
+    vector<std::string>::iterator it = comList8250.begin();
 
     // Iterate over all serial8250-devices
     while (it != comList8250.end()) {
@@ -148,28 +114,27 @@ static void probe_serial8250_comports(std::list<std::string>& comList, std::list
     }
 }
 
-std::list<std::string> CSerialPortInfoUnixBase::getComList()
+vector<std::string> getPortInfoListLinux()
 {
-    int n;
+    //https://stackoverflow.com/questions/2530096/how-to-find-all-serial-devices-ttys-ttyusb-on-linux-without-opening-them
+    int n = -1;
     struct dirent **namelist;
-    std::list<std::string> comList;
-    std::list<std::string> comList8250;
-    const char* sysdir = "/sys/class/tty/";
+    vector<std::string> comList;
+    vector<std::string> comList8250;
+    const char* sysDir = "/sys/class/tty/";
+    const char* ptsDir = "/dev/pts/";
 
-    // Scan through /sys/class/tty - it contains all tty-devices in the system
-    n = scandir(sysdir, &namelist, NULL, NULL);
-    if (n < 0)
-    {
-        perror("scandir");
-    }
-    else
+
+    // 1.Scan through /sys/class/tty - it contains all tty-devices in the system
+    n = scandir(sysDir, &namelist, NULL, NULL);
+    if (n >= 0)
     {
         while (n--)
         {
             if (strcmp(namelist[n]->d_name,"..") && strcmp(namelist[n]->d_name,"."))
             {
                 // Construct full absolute file path
-                std::string devicedir = sysdir;
+                std::string devicedir = sysDir;
                 devicedir += namelist[n]->d_name;
 
                 // Register the device
@@ -186,4 +151,147 @@ std::list<std::string> CSerialPortInfoUnixBase::getComList()
 
     // Return the lsit of detected comports
     return comList;
+}
+
+#endif
+
+#ifdef I_OS_MAC
+std::string getSerialPath(io_object_t &serialPort)
+{
+    char str[MAXPATHLEN];
+    std::string result;
+    CFTypeRef calloutCFString;
+
+    calloutCFString = IORegistryEntryCreateCFProperty(serialPort, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, 0);
+
+    if (calloutCFString)
+    {
+        if (CFStringGetCString(static_cast<CFStringRef>(calloutCFString), str, sizeof(str), kCFStringEncodingUTF8))
+        {
+            result = str;
+        }
+
+        CFRelease(calloutCFString);
+    }
+
+    return result;
+}
+
+vector<SerialPortInfo> getPortInfoListMac()
+{
+    // https://developer.apple.com/documentation/iokit/communicating_with_a_modem_on_a_serial_port
+    SerialPortInfo m_serialPortInfo;
+    vector<SerialPortInfo> portInfoList;
+
+    // mach_port_t master_port;
+
+    kern_return_t kernResult;
+    CFMutableDictionaryRef classesToMatch;
+    io_iterator_t serialPortIterator;
+
+    io_object_t serialPort;
+
+    classesToMatch = IOServiceMatching(kIOSerialBSDServiceValue);
+
+    if (classesToMatch == NULL)
+        return portInfoList;
+
+    CFDictionarySetValue(classesToMatch,
+                         CFSTR(kIOSerialBSDTypeKey),
+                         CFSTR(kIOSerialBSDAllTypes));
+
+    kernResult = IOServiceGetMatchingServices(kIOMasterPortDefault, classesToMatch, &serialPortIterator);
+
+    if (KERN_SUCCESS != kernResult)
+    {
+        return portInfoList;
+    }
+
+    while (serialPort = IOIteratorNext(serialPortIterator))
+    {
+        string device_path = getSerialPath(serialPort);
+        IOObjectRelease(serialPort);
+
+        if (device_path.empty())
+            continue;
+
+        m_serialPortInfo.portName = device_path;
+
+        portInfoList.push_back(m_serialPortInfo);
+    }
+
+    IOObjectRelease(serialPortIterator);
+    return portInfoList;
+}
+#endif
+
+vector<SerialPortInfo> getPortInfoList()
+{
+#ifdef I_OS_LINUX
+    // TODO: need to optimize
+    vector<SerialPortInfo> portInfoList;
+    SerialPortInfo m_serialPort;
+    vector<std::string> portList = getPortInfoListLinux();
+
+    int count = portList.size();
+
+    for (int i = 0; i < count; i++)
+    {
+        m_serialPort.portName = portList[i];
+        portInfoList.push_back(m_serialPort);
+    }
+    return portInfoList;
+#elif defined I_OS_MAC
+    // ls /dev/{tty,cu}.*
+    return getPortInfoListMac();
+#endif
+}
+
+CSerialPortInfoUnixBase::CSerialPortInfoUnixBase()
+{
+}
+
+
+CSerialPortInfoUnixBase::~CSerialPortInfoUnixBase()
+{
+}
+
+std::list<std::string> CSerialPortInfoUnixBase::availablePorts()
+{
+    // ttyS*    // Standard UART 8250 and etc
+    // ttyO*    // OMAP UART 8250 and etc
+    // ttyUSB*  // Usb/serial converters PL2303 and etc
+    // ttyACM*  // CDC_ACM converters (i.e. Mobile Phones)
+    // ttyGS*   // Gadget serial device (i.e. Mobile Phones with gadget serial driver)
+    // ttyMI*   // MOXA pci/serial converters
+    // ttymxc*  // Motorola IMX serial ports (i.e. Freescale i.MX)
+    // ttyAMA*  // AMBA serial device for embedded platform on ARM (i.e. Raspberry Pi)
+    // ttyTHS*  // Serial device for embedded platform on ARM (i.e. Tegra Jetson TK1)
+    // rfcomm*  // Bluetooth serial device
+    // ircomm*  // IrDA serial device
+    // tnt*     // Virtual tty0tty serial device
+    // pts/*    // Virtual pty serial device
+
+    std::list<std::string> portsList;
+
+    vector<SerialPortInfo> portInfoList = availablePortInfos();
+
+    int count = portInfoList.size();
+
+    for (int i = 0; i < count; i++)
+    {
+        portsList.push_back(portInfoList[i].portName);
+    }
+    return portsList;
+}
+
+std::list<std::string> CSerialPortInfoUnixBase::availableFriendlyPorts()
+{
+    // Not Support,so it is equal to availablePorts()
+    return availablePorts();
+}
+
+vector<SerialPortInfo> CSerialPortInfoUnixBase::availablePortInfos()
+{
+    return getPortInfoList();
 }
