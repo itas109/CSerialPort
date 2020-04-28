@@ -46,8 +46,8 @@
 
 # Last Modify 最新版本
 
-## Version: 4.0.2.200108
-by itas109 on 2020-01-08
+## Version: 4.0.3.200429
+by itas109 on 2020-04-29
 
 # Quick Start 快速开始
 ## Windows
@@ -123,20 +123,18 @@ chmod +x compile.sh
 
 # Tested Machine 测试机器
 
-| 系统版本 | CPU架构 |Gui | 编译器 | 测试时间 |
-| :-----:| :----: | :----: | :----: | :----: |
-| DeepIn 15.11 64bit CN | x86_64 | QT 5.12.6 | GCC 6.3.0 | 2020-03-21 |
-| NeoKylin Server 7.0 CN| x86_64 | NoGui | GCC 4.8.5 | 2020-03-26 |
-| Win7 Ultimate 64bit CN | x86_64 | QT 5.6.2 | MSVC2013u5 32bit |2020-01-08|
-| Win7 Ultimate 64bit CN | x86_64 | QT 5.12.1 | MSVC2017 64bit | 2020-01-08 |
-| Win7 Ultimate 64bit CN | x86_64 | QT 5.12.7 | MinGW73 32bit | 2020-03-11 |
-| Win7 Ultimate 64bit CN | x86_64 | MFC | MSVC2013u5 32bit | 2020-01-08 |
-| Win7 Ultimate 64bit CN | x86_64 | MFC | MSVC2015u3 32bit | 2020-01-08 |
-| Win7 Ultimate 64bit En | x86_64 | MFC | MSVC2013u5 32bit | 2019-03-07 |
-| Win10 Enterprise 64bit CN | x86_64 | MFC | MSVC2015u3 32bit | 2020-01-08 |
-| Win10 Enterprise 64bit CN | x86_64 | QT 5.12.7 | MinGW73 64bit | 2020-03-12 |
-| Ubuntu 16.04 64bit En | x86_64 | QT 5.6.2 | GCC 5.4.0 | 2019-07-28 |
-| Linux raspberrypi 4.9.70 | armv7l | NoGUi | GCC 4.9.2 | 2020-03-21 |
+| 系统版本 | CPU架构 |Gui | 编译器 | 版本 | 测试时间 |
+| :-----:| :----: | :----: | :----: | :----: |:----: |
+| DeepIn 15.11 64bit CN | x86_64 | QT 5.12.6 | GCC 6.3.0 | 4.0.3 |2020-04-29|
+| NeoKylin Server 7.0 CN| x86_64 | NoGui | GCC 4.8.5 | 4.0.3 |2020-04-29|
+| Win7 Ultimate 64bit CN | x86_64 | QT 5.6.2 | MSVC2013u5 32bit | 4.0.3 |2020-04-29|
+| Win7 Ultimate 64bit CN | x86_64 | QT 5.12.7 | MSVC2017 64bit |  4.0.3 |2020-04-29|
+| Win7 Ultimate 64bit CN | x86_64 | NoGui | MinGW73 64bit |  4.0.3 |2020-04-29|
+| Win7 Ultimate 64bit CN | x86_64 | MFC | MSVC2013u5 32bit |  4.0.3 |2020-04-29|
+| Win7 Ultimate 64bit CN | x86_64 | MFC | MSVC2015u3 32bit |  4.0.3 |2020-04-29|
+| Win10 Enterprise 64bit CN | x86_64 | MFC | MSVC2015u3 32bit | 4.0.3 |2020-04-29|
+| Win10 Enterprise 64bit CN | x86_64 | QT 5.12.7 | MinGW73 64bit | 4.0.3 |2020-04-29|
+| Linux raspberrypi 4.9.70 | armv7l | NoGUi | GCC 4.9.2 |  4.0.3 |2020-04-29|
 
 # Result 结果
 
