@@ -14,8 +14,8 @@ Fixed:
 * fixed compile error when baudrate not difine 修复波特率未定义错误
 
 Feature:
-* support mingw 支持mingw
-* support mac 支持mac
+* support mingw 支持mingw 4.8.2
+* support mac 支持mac 10.13
 * add Common baud rate 增加波特率
 * add test case by gtest 增加测试用例
 * add function CSerialPortInfo::availablePortInfos 增加通用串口信息枚举函数
