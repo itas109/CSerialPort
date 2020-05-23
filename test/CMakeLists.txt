@@ -4,10 +4,12 @@ cmake_minimum_required(VERSION 2.8)
 
 MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 
+include(gtest.cmake)
+
 include_directories(.)
 include_directories(../src)
 
-link_directories(${PROJECT_SOURCE_DIR}/lib )
+#link_directories(${PROJECT_SOURCE_DIR}/lib )
 
 file(GLOB_RECURSE COMMON_SOURCES ../src/SerialPort.cpp ../src/SerialPortBase.cpp ../src/SerialPortInfo.cpp ../src/SerialPortInfoBase.cpp)
 
@@ -19,7 +21,8 @@ ENDIF ()
 
 add_executable(CSerialPortTest cseiralport_test.cpp ${COMMON_SOURCES} ${OS_ABOUT_SOURCES})
 
-target_link_libraries( CSerialPortTest gtest gtest_main)
+#target_link_libraries( CSerialPortTest gtest gtest_main)
+target_link_libraries( CSerialPortTest gtest)
 
 IF (CMAKE_HOST_WIN32)
 	# for function availableFriendlyPorts

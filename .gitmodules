@@ -1,0 +1,3 @@
+[submodule "test/googletest"]
+	path = test/googletest
+	url = https://gitee.com/itas109/googletest.git
