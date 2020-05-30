@@ -2,6 +2,20 @@
 
 #include <iostream>
 
+std::wstring stringToWString(const std::string &str)
+{
+    if (str.empty())
+    {
+        return std::wstring();
+    }
+
+    int size = MultiByteToWideChar(CP_ACP, 0, &str[0], (int)str.size(), NULL, 0);
+    std::wstring ret = std::wstring(size, 0);
+    MultiByteToWideChar(CP_ACP, 0, &str[0], (int)str.size(), &ret[0], size);
+
+    return ret;
+}
+
 CSerialPortWinBase::CSerialPortWinBase()
 {
     construct();
@@ -74,11 +88,12 @@ bool CSerialPortWinBase::openPort()
 
     bool bRet = false;
 
-    TCHAR tcPortName[MAX_PATH];
+    TCHAR  * tcPortName = NULL;
 #ifdef UNICODE
-    _stprintf_s(tcPortName, MAX_PATH, _T("%S"), m_portName.c_str());//%S宽字符
+	std::wstring wstr = stringToWString(m_portName);
+	tcPortName = const_cast<TCHAR*>(wstr.c_str());
 #else
-    _stprintf_s(tcPortName, MAX_PATH, _T("%s"), m_portName.c_str());//%s单字符
+	tcPortName = const_cast<TCHAR*>(m_portName.c_str());
 #endif
     unsigned long configSize = sizeof(COMMCONFIG);
     m_comConfigure.dwSize = configSize;
