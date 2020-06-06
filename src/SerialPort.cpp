@@ -53,14 +53,6 @@ void itas109::CSerialPort::init(std::string portName, int baudRate /*= itas109::
     }
 }
 
-void itas109::CSerialPort::init(int port, int baudRate /*= itas109::BaudRate9600*/, itas109::Parity parity /*= itas109::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopOne*/, itas109::FlowControl flowControl /*= itas109::FlowNone*/, int64 readBufferSize /*= 512*/)
-{
-    if(p_serialPortBase)
-    {
-        p_serialPortBase->init(port, baudRate, parity, dataBits, stopbits, flowControl, readBufferSize);
-    }
-}
-
 void CSerialPort::setOperateMode(OperateMode operateMode)
 {
     if(p_serialPortBase)

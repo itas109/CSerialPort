@@ -44,17 +44,6 @@ void CSerialPortUnixBase::init(std::string portName, int baudRate /*= itas109::B
     m_readBufferSize = readBufferSize;
 }
 
-void CSerialPortUnixBase::init(int port, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl, int64 readBufferSize)
-{
-    char sPort[32];
-    //_itoa_s(port, sPort, 10);
-    std::string portName = "/dev/ttyS";//unix not recommend use port init
-    portName += sPort;
-
-    init(portName, baudRate, parity, dataBits, stopbits, flowControl, readBufferSize);
-
-}
-
 int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl)
 {
     struct termios options;

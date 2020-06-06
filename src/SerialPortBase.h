@@ -60,19 +60,6 @@ public:
         virtual void init(std::string portName, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl, int64 readBufferSize) = 0;
 
 	/**
-	* @brief  init 初始化函数
-	*
-	* @param port [in] the port number 串口号
-	* @param baudRate [in] the baudRate 波特率
-	* @param parity [in] the parity 校验位
-	* @param dataBits [in] the dataBits 数据位
-	* @param stopbits [in] the stopbits 停止位
-    * @param flowControl [in] flowControl type 流控制
-	* @param readBufferSize [in] the read buffer size 读取缓冲区大小
-	*/
-        virtual void init(int port, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl, int64 readBufferSize) = 0;
-
-	/**
 	 * @brief Set the Operate Mode object 设置串口操作模式
 	 *
 	 * @param operateMode [in] the operate mode 串口操作模式 {@link itas109::OperateMode}

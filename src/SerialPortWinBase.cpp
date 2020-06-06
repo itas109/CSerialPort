@@ -72,16 +72,6 @@ void CSerialPortWinBase::init(std::string portName, int baudRate /*= itas109::Ba
     m_readBufferSize = readBufferSize;
 }
 
-void CSerialPortWinBase::init(int port, int baudRate /*= itas109::BaudRate9600*/, itas109::Parity parity /*= itas109::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopOne*/, itas109::FlowControl flowControl /*= itas109::FlowNone*/, int64 readBufferSize /*= 512*/)
-{
-    char sPort[32];
-    _itoa_s(port, sPort, 32, 10);
-    std::string portName = "\\\\.\\COM";//support COM10 above \\\\.\\COM10
-    portName += sPort;
-
-    init(portName, baudRate, parity, dataBits, stopbits, flowControl, readBufferSize);
-}
-
 bool CSerialPortWinBase::openPort()
 {
     lock();

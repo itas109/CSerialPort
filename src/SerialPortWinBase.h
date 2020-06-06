@@ -75,18 +75,6 @@ public:
 	 * @param readBufferSize [in] the read buffer size 读取缓冲区大小
 	 */
         virtual void init(std::string portName, int baudRate = itas109::BaudRate9600, itas109::Parity parity = itas109::ParityNone, itas109::DataBits dataBits = itas109::DataBits8, itas109::StopBits stopbits = itas109::StopOne, itas109::FlowControl flowControl = itas109::FlowNone, int64 readBufferSize = 512);
-	/**
-	 * @brief  init 初始化函数
-	 *
-	 * @param port [in] the port number 串口号
-	 * @param baudRate [in] the baudRate 波特率
-	 * @param parity [in] the parity 校验位
-	 * @param dataBits [in] the dataBits 数据位
-	 * @param stopbits [in] the stopbits 停止位
-     * @param flowControl [in] flowControl type 流控制
-	 * @param readBufferSize [in] the read buffer size 读取缓冲区大小
-	 */
-        virtual void init(int port, int baudRate = itas109::BaudRate9600, itas109::Parity parity = itas109::ParityNone, itas109::DataBits dataBits = itas109::DataBits8, itas109::StopBits stopbits = itas109::StopOne, itas109::FlowControl flowControl = itas109::FlowNone, int64 readBufferSize = 512);
 
 	/**
 	 * @brief open serial port 打开串口
