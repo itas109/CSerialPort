@@ -32,6 +32,17 @@ typedef long long int64;           ///< 64 bit signed unix 定义Unix int64
 //Not support
 #endif // I_OS_WIN
 
+#ifdef _UNICODE
+#ifndef UNICODE
+#define UNICODE
+#endif
+#endif
+#ifdef UNICODE
+#ifndef _UNICODE
+#define _UNICODE
+#endif
+#endif
+
 namespace itas109
 {
 		/**
