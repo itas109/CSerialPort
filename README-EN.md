@@ -137,7 +137,7 @@ chmod +x compile.sh
 | Win10 Enterprise 64bit CN | x86_64 | QT 5.12.7 | MinGW73 64bit | 4.0.3 |2020-04-29|
 | Linux raspberrypi 4.9.70 | armv7l | NoGUi | GCC 4.9.2 |  4.0.3 |2020-04-29|
 
-# Result 结果
+# Result
 
 ## Linux：
 
@@ -146,6 +146,12 @@ chmod +x compile.sh
 Demo Path: CSerialPort/Demo/CommQT
 
 ![image](./pic/linux.jpg)
+
+### Tui
+
+Demo Path: CSerialPort/Demo/CommTui
+
+![image](./pic/linux_tui.jpg)
 
 ### No Gui
 
@@ -161,6 +167,12 @@ Demo Path: CSerialPort/Demo/CommNoGui
 Demo Path: CSerialPort/Demo/CommQT
 
 ![image](./pic/win.jpg)
+
+### Tui
+
+Demo Path: CSerialPort/Demo/CommTui
+
+![image](./pic/win_tui.jpg)
 
 
 ### No Gui

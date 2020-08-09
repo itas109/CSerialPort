@@ -147,6 +147,10 @@ chmod +x compile.sh
 
 ![image](./pic/linux.jpg)
 
+示例路径: CSerialPort/Demo/CommTui
+
+![image](./pic/linux_tui.jpg)
+
 ### No Gui 无界面
 
 示例路径: CSerialPort/Demo/CommNoGui
@@ -156,12 +160,17 @@ chmod +x compile.sh
 
 ## Windows:
 
-### Gui 界面
+### Gui 图形用户界面
 
 示例路径: CSerialPort/Demo/CommQT
 
 ![image](./pic/win.jpg)
 
+### Tui 终端用户界面
+
+示例路径: CSerialPort/Demo/CommTui
+
+![image](./pic/win_tui.jpg)
 
 ### No Gui 无界面
 
