@@ -141,11 +141,13 @@ chmod +x compile.sh
 
 ## Linux：
 
-### Gui 界面
+### Gui 图形用户界面
 
 示例路径: CSerialPort/Demo/CommQT
 
 ![image](./pic/linux.jpg)
+
+### Tui 终端用户界面 
 
 示例路径: CSerialPort/Demo/CommTui
 
