@@ -1,8 +1,6 @@
-project(CSerialPortDemoNoGui)
-
 cmake_minimum_required(VERSION 2.8)
 
-MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
+set(APP_NAME CSerialPortDemoNoGui)
 
 if(APPLE)
     find_library(IOKIT_LIBRARY IOKit)
@@ -19,13 +17,13 @@ ELSEIF (CMAKE_HOST_UNIX)
 	file(GLOB_RECURSE OS_ABOUT_SOURCES ../../src/SerialPortInfoUnixBase.cpp ../../src/SerialPortUnixBase.cpp)
 ENDIF ()
 
-add_executable( ${PROJECT_NAME} CSerialPortDemoNoGui.cpp ${COMMON_SOURCES} ${OS_ABOUT_SOURCES})
+add_executable( ${APP_NAME} CSerialPortDemoNoGui.cpp ${COMMON_SOURCES} ${OS_ABOUT_SOURCES})
 
 IF (CMAKE_HOST_WIN32)
 	# for function availableFriendlyPorts
-	target_link_libraries( ${PROJECT_NAME} setupapi )
+	target_link_libraries( ${APP_NAME} setupapi )
 elseif(APPLE)
-    target_link_libraries( ${PROJECT_NAME} ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
+    target_link_libraries( ${APP_NAME} ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
 elseif(UNIX)
-	target_link_libraries( ${PROJECT_NAME} pthread )
+	target_link_libraries( ${APP_NAME} pthread )
 ENDIF ()
