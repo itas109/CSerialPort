@@ -8,16 +8,24 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(CSERIALPORT_BUILD_EXAMPLES "Build CSerialPort examples" ON)
+
 message(STATUS "CSerialPort CMake Info")
 message(STATUS "=======================================================")
 message(STATUS "    Operation System :  ${CMAKE_SYSTEM}")
 message(STATUS "    CPU Architecture : ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "    Build Type : ${CMAKE_BUILD_TYPE}${CMAKE_CONFIGURATION_TYPES}")
 message(STATUS "    Shared Library  : ${BUILD_SHARED_LIBS}")
+message(STATUS "    Build Examples  : ${CSERIALPORT_BUILD_EXAMPLES}")
 message(STATUS "=======================================================")
 
 # libcserialport
 add_subdirectory(lib)
+
+# examples
+if (CSERIALPORT_BUILD_EXAMPLES)
+	add_subdirectory(examples)
+endif ()
 
 # test
 # add_subdirectory(test)
