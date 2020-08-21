@@ -4,15 +4,15 @@ set(LIB_NAME libcserialport)
 
 include_directories(../src)
 
-file(GLOB_RECURSE COMMON_SOURCES ../src/SerialPort.cpp ../src/SerialPortBase.cpp ../src/SerialPortInfo.cpp ../src/SerialPortInfoBase.cpp)
+set(COMMON_SOURCES ../src/SerialPort.cpp ../src/SerialPortBase.cpp ../src/SerialPortInfo.cpp ../src/SerialPortInfoBase.cpp)
 
 if (CMAKE_HOST_WIN32)
-	file(GLOB_RECURSE OS_ABOUT_SOURCES ../src/SerialPortInfoWinBase.cpp ../src/SerialPortWinBase.cpp)
-	if(MSVC)
-  		list(APPEND OS_ABOUT_SOURCES libcserialport.rc)
+	set(OS_ABOUT_SOURCES ../src/SerialPortInfoWinBase.cpp ../src/SerialPortWinBase.cpp)
+	if (BUILD_SHARED_LIBS)
+	    list(APPEND OS_ABOUT_SOURCES version.rc)
 	endif()
 elseif (CMAKE_HOST_UNIX)
-	file(GLOB_RECURSE OS_ABOUT_SOURCES ../src/SerialPortInfoUnixBase.cpp ../src/SerialPortUnixBase.cpp)
+	set(OS_ABOUT_SOURCES ../src/SerialPortInfoUnixBase.cpp ../src/SerialPortUnixBase.cpp)
 endif ()
 
 add_library( ${LIB_NAME} ${COMMON_SOURCES} ${OS_ABOUT_SOURCES})
