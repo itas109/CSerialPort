@@ -5,8 +5,8 @@
 #pragma once
 
 //About CSerialPort start
-#include "SerialPort.h"
-#include "SerialPortInfo.h"
+#include "CSerialPort/SerialPort.h"
+#include "CSerialPort/SerialPortInfo.h"
 using namespace itas109;
 //About CSerialPort end
 

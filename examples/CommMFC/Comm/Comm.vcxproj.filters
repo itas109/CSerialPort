@@ -36,25 +36,25 @@
     <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\SerialPort.h">
+    <ClInclude Include="..\..\..\include\SerialPort.h">
       <Filter>com</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\SerialPortBase.h">
+    <ClInclude Include="..\..\..\include\SerialPortBase.h">
       <Filter>com</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\SerialPortInfo.h">
+    <ClInclude Include="..\..\..\include\SerialPortInfo.h">
       <Filter>com</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\SerialPortInfoBase.h">
+    <ClInclude Include="..\..\..\include\SerialPortInfoBase.h">
       <Filter>com</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\SerialPortInfoWinBase.h">
+    <ClInclude Include="..\..\..\include\SerialPortInfoWinBase.h">
       <Filter>com</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\SerialPortWinBase.h">
+    <ClInclude Include="..\..\..\include\SerialPortWinBase.h">
       <Filter>com</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\sigslot.h">
+    <ClInclude Include="..\..\..\include\sigslot.h">
       <Filter>com</Filter>
     </ClInclude>
   </ItemGroup>

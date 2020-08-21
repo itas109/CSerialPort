@@ -1,6 +1,6 @@
-﻿#include "SerialPortInfoUnixBase.h"
+﻿#include "CSerialPort/SerialPortInfoUnixBase.h"
 
-#include "osplatformutil.h"
+#include "CSerialPort/osplatformutil.h"
 
 #ifdef I_OS_LINUX
     #include <stdlib.h> // free

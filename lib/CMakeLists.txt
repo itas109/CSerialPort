@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 set(LIB_NAME libcserialport)
 
-include_directories(../src)
+include_directories(../include)
 
 set(COMMON_SOURCES ../src/SerialPort.cpp ../src/SerialPortBase.cpp ../src/SerialPortInfo.cpp ../src/SerialPortInfoBase.cpp)
 

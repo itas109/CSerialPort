@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "SerialPort.h"
-#include "SerialPortInfo.h"
+#include "CSerialPort/SerialPort.h"
+#include "CSerialPort/SerialPortInfo.h"
 
 #include <vector>
 using namespace itas109;

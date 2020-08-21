@@ -1,10 +1,10 @@
-﻿#include "SerialPort.h"
+﻿#include "CSerialPort/SerialPort.h"
 
 #ifdef I_OS_WIN
-#include "SerialPortWinBase.h"
+#include "CSerialPort/SerialPortWinBase.h"
 #define CSERIALPORTBASE CSerialPortWinBase
 #elif defined I_OS_UNIX
-#include "SerialPortUnixBase.h"
+#include "CSerialPort/SerialPortUnixBase.h"
 #define CSERIALPORTBASE CSerialPortUnixBase
 #else
 //Not support

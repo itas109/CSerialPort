@@ -1,21 +1,21 @@
-HEADERS += $$PWD/../../src/osplatformutil.h
-HEADERS += $$PWD/../../src/SerialPort_global.h
-HEADERS += $$PWD/../../src/sigslot.h
-HEADERS += $$PWD/../../src/SerialPortBase.h
-HEADERS += $$PWD/../../src/SerialPort.h
-HEADERS += $$PWD/../../src/SerialPortInfoBase.h
-HEADERS += $$PWD/../../src/SerialPortInfo.h
+HEADERS += $$PWD/../../include/CSerialPort/osplatformutil.h
+HEADERS += $$PWD/../../include/CSerialPort/SerialPort_global.h
+HEADERS += $$PWD/../../include/CSerialPort/sigslot.h
+HEADERS += $$PWD/../../include/CSerialPort/SerialPortBase.h
+HEADERS += $$PWD/../../include/CSerialPort/SerialPort.h
+HEADERS += $$PWD/../../include/CSerialPort/SerialPortInfoBase.h
+HEADERS += $$PWD/../../include/CSerialPort/SerialPortInfo.h
 
 win32 {
     message("Building for Windows")
-    HEADERS += $$PWD/../../src/SerialPortInfoWinBase.h
-    HEADERS += $$PWD/../../src/SerialPortWinBase.h
+    HEADERS += $$PWD/../../include/CSerialPort/SerialPortInfoWinBase.h
+    HEADERS += $$PWD/../../include/CSerialPort/SerialPortWinBase.h
 }
 
 unix {
     message("Building for unix")
-    HEADERS += $$PWD/../../src/SerialPortUnixBase.h
-    HEADERS += $$PWD/../../src/SerialPortInfoUnixBase.h
+    HEADERS += $$PWD/../../include/CSerialPort/SerialPortUnixBase.h
+    HEADERS += $$PWD/../../include/CSerialPort/SerialPortInfoUnixBase.h
 }
 
 SOURCES += $$PWD/../../src/SerialPortBase.cpp
@@ -33,5 +33,5 @@ unix {
     SOURCES += $$PWD/../../src/SerialPortInfoUnixBase.cpp
 }
 
-INCLUDEPATH += $$PWD/../../src
+INCLUDEPATH += $$PWD/../../include
 DEPENDPATH += $$PWD/../../src

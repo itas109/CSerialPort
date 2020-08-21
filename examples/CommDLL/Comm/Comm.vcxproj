@@ -44,12 +44,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)..\..\..\lib\Windows\VC12\libcserialport\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)..\..\..\lib\Windows\VC12\libcserialport\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

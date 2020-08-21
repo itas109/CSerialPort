@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "SerialPortInfo.h"
+#include "CSerialPort/SerialPortInfo.h"
 
 #include <QDebug>
 #include <QScrollBar>

@@ -7,7 +7,7 @@ MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 include(gtest.cmake)
 
 include_directories(.)
-include_directories(../src)
+include_directories(../include)
 
 #link_directories(${PROJECT_SOURCE_DIR}/lib )
 

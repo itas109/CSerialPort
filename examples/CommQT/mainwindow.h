@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-#include "SerialPort.h"
+#include "CSerialPort/SerialPort.h"
 
 using namespace std;
 using namespace itas109;

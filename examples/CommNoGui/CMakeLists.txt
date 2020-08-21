@@ -7,7 +7,7 @@ if(APPLE)
     find_library(FOUNDATION_LIBRARY Foundation)
 endif()
 
-include_directories(../../src)
+include_directories(../../include)
 
 file(GLOB_RECURSE COMMON_SOURCES ../../src/SerialPort.cpp ../../src/SerialPortBase.cpp ../../src/SerialPortInfo.cpp ../../src/SerialPortInfoBase.cpp)
 

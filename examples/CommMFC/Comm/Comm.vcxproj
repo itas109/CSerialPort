@@ -44,11 +44,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -89,7 +89,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -106,13 +106,13 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\SerialPort.h" />
-    <ClInclude Include="..\..\..\src\SerialPortBase.h" />
-    <ClInclude Include="..\..\..\src\SerialPortInfo.h" />
-    <ClInclude Include="..\..\..\src\SerialPortInfoBase.h" />
-    <ClInclude Include="..\..\..\src\SerialPortInfoWinBase.h" />
-    <ClInclude Include="..\..\..\src\SerialPortWinBase.h" />
-    <ClInclude Include="..\..\..\src\sigslot.h" />
+    <ClInclude Include="..\..\..\include\SerialPort.h" />
+    <ClInclude Include="..\..\..\include\SerialPortBase.h" />
+    <ClInclude Include="..\..\..\include\SerialPortInfo.h" />
+    <ClInclude Include="..\..\..\include\SerialPortInfoBase.h" />
+    <ClInclude Include="..\..\..\include\SerialPortInfoWinBase.h" />
+    <ClInclude Include="..\..\..\include\SerialPortWinBase.h" />
+    <ClInclude Include="..\..\..\include\sigslot.h" />
     <ClInclude Include="Comm.h" />
     <ClInclude Include="CommDlg.h" />
     <ClInclude Include="Resource.h" />

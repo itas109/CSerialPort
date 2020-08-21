@@ -1,4 +1,4 @@
-﻿#include "SerialPortInfoWinBase.h"
+﻿#include "CSerialPort/SerialPortInfoWinBase.h"
 
 #include "Windows.h"
 

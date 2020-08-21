@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 
-#include "../src/SerialPort.h"
-#include "../src/SerialPortInfo.h"
+#include "CSerialPort/SerialPort.h"
+#include "CSerialPort/SerialPortInfo.h"
 using namespace itas109;
 
 #include <iostream>
