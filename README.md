@@ -50,48 +50,11 @@
 by itas109 on 2020-04-29
 
 # Quick Start 快速开始
-## Windows
-* cmake(**recommend**)
-```
-git clone https://github.com/itas109/CSerialPort.git
-
-cd CSerialPort\Demo\CommNoGui
-
-mkdir bin
-
-cd bin
-
-cmake ..
-```
-* MSVC
 
 ```
 git clone https://github.com/itas109/CSerialPort.git
 
-cd CSerialPort\Demo\CommNoGui
-
-compile-MSVC.bat
-
-CSerialPortDemoNoGui-MSVC.exe
-```
-
-* MinGW
-```
-git clone https://github.com/itas109/CSerialPort.git
-
-cd CSerialPort\Demo\CommNoGui
-
-compile-MinGW.bat
-
-CSerialPortDemoNoGui-MinGW.exe
-```
-
-## Linux
-* cmake(**recommend**)
-```
-git clone https://github.com/itas109/CSerialPort.git
-
-cd CSerialPort\Demo\CommNoGui
+cd CSerialPort
 
 mkdir bin
 
@@ -99,26 +62,7 @@ cd bin
 
 cmake ..
 
-make
-
-./CSerialPortDemoNoGui
-```
-* makefile
-```
-git clone https://github.com/itas109/CSerialPort.git
-cd CSerialPort\Demo\CommNoGui
-
-make
-./CSerialPortDemoNoGui
-```
-* shell
-```
-git clone https://github.com/itas109/CSerialPort.git
-cd CSerialPort\Demo\CommNoGui
-
-chmod +x compile.sh
-./compile.sh
-./CSerialPortDemoNoGui
+make -j8
 ```
 
 # Tested Machine 测试机器
@@ -143,19 +87,19 @@ chmod +x compile.sh
 
 ### Gui 图形用户界面
 
-示例路径: CSerialPort/Demo/CommQT
+示例路径: CSerialPort/examples/CommQT
 
 ![image](./pic/linux.jpg)
 
 ### Tui 终端用户界面 
 
-示例路径: CSerialPort/Demo/CommTui
+示例路径: CSerialPort/examples/CommTui
 
 ![image](./pic/linux_tui.jpg)
 
 ### No Gui 无界面
 
-示例路径: CSerialPort/Demo/CommNoGui
+示例路径: CSerialPort/examples/CommNoGui
 
 ![image](./pic/linux_no_gui.jpg)
 
@@ -164,19 +108,19 @@ chmod +x compile.sh
 
 ### Gui 图形用户界面
 
-示例路径: CSerialPort/Demo/CommQT
+示例路径: CSerialPort/examples/CommQT
 
 ![image](./pic/win.jpg)
 
 ### Tui 终端用户界面
 
-示例路径: CSerialPort/Demo/CommTui
+示例路径: CSerialPort/examples/CommTui
 
 ![image](./pic/win_tui.jpg)
 
 ### No Gui 无界面
 
-示例路径: CSerialPort/Demo/CommNoGui
+示例路径: CSerialPort/examples/CommNoGui
 ![image](./pic/win_no_gui.jpg)
 
 # Directory List 目录列表
@@ -204,7 +148,10 @@ chmod +x compile.sh
 * [Gitee码云](https://gitee.com/itas109/CSerialPort)
 
 # CSerialPort-based Applications 基于CSerialPort的应用
-欢迎补充
+## 1.[CommMaster通信大师](https://gitee.com/itas109/CommMaster)
+支持windwos/linux/macos/raspberrypi等等
+https://gitee.com/itas109/CommMaster
+![image](./pic/CommMaster.png)
 
 # Donate 捐助
 

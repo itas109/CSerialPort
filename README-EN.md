@@ -50,48 +50,11 @@ a lightweight library of serial port, which can easy to read and write serical p
 by itas109 on 2020-04-29
 
 # Quick Start
-## Windows
-* cmake(**recommend**)
-```
-git clone https://github.com/itas109/CSerialPort.git
-
-cd CSerialPort\Demo\CommNoGui
-
-mkdir bin
-
-cd bin
-
-cmake ..
-```
-* MSVC
 
 ```
 git clone https://github.com/itas109/CSerialPort.git
 
-cd CSerialPort\Demo\CommNoGui
-
-compile-MSVC.bat
-
-CSerialPortDemoNoGui-MSVC.exe
-```
-
-* MinGW
-```
-git clone https://github.com/itas109/CSerialPort.git
-
-cd CSerialPort\Demo\CommNoGui
-
-compile-MinGW.bat
-
-CSerialPortDemoNoGui-MinGW.exe
-```
-
-## Linux
-* cmake(**recommend**)
-```
-git clone https://github.com/itas109/CSerialPort.git
-
-cd CSerialPort\Demo\CommNoGui
+cd CSerialPort
 
 mkdir bin
 
@@ -99,26 +62,7 @@ cd bin
 
 cmake ..
 
-make
-
-./CSerialPortDemoNoGui
-```
-* makefile
-```
-git clone https://github.com/itas109/CSerialPort.git
-cd CSerialPort\Demo\CommNoGui
-
-make
-./CSerialPortDemoNoGui
-```
-* shell
-```
-git clone https://github.com/itas109/CSerialPort.git
-cd CSerialPort\Demo\CommNoGui
-
-chmod +x compile.sh
-./compile.sh
-./CSerialPortDemoNoGui
+make -j8
 ```
 
 # Tested Machine
@@ -143,19 +87,19 @@ chmod +x compile.sh
 
 ### Gui
 
-Demo Path: CSerialPort/Demo/CommQT
+Demo Path: CSerialPort/examples/CommQT
 
 ![image](./pic/linux.jpg)
 
 ### Tui
 
-Demo Path: CSerialPort/Demo/CommTui
+Demo Path: CSerialPort/examples/CommTui
 
 ![image](./pic/linux_tui.jpg)
 
 ### No Gui
 
-Demo Path: CSerialPort/Demo/CommNoGui
+Demo Path: CSerialPort/examples/CommNoGui
 
 ![image](./pic/linux_no_gui.jpg)
 
@@ -164,20 +108,20 @@ Demo Path: CSerialPort/Demo/CommNoGui
 
 ### Gui
 
-Demo Path: CSerialPort/Demo/CommQT
+Demo Path: CSerialPort/examples/CommQT
 
 ![image](./pic/win.jpg)
 
 ### Tui
 
-Demo Path: CSerialPort/Demo/CommTui
+Demo Path: CSerialPort/examples/CommTui
 
 ![image](./pic/win_tui.jpg)
 
 
 ### No Gui
 
-Demo Path: CSerialPort/Demo/CommNoGui
+Demo Path: CSerialPort/examples/CommNoGui
 ![image](./pic/win_no_gui.jpg)
 
 # Directory List
@@ -205,7 +149,11 @@ Demo Path: CSerialPort/Demo/CommNoGui
 * [Gitee](https://gitee.com/itas109/CSerialPort)
 
 # CSerialPort-based Applications
-Welcome to add
+## 1.[CommMaster通信大师](https://gitee.com/itas109/CommMaster)
+support windwos/linux/macos/raspberrypi and so on
+
+https://gitee.com/itas109/CommMaster
+![image](./pic/CommMaster.png)
 
 # Donate
 
