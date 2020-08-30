@@ -150,7 +150,11 @@ Demo Path: CSerialPort/examples/CommNoGui
 
 # CSerialPort-based Applications
 ## 1.[CommMaster通信大师](https://gitee.com/itas109/CommMaster)
-support windwos/linux/macos/raspberrypi and so on
+* support windows/linux/macos/raspberrypi and so on
+* support custom port name
+* support custom baudrate
+* support custom language
+* support custom theme
 
 https://gitee.com/itas109/CommMaster
 ![image](./pic/CommMaster.png)

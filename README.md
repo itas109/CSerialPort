@@ -149,7 +149,12 @@ make -j8
 
 # CSerialPort-based Applications 基于CSerialPort的应用
 ## 1.[CommMaster通信大师](https://gitee.com/itas109/CommMaster)
-支持windwos/linux/macos/raspberrypi等等
+* 支持windows/linux/macos/raspberrypi等等
+* 支持自定义串口名称
+* 支持自定义波特率
+* 支持自定义语言
+* 支持自定义主题
+
 https://gitee.com/itas109/CommMaster
 ![image](./pic/CommMaster.png)
 
