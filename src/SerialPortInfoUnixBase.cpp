@@ -110,7 +110,7 @@ void probe_serial8250_comports(vector<std::string>& comList, vector<std::string>
             }
             close(fd);
         }
-        it ++;
+        ++it;
     }
 }
 

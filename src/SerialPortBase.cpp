@@ -3,12 +3,20 @@
 
 CSerialPortBase::CSerialPortBase()
 {
+    lastError = 0;
+
     m_minByteReadNotify = 1;
+
+    m_operateMode = itas109::AsynchronousOperate;
 }
 
 CSerialPortBase::CSerialPortBase(const std::string & portName)
 {
+    lastError = 0;
+    
+    m_minByteReadNotify = 1;
 
+    m_operateMode = itas109::AsynchronousOperate;
 }
 
 CSerialPortBase::~CSerialPortBase()

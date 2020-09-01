@@ -343,7 +343,7 @@ bool CSerialPortWinBase::isOpened()
 
 int CSerialPortWinBase::readData(char *data, int maxSize)
 {
-    DWORD dRet;
+    DWORD dRet = 0;
 
     lock();
 
@@ -419,7 +419,7 @@ int CSerialPortWinBase::readAllData(char *data)
 
 int CSerialPortWinBase::readLineData(char *data, int maxSize)
 {
-    DWORD dRet;
+    DWORD dRet = 0;
     lock();
 
     if (isOpened())
@@ -438,7 +438,7 @@ int CSerialPortWinBase::readLineData(char *data, int maxSize)
 
 int CSerialPortWinBase::writeData(const char * data, int maxSize)
 {
-    DWORD dRet;
+    DWORD dRet = 0;
 
     lock();
 
@@ -504,7 +504,7 @@ int CSerialPortWinBase::writeData(const char * data, int maxSize)
 
             if (!bWrite)
             {
-                bWrite = TRUE;
+                // bWrite = TRUE;
 
                 bResult = GetOverlappedResult(m_handle,&m_overlapWrite,&dRet,TRUE);
             }
