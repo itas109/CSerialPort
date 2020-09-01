@@ -29,7 +29,12 @@ using namespace std;
 class mySlot : public has_slots<>
 {
 public:
-	mySlot(CSerialPort & sp){ m_sp = sp; };
+	mySlot(CSerialPort & sp)
+    {
+	    recLen = -1;
+        str = {0};
+        m_sp = sp; 
+    };
 
 	void OnSendMessage()
 	{
@@ -231,7 +236,7 @@ void open(void)
 	}
 	else
 	{
-        char errorCodeStr[10];
+        char errorCodeStr[256];
         sprintf(errorCodeStr,"open failed, error code : %d\n",m_serialPort.getLastError()); 
         bodymsg(errorCodeStr);
 	}

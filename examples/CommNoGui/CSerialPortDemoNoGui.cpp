@@ -16,7 +16,12 @@ int countRead = 0;
 class mySlot : public has_slots<>
 {
 public:
-	mySlot(CSerialPort & sp){ m_sp = sp; };
+	mySlot(CSerialPort & sp)
+    {
+	    recLen = -1;
+        str = {0};
+        m_sp = sp; 
+    };
 
 	void OnSendMessage()
 	{

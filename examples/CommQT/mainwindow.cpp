@@ -72,8 +72,11 @@ void MainWindow::OnReceive()
 
     }
 
-    delete str;
-    str = NULL;
+    if(str)
+    {
+        delete[] str;
+        str = NULL;
+    }
 
 }
 
