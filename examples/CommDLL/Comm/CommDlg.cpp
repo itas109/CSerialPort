@@ -294,6 +294,12 @@ void CCommDlg::OnBnClickedButtonSend()
 	m_str = temp.GetBuffer(0);
 #endif
 	m_SerialPort.writeData(m_str, len);
+	
+	if(m_str)
+	{
+		delete[] m_str;
+		m_str = NULL;
+	}
 }
 
 

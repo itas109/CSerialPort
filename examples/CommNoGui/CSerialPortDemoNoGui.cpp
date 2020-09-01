@@ -19,7 +19,6 @@ public:
 	mySlot(CSerialPort & sp)
     {
 	    recLen = -1;
-        str = {0};
         m_sp = sp; 
     };
 
