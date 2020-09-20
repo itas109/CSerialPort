@@ -247,9 +247,9 @@ vector<SerialPortInfo> getPortInfoListMac()
 
 vector<SerialPortInfo> getPortInfoList()
 {
+	vector<SerialPortInfo> portInfoList;
 #ifdef I_OS_LINUX
     // TODO: need to optimize
-    vector<SerialPortInfo> portInfoList;
     SerialPortInfo m_serialPort;
     vector<std::string> portList = getPortInfoListLinux();
 
@@ -260,11 +260,12 @@ vector<SerialPortInfo> getPortInfoList()
         m_serialPort.portName = portList[i];
         portInfoList.push_back(m_serialPort);
     }
-    return portInfoList;
 #elif defined I_OS_MAC
     // ls /dev/{tty,cu}.*
-    return getPortInfoListMac();
+    portInfoList = getPortInfoListMac();
 #endif
+
+	return portInfoList;
 }
 
 CSerialPortInfoUnixBase::CSerialPortInfoUnixBase()
