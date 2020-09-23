@@ -40,3 +40,13 @@ elseif(APPLE)
 elseif (CMAKE_HOST_UNIX)
 	target_link_libraries( ${LIB_NAME} pthread )
 endif()
+
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/CSerialPort DESTINATION include FILES_MATCHING PATTERN "*.h")
+
+install(TARGETS libcserialport
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib
+		)
+
+install(FILES ${PROJECT_SOURCE_DIR}/cserialport-config.cmake DESTINATION lib/cmake/CSerialPort)
