@@ -160,38 +160,6 @@ CSerialPortInfoWinBase::~CSerialPortInfoWinBase()
 {
 }
 
-std::list<std::string> CSerialPortInfoWinBase::availablePorts()
-{
-    std::list<std::string> portsList;
-
-    vector<SerialPortInfo> portInfoList = availablePortInfos();
-
-    int count = portInfoList.size();
-
-    for (int i = 0; i < count; i++)
-    {
-        portsList.push_back(portInfoList[i].portName);
-    }
-    return portsList;
-}
-
-std::list<std::string> CSerialPortInfoWinBase::availableFriendlyPorts()
-{
-    std::list<std::string> portsList;
-
-    vector<SerialPortInfo> portInfoList = availablePortInfos();
-
-    int count = portInfoList.size();
-
-    for (int i = 0; i < count; i++)
-    {
-        // compose string => COM1 Prolific USB-to-Serial Comm Port
-        portsList.push_back(portInfoList[i].portName + " " + portInfoList[i].description);
-    }
-
-    return portsList;
-}
-
 vector<SerialPortInfo> CSerialPortInfoWinBase::availablePortInfos()
 {
     vector<SerialPortInfo> portInfoList;
@@ -199,4 +167,3 @@ vector<SerialPortInfo> CSerialPortInfoWinBase::availablePortInfos()
 
     return portInfoList;
 }
-

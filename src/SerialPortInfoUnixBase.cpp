@@ -277,41 +277,6 @@ CSerialPortInfoUnixBase::~CSerialPortInfoUnixBase()
 {
 }
 
-std::list<std::string> CSerialPortInfoUnixBase::availablePorts()
-{
-    // ttyS*    // Standard UART 8250 and etc
-    // ttyO*    // OMAP UART 8250 and etc
-    // ttyUSB*  // Usb/serial converters PL2303 and etc
-    // ttyACM*  // CDC_ACM converters (i.e. Mobile Phones)
-    // ttyGS*   // Gadget serial device (i.e. Mobile Phones with gadget serial driver)
-    // ttyMI*   // MOXA pci/serial converters
-    // ttymxc*  // Motorola IMX serial ports (i.e. Freescale i.MX)
-    // ttyAMA*  // AMBA serial device for embedded platform on ARM (i.e. Raspberry Pi)
-    // ttyTHS*  // Serial device for embedded platform on ARM (i.e. Tegra Jetson TK1)
-    // rfcomm*  // Bluetooth serial device
-    // ircomm*  // IrDA serial device
-    // tnt*     // Virtual tty0tty serial device
-    // pts/*    // Virtual pty serial device
-
-    std::list<std::string> portsList;
-
-    vector<SerialPortInfo> portInfoList = availablePortInfos();
-
-    int count = portInfoList.size();
-
-    for (int i = 0; i < count; i++)
-    {
-        portsList.push_back(portInfoList[i].portName);
-    }
-    return portsList;
-}
-
-std::list<std::string> CSerialPortInfoUnixBase::availableFriendlyPorts()
-{
-    // Not Support,so it is equal to availablePorts()
-    return availablePorts();
-}
-
 vector<SerialPortInfo> CSerialPortInfoUnixBase::availablePortInfos()
 {
     return getPortInfoList();
