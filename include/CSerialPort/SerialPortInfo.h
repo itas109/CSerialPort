@@ -14,11 +14,11 @@
 #ifndef __CSERIALPORTINFO_H__
 #define __CSERIALPORTINFO_H__
 
-#include "SerialPort_global.h"
 #include "SerialPortInfoBase.h"
+#include "SerialPort_global.h"
 
-#include <string>
 #include <list>
+#include <string>
 
 namespace itas109
 {

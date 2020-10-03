@@ -21,33 +21,34 @@
 
 using namespace std;
 
-struct SerialPortInfo {
-  std::string portName;
-  std::string description;
+struct SerialPortInfo
+{
+    std::string portName;
+    std::string description;
 };
 
 /**
  * @brief the CSerialPortInfo Base class 串口信息辅助类基类
- * 
+ *
  */
 class CSerialPortInfoBase
 {
 public:
-	/**
-	 * @brief Construct a new CSerialPortInfoBase object 构造函数
-	 * 
-	 */
-	CSerialPortInfoBase();
-	/**
-	 * @brief Destroy the CSerialPortInfoBase object 析构函数
-	 * 
-	 */
-	~CSerialPortInfoBase();
+    /**
+     * @brief Construct a new CSerialPortInfoBase object 构造函数
+     *
+     */
+    CSerialPortInfoBase();
+    /**
+     * @brief Destroy the CSerialPortInfoBase object 析构函数
+     *
+     */
+    ~CSerialPortInfoBase();
 
     /**
      * @brief availablePortInfos 获取串口信息列表
      * @return return available port infolist 返回可用串口名称列表
      */
-	static std::vector<SerialPortInfo> availablePortInfos(void);
+    static std::vector<SerialPortInfo> availablePortInfos(void);
 };
-#endif//__CSERIALPORTINFOBASE_H__
+#endif //__CSERIALPORTINFOBASE_H__

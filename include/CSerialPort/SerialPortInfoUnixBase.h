@@ -19,13 +19,13 @@
 
 /**
  * @brief the CSerialPortInfo unix class unix串口信息辅助类基类
- * 
+ *
  */
-class CSerialPortInfoUnixBase :	public CSerialPortInfoBase
+class CSerialPortInfoUnixBase : public CSerialPortInfoBase
 {
 public:
-	CSerialPortInfoUnixBase();
-	~CSerialPortInfoUnixBase();
+    CSerialPortInfoUnixBase();
+    ~CSerialPortInfoUnixBase();
 
     /**
      * @brief availablePortInfos 获取串口信息列表
@@ -33,4 +33,4 @@ public:
      */
     static std::vector<SerialPortInfo> availablePortInfos();
 };
-#endif//__CSERIALPORTINFOUNIXBASE_H__
+#endif //__CSERIALPORTINFOUNIXBASE_H__

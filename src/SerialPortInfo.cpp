@@ -7,20 +7,15 @@
 #include "CSerialPort/SerialPortInfoUnixBase.h"
 #define CSERIALPORTINFOBASE CSerialPortInfoUnixBase
 #else
-//Not support
+// Not support
 #define CSERIALPORTBASE
 #endif // I_OS_WIN
 
 using namespace itas109;
 
-CSerialPortInfo::CSerialPortInfo()
-{
-}
+CSerialPortInfo::CSerialPortInfo() {}
 
-
-CSerialPortInfo::~CSerialPortInfo()
-{
-}
+CSerialPortInfo::~CSerialPortInfo() {}
 
 vector<SerialPortInfo> CSerialPortInfo::availablePortInfos()
 {

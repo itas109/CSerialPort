@@ -19,26 +19,26 @@
 /**
  * @brief the CSerialPortInfoBase windows class windows串口信息辅助类基类
  * @see inherit 继承 CSerialPortInfoBase
- * 
+ *
  */
-class CSerialPortInfoWinBase :	public CSerialPortInfoBase
+class CSerialPortInfoWinBase : public CSerialPortInfoBase
 {
 public:
-	/**
-	 * @brief Construct a new CSerialPortInfoWinBase object 构造函数
-	 * 
-	 */
-	CSerialPortInfoWinBase();
-	/**
-	 * @brief Destroy the CSerialPortInfoWinBase object 析构函数
-	 * 
-	 */
-	~CSerialPortInfoWinBase();
+    /**
+     * @brief Construct a new CSerialPortInfoWinBase object 构造函数
+     *
+     */
+    CSerialPortInfoWinBase();
+    /**
+     * @brief Destroy the CSerialPortInfoWinBase object 析构函数
+     *
+     */
+    ~CSerialPortInfoWinBase();
 
-	/**
+    /**
      * @brief availablePortInfos 获取串口信息列表
      * @return return available port infolist 返回可用串口名称列表
      */
     static std::vector<SerialPortInfo> availablePortInfos();
 };
-#endif//__CSERIALPORTINFOWINBASE_H__
+#endif //__CSERIALPORTINFOWINBASE_H__

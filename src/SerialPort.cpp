@@ -7,7 +7,7 @@
 #include "CSerialPort/SerialPortUnixBase.h"
 #define CSERIALPORTBASE CSerialPortUnixBase
 #else
-//Not support
+// Not support
 #define CSERIALPORTBASE
 #endif // I_OS_WIN
 
@@ -24,7 +24,7 @@ CSerialPort::CSerialPort()
     ((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
 }
 
-itas109::CSerialPort::CSerialPort(const std::string & portName)
+itas109::CSerialPort::CSerialPort(const std::string &portName)
 {
     p_serialPortBase = new CSERIALPORTBASE(portName);
 
@@ -33,21 +33,26 @@ itas109::CSerialPort::CSerialPort(const std::string & portName)
     ((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
 }
 
-
 CSerialPort::~CSerialPort()
 {
     ((CSERIALPORTBASE *)p_serialPortBase)->readReady.disconnect_all();
 
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         delete p_serialPortBase;
         p_serialPortBase = NULL;
     }
 }
 
-void itas109::CSerialPort::init(std::string portName, int baudRate /*= itas109::BaudRate::BaudRate9600*/, itas109::Parity parity /*= itas109::Parity::ParityNone*/, itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/, itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/, itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/, int64 readBufferSize /*= 512*/)
+void itas109::CSerialPort::init(std::string portName,
+                                int baudRate /*= itas109::BaudRate::BaudRate9600*/,
+                                itas109::Parity parity /*= itas109::Parity::ParityNone*/,
+                                itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/,
+                                itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/,
+                                itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/,
+                                int64 readBufferSize /*= 512*/)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->init(portName, baudRate, parity, dataBits, stopbits, flowControl, readBufferSize);
     }
@@ -55,14 +60,15 @@ void itas109::CSerialPort::init(std::string portName, int baudRate /*= itas109::
 
 void CSerialPort::setOperateMode(OperateMode operateMode)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
-        p_serialPortBase->setOperateMode(operateMode);}
+        p_serialPortBase->setOperateMode(operateMode);
+    }
 }
 
 bool itas109::CSerialPort::open()
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         return p_serialPortBase->openPort();
     }
@@ -74,7 +80,7 @@ bool itas109::CSerialPort::open()
 
 void itas109::CSerialPort::close()
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->closePort();
     }
@@ -82,7 +88,7 @@ void itas109::CSerialPort::close()
 
 bool itas109::CSerialPort::isOpened()
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         return p_serialPortBase->isOpened();
     }
@@ -94,9 +100,9 @@ bool itas109::CSerialPort::isOpened()
 
 int itas109::CSerialPort::readData(char *data, int maxSize)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
-        return p_serialPortBase->readData(data,maxSize);
+        return p_serialPortBase->readData(data, maxSize);
     }
     else
     {
@@ -104,10 +110,9 @@ int itas109::CSerialPort::readData(char *data, int maxSize)
     }
 }
 
-
 int itas109::CSerialPort::readAllData(char *data)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         return p_serialPortBase->readAllData(data);
     }
@@ -119,9 +124,9 @@ int itas109::CSerialPort::readAllData(char *data)
 
 int itas109::CSerialPort::readLineData(char *data, int maxSize)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
-        return p_serialPortBase->readLineData(data,maxSize);
+        return p_serialPortBase->readLineData(data, maxSize);
     }
     else
     {
@@ -129,11 +134,11 @@ int itas109::CSerialPort::readLineData(char *data, int maxSize)
     }
 }
 
-int itas109::CSerialPort::writeData(const char * data, int maxSize)
+int itas109::CSerialPort::writeData(const char *data, int maxSize)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
-        return p_serialPortBase->writeData(data,maxSize);
+        return p_serialPortBase->writeData(data, maxSize);
     }
     else
     {
@@ -143,7 +148,7 @@ int itas109::CSerialPort::writeData(const char * data, int maxSize)
 
 void itas109::CSerialPort::setDebugModel(bool isDebug)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->setDebugModel(isDebug);
     }
@@ -151,7 +156,7 @@ void itas109::CSerialPort::setDebugModel(bool isDebug)
 
 void itas109::CSerialPort::setReadTimeInterval(int msecs)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->setReadTimeInterval(msecs);
     }
@@ -159,7 +164,7 @@ void itas109::CSerialPort::setReadTimeInterval(int msecs)
 
 void CSerialPort::setMinByteReadNotify(unsigned int minByteReadNotify)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->setMinByteReadNotify(minByteReadNotify);
     }
@@ -167,20 +172,20 @@ void CSerialPort::setMinByteReadNotify(unsigned int minByteReadNotify)
 
 int itas109::CSerialPort::getLastError() const
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         return p_serialPortBase->getLastError();
     }
     else
     {
         // null error
-        return itas109::/*SerialPortError::*/SystemError;
+        return itas109::/*SerialPortError::*/ SystemError;
     }
 }
 
 void itas109::CSerialPort::clearError()
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->clearError();
     }
@@ -188,7 +193,7 @@ void itas109::CSerialPort::clearError()
 
 void itas109::CSerialPort::setPortName(std::string portName)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->setPortName(portName);
     }
@@ -196,7 +201,7 @@ void itas109::CSerialPort::setPortName(std::string portName)
 
 std::string itas109::CSerialPort::getPortName() const
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         return p_serialPortBase->getPortName();
     }
@@ -208,7 +213,7 @@ std::string itas109::CSerialPort::getPortName() const
 
 void itas109::CSerialPort::setBaudRate(int baudRate)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->setBaudRate(baudRate);
     }
@@ -216,7 +221,7 @@ void itas109::CSerialPort::setBaudRate(int baudRate)
 
 int itas109::CSerialPort::getBaudRate() const
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         return p_serialPortBase->getBaudRate();
     }
@@ -228,7 +233,7 @@ int itas109::CSerialPort::getBaudRate() const
 
 void itas109::CSerialPort::setParity(itas109::Parity parity)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->setParity(parity);
     }
@@ -236,20 +241,20 @@ void itas109::CSerialPort::setParity(itas109::Parity parity)
 
 itas109::Parity itas109::CSerialPort::getParity() const
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
-        return  p_serialPortBase->getParity();
+        return p_serialPortBase->getParity();
     }
     else
     {
         // should retrun error
-        return itas109::/*Parity::*/ParityNone;
+        return itas109::/*Parity::*/ ParityNone;
     }
 }
 
 void itas109::CSerialPort::setDataBits(itas109::DataBits dataBits)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->setDataBits(dataBits);
     }
@@ -257,20 +262,20 @@ void itas109::CSerialPort::setDataBits(itas109::DataBits dataBits)
 
 itas109::DataBits itas109::CSerialPort::getDataBits() const
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         return p_serialPortBase->getDataBits();
     }
     else
     {
         // should retrun error
-        return itas109::/*DataBits::*/DataBits8;
+        return itas109::/*DataBits::*/ DataBits8;
     }
 }
 
 void itas109::CSerialPort::setStopBits(itas109::StopBits stopbits)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->setStopBits(stopbits);
     }
@@ -278,20 +283,20 @@ void itas109::CSerialPort::setStopBits(itas109::StopBits stopbits)
 
 itas109::StopBits itas109::CSerialPort::getStopBits() const
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         return p_serialPortBase->getStopBits();
     }
     else
     {
         // should retrun error
-        return itas109::/*StopBits::*/StopOne;
+        return itas109::/*StopBits::*/ StopOne;
     }
 }
 
 void itas109::CSerialPort::setFlowControl(itas109::FlowControl flowControl)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->setFlowControl(flowControl);
     }
@@ -299,20 +304,20 @@ void itas109::CSerialPort::setFlowControl(itas109::FlowControl flowControl)
 
 itas109::FlowControl itas109::CSerialPort::getFlowControl() const
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         return p_serialPortBase->getFlowControl();
     }
     else
     {
         // should retrun error
-        return itas109::/*FlowControl::*/FlowNone;
+        return itas109::/*FlowControl::*/ FlowNone;
     }
 }
 
 void itas109::CSerialPort::setReadBufferSize(int64 size)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->setReadBufferSize(size);
     }
@@ -320,7 +325,7 @@ void itas109::CSerialPort::setReadBufferSize(int64 size)
 
 int64 itas109::CSerialPort::getReadBufferSize() const
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         return p_serialPortBase->getReadBufferSize();
     }
@@ -332,7 +337,7 @@ int64 itas109::CSerialPort::getReadBufferSize() const
 
 void itas109::CSerialPort::setDtr(bool set /*= true*/)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->setDtr(set);
     }
@@ -340,7 +345,7 @@ void itas109::CSerialPort::setDtr(bool set /*= true*/)
 
 void itas109::CSerialPort::setRts(bool set /*= true*/)
 {
-    if(p_serialPortBase)
+    if (p_serialPortBase)
     {
         p_serialPortBase->setRts(set);
     }

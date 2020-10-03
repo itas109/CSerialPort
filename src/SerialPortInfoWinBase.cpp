@@ -6,10 +6,10 @@
 #undef PHYSICAL_ADDRESS
 #define PHYSICAL_ADDRESS LARGE_INTEGER
 
-#include <initguid.h>//GUID
-#include <Setupapi.h>//SetupDiGetClassDevs Setup*
-#include <ntddser.h>//GUID_DEVINTERFACE_COMPORT
-#include <tchar.h>//_T
+#include <Setupapi.h> //SetupDiGetClassDevs Setup*
+#include <initguid.h> //GUID
+#include <ntddser.h>  //GUID_DEVINTERFACE_COMPORT
+#include <tchar.h>    //_T
 
 std::string wstringToString(const std::wstring &wstr)
 {
@@ -21,7 +21,7 @@ std::string wstringToString(const std::wstring &wstr)
 
     int size = WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
     std::string ret = std::string(size, 0);
-	WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), &ret[0], size, NULL, NULL);//CP_UTF8
+    WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), &ret[0], size, NULL, NULL); // CP_UTF8
 
     return ret;
 }
@@ -47,21 +47,22 @@ bool enumDetailsSerialPorts(vector<SerialPortInfo> &portInfoList)
     SP_DEVICE_INTERFACE_DETAIL_DATA *pDetData = NULL;
 
     // Return only devices that are currently present in a system
-    // The GUID_DEVINTERFACE_COMPORT device interface class is defined for COM ports. GUID {86E0D1E0-8089-11D0-9CE4-08003E301F73}
+    // The GUID_DEVINTERFACE_COMPORT device interface class is defined for COM ports. GUID
+    // {86E0D1E0-8089-11D0-9CE4-08003E301F73}
     hDevInfo = SetupDiGetClassDevs(&GUID_DEVINTERFACE_COMPORT, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
 
     if (INVALID_HANDLE_VALUE != hDevInfo)
     {
         BOOL bOk = TRUE;
 
-        DWORD dwDetDataSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA)+256;
-        pDetData = (SP_DEVICE_INTERFACE_DETAIL_DATA*)new char[dwDetDataSize];
+        DWORD dwDetDataSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA) + 256;
+        pDetData = (SP_DEVICE_INTERFACE_DETAIL_DATA *)new char[dwDetDataSize];
 
         if (pDetData != NULL)
         {
             pDetData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
 
-            SP_DEVICE_INTERFACE_DATA did = { 0 };
+            SP_DEVICE_INTERFACE_DATA did = {0};
             did.cbSize = sizeof(did);
 
             for (DWORD idev = 0; bOk; idev++)
@@ -70,11 +71,11 @@ bool enumDetailsSerialPorts(vector<SerialPortInfo> &portInfoList)
                 bOk = SetupDiEnumDeviceInterfaces(hDevInfo, NULL, &GUID_DEVINTERFACE_COMPORT, idev, &did);
                 if (bOk)
                 {
-                    //DWORD cbRequired = 0;
+                    // DWORD cbRequired = 0;
 
-                    SP_DEVINFO_DATA devdata = { sizeof(SP_DEVINFO_DATA) };
+                    SP_DEVINFO_DATA devdata = {sizeof(SP_DEVINFO_DATA)};
                     // get detailed information about an interface
-                    //bOk = SetupDiGetDeviceInterfaceDetail(hDevInfo, &did, NULL, NULL,&cbRequired, &devdata);
+                    // bOk = SetupDiGetDeviceInterfaceDetail(hDevInfo, &did, NULL, NULL,&cbRequired, &devdata);
 
                     bOk = SetupDiGetDeviceInterfaceDetail(hDevInfo, &did, pDetData, dwDetDataSize, NULL, &devdata);
 
@@ -82,15 +83,17 @@ bool enumDetailsSerialPorts(vector<SerialPortInfo> &portInfoList)
                     {
                         TCHAR fname[256];
                         // retrieves a specified Plug and Play device property (include friendlyname etc.)
-                        BOOL bSuccess = SetupDiGetDeviceRegistryProperty(hDevInfo, &devdata, SPDRP_FRIENDLYNAME, NULL, (PBYTE)fname, sizeof(fname), NULL);
+                        BOOL bSuccess = SetupDiGetDeviceRegistryProperty(hDevInfo, &devdata, SPDRP_FRIENDLYNAME, NULL,
+                                                                         (PBYTE)fname, sizeof(fname), NULL);
 
                         TCHAR portName[256];
                         // get port name
-                        HKEY hDevKey = SetupDiOpenDevRegKey(hDevInfo, &devdata, DICS_FLAG_GLOBAL, 0, DIREG_DEV, KEY_READ);
+                        HKEY hDevKey =
+                            SetupDiOpenDevRegKey(hDevInfo, &devdata, DICS_FLAG_GLOBAL, 0, DIREG_DEV, KEY_READ);
                         if (INVALID_HANDLE_VALUE != hDevKey)
                         {
-                            DWORD dwCount = 255;//DEV_NAME_MAX_LEN
-                            RegQueryValueEx(hDevKey, _T("PortName"), NULL, NULL, (BYTE*)portName, &dwCount);
+                            DWORD dwCount = 255; // DEV_NAME_MAX_LEN
+                            RegQueryValueEx(hDevKey, _T("PortName"), NULL, NULL, (BYTE *)portName, &dwCount);
                             RegCloseKey(hDevKey);
 
                             bSuccess &= TRUE;
@@ -118,7 +121,6 @@ bool enumDetailsSerialPorts(vector<SerialPortInfo> &portInfoList)
 
                             bRet = true;
                         }
-
                     }
                     else
                     {
@@ -127,16 +129,15 @@ bool enumDetailsSerialPorts(vector<SerialPortInfo> &portInfoList)
                 }
                 else if (ERROR_NO_MORE_ITEMS == GetLastError())
                 {
-                    bRet = false;// Enumeration failed
+                    bRet = false; // Enumeration failed
                     break;
                 }
                 else
                 {
-
                 }
             }
 
-            delete[](char*)pDetData;
+            delete[](char *) pDetData;
             pDetData = NULL;
         }
         else
@@ -150,15 +151,9 @@ bool enumDetailsSerialPorts(vector<SerialPortInfo> &portInfoList)
 }
 /********************* EnumDetailsSerialPorts ****************************************/
 
+CSerialPortInfoWinBase::CSerialPortInfoWinBase() {}
 
-CSerialPortInfoWinBase::CSerialPortInfoWinBase()
-{
-}
-
-
-CSerialPortInfoWinBase::~CSerialPortInfoWinBase()
-{
-}
+CSerialPortInfoWinBase::~CSerialPortInfoWinBase() {}
 
 vector<SerialPortInfo> CSerialPortInfoWinBase::availablePortInfos()
 {
