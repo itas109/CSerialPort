@@ -14,7 +14,7 @@
 Language: <strong>English</strong> / <a href="README.md">Chinese 中文</a>
 </p>
 
-a lightweight library of serial port, which can easy to read and write serical port on windows and linux with C++
+Lightweight cross-platform serial port library based on C++, which can easy to read and write serial port on mutiple operating system
 
 ---
 
@@ -23,6 +23,17 @@ a lightweight library of serial port, which can easy to read and write serical p
 * Cross-platform
 * Easy use
 * higher efficiency
+
+# Platform
+CSerialPort has been tested to the following platforms:
+
+   - DOS ( x86_64 )
+   - Windows ( x86_64 )
+   - Linux ( x86_64, aarch64, mips64el )
+   - macOS ( x86_64 )
+   - Raspberry Pi ( armv7l )
+   - FreeBSD ( x86_64 )
+   - ...
 
 # Todo List
 
@@ -54,17 +65,15 @@ by itas109 on 2020-04-29
 # Quick Start
 
 ```
-git clone https://github.com/itas109/CSerialPort.git
+$ git clone https://github.com/itas109/CSerialPort.git
 
-cd CSerialPort
+$ cd CSerialPort
+$ mkdir bin
+$ cd bin
 
-mkdir bin
-
-cd bin
-
-cmake ..
-
-make -j8
+$ cmake ..
+$ make -j8
+$ make install
 ```
 
 # Tested Machine
@@ -83,48 +92,25 @@ make -j8
 | Win10 Enterprise 64bit CN | x86_64 | QT 5.12.7 | MinGW73 64bit | 4.0.3 |2020-04-29|
 | Linux raspberrypi 4.9.70 | armv7l | NoGUi | GCC 4.9.2 |  4.0.3 |2020-04-29|
 
-# Result
+# Screenshot
 
-## Linux：
-
-### Gui
+## Gui
 
 Demo Path: CSerialPort/examples/CommQT
 
 ![image](./pic/linux.jpg)
 
-### Tui
+## Tui
 
 Demo Path: CSerialPort/examples/CommTui
 
 ![image](./pic/linux_tui.jpg)
 
-### No Gui
+## No Gui
 
 Demo Path: CSerialPort/examples/CommNoGui
 
 ![image](./pic/linux_no_gui.jpg)
-
-
-## Windows:
-
-### Gui
-
-Demo Path: CSerialPort/examples/CommQT
-
-![image](./pic/win.jpg)
-
-### Tui
-
-Demo Path: CSerialPort/examples/CommTui
-
-![image](./pic/win_tui.jpg)
-
-
-### No Gui
-
-Demo Path: CSerialPort/examples/CommNoGui
-![image](./pic/win_no_gui.jpg)
 
 # Directory List
 
@@ -146,12 +132,12 @@ Demo Path: CSerialPort/examples/CommNoGui
 
 # Links
 
-* [CSDN Blog](http://blog.csdn.net/itas109)
+* [CSDN Blog](https://blog.csdn.net/itas109)
 * [Github](https://github.com/itas109/CSerialPort)
 * [Gitee](https://gitee.com/itas109/CSerialPort)
 
 # CSerialPort-based Applications
-## 1.[CommMaster通信大师](https://gitee.com/itas109/CommMaster)
+## 1.[CommMaster](https://gitee.com/itas109/CommMaster)
 * support windows/linux/macos/raspberrypi and so on
 * support custom port name
 * support custom baudrate
@@ -159,9 +145,23 @@ Demo Path: CSerialPort/examples/CommNoGui
 * support custom theme
 
 https://gitee.com/itas109/CommMaster
+
 ![image](./pic/CommMaster.png)
 
+## 2.[CommLite](https://github.com/itas109/CommLite)
+
+CommLite is tui's serial port tool based CSerialPort
+
+* support x86, arm, mips cpu architecture
+* support windows dos, linux, macos,raspberrypi, freebsd operating system
+
+https://github.com/itas109/CommLite
+
+![image](./pic/commlite.gif)
+
 # Donate
+
+[CSDN Blog](https://blog.csdn.net/itas109)
 
 ---
 # Other branches

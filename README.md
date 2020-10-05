@@ -1,4 +1,4 @@
-<p align="center">CSerialPort</p>
+<p align="center"><strong>CSerialPort</strong></p>
 
 <p align="center">
 <a href="https://github.com/itas109/CSerialPort/releases"><img alt="Version" src="https://img.shields.io/github/release/itas109/CSerialPort"/></a>
@@ -14,7 +14,7 @@
 语言：<a href="README-EN.md">English 英语</a> / <strong>中文</strong>
 </p>
 
-一个使用C++实现的轻量级串口类库，可以轻松在windows和linux下进行串口读写
+基于C++的轻量级开源跨平台串口类库，可以轻松实现跨平台多操作系统的串口读写
 
 ---
 # Design Principles 设计原则
@@ -22,6 +22,17 @@
 * 跨平台
 * 简单易用
 * 高效
+
+# Platform 平台
+CSerialPort已经在以下平台做过测试:
+
+   - DOS ( x86_64 )
+   - Windows ( x86_64 )
+   - Linux ( x86_64, aarch64, mips64el )
+   - macOS ( x86_64 )
+   - Raspberry Pi ( armv7l )
+   - FreeBSD ( x86_64 )
+   - ...
 
 # Todo List 待处理事项
 
@@ -54,17 +65,16 @@ by itas109 on 2020-04-29
 # Quick Start 快速开始
 
 ```
-git clone https://github.com/itas109/CSerialPort.git
+$ git clone https://github.com/itas109/CSerialPort.git
 
-cd CSerialPort
+$ cd CSerialPort
+$ mkdir bin
+$ cd bin
 
-mkdir bin
+$ cmake ..
+$ make -j8
+$ make install
 
-cd bin
-
-cmake ..
-
-make -j8
 ```
 
 # Tested Machine 测试机器
@@ -83,47 +93,25 @@ make -j8
 | Win10 Enterprise 64bit CN | x86_64 | QT 5.12.7 | MinGW73 64bit | 4.0.3 |2020-04-29|
 | Linux raspberrypi 4.9.70 | armv7l | NoGUi | GCC 4.9.2 |  4.0.3 |2020-04-29|
 
-# Result 结果
+# Screenshot 截图
 
-## Linux：
-
-### Gui 图形用户界面
+## Gui 图形用户界面
 
 示例路径: CSerialPort/examples/CommQT
 
 ![image](./pic/linux.jpg)
 
-### Tui 终端用户界面 
+## Tui 终端用户界面 
 
 示例路径: CSerialPort/examples/CommTui
 
 ![image](./pic/linux_tui.jpg)
 
-### No Gui 无界面
+## No Gui 无界面
 
 示例路径: CSerialPort/examples/CommNoGui
 
 ![image](./pic/linux_no_gui.jpg)
-
-
-## Windows:
-
-### Gui 图形用户界面
-
-示例路径: CSerialPort/examples/CommQT
-
-![image](./pic/win.jpg)
-
-### Tui 终端用户界面
-
-示例路径: CSerialPort/examples/CommTui
-
-![image](./pic/win_tui.jpg)
-
-### No Gui 无界面
-
-示例路径: CSerialPort/examples/CommNoGui
-![image](./pic/win_no_gui.jpg)
 
 # Directory List 目录列表
 
@@ -145,7 +133,7 @@ make -j8
 
 # Links 链接
 
-* [CSDN博客](http://blog.csdn.net/itas109)
+* [CSDN博客](https://blog.csdn.net/itas109)
 * [Github](https://github.com/itas109/CSerialPort)
 * [Gitee码云](https://gitee.com/itas109/CSerialPort)
 
@@ -158,9 +146,23 @@ make -j8
 * 支持自定义主题
 
 https://gitee.com/itas109/CommMaster
+
 ![image](./pic/CommMaster.png)
 
+## 2.[CommLite](https://github.com/itas109/CommLite)
+
+CommLite是一款基于CSerialPort的文本UI串口调试助手
+
+* 支持x86, arm, mips等cpu架构
+* 支持windows dos, linux, macos, raspberrypi, freebsd等操作系统
+
+https://github.com/itas109/CommLite
+
+![image](./pic/commlite.gif)
+
 # Donate 捐助
+
+[CSDN博客](https://blog.csdn.net/itas109)
 
 ---
 # Other branches 其他分支
