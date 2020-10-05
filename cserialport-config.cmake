@@ -9,6 +9,8 @@
 #  You may use, distribute and copy the CSerialPort under the terms of \n
 #  GNU Lesser General Public License version 3, which is displayed below.
 
+set(CSerialPort_FOUND FALSE)
+
 if(NOT CSerialPort_INCLUDE_DIR)
         find_path(CSerialPort_INCLUDE_DIR NAMES
                 CSerialPort/SerialPort.h
