@@ -66,14 +66,9 @@ by itas109 on 2020-04-29
 
 ```
 $ git clone https://github.com/itas109/CSerialPort.git
-
 $ cd CSerialPort
-$ mkdir bin
-$ cd bin
-
-$ cmake ..
-$ make -j8
-$ make install
+$ cmake -B bin .
+$ cmake --build bin
 ```
 
 # Tested Machine
