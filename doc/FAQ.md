@@ -21,7 +21,7 @@ A : 一般情况下是初始化参数错误，可以先使用默认参数，然�
 
 Q4 : 如何编译动态库?
 
-A : 工程目录CSerialPort\lib下分别有Linux和Windows的动态库编译方法
+A : 工程目录CSerialPort\lib下分别有Linux和Windows的动态库编译方法，但是更推荐直接使用cmake生成动态库
 
 ---
 
@@ -29,9 +29,9 @@ Q5 : 如何调用动态库?
 
 A : 
 
-windows下可以运行CSerialPort\Demo\CommDLL的示例
+windows下可以运行CSerialPort\examples\CommDLL的示例
 
-linux下将生成的libcserialport.so文件拷贝到CSerialPort\Demo\CommNoGui目录，执行下列命令即可
+linux下将生成的libcserialport.so文件拷贝到CSerialPort\examples\CommNoGui目录，执行下列命令即可
 
 ```
     g++ CSerialPortDemoNoGui.cpp -o CSerialPortDemoNoGui -I../../src -L. -lcserialport
@@ -48,3 +48,20 @@ A :
 默认情况下，只有当收到的字符数大于1时，才会触发读取信号。
 
 可以调用setMinByteReadNoify函数设置读取触发的最小字符数，该设置即时生效。
+
+Q7 : How to send/write Hex Data 如何发送/写入hex十六进制数据？
+
+A :
+
+more info https://github.com/itas109/CSerialPort/issues/38
+
+```
+char sendStr[5] = {0};
+sendStr[0] = 0x00;
+sendStr[1] = 0x11;
+sendStr[2] = 0x22;
+sendStr[3] = 0x33;
+sendStr[4] = 0x44;
+
+m_serialPort.writeData(sendStr,sizeof(sendStr));
+```
