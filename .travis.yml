@@ -1,0 +1,127 @@
+# @file .travis.yml
+# @author itas109 (itas109@qq.com) \n\n
+# Blog : https://blog.csdn.net/itas109 \n
+# Github : https://github.com/itas109 \n
+# QQ Group : 12951803
+# @brief Lightweight cross-platform serial port library based on C++ 基于C++的轻量级开源跨平台串口类库
+# @copyright The CSerialPort is Copyright (C) 2020 itas109. \n
+# Contact: itas109@qq.com \n\n
+#  You may use, distribute and copy the CSerialPort under the terms of \n
+#  GNU Lesser General Public License version 3, which is displayed below.
+
+language: cpp
+
+# gcc 4.8
+addons: &gcc48
+  apt:
+    packages:
+      - g++-4.8
+    sources:
+      - ubuntu-toolchain-r-test
+
+# gcc 7.0
+addons: &gcc7
+  apt:
+    packages:
+      - g++-7
+    sources:
+      - ubuntu-toolchain-r-test
+
+# Clang 3.5
+addons: &clang35
+  apt:
+    packages:
+      - clang-3.5
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.5
+      
+
+addons: &clang10
+  apt:
+    packages:
+      - clang-10
+      - lldb-10
+      - lld-10
+    sources:
+      - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
+        key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
+
+
+matrix:
+  include:
+    # Test gcc-4.8: Build=Debug/Release
+    - env: GCC_VERSION=4.8 BUILD_TYPE=Debug
+      os: linux
+      arch: amd64
+      dist: trusty
+      addons: *gcc48
+
+    - env: GCC_VERSION=4.8 BUILD_TYPE=Release
+      os: linux
+      arch: arm64
+      dist: trusty
+      addons: *gcc48
+      
+    - env: GCC_VERSION=7 BUILD_TYPE=Debug
+      os: linux
+      arch: s390x
+      dist: xenial
+      addons: *gcc7
+
+    - env: GCC_VERSION=7 BUILD_TYPE=Release
+      os: linux
+      arch: ppc64le
+      dist: xenial
+      addons: *gcc7
+
+    # Test clang-3.5: Build=Debug/Release
+    - env: CLANG_VERSION=3.5 BUILD_TYPE=Debug
+      os: linux
+      arch: amd64
+      dist: xenial
+      addons: *clang35
+
+    - env: CLANG_VERSION=3.5 BUILD_TYPE=Release
+      os: linux
+      arch: amd64
+      dist: xenial
+      addons: *clang35
+
+      # osx
+    - env: BUILD_TYPE=Release
+      os: osx
+      osx_image: xcode9.4
+
+    # Test clang-10.0: Build=Debug/Release
+    - env: CLANG_VERSION=10 BUILD_TYPE=Debug
+      os: linux
+      arch: arm64
+      dist: bionic
+      addons: *clang10
+
+    - env: CLANG_VERSION=10 BUILD_TYPE=Release
+      os: linux
+      arch: amd64
+      dist: bionic
+      addons: *clang10
+
+
+before_script:
+  - if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
+  - if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CXX="clang++" CC="clang"; fi
+  - which $CXX
+  - which $CC
+  - $CXX --version
+  - cmake --version
+
+script:
+  - cd ${TRAVIS_BUILD_DIR}
+  - mkdir -p bin && cd bin
+  - |
+    cmake .. \
+      -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+      -DCSERIALPORT_BUILD_TEST=OFF
+      
+  - cmake --build .
