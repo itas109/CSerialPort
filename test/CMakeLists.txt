@@ -4,7 +4,14 @@ cmake_minimum_required(VERSION 2.8)
 
 MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 
+add_custom_target(get_gtest
+		COMMAND git submodule update --init --recursive
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+	)
+
 include(gtest.cmake)
+
+add_dependencies(gtest get_gtest)
 
 include_directories(.)
 include_directories(../include)
