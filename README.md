@@ -7,6 +7,8 @@
 <a href="https://github.com/itas109/CSerialPort/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-LGPL%203.0-orange"/></a>
 <img alt="language" src="https://img.shields.io/badge/language-c++-red"/>
 <img alt="platform" src="https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20macos%20%7C%20raspberrypi%20%7C%20freebsd-lightgrey"/>
+<img alt="appveyor-ci" src="https://ci.appveyor.com/api/projects/status/a4t6ddubhns561kh?svg=true"/>
+<img alt="travis-ci" src="https://www.travis-ci.org/itas109/CSerialPort.svg?branch=master"/>
 <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/itas109/CSerialPort">
 </p>
 
@@ -28,7 +30,7 @@ CSerialPort已经在以下平台做过测试:
 
    - DOS ( x86_64 )
    - Windows ( x86_64 )
-   - Linux ( x86_64, aarch64, mips64el )
+   - Linux ( x86_64, aarch64, mips64el, s390x, ppc64le )
    - macOS ( x86_64 )
    - Raspberry Pi ( armv7l )
    - FreeBSD ( x86_64 )
