@@ -189,12 +189,12 @@ int main(int argc, char **argv)
         std::cerr << "Unhandled Exception: " << e.what() << std::endl;
     }
 
-#ifdef I_OS_WIN
-    system("pause");
-#elif defined I_OS_UNIX   // unix
-    printf("Press any key to continue...");
-    fgetc(stdin);
-#endif
+// #ifdef I_OS_WIN
+//    system("pause");
+// #elif defined I_OS_UNIX   // unix
+//    printf("Press any key to continue...");
+//    fgetc(stdin);
+// #endif
     
     return 0;
 }
