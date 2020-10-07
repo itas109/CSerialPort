@@ -1,0 +1,42 @@
+version: 1.0.{build}
+image: Visual Studio 2015
+clone_depth: 1
+environment:
+  build_type: Release
+  matrix:
+  - compiler: msvc-14-win32
+    generator: Visual Studio 14 2015
+  - compiler: msvc-14-win64
+    generator: Visual Studio 14 2015 Win64
+  - compiler: msvc-14-win32-xp
+    generator: Visual Studio 14 2015
+    platformset: v140_xp
+  - compiler: msvc-12-win32
+    generator: Visual Studio 12 2013
+  - compiler: msvc-12-win64
+    generator: Visual Studio 12 2013 Win64
+  - compiler: msvc-11-win32
+    generator: Visual Studio 11 2012
+  - compiler: msvc-11-win64
+    generator: Visual Studio 11 2012 Win64
+  - compiler: msvc-10-win32
+    generator: Visual Studio 10 2010
+  - compiler: msvc-08-win32
+    generator: Visual Studio 9 2008
+  - compiler: gcc-5.3.0-posix-win32
+    generator: MinGW Makefiles
+    cxx_path: C:\mingw-w64\i686-5.3.0-posix-dwarf-rt_v4-rev0\mingw32\bin
+  - compiler: gcc-7.3.0-posix-win64
+    generator: MinGW Makefiles
+    cxx_path: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin
+install:
+- ps: "# git bash conflicts with MinGW makefiles\nif ($env:generator -eq \"MinGW Makefiles\") \n{\n      $env:path = $env:path.replace(\"C:\\Program Files\\Git\\usr\\bin;\", \"\")\n      if ($env:cxx_path -ne \"\") \n      {\n           $env:path = \"$env:cxx_path;\" + $env:path\n      }\n}\n\n\nWrite-Output \"APPVEYOR_BUILD_FOLDER: $env:APPVEYOR_BUILD_FOLDER\"\nWrite-Output \"Compiler: $env:compiler\"\nWrite-Output \"Generator: $env:generator\"\n# Write-Output \"Path: $env:path\"\nWrite-Output \"Env:build_type: $env:build_type\""
+build_script:
+- ps: "cd $env:APPVEYOR_BUILD_FOLDER\n\nmkdir bin\n\ncd bin\n\nif ($env:platformset -ne \"\") \n{\n    cmake -G \"$env:generator\" -DCSERIALPORT_BUILD_TEST=OFF -DCMAKE_BUILD_TYPE=\"$env:build_type\" ..  \n}\nelse\n{\n    cmake -G \"$env:generator\" -T \"$env:platformset\"  -DCSERIALPORT_BUILD_TEST=OFF -DCMAKE_BUILD_TYPE=\"$env:build_type\" ..  \n}\n\ncmake --build ."
+notifications:
+- provider: Email
+  to:
+  - itas109@qq.com
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: true
