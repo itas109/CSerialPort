@@ -6,8 +6,10 @@ environment:
   matrix:
   - compiler: msvc-14-win32
     generator: Visual Studio 14 2015
+    build_test: ON
   - compiler: msvc-14-win64
     generator: Visual Studio 14 2015 Win64
+    build_test: ON
   - compiler: msvc-14-win32-xp
     generator: Visual Studio 14 2015
     platformset: v140_xp
@@ -23,16 +25,27 @@ environment:
     generator: Visual Studio 10 2010
   - compiler: msvc-08-win32
     generator: Visual Studio 9 2008
-  - compiler: gcc-5.3.0-posix-win32
+  - compiler: mingw-4.9.2-posix-win32
+    generator: MinGW Makefiles
+    cxx_path: C:\Qt\Tools\mingw492_32\bin
+  - compiler: mingw-5.3.0-posix-win32
     generator: MinGW Makefiles
     cxx_path: C:\mingw-w64\i686-5.3.0-posix-dwarf-rt_v4-rev0\mingw32\bin
-  - compiler: gcc-7.3.0-posix-win64
+  - compiler: mingw-7.3.0-posix-win64
     generator: MinGW Makefiles
     cxx_path: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin
 install:
 - ps: "# git bash conflicts with MinGW makefiles\nif ($env:generator -eq \"MinGW Makefiles\") \n{\n      $env:path = $env:path.replace(\"C:\\Program Files\\Git\\usr\\bin;\", \"\")\n      if ($env:cxx_path -ne \"\") \n      {\n           $env:path = \"$env:cxx_path;\" + $env:path\n      }\n}\n\n\nWrite-Output \"APPVEYOR_BUILD_FOLDER: $env:APPVEYOR_BUILD_FOLDER\"\nWrite-Output \"Compiler: $env:compiler\"\nWrite-Output \"Generator: $env:generator\"\n# Write-Output \"Path: $env:path\"\nWrite-Output \"Env:build_type: $env:build_type\""
 build_script:
-- ps: "cd $env:APPVEYOR_BUILD_FOLDER\n\nmkdir bin\n\ncd bin\n\nif ($env:platformset -ne \"\") \n{\n    cmake -G \"$env:generator\" -DCSERIALPORT_BUILD_TEST=OFF -DCMAKE_BUILD_TYPE=\"$env:build_type\" ..  \n}\nelse\n{\n    cmake -G \"$env:generator\" -T \"$env:platformset\"  -DCSERIALPORT_BUILD_TEST=OFF -DCMAKE_BUILD_TYPE=\"$env:build_type\" ..  \n}\n\ncmake --build ."
+- ps: "cd $env:APPVEYOR_BUILD_FOLDER\n\nmkdir bin\n\ncd bin\n\nif ($env:build_test -ne \"ON\") \n{\n    $env:build_test=\"OFF\"\n}\n\nif ($env:platformset -ne \"\") \n{\n    cmake -G \"$env:generator\" -DCSERIALPORT_BUILD_TEST=\"$env:build_test\" -DCMAKE_BUILD_TYPE=\"$env:build_type\" ..  \n}\nelse\n{\n    cmake -G \"$env:generator\" -T \"$env:platformset\"  -DCSERIALPORT_BUILD_TEST=\"$env:build_test\" -DCMAKE_BUILD_TYPE=\"$env:build_type\" ..  \n}\n\ncmake --build ."
+test_script:
+- ps: >-
+    if ($env:build_test -eq "ON")
+
+    {
+        cd $env:APPVEYOR_BUILD_FOLDER
+        bin\test\Debug\CSerialPortTest.exe
+    }
 notifications:
 - provider: Email
   to:
