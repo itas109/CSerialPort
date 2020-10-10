@@ -1,3 +1,5 @@
+# Run manually to reformat file
+# clang-format -i --style=file <file>
 # http://clang.llvm.org/docs/ClangFormatStyleOptions.html
 # 语言: None, Cpp, Java, JavaScript, ObjC, Proto, TableGen, TextProto
 Language: Cpp
