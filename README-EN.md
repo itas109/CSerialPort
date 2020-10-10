@@ -47,7 +47,7 @@ CSerialPort has been tested to the following platforms:
 - [ ] 4.higher efficiency notify module
 - [ ] 5.support other language,such as C, C#, Python, Java, Golang
 - [x] 6.sync serial port communication
-- [ ] 7.new cross-platform gui serial port tool
+- [X] 7.new cross-platform gui serial port tool
 - [ ] 8.add a video description of this class
 - [ ] 9.comm monitor hook
 
@@ -61,8 +61,8 @@ CSerialPort has been tested to the following platforms:
 
 # Last Modify
 
-## Version: 4.0.3.200429
-by itas109 on 2020-04-29
+## Version: 4.1.0.201010
+by itas109 on 2020-10-10
 
 # Quick Start
 
@@ -72,22 +72,6 @@ $ cd CSerialPort
 $ cmake -B bin .
 $ cmake --build bin
 ```
-
-# Tested Machine
-
-| OS | Arch | Gui | compiler | version | testing time |
-| :-----:| :----: | :----: | :----: | :----: | :----: |
-| DeepIn 15.11 64bit CN | x86_64 | QT 5.12.6 | GCC 6.3.0 | 4.0.3 |2020-04-29|
-| NeoKylin Server 7.0 CN| x86_64 | NoGui | GCC 4.8.5 | 4.0.3 |2020-04-29|
-| Win7 Ultimate 64bit CN | x86_64 | QT 5.6.2 | MSVC2013u5 32bit | 4.0.3 |2020-04-29|
-| Win7 Ultimate 64bit CN | x86_64 | QT 5.12.7 | MSVC2017 64bit |  4.0.3 |2020-04-29|
-| Win7 Ultimate 64bit CN | x86_64 | NoGui | MinGW73 64bit |  4.0.3 |2020-04-29|
-| Win7 Ultimate 64bit CN | x86_64 | NoGui | MinGW48 32bit |  4.0.3 |2020-04-29|
-| Win7 Ultimate 64bit CN | x86_64 | MFC | MSVC2013u5 32bit |  4.0.3 |2020-04-29|
-| Win7 Ultimate 64bit CN | x86_64 | MFC | MSVC2015u3 32bit |  4.0.3 |2020-04-29|
-| Win10 Enterprise 64bit CN | x86_64 | MFC | MSVC2015u3 32bit | 4.0.3 |2020-04-29|
-| Win10 Enterprise 64bit CN | x86_64 | QT 5.12.7 | MinGW73 64bit | 4.0.3 |2020-04-29|
-| Linux raspberrypi 4.9.70 | armv7l | NoGUi | GCC 4.9.2 |  4.0.3 |2020-04-29|
 
 # Screenshot
 

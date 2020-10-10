@@ -24,11 +24,11 @@ BEGIN
     BEGIN
       VALUE "CompanyName",      "itas109, https://github.com/itas109/CSerialPort\0"
       VALUE "FileDescription",  "libcserialport shared library\0"
-      VALUE "FileVersion",      "4.0.3.200429\0"
+      VALUE "FileVersion",      "4.1.0.201010\0"
       VALUE "InternalName",     "libcserialport\0"
       VALUE "OriginalFilename", "libcserialport.dll\0"
       VALUE "ProductName",      "cserialport library\0"
-      VALUE "ProductVersion",   "4.0.3.200429\0"
+      VALUE "ProductVersion",   "4.1.0.201010\0"
       VALUE "LegalCopyright",   "Copyright (C) 2020 itas109, <itas109@qq.com>\0"
     END
   END

@@ -46,7 +46,7 @@ CSerialPort已经在以下平台做过测试:
 - [ ] 4.更高效的通知模块
 - [ ] 5.支持其他语言，如C, C#, Python, Java, Golang等
 - [x] 6.同步串口通信
-- [ ] 7.全新的跨平台串口调试助手
+- [X] 7.全新的跨平台串口调试助手
 - [ ] 8.增加一个类库的介绍和使用视频
 - [ ] 9.串口侦听hook
 
@@ -61,8 +61,8 @@ CSerialPort已经在以下平台做过测试:
 
 # Last Modify 最新版本
 
-## Version: 4.0.3.200429
-by itas109 on 2020-04-29
+## Version: 4.1.0.201010
+by itas109 on 2020-10-10
 
 # Quick Start 快速开始
 
@@ -72,22 +72,6 @@ $ cd CSerialPort
 $ cmake -B bin .
 $ cmake --build bin
 ```
-
-# Tested Machine 测试机器
-
-| 系统版本 | CPU架构 |Gui | 编译器 | 版本 | 测试时间 |
-| :-----:| :----: | :----: | :----: | :----: |:----: |
-| DeepIn 15.11 64bit CN | x86_64 | QT 5.12.6 | GCC 6.3.0 | 4.0.3 |2020-04-29|
-| NeoKylin Server 7.0 CN| x86_64 | NoGui | GCC 4.8.5 | 4.0.3 |2020-04-29|
-| Win7 Ultimate 64bit CN | x86_64 | QT 5.6.2 | MSVC2013u5 32bit | 4.0.3 |2020-04-29|
-| Win7 Ultimate 64bit CN | x86_64 | QT 5.12.7 | MSVC2017 64bit |  4.0.3 |2020-04-29|
-| Win7 Ultimate 64bit CN | x86_64 | NoGui | MinGW73 64bit |  4.0.3 |2020-04-29|
-| Win7 Ultimate 64bit CN | x86_64 | NoGui | MinGW48 32bit |  4.0.3 |2020-04-29|
-| Win7 Ultimate 64bit CN | x86_64 | MFC | MSVC2013u5 32bit |  4.0.3 |2020-04-29|
-| Win7 Ultimate 64bit CN | x86_64 | MFC | MSVC2015u3 32bit |  4.0.3 |2020-04-29|
-| Win10 Enterprise 64bit CN | x86_64 | MFC | MSVC2015u3 32bit | 4.0.3 |2020-04-29|
-| Win10 Enterprise 64bit CN | x86_64 | QT 5.12.7 | MinGW73 64bit | 4.0.3 |2020-04-29|
-| Linux raspberrypi 4.9.70 | armv7l | NoGUi | GCC 4.9.2 |  4.0.3 |2020-04-29|
 
 # Screenshot 截图
 

@@ -353,7 +353,7 @@ void itas109::CSerialPort::setRts(bool set /*= true*/)
 
 std::string itas109::CSerialPort::getVersion()
 {
-    return "https://github.com/itas109/CSerialPort - V4.0.3.200429";
+    return "https://github.com/itas109/CSerialPort - V4.1.0.201010";
 }
 
 void itas109::CSerialPort::onReadReady()
