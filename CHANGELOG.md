@@ -2,6 +2,27 @@
 
 
 ---
+## 4.1.0 (2020-10-10)
+
+Fixed:
+* #29 windows xp unable to locate the program input point in msvcrt.dll 无法定位程序输入点于msvcrt.dll
+* #30 _T() cannot convert 'const char*' to 'LPCWSTR
+* #39 fix getPortInfoList crash on unix(not linux and mac os) 修复unix系统(非linux和macos)getPortInfoList引起的崩溃问题
+* #40 fix vs2008 vs2010 Cannot open include file: 'ntddser.h' 修复msvc无法找到ntddser.h问题
+
+Feature:
+* header files is separated into include directory 头文件独立到include文件夹
+* add Tui Demo based pdcurses and ncurses 增加基于pdcurses和ncurses的tui示例
+* use cmake compile CSerialPort 使用cmake编译
+* add cmake install 增加cmake安装
+* add cppcheck file 增加cppcheck代码检测文件
+* add clang-format 增加clang-format代码格式化
+* add travis ci and appveyor ci 增加travis和appveyor持续集成
+
+Remove:
+* remove function init of integer port 移除init整型串口函数
+* remove function availablePorts and availableFriendlyPorts 移除availablePorts和availablePorts函数
+
 ## 4.0.3 (2020-04-29)
 
 Fixed:
