@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-Language: <strong>English</strong> / <a href="README.md">Chinese 中文</a>
+Language: <strong>English</strong> / <a href="README.md">中文</a>
 </p>
 
 Lightweight cross-platform serial port library based on C++, which can easy to read and write serial port on mutiple operating system
@@ -67,10 +67,11 @@ by itas109 on 2020-10-10
 # Quick Start
 
 ```
-$ git clone https://github.com/itas109/CSerialPort.git
+$ git clone --depth=1 https://github.com/itas109/CSerialPort.git
 $ cd CSerialPort
-$ cmake -B bin .
-$ cmake --build bin
+$ mkdir bin && cd bin
+$ cmake ..
+$ cmake --build .
 ```
 
 # Screenshot

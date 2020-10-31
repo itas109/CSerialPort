@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-语言：<a href="README-EN.md">English 英语</a> / <strong>中文</strong>
+语言：<a href="README-EN.md">English</a> / <strong>中文</strong>
 </p>
 
 基于C++的轻量级开源跨平台串口类库，可以轻松实现跨平台多操作系统的串口读写
@@ -67,10 +67,11 @@ by itas109 on 2020-10-10
 # Quick Start 快速开始
 
 ```
-$ git clone https://github.com/itas109/CSerialPort.git
+$ git clone --depth=1 https://github.com/itas109/CSerialPort.git
 $ cd CSerialPort
-$ cmake -B bin .
-$ cmake --build bin
+$ mkdir bin && cd bin
+$ cmake ..
+$ cmake --build .
 ```
 
 # Screenshot 截图
