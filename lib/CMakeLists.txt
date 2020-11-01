@@ -49,4 +49,4 @@ install(TARGETS libcserialport
 		ARCHIVE DESTINATION lib
 		)
 
-install(FILES ${PROJECT_SOURCE_DIR}/cserialport-config.cmake DESTINATION lib/cmake/CSerialPort)
+install(FILES ${PROJECT_SOURCE_DIR}/cserialport-config.cmake.in DESTINATION lib/cmake/CSerialPort RENAME cserialport-config.cmake)
