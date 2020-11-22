@@ -3,6 +3,14 @@
 #include "CSerialPort/SerialPort.h"
 #include "CSerialPort/SerialPortInfo.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#define imsleep(microsecond) Sleep(microsecond) // ms
+#else
+#include <unistd.h>
+#define imsleep(microsecond) usleep(1000 * microsecond) // ms
+#endif
+
 #include <vector>
 using namespace itas109;
 using namespace std;
@@ -119,8 +127,11 @@ int main()
 		//write
 		sp.writeData("itas109", 7);
 
-		while (true);
-	}
+        for (;;)
+		{
+			imsleep(1);
+		}
+    }
 
 	return 0;
 }
