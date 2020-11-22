@@ -1,4 +1,5 @@
 ﻿#include "CSerialPort/SerialPortUnixBase.h"
+#include <unistd.h> // usleep
 
 CSerialPortUnixBase::CSerialPortUnixBase()
 {
@@ -223,7 +224,7 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
 
     if (p_base)
     {
-        while (p_base->isThreadRunning())
+        for (; p_base->isThreadRunning();)
         {
             int readbytes = 0;
 
@@ -232,6 +233,10 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
             if (readbytes >= p_base->getMinByteReadNotify()) //设定字符数，默认为2
             {
                 p_base->readReady._emit();
+            }
+            else
+            {
+                usleep(1); // fix high cpu usage on unix
             }
         }
     }
