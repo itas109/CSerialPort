@@ -288,13 +288,56 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
 
         ResetEvent(m_mainHandle);
 
-        while (p_base->isThreadRunning())
+        for (; p_base->isThreadRunning();)
         {
             if (!WaitCommEvent(m_mainHandle, &eventMask, &m_overlapMonitor))
-                if (GetLastError() != ERROR_IO_PENDING)
+            {
+                switch (GetLastError())
                 {
-                    // WaitCommEvent error
+                    case ERROR_IO_PENDING: // normal, because no bytes. error code:997
+                    {
+                        // This is a normal return value if there are no bytes to read at the port.
+                        break;
+                    }
+                    case ERROR_INVALID_PARAMETER: // system error. error code:87
+                    {
+                        // Under Windows NT, this value is returned for some reason.
+                        // I have not investigated why, but it is also a valid reply
+                        // Also do nothing and continue.
+                        break;
+                    }
+                    case ERROR_ACCESS_DENIED: // Access denied. error code:5
+                    {
+                        // std::cout << "comm acess denied" << std::endl;
+                        break;
+                    }
+                    case ERROR_INVALID_HANDLE: // handle invalid. error code:6
+                    {
+                        // std::cout << "comm handle invalid" << std::endl;
+                        break;
+                    }
+                    case ERROR_BAD_COMMAND: // illegal disconnect. error code:22
+                    {
+                        // std::cout << "comm illegal disconnect" << std::endl;
+                        break;
+                    }
+                    default:
+                    {
+                        // All other error codes indicate a serious error has occured.  Process this error.
+                        p_base->m_handle = INVALID_HANDLE_VALUE;
+                        break;
+                    }
                 }
+            }
+            else
+            {
+                // If WaitCommEvent() returns TRUE, check to be sure there are actually bytes in the buffer to read
+                ClearCommError(m_mainHandle, &dwError, &comstat);
+                if (comstat.cbInQue == 0)
+                {
+                    continue;
+                }
+            }
 
             if (WaitForSingleObject(m_overlapMonitor.hEvent, INFINITE) == WAIT_OBJECT_0)
             {
