@@ -641,7 +641,7 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 		//deal with mutil handle tigger at the same time	//by itas109 2017-12-17
 		if (Event >= WAIT_OBJECT_0 && Event < WAIT_OBJECT_0 + 3)
 		{
-			for (int i = Event - WAIT_OBJECT_0 - 1; i < 3; i++)
+			for (int i = Event - WAIT_OBJECT_0 ; i < 3; i++)
 			{
 				if (WaitForSingleObject(port->m_hEventArray[i], 0) == WAIT_OBJECT_0)
 				{
