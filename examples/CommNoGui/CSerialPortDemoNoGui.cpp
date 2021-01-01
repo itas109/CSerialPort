@@ -24,16 +24,16 @@ int countRead = 0;
 class mySlot : public has_slots<>
 {
 public:
-	mySlot(CSerialPort & sp)
+    mySlot(CSerialPort * sp)
     {
 	    recLen = -1;
-        m_sp = sp; 
+        p_sp = sp;
     };
 
 	void OnSendMessage()
 	{
 		//read
-		recLen = m_sp.readAllData(str);
+        recLen = p_sp->readAllData(str);
 
 		if(recLen > 0)
 		{
@@ -45,12 +45,12 @@ public:
 			if(countRead > 7)
 			{
 				std::cout << "close serial port when receive count > 7" << std::endl;
-				m_sp.close();
+				p_sp->close();
 			}
 			else
 			{		
 				// return receive data
-				m_sp.writeData(str, recLen);
+				p_sp->writeData(str, recLen);
 			}
 		}
 	};
@@ -59,7 +59,7 @@ private:
 	mySlot(){};
 
 private:
-	CSerialPort m_sp;
+    CSerialPort * p_sp;
 
 	char str[1024];
 	int recLen;
@@ -74,7 +74,7 @@ int main()
 
 	std::cout << "Version : " << sp.getVersion() << std::endl << std::endl;
 
-	mySlot receive(sp);
+	mySlot receive(&sp);
 
 	m_availablePortsList = CSerialPortInfo::availablePortInfos();
 
