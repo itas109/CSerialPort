@@ -5,7 +5,7 @@
  * Github : https://github.com/itas109 \n
  * QQ Group : 12951803
  * @brief os platform util 操作系统平台工具
- * @copyright The CSerialPort is Copyright (C) 2020 itas109. \n
+ * @copyright The CSerialPort is Copyright (C) 2021 itas109. \n
  * Contact: itas109@qq.com \n\n
  *  You may use, distribute and copy the CSerialPort under the terms of \n
  *  GNU Lesser General Public License version 3, which is displayed below.

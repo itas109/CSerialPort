@@ -8,7 +8,7 @@
  * C++ 轻量级跨平台串口读写类库
  * @version 4.1.0.201010
  * @date 2020-10-10
- * @copyright The CSerialPort is Copyright (C) 2020 itas109. \n
+ * @copyright The CSerialPort is Copyright (C) 2021 itas109. \n
  * Contact: itas109@qq.com \n\n
  *  You may use, distribute and copy the CSerialPort under the terms of \n
  *  GNU Lesser General Public License version 3, which is displayed below.

@@ -29,7 +29,7 @@ BEGIN
       VALUE "OriginalFilename", "libcserialport.dll\0"
       VALUE "ProductName",      "cserialport library\0"
       VALUE "ProductVersion",   "4.1.0.201010\0"
-      VALUE "LegalCopyright",   "Copyright (C) 2020 itas109, <itas109@qq.com>\0"
+      VALUE "LegalCopyright",   "Copyright (C) 2021 itas109, <itas109@qq.com>\0"
     END
   END
 
