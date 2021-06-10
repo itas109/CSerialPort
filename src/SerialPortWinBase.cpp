@@ -569,6 +569,8 @@ int CSerialPortWinBase::writeData(const char *data, int maxSize)
                 lastError = itas109::/*SerialPortError::*/ WriteError;
                 dRet = (DWORD)-1;
             }
+
+            CloseHandle(m_overlapWrite.hEvent);
         }
         else
         {
