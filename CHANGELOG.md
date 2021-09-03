@@ -2,6 +2,21 @@
 
 
 ---
+
+## v4.1.1 (2021-09-03)
+
+Fixed:
+* #49 function writeData hanle leak on windows 修复windows下writeData函数句柄泄漏问题
+* #41 could not enum all avaiable ports on windows 修复windows下偶尔枚举可用串口不全的问题
+* #42 high cpu usage problem on unix 修复unix上高cpu占用问题
+* #33 No Gui Application without endless loop crash problem 修复NoGui程序崩溃问题
+* #28 VS2015 x64 MFC not work 修复VS2015生成x64程序不能正常运行问题
+
+Feature:
+* use unsigned int instead of int64 使用unsigned int代替int64
+* add unix virtual serial port 增加unix虚拟串口工具
+* read thread optimization 读取线程优化
+
 ## 4.1.0 (2020-10-10)
 
 Fixed:
