@@ -9,7 +9,7 @@
 <img alt="language" src="https://img.shields.io/badge/language-c++-red"/>
 <img alt="platform" src="https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20macos%20%7C%20raspberrypi%20%7C%20freebsd-lightgrey"/>
 <img alt="appveyor-ci" src="https://ci.appveyor.com/api/projects/status/a4t6ddubhns561kh?svg=true"/>
-<img alt="travis-ci" src="https://www.travis-ci.org/itas109/CSerialPort.svg?branch=master"/>
+<img alt="travis-ci" src="https://app.travis-ci.com/itas109/CSerialPort.svg?branch=master"/>
 <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/itas109/CSerialPort">
 </p>
 
