@@ -67,7 +67,7 @@ void CSerialPortWinBase::init(std::string portName,
                               itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/,
                               itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/,
                               itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/,
-                              int64 readBufferSize /*= 512*/)
+                              unsigned int readBufferSize /*= 512*/)
 {
     m_portName = "\\\\.\\" + portName; // support COM10 above \\\\.\\COM10
     m_baudRate = baudRate;
@@ -844,7 +844,7 @@ itas109::FlowControl CSerialPortWinBase::getFlowControl() const
     return m_flowControl;
 }
 
-void CSerialPortWinBase::setReadBufferSize(int64 size)
+void CSerialPortWinBase::setReadBufferSize(unsigned int size)
 {
     lock();
     if (isOpened())
@@ -854,7 +854,7 @@ void CSerialPortWinBase::setReadBufferSize(int64 size)
     unlock();
 }
 
-int64 CSerialPortWinBase::getReadBufferSize() const
+unsigned int CSerialPortWinBase::getReadBufferSize() const
 {
     return m_readBufferSize;
 }

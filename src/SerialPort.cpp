@@ -50,7 +50,7 @@ void itas109::CSerialPort::init(std::string portName,
                                 itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/,
                                 itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/,
                                 itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/,
-                                int64 readBufferSize /*= 512*/)
+                                unsigned int readBufferSize /*= 512*/)
 {
     if (p_serialPortBase)
     {
@@ -315,7 +315,7 @@ itas109::FlowControl itas109::CSerialPort::getFlowControl() const
     }
 }
 
-void itas109::CSerialPort::setReadBufferSize(int64 size)
+void itas109::CSerialPort::setReadBufferSize(unsigned int size)
 {
     if (p_serialPortBase)
     {
@@ -323,7 +323,7 @@ void itas109::CSerialPort::setReadBufferSize(int64 size)
     }
 }
 
-int64 itas109::CSerialPort::getReadBufferSize() const
+unsigned int itas109::CSerialPort::getReadBufferSize() const
 {
     if (p_serialPortBase)
     {

@@ -40,7 +40,7 @@ void CSerialPortUnixBase::init(std::string portName,
                                itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/,
                                itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/,
                                itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/,
-                               int64 readBufferSize /*= 512*/)
+                               unsigned int readBufferSize /*= 512*/)
 {
     m_portName = portName; // portName;//串口 /dev/ttySn, USB /dev/ttyUSBn
     m_baudRate = baudRate;
@@ -508,12 +508,12 @@ itas109::FlowControl CSerialPortUnixBase::getFlowControl() const
     return m_flowControl;
 }
 
-void CSerialPortUnixBase::setReadBufferSize(int64 size)
+void CSerialPortUnixBase::setReadBufferSize(unsigned int size)
 {
     m_readBufferSize = size;
 }
 
-int64 CSerialPortUnixBase::getReadBufferSize() const
+unsigned int CSerialPortUnixBase::getReadBufferSize() const
 {
     return m_readBufferSize;
 }

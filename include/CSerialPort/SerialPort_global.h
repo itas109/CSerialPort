@@ -20,14 +20,8 @@
 #include "osplatformutil.h"
 
 #ifdef I_OS_WIN
-#if defined(__MINGW32__) || defined(__MINGW64__)
-typedef long long int64; ///< long long定义方式可以用于gcc/g++，不受平台限制，但不能用于VC6.0
-#else
-typedef __int64 int64; ///< __int64是Win32平台编译器64位长整型的定义方式，不能用于Linux
-#endif
 #define DLL_EXPORT __declspec(dllexport) ///< define DLL_EXPORT windows 定义windows导出函数
 #elif defined I_OS_UNIX
-typedef long long int64; ///< 64 bit signed unix 定义Unix int64
 #define DLL_EXPORT __attribute__((visibility("default"))) ///< define DLL_EXPORT unix 定义Unix导出函数
 #else
 // Not support

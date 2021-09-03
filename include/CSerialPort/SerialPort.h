@@ -67,7 +67,7 @@ public:
               itas109::DataBits dataBits = itas109::DataBits8,
               itas109::StopBits stopbits = itas109::StopOne,
               itas109::FlowControl flowControl = itas109::FlowNone,
-              int64 readBufferSize = 512);
+              unsigned int readBufferSize = 512);
 
     /**
      * @brief Set the Operate Mode object 设置串口操作模式
@@ -258,13 +258,13 @@ public:
      *
      * @param size [in] read buffer size  设置缓冲区大小
      */
-    void setReadBufferSize(int64 size);
+    void setReadBufferSize(unsigned int size);
     /**
      * @brief Get the Read Buffer Size object 获取读取缓冲区大小
      *
      * @return return read buffer size 返回读取缓冲区大小
      */
-    int64 getReadBufferSize() const;
+    unsigned int getReadBufferSize() const;
 
     /**
      * @brief Set the Dtr object 设置DTR

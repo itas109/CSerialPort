@@ -115,7 +115,7 @@ public:
                       itas109::DataBits dataBits = itas109::DataBits8,
                       itas109::StopBits stopbits = itas109::StopOne,
                       itas109::FlowControl flowControl = itas109::FlowNone,
-                      int64 readBufferSize = 512);
+                      unsigned int readBufferSize = 512);
 
     /**
      * @brief open serial port 打开串口
@@ -299,13 +299,13 @@ public:
      *
      * @param size [in] read buffer size 读取缓冲区大小
      */
-    virtual void setReadBufferSize(int64 size);
+    virtual void setReadBufferSize(unsigned int size);
     /**
      * @brief Get the Read Buffer Size object 获取读取缓冲区大小
      *
      * @return return read buffer size 返回读取缓冲区大小
      */
-    virtual int64 getReadBufferSize() const;
+    virtual unsigned int getReadBufferSize() const;
 
     /**
      * @brief Set the Dtr object 设置DTR
@@ -407,7 +407,7 @@ private:
     itas109::DataBits m_dataBits;
     itas109::StopBits m_stopbits;
     itas109::FlowControl m_flowControl;
-    int64 m_readBufferSize;
+    unsigned int m_readBufferSize;
 
     int fd; /* File descriptor for the port */
 
