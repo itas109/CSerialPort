@@ -62,8 +62,8 @@ CSerialPort has been tested to the following platforms:
 
 # Last Modify
 
-## Version: 4.1.0.201010
-by itas109 on 2020-10-10
+## Version: 4.1.1.210903
+by itas109 on 2021-09-03
 
 # Quick Start
 

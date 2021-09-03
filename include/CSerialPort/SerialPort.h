@@ -6,8 +6,8 @@
  * QQ Group : 12951803
  * @brief a lightweight library of serial port, which can easy to read and write serical port on windows and linux with
  * C++ 轻量级跨平台串口读写类库
- * @version 4.1.0.201010
- * @date 2020-10-10
+ * @version 4.1.1.210903
+ * @date 2021-09-03
  * @copyright The CSerialPort is Copyright (C) 2021 itas109. \n
  * Contact: itas109@qq.com \n\n
  *  You may use, distribute and copy the CSerialPort under the terms of \n
