@@ -75,11 +75,30 @@ $ cmake ..
 $ cmake --build .
 ```
 
-运行示例程序
+运行示例程序(如linux下串口环回测试)
 
 ```
-$ cd bin/Debug
-$ ./CSerialPortDemoNoGui
+CSerialPort/bin $ ./bin/CSerialPortDemoNoGui
+Version : https://github.com/itas109/CSerialPort - V4.1.1.210903
+
+availableFriendlyPorts :
+0 - /dev/ttyS0
+1 - /dev/pts/0
+2 - /dev/pts/1
+
+Please input index of the port(0 - 2 ) :
+0
+select port name : /dev/ttyS0
+open /dev/ttyS0 success
+receive data : i, receive size : 1, receive count : 1
+receive data : t, receive size : 1, receive count : 2
+receive data : a, receive size : 1, receive count : 3
+receive data : s, receive size : 1, receive count : 4
+receive data : 1, receive size : 1, receive count : 5
+receive data : 0, receive size : 1, receive count : 6
+receive data : 9, receive size : 1, receive count : 7
+receive data : i, receive size : 1, receive count : 8
+close serial port when receive count > 7
 ```
 
 # Screenshot 截图
