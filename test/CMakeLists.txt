@@ -1,6 +1,6 @@
-project(CSerialPortTest)
+cmake_minimum_required(VERSION 2.8.12)
 
-cmake_minimum_required(VERSION 2.8)
+project(CSerialPortTest)
 
 MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 
