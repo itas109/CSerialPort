@@ -44,7 +44,7 @@ test_script:
 
     {
         cd $env:APPVEYOR_BUILD_FOLDER
-        bin\test\Debug\CSerialPortTest.exe
+        bin\Debug\CSerialPortTest.exe
     }
 notifications:
 - provider: Email
