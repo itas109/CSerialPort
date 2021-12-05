@@ -9,7 +9,7 @@
 <img alt="language" src="https://img.shields.io/badge/language-c++-red"/>
 <img alt="platform" src="https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20macos%20%7C%20raspberrypi%20%7C%20freebsd-lightgrey"/>
 <img alt="appveyor-ci" src="https://ci.appveyor.com/api/projects/status/a4t6ddubhns561kh?svg=true"/>
-<img alt="travis-ci" src="https://app.travis-ci.com/itas109/CSerialPort.svg?branch=master"/>
+<img alt="travis-ci" src="https://www.travis-ci.org/itas109/CSerialPort.svg?branch=master"/>
 <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/itas109/CSerialPort">
 </p>
 
@@ -62,8 +62,8 @@ CSerialPort已经在以下平台做过测试:
 
 # Last Modify 最新版本
 
-## Version: 4.1.1.210903
-by itas109 on 2021-09-03
+## Version: 4.1.0.201010
+by itas109 on 2020-10-10
 
 # Quick Start 快速开始
 
@@ -73,6 +73,13 @@ $ cd CSerialPort
 $ mkdir bin && cd bin
 $ cmake ..
 $ cmake --build .
+```
+
+运行示例程序
+
+```
+$ cd bin/Debug
+$ ./CSerialPortDemoNoGui
 ```
 
 # Screenshot 截图
