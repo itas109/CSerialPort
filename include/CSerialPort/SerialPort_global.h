@@ -20,11 +20,14 @@
 #include "osplatformutil.h"
 
 #ifdef I_OS_WIN
+#if defined(BUILDING_LIBCSERIALPORT)
 #define DLL_EXPORT __declspec(dllexport) ///< define DLL_EXPORT windows 定义windows导出函数
-#elif defined I_OS_UNIX
-#define DLL_EXPORT __attribute__((visibility("default"))) ///< define DLL_EXPORT unix 定义Unix导出函数
 #else
-// Not support
+#define DLL_EXPORT
+#endif
+#else
+// https://gcc.gnu.org/wiki/Visibility gcc default export all gcc默认全部导出
+#define DLL_EXPORT
 #endif // I_OS_WIN
 
 #ifdef _UNICODE
