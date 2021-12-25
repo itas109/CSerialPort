@@ -1,1 +1,0 @@
-CSerialPort MFC Demo use Win32 Dll win32¶¯Ì¬¿âMFC³ÌÐòÊ¾Àý
