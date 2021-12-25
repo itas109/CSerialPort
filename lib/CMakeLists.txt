@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12)
 
-set(LIB_NAME libcserialport)
-
-if(APPLE)
-    find_library(IOKIT_LIBRARY IOKit)
-    find_library(FOUNDATION_LIBRARY Foundation)
-endif()
+project(libcserialport)
 
 if (NOT BUILD_SHARED_LIBS)
 	set(BUILD_SHARED_LIBS ON)
@@ -19,36 +14,41 @@ include_directories(${CSerialPortRootPath}/include)
 list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPort.cpp ${CSerialPortRootPath}/src/SerialPortBase.cpp ${CSerialPortRootPath}/src/SerialPortInfo.cpp ${CSerialPortRootPath}/src/SerialPortInfoBase.cpp)
 if (WIN32)
     list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortInfoWinBase.cpp ${CSerialPortRootPath}/src/SerialPortWinBase.cpp)
+    if (BUILD_SHARED_LIBS)
+        list(APPEND CSerialPortSourceFiles version.rc)
+    endif()
 elseif (UNIX)
     list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortInfoUnixBase.cpp ${CSerialPortRootPath}/src/SerialPortUnixBase.cpp)
 endif ()
 
-add_library( ${LIB_NAME} ${CSerialPortSourceFiles})
+add_library( ${PROJECT_NAME} ${CSerialPortSourceFiles})
 
 # remove prefix
-set_target_properties( ${LIB_NAME} PROPERTIES PREFIX "")
+set_target_properties( ${PROJECT_NAME} PROPERTIES PREFIX "")
 
 # preprocessor definitions for compiling CSerialPort library
-set_target_properties( ${LIB_NAME} PROPERTIES COMPILE_DEFINITIONS BUILDING_LIBCSERIALPORT)
+set_target_properties( ${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS BUILDING_LIBCSERIALPORT)
 
 if (WIN32)
 	# for function availableFriendlyPorts
-	target_link_libraries( ${LIB_NAME} setupapi)
-	#target_link_libraries( ${LIB_NAME} libgcc.a)
-	#target_link_libraries( ${LIB_NAME} libstdc++.a)
-	#target_link_libraries( ${LIB_NAME} libpthread.a)
+	target_link_libraries( ${PROJECT_NAME} setupapi)
+	#target_link_libraries( ${PROJECT_NAME} libgcc.a)
+	#target_link_libraries( ${PROJECT_NAME} libstdc++.a)
+	#target_link_libraries( ${PROJECT_NAME} libpthread.a)
 elseif(APPLE)
-    target_link_libraries( ${LIB_NAME} ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
+    find_library(IOKIT_LIBRARY IOKit)
+    find_library(FOUNDATION_LIBRARY Foundation)
+    target_link_libraries( ${PROJECT_NAME} ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
 elseif (UNIX)
-	target_link_libraries( ${LIB_NAME} pthread)
+	target_link_libraries( ${PROJECT_NAME} pthread)
 endif()
 
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/CSerialPort DESTINATION include FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY ../include/CSerialPort DESTINATION include FILES_MATCHING PATTERN "*.h")
 
-install(TARGETS libcserialport
+install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION lib
 		)
 
-install(FILES ${PROJECT_SOURCE_DIR}/cserialport-config.cmake.in DESTINATION lib/cmake/CSerialPort RENAME cserialport-config.cmake)
+install(FILES ../cserialport-config.cmake.in DESTINATION lib/cmake/CSerialPort RENAME cserialport-config.cmake)

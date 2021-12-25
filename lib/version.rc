@@ -1,8 +1,9 @@
 #include <winver.h>
+#include "../include/CSerialPort/SerialPort_version.h"
 
 LANGUAGE  0, 0
 
-#define RC_VERSION  4, 1, 1, 0
+#define RC_VERSION  CSERIALPORT_VERSION_MAJOR, CSERIALPORT_VERSION_MINOR, CSERIALPORT_VERSION_PATCH, 0
 
 VS_VERSION_INFO VERSIONINFO
   FILEVERSION     RC_VERSION
@@ -20,21 +21,22 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
   BLOCK "StringFileInfo"
   BEGIN
-    BLOCK "040904b0"
+    BLOCK "080404b0"
     BEGIN
       VALUE "CompanyName",      "itas109, https://github.com/itas109/CSerialPort\0"
       VALUE "FileDescription",  "libcserialport shared library\0"
-      VALUE "FileVersion",      "4.1.1.210903\0"
+      VALUE "FileVersion",      CSERIALPORT_VERSION "\0"
       VALUE "InternalName",     "libcserialport\0"
       VALUE "OriginalFilename", "libcserialport.dll\0"
       VALUE "ProductName",      "cserialport library\0"
-      VALUE "ProductVersion",   "4.1.1.210903\0"
-      VALUE "LegalCopyright",   "Copyright (C) 2021 itas109, <itas109@qq.com>\0"
+      VALUE "ProductVersion",   CSERIALPORT_VERSION "\0"
+      VALUE "LegalCopyright",   CSERIALPORT_COPYRIGHT "\0"
     END
   END
 
+  // https://docs.microsoft.com/en-us/windows/win32/menurc/varfileinfo-block
   BLOCK "VarFileInfo"
   BEGIN
-    VALUE "Translation", 0x409, 1200
+    VALUE "Translation", 0x804, 1200
   END
 END
