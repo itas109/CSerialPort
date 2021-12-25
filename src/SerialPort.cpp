@@ -1,4 +1,5 @@
 ﻿#include "CSerialPort/SerialPort.h"
+#include "CSerialPort/SerialPort_version.h"
 
 #ifdef I_OS_WIN
 #include "CSerialPort/SerialPortWinBase.h"
@@ -353,7 +354,7 @@ void itas109::CSerialPort::setRts(bool set /*= true*/)
 
 std::string itas109::CSerialPort::getVersion()
 {
-    return "https://github.com/itas109/CSerialPort - V4.1.1.210903";
+    return std::string("https://github.com/itas109/CSerialPort - V") + std::string(CSERIALPORT_VERSION);
 }
 
 void itas109::CSerialPort::onReadReady()
