@@ -3,14 +3,13 @@
  * @author itas109 (itas109@qq.com) \n\n
  * Blog : https://blog.csdn.net/itas109 \n
  * Github : https://github.com/itas109 \n
- * QQ Group : 12951803
+ * Gitee : https://gitee.com/itas109 \n
+ * QQ Group : 129518033
  * @brief the CSerialPortInfo unix class unix串口信息辅助类基类
  * @todo Not implemented 未实现
- * @date 2020-04-29
- * @copyright The CSerialPort is Copyright (C) 2021 itas109. \n
- * Contact: itas109@qq.com \n\n
- *  You may use, distribute and copy the CSerialPort under the terms of \n
- *  GNU Lesser General Public License version 3, which is displayed below.
+ * @copyright The CSerialPort is Copyright (C) 2014 itas109 <itas109@qq.com>. \n
+ * You may use, copy, modify, and distribute the CSerialPort, under the terms \n
+ * of the LICENSE file.
  */
 #ifndef __CSERIALPORTINFOUNIXBASE_H__
 #define __CSERIALPORTINFOUNIXBASE_H__

@@ -1,3 +1,16 @@
+#***************************************************************************
+# @file CMakeLists.txt
+# @author itas109 (itas109@qq.com) \n\n
+# Blog : https://blog.csdn.net/itas109 \n
+# Github : https://github.com/itas109 \n
+# Gitee : https://gitee.com/itas109 \n
+# QQ Group : 12951803
+# @brief Lightweight cross-platform serial port library based on C++
+# @copyright The CSerialPort is Copyright (C) 2014 itas109 <itas109@qq.com>.
+# You may use, copy, modify, and distribute the CSerialPort, under the terms
+# of the LICENSE file.
+############################################################################
+
 cmake_minimum_required(VERSION 2.8.12)
 
 project(CSerialPortTest)
@@ -14,26 +27,30 @@ include(gtest.cmake)
 add_dependencies(gtest get_gtest)
 
 include_directories(.)
-include_directories(../include)
 
-#link_directories(${PROJECT_SOURCE_DIR}/lib )
+# add by itas109
+set(CSerialPortRootPath "${CMAKE_CURRENT_SOURCE_DIR}/../")
+include_directories(${CSerialPortRootPath}/include)
+list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPort.cpp ${CSerialPortRootPath}/src/SerialPortBase.cpp ${CSerialPortRootPath}/src/SerialPortInfo.cpp ${CSerialPortRootPath}/src/SerialPortInfoBase.cpp)
+if(WIN32)
+    list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortInfoWinBase.cpp ${CSerialPortRootPath}/src/SerialPortWinBase.cpp)
+elseif(UNIX)
+    list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortInfoUnixBase.cpp ${CSerialPortRootPath}/src/SerialPortUnixBase.cpp)
+endif()
+# end by itas109
 
-file(GLOB_RECURSE COMMON_SOURCES ../src/SerialPort.cpp ../src/SerialPortBase.cpp ../src/SerialPortInfo.cpp ../src/SerialPortInfoBase.cpp)
+add_executable(${PROJECT_NAME} cseiralport_test.cpp ${CSerialPortSourceFiles})
+target_link_libraries( ${PROJECT_NAME} gtest)
 
-IF (CMAKE_HOST_WIN32)
-	file(GLOB_RECURSE OS_ABOUT_SOURCES ../src/SerialPortInfoWinBase.cpp ../src/SerialPortWinBase.cpp)
-ELSEIF (CMAKE_HOST_UNIX)
-	file(GLOB_RECURSE OS_ABOUT_SOURCES ../src/SerialPortInfoUnixBase.cpp ../src/SerialPortUnixBase.cpp)
-ENDIF ()
-
-add_executable(CSerialPortTest cseiralport_test.cpp ${COMMON_SOURCES} ${OS_ABOUT_SOURCES})
-
-#target_link_libraries( CSerialPortTest gtest gtest_main)
-target_link_libraries( CSerialPortTest gtest)
-
-IF (CMAKE_HOST_WIN32)
-	# for function availableFriendlyPorts
-	target_link_libraries( CSerialPortTest setupapi )
-ELSEIF (CMAKE_HOST_UNIX)
-	target_link_libraries( CSerialPortTest pthread )
-ENDIF ()
+# add by itas109
+if (WIN32)
+    # for function availableFriendlyPorts
+    target_link_libraries( ${PROJECT_NAME} setupapi)
+elseif(APPLE)
+    find_library(IOKIT_LIBRARY IOKit)
+    find_library(FOUNDATION_LIBRARY Foundation)
+    target_link_libraries( ${PROJECT_NAME} ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
+elseif(UNIX)
+    target_link_libraries( ${PROJECT_NAME} pthread)
+endif ()
+# end by itas109

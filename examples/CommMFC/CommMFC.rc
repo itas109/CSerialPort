@@ -84,7 +84,7 @@ FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
     LTEXT           "CommMFC£¬1.0 °æ",IDC_STATIC,42,14,114,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2021",IDC_STATIC,42,26,114,8
+    LTEXT           "Copyright (C) 2021 itas109",IDC_STATIC,42,26,114,8
     DEFPUSHBUTTON   "È·¶¨",IDOK,113,41,50,14,WS_GROUP
 END
 
@@ -146,7 +146,7 @@ BEGIN
             VALUE "FileDescription", "MFC Application with CSerialPort"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "CommMFC.exe"
-            VALUE "LegalCopyright", "Copyright (C) itas109. All Rights Reserved."
+            VALUE "LegalCopyright", "Copyright (C) 2021 itas109. All Rights Reserved."
             VALUE "OriginalFilename", "CommMFC.exe"
             VALUE "ProductName", "CommMFC.exe"
             VALUE "ProductVersion", "1.0.0.1"
