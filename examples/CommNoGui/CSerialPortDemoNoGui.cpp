@@ -63,7 +63,7 @@ private:
 
 int main()
 {
-    int index = -1;
+    size_t index = -1;
     std::string portName;
     vector<SerialPortInfo> m_availablePortsList;
     CSerialPort sp;
@@ -76,7 +76,7 @@ int main()
 
     std::cout << "availableFriendlyPorts : " << std::endl;
 
-    for (int i = 0; i < m_availablePortsList.size(); i++)
+    for (size_t i = 0; i < m_availablePortsList.size(); i++)
     {
         std::cout << i << " - " << m_availablePortsList[i].portName << " " << m_availablePortsList[i].description << std::endl;
     }
