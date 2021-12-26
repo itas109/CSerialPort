@@ -149,5 +149,5 @@ script:
       -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
       -DCSERIALPORT_BUILD_TEST=OFF
       
-  - cmake --build . --config $BUILD_TYPE
-  - cmake --install . --config $BUILD_TYPE
+  - cmake --build .
+  - cmake --install .
