@@ -10,11 +10,12 @@ echo 3 - Visual Studio 2013(VC12)
 echo 4 - Visual Studio 2015(VC14)
 echo 5 - Visual Studio 2017(VC14.1)
 echo 6 - Visual Studio 2019(VC14.2)
+echo 7 - Visual Studio 2022(VC14.3)
 echo.
 
 :loop
-set /p choice=please input index(0-6):
-echo "%choice:"=""%"|findstr /rx "^""[0-6]""" && echo. || goto loop
+set /p choice=please input index(0-7):
+echo "%choice:"=""%"|findstr /rx "^""[0-7]""" && echo. || goto loop
 
 if %choice%==0 (
    if exist "C:\Program Files (x86)\Microsoft Visual Studio 9.0\Common7\Tools\vsvars32.bat" (
@@ -87,6 +88,22 @@ if %choice%==0 (
       call "D:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
    ) else (
       echo "No Found VS2019 vcvars32.bat(notice not vsvars32.bat)"
+   )
+) else if %choice%==7 (
+      if exist "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat" (
+      call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat"
+   ) else if exist "D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat" (
+      call "D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat"
+   ) else if exist "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars32.bat" (
+      call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars32.bat"
+   ) else if exist "D:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars32.bat" (
+      call "D:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars32.bat"
+   )else if exist "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars32.bat" (
+      call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
+   ) else if exist "D:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars32.bat" (
+      call "D:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
+   ) else (
+      echo "No Found VS2022 vcvars32.bat(notice not vsvars32.bat)"
    )
 )
 
