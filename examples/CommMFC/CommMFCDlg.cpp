@@ -9,6 +9,8 @@
 #define new DEBUG_NEW
 #endif
 
+#define RECEIVE_TIMER_EVENT 1
+
 int BaudRateArray[] = { 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 56000, 57600, 115200 };
 
 string ParityArray[] = { "None", "Odd", "Even", "Mark", "Space" };
@@ -54,6 +56,7 @@ END_MESSAGE_MAP()
 
 CCommMFCDlg::CCommMFCDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CCommMFCDlg::IDD, pParent)
+	, m_ReceiveTimeoutMS(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -71,6 +74,9 @@ void CCommMFCDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_PARITY, m_Parity);
 	DDX_Control(pDX, IDC_COMBO_STOP, m_Stop);
 	DDX_Control(pDX, IDC_COMBO_DATABITS, m_DataBits);
+	DDX_Text(pDX, IDC_EDIT_RECEIVE_TIMEOUT_MS, m_ReceiveTimeoutMS);
+	DDV_MinMaxUInt(pDX, m_ReceiveTimeoutMS, 0, 999999);
+	DDX_Control(pDX, IDC_EDIT_RECEIVE_TIMEOUT_MS, m_ReceiveTimeoutMSCtrl);
 }
 
 BEGIN_MESSAGE_MAP(CCommMFCDlg, CDialog)
@@ -81,6 +87,7 @@ BEGIN_MESSAGE_MAP(CCommMFCDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_SEND, &CCommMFCDlg::OnBnClickedButtonSend)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR, &CCommMFCDlg::OnBnClickedButtonClear)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -119,6 +126,10 @@ BOOL CCommMFCDlg::OnInitDialog()
 	tx = 0;
 	m_recvCountCtrl.SetWindowText(CString("0"));
 	m_sendCountCtrl.SetWindowText(CString("0"));
+
+	m_isTimerRunning = FALSE;
+	// 默认接收超时时间(毫秒)
+	m_ReceiveTimeoutMSCtrl.SetWindowText(_T("50"));
 
 	CString temp;
 	//添加波特率到下拉列表
@@ -342,9 +353,26 @@ void CCommMFCDlg::OnClose()
 
 void CCommMFCDlg::OnReceive()
 {
+	if(m_isTimerRunning)
+	{
+		KillTimer(RECEIVE_TIMER_EVENT);
+	}
+
+	if(0 != m_ReceiveTimeoutMS)
+	{
+		SetTimer(RECEIVE_TIMER_EVENT, m_ReceiveTimeoutMS, NULL);
+	}
+	else
+	{
+		OnReceiveBusiness();
+	}
+}
+
+void CCommMFCDlg::OnReceiveBusiness()
+{
 	char * str = NULL;
 	str = new char[1024];
-	int iRet = m_SerialPort.readAllData(str);
+	int iRet  = m_SerialPort.readAllData(str);
 
 	if (iRet > 0)
 	{
@@ -361,6 +389,12 @@ void CCommMFCDlg::OnReceive()
 		str2.Format(_T("%d"), rx);
 		m_recvCountCtrl.SetWindowText(str2);
 	}
+
+	if(str)
+	{
+		delete [] str;
+		str = NULL;
+	}
 }
 
 
@@ -370,4 +404,19 @@ void CCommMFCDlg::OnBnClickedButtonClear()
 	tx = 0;
 	m_recvCountCtrl.SetWindowText(CString("0"));
 	m_sendCountCtrl.SetWindowText(CString("0"));
+}
+
+void CCommMFCDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	switch (nIDEvent)
+	{
+	case RECEIVE_TIMER_EVENT:
+		KillTimer(RECEIVE_TIMER_EVENT);
+		OnReceiveBusiness();
+		break;
+	default:
+		break;
+	}
+
+	__super::OnTimer(nIDEvent);
 }

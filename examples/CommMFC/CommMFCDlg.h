@@ -6,6 +6,7 @@
 //About CSerialPort start
 #include "CSerialPort/SerialPort.h"
 #include "CSerialPort/SerialPortInfo.h"
+#include "afxwin.h"
 using namespace itas109;
 //About CSerialPort end
 
@@ -24,6 +25,7 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
 	void OnReceive();//About CSerialPort
+	void OnReceiveBusiness(); // receive business
 
 
 // 实现
@@ -35,6 +37,7 @@ protected:
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	DECLARE_MESSAGE_MAP()
 
 public:
@@ -46,10 +49,12 @@ public:
 	CButton m_OpenCloseCtrl;
 	CEdit m_Send;
 	CEdit m_ReceiveCtrl;
-	afx_msg void OnClose();
 	CStatic m_recvCountCtrl;
 	CStatic m_sendCountCtrl;
+	CEdit m_ReceiveTimeoutMSCtrl;
+	UINT m_ReceiveTimeoutMS;
 
+	afx_msg void OnClose();
 	afx_msg void OnBnClickedButtonOpenClose();
 	afx_msg void OnBnClickedButtonSend();
 	afx_msg void OnBnClickedButtonClear();
@@ -59,4 +64,6 @@ private:
 
 	int rx; 
 	int tx;
+
+	BOOL m_isTimerRunning;	
 };
