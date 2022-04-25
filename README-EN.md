@@ -62,8 +62,8 @@ CSerialPort has been tested to the following platforms:
 
 # Last Modify
 
-## Version: 4.1.0.201010
-by itas109 on 2020-10-10
+## Version: 4.1.1.210903
+by itas109 on 2021-09-03
 
 # Quick Start
 
@@ -99,6 +99,21 @@ receive data : 0, receive size : 1, receive count : 6
 receive data : 9, receive size : 1, receive count : 7
 receive data : i, receive size : 1, receive count : 8
 close serial port when receive count > 7
+```
+
+# Cross Compile
+
+arm on ubuntu 20.04
+
+```
+# ubuntu 20.04
+$ sudo apt-get install g++-arm-linux-gnueabi
+$ git clone --depth=1 https://github.com/itas109/CSerialPort.git
+$ cd CSerialPort
+$ mkdir bin && cd bin
+$ cmake .. -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_arm.cmake
+$ cmake --build .
+mkdir bin && cd bin
 ```
 
 # Screenshot
