@@ -103,17 +103,34 @@ close serial port when receive count > 7
 
 # Cross Compile 交叉编译
 
-arm on ubuntu 20.04
+- arm on ubuntu 20.04
 
 ```
-# ubuntu 20.04
 $ sudo apt-get install g++-arm-linux-gnueabi
-$ git clone --depth=1 https://github.com/itas109/CSerialPort.git
 $ cd CSerialPort
-$ mkdir bin && cd bin
+$ mkdir bin_arm && cd bin_arm
 $ cmake .. -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_arm.cmake
 $ cmake --build .
-mkdir bin && cd bin
+```
+
+- aarch64 on ubuntu 20.04
+
+```
+$ sudo apt-get install g++-aarch64-linux-gnu
+$ cd CSerialPort
+$ mkdir bin_aarch64 && cd bin_aarch64
+$ cmake .. -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_aarch64.cmake
+$ cmake --build .
+```
+
+- mips64el on ubuntu 20.04
+
+```
+$ sudo apt-get install g++-mips64el-linux-gnuabi64
+$ cd CSerialPort
+$ mkdir bin_mips64el && cd bin_mips64el
+$ cmake .. -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_mips64el.cmake
+$ cmake --build .
 ```
 
 # Screenshot 截图
