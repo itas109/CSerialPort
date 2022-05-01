@@ -1,5 +1,5 @@
 ﻿#include "CSerialPort/SerialPortWinBase.h"
-
+#include "CSerialPort/ithread.hpp"
 #include <iostream>
 
 std::wstring stringToWString(const std::string &str)
@@ -32,8 +32,6 @@ CSerialPortWinBase::~CSerialPortWinBase()
     {
         closePort();
     }
-
-    DeleteCriticalSection(&m_communicationMutex);
 }
 
 void CSerialPortWinBase::construct()
@@ -57,8 +55,6 @@ void CSerialPortWinBase::construct()
     overlapMonitor.hEvent = CreateEvent(NULL, true, false, NULL);
 
     m_isThreadRunning = false;
-
-    InitializeCriticalSection(&m_communicationMutex);
 }
 
 void CSerialPortWinBase::init(std::string portName,
@@ -80,7 +76,7 @@ void CSerialPortWinBase::init(std::string portName,
 
 bool CSerialPortWinBase::openPort()
 {
-    lock();
+    itas109::IAutoLock lock(p_mutex);
 
     bool bRet = false;
 
@@ -174,14 +170,14 @@ bool CSerialPortWinBase::openPort()
                         if (!bRet)
                         {
                             m_isThreadRunning = false;
-                            lastError = itas109::/*SerialPortError::*/ SystemError;
+                            m_lastError = itas109::/*SerialPortError::*/ SystemError;
                         }
                     }
                     else
                     {
                         // Failed to set Comm Mask
                         bRet = false;
-                        lastError = itas109::/*SerialPortError::*/ InvalidParameterError;
+                        m_lastError = itas109::/*SerialPortError::*/ InvalidParameterError;
                     }
                 }
                 else
@@ -200,7 +196,7 @@ bool CSerialPortWinBase::openPort()
             {
                 // set com configure error
                 bRet = false;
-                lastError = itas109::/*SerialPortError::*/ InvalidParameterError;
+                m_lastError = itas109::/*SerialPortError::*/ InvalidParameterError;
             }
         }
         else
@@ -211,19 +207,19 @@ bool CSerialPortWinBase::openPort()
                 //串口不存在
                 case ERROR_FILE_NOT_FOUND:
                 {
-                    lastError = itas109::/*SerialPortError::*/ DeviceNotFoundError;
+                    m_lastError = itas109::/*SerialPortError::*/ DeviceNotFoundError;
 
                     break;
                 }
                     //串口拒绝访问
                 case ERROR_ACCESS_DENIED:
                 {
-                    lastError = itas109::/*SerialPortError::*/ PermissionError;
+                    m_lastError = itas109::/*SerialPortError::*/ PermissionError;
 
                     break;
                 }
                 default:
-                    lastError = itas109::/*SerialPortError::*/ UnknownError;
+                    m_lastError = itas109::/*SerialPortError::*/ UnknownError;
                     break;
             }
         }
@@ -231,15 +227,13 @@ bool CSerialPortWinBase::openPort()
     else
     {
         bRet = false;
-        lastError = itas109::/*SerialPortError::*/ OpenError;
+        m_lastError = itas109::/*SerialPortError::*/ OpenError;
     }
 
     if (!bRet)
     {
         closePort();
     }
-
-    unlock();
 
     return bRet;
 }
@@ -395,7 +389,7 @@ int CSerialPortWinBase::readData(char *data, int maxSize)
 {
     DWORD dRet = 0;
 
-    lock();
+    itas109::IAutoLock lock(p_mutex);
 
     if (isOpened())
     {
@@ -418,7 +412,7 @@ int CSerialPortWinBase::readData(char *data, int maxSize)
                 }
                 else
                 {
-                    lastError = itas109::/*SerialPortError::*/ ReadError;
+                    m_lastError = itas109::/*SerialPortError::*/ ReadError;
                     dRet = (DWORD)-1;
                 }
             }
@@ -431,18 +425,16 @@ int CSerialPortWinBase::readData(char *data, int maxSize)
             }
             else
             {
-                lastError = itas109::/*SerialPortError::*/ ReadError;
+                m_lastError = itas109::/*SerialPortError::*/ ReadError;
                 dRet = (DWORD)-1;
             }
         }
     }
     else
     {
-        lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
         dRet = (DWORD)-1;
     }
-
-    unlock();
 
     return dRet;
 }
@@ -469,18 +461,16 @@ int CSerialPortWinBase::readAllData(char *data)
 int CSerialPortWinBase::readLineData(char *data, int maxSize)
 {
     DWORD dRet = 0;
-    lock();
+    itas109::IAutoLock lock(p_mutex);
 
     if (isOpened())
     {
     }
     else
     {
-        lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
         dRet = (DWORD)-1;
     }
-
-    unlock();
 
     return dRet;
 }
@@ -489,7 +479,7 @@ int CSerialPortWinBase::writeData(const char *data, int maxSize)
 {
     DWORD dRet = 0;
 
-    lock();
+    itas109::IAutoLock lock(p_mutex);
 
     if (isOpened())
     {
@@ -566,7 +556,7 @@ int CSerialPortWinBase::writeData(const char *data, int maxSize)
             }
             else
             {
-                lastError = itas109::/*SerialPortError::*/ WriteError;
+                m_lastError = itas109::/*SerialPortError::*/ WriteError;
                 dRet = (DWORD)-1;
             }
 
@@ -579,18 +569,16 @@ int CSerialPortWinBase::writeData(const char *data, int maxSize)
             }
             else
             {
-                lastError = itas109::/*SerialPortError::*/ WriteError;
+                m_lastError = itas109::/*SerialPortError::*/ WriteError;
                 dRet = (DWORD)-1;
             }
         }
     }
     else
     {
-        lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
         dRet = (DWORD)-1;
     }
-
-    unlock();
 
     return dRet;
 }
@@ -612,12 +600,12 @@ void CSerialPortWinBase::setMinByteReadNotify(unsigned int minByteReadNotify)
 
 int CSerialPortWinBase::getLastError() const
 {
-    return lastError;
+    return m_lastError;
 }
 
 void CSerialPortWinBase::clearError()
 {
-    lastError = itas109::/*SerialPortError::*/ NoError;
+    m_lastError = itas109::/*SerialPortError::*/ NoError;
 }
 
 void CSerialPortWinBase::setPortName(std::string portName)
@@ -634,12 +622,10 @@ std::string CSerialPortWinBase::getPortName() const
 
 void CSerialPortWinBase::setBaudRate(int baudRate)
 {
-    lock();
+    itas109::IAutoLock lock(p_mutex);
     m_baudRate = baudRate;
     m_comConfigure.dcb.BaudRate = m_baudRate;
     SetCommConfig(m_handle, &m_comConfigure, sizeof(COMMCONFIG));
-
-    unlock();
 }
 
 int CSerialPortWinBase::getBaudRate() const
@@ -649,7 +635,7 @@ int CSerialPortWinBase::getBaudRate() const
 
 void CSerialPortWinBase::setParity(itas109::Parity parity)
 {
-    lock();
+    itas109::IAutoLock lock(p_mutex);
     m_parity = parity;
 
     if (isOpened())
@@ -680,8 +666,6 @@ void CSerialPortWinBase::setParity(itas109::Parity parity)
         }
         SetCommConfig(m_handle, &m_comConfigure, sizeof(COMMCONFIG));
     }
-
-    unlock();
 }
 
 itas109::Parity CSerialPortWinBase::getParity() const
@@ -691,7 +675,7 @@ itas109::Parity CSerialPortWinBase::getParity() const
 
 void CSerialPortWinBase::setDataBits(itas109::DataBits dataBits)
 {
-    lock();
+    itas109::IAutoLock lock(p_mutex);
     m_dataBits = dataBits;
 
     if (isOpened())
@@ -744,7 +728,6 @@ void CSerialPortWinBase::setDataBits(itas109::DataBits dataBits)
                 break;
         }
     }
-    unlock();
 }
 
 itas109::DataBits CSerialPortWinBase::getDataBits() const
@@ -754,7 +737,7 @@ itas109::DataBits CSerialPortWinBase::getDataBits() const
 
 void CSerialPortWinBase::setStopBits(itas109::StopBits stopbits)
 {
-    lock();
+    itas109::IAutoLock lock(p_mutex);
     m_stopbits = stopbits;
 
     if (isOpened())
@@ -791,7 +774,6 @@ void CSerialPortWinBase::setStopBits(itas109::StopBits stopbits)
                 break;
         }
     }
-    unlock();
 }
 
 itas109::StopBits CSerialPortWinBase::getStopBits() const
@@ -801,7 +783,7 @@ itas109::StopBits CSerialPortWinBase::getStopBits() const
 
 void CSerialPortWinBase::setFlowControl(itas109::FlowControl flowControl)
 {
-    lock();
+    itas109::IAutoLock lock(p_mutex);
 
     m_flowControl = flowControl;
 
@@ -835,8 +817,6 @@ void CSerialPortWinBase::setFlowControl(itas109::FlowControl flowControl)
                 break;
         }
     }
-
-    unlock();
 }
 
 itas109::FlowControl CSerialPortWinBase::getFlowControl() const
@@ -846,12 +826,11 @@ itas109::FlowControl CSerialPortWinBase::getFlowControl() const
 
 void CSerialPortWinBase::setReadBufferSize(unsigned int size)
 {
-    lock();
+    itas109::IAutoLock lock(p_mutex);
     if (isOpened())
     {
         m_readBufferSize = size;
     }
-    unlock();
 }
 
 unsigned int CSerialPortWinBase::getReadBufferSize() const
@@ -861,7 +840,7 @@ unsigned int CSerialPortWinBase::getReadBufferSize() const
 
 void CSerialPortWinBase::setDtr(bool set /*= true*/)
 {
-    lock();
+    itas109::IAutoLock lock(p_mutex);
     if (isOpened())
     {
         if (set)
@@ -873,12 +852,11 @@ void CSerialPortWinBase::setDtr(bool set /*= true*/)
             EscapeCommFunction(m_handle, CLRDTR);
         }
     }
-    unlock();
 }
 
 void CSerialPortWinBase::setRts(bool set /*= true*/)
 {
-    lock();
+    itas109::IAutoLock lock(p_mutex);
     if (isOpened())
     {
         if (set)
@@ -890,7 +868,6 @@ void CSerialPortWinBase::setRts(bool set /*= true*/)
             EscapeCommFunction(m_handle, CLRRTS);
         }
     }
-    unlock();
 }
 
 std::string CSerialPortWinBase::getVersion()
@@ -917,27 +894,13 @@ bool CSerialPortWinBase::isThreadRunning()
     return m_isThreadRunning;
 }
 
-void CSerialPortWinBase::lock()
-{
-    // Finished
-    EnterCriticalSection(&m_communicationMutex);
-}
-
-void CSerialPortWinBase::unlock()
-{
-    // Finished
-    LeaveCriticalSection(&m_communicationMutex);
-}
-
 bool CSerialPortWinBase::startThreadMonitor()
 {
     // Finished
 
     // start event thread monitor
     bool bRet = false;
-    m_monitorThread = (HANDLE)_beginthreadex(NULL, 0, commThreadMonitor, (LPVOID)this, 0, NULL);
-    // closeHandle(m_monitorThread);
-    if (m_monitorThread != INVALID_HANDLE_VALUE)
+    if (0 == itas109::i_thread_create(&m_monitorThread, NULL, commThreadMonitor, (LPVOID)this))
     {
         bRet = true;
     }

@@ -316,18 +316,6 @@ public:
      */
     bool isThreadRunning();
 
-protected:
-    /**
-     * @brief lock 锁
-     *
-     */
-    void lock();
-    /**
-     * @brief unlock 解锁
-     *
-     */
-    void unlock();
-
 private:
     /**
      * @brief thread monitor 多线程监视器

@@ -16,6 +16,11 @@
 #include "SerialPort_global.h"
 #include <string>
 
+namespace itas109
+{
+class IMutex;
+}
+
 /**
  * @brief the CSerialPort Base class 串口基类
  *
@@ -286,21 +291,10 @@ public:
     std::string getVersion();
 
 protected:
-    /**
-     * @brief lock 锁
-     *
-     */
-    void lock();
-    /**
-     * @brief unlock 解锁
-     *
-     */
-    void unlock();
-
-protected:
-    int lastError;                      ///< last error code 最后的错误代码
+    int m_lastError;                      ///< last error code 最后的错误代码
     itas109::OperateMode m_operateMode; ///< operate mode 串口操作类型
     unsigned int m_minByteReadNotify;   ///< minimum byte of read notify 读取通知触发最小字节数
+    itas109::IMutex *p_mutex;           ///< mutex 互斥锁
 private:
 };
 #endif //__CSERIALPORTBASE_H__

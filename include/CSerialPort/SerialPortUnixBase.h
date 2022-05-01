@@ -339,17 +339,6 @@ public:
 
 private:
     /**
-     * @brief lock 锁
-     *
-     */
-    void lock();
-    /**
-     * @brief unlock 解锁
-     *
-     */
-    void unlock();
-
-    /**
      * @brief rate2Constant baudrate to constant 波特率转为unix常量
      * @param baudrate 波特率
      * @return constant unix常量

@@ -1,4 +1,5 @@
 ﻿#include "CSerialPort/SerialPortUnixBase.h"
+#include "CSerialPort/ithread.hpp"
 #include <unistd.h> // usleep
 
 CSerialPortUnixBase::CSerialPortUnixBase()
@@ -11,10 +12,7 @@ CSerialPortUnixBase::CSerialPortUnixBase(const std::string &portName)
     construct();
 }
 
-CSerialPortUnixBase::~CSerialPortUnixBase()
-{
-    pthread_mutex_destroy(&m_communicationMutex);
-}
+CSerialPortUnixBase::~CSerialPortUnixBase() {}
 
 void CSerialPortUnixBase::construct()
 {
@@ -30,8 +28,6 @@ void CSerialPortUnixBase::construct()
     m_isThreadRunning = false;
 
     m_operateMode = itas109::AsynchronousOperate;
-
-    pthread_mutex_init(&m_communicationMutex, NULL);
 }
 
 void CSerialPortUnixBase::init(std::string portName,
@@ -51,12 +47,7 @@ void CSerialPortUnixBase::init(std::string portName,
     m_readBufferSize = readBufferSize;
 }
 
-int CSerialPortUnixBase::uart_set(int fd,
-                                  int baudRate,
-                                  itas109::Parity parity,
-                                  itas109::DataBits dataBits,
-                                  itas109::StopBits stopbits,
-                                  itas109::FlowControl flowControl)
+int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl)
 {
     struct termios options;
 
@@ -104,7 +95,7 @@ int CSerialPortUnixBase::uart_set(int fd,
             options.c_cflag |= PARENB;  // PARENB：产生奇偶位，执行奇偶校验
             options.c_cflag &= ~PARODD; // PARODD：若设置则为奇校验,否则为偶校验
             options.c_cflag |= INPCK;   // INPCK：使奇偶校验起作用
-            options.c_cflag |= ISTRIP; // ISTRIP：若设置则有效输入数字被剥离7个字节，否则保留全部8位
+            options.c_cflag |= ISTRIP;  // ISTRIP：若设置则有效输入数字被剥离7个字节，否则保留全部8位
             break;
             /*设为空格,即停止位为2位*/
         case itas109::ParitySpace:
@@ -253,8 +244,7 @@ bool CSerialPortUnixBase::startThreadMonitor()
     bool bRet = true;
 
     // start read thread
-    int ret = pthread_create(&m_monitorThread, NULL, commThreadMonitor, (void *)this);
-    if (ret < 0)
+    if (0 != itas109::i_thread_create(&m_monitorThread, NULL, commThreadMonitor, (void *)this))
     {
         bRet = false;
 
@@ -268,7 +258,7 @@ bool CSerialPortUnixBase::stopThreadMonitor()
 {
     m_isThreadRunning = false;
 
-    pthread_join(m_monitorThread, NULL);
+    itas109::i_thread_join(m_monitorThread);
 
     return true;
 }
@@ -277,7 +267,7 @@ bool CSerialPortUnixBase::openPort()
 {
     bool bRet = false;
 
-    lock();
+    itas109::IAutoLock lock(p_mutex);
 
     // fd = open(m_portName.c_str(),O_RDWR | O_NOCTTY);//阻塞
 
@@ -295,7 +285,7 @@ bool CSerialPortUnixBase::openPort()
                 // exit(EXIT_FAILURE);
 
                 bRet = false;
-                lastError = itas109::/*SerialPortError::*/ InvalidParameterError;
+                m_lastError = itas109::/*SerialPortError::*/ InvalidParameterError;
             }
             else
             {
@@ -305,14 +295,14 @@ bool CSerialPortUnixBase::openPort()
                 if (!bRet)
                 {
                     m_isThreadRunning = false;
-                    lastError = itas109::/*SerialPortError::*/ SystemError;
+                    m_lastError = itas109::/*SerialPortError::*/ SystemError;
                 }
             }
         }
         else
         {
             bRet = false;
-            lastError = itas109::/*SerialPortError::*/ SystemError;
+            m_lastError = itas109::/*SerialPortError::*/ SystemError;
         }
     }
     else
@@ -323,15 +313,13 @@ bool CSerialPortUnixBase::openPort()
         perror(str);
 
         bRet = false;
-        lastError = itas109::/*SerialPortError::*/ OpenError;
+        m_lastError = itas109::/*SerialPortError::*/ OpenError;
     }
 
     if (!bRet)
     {
         closePort();
     }
-
-    unlock();
 
     return bRet;
 }
@@ -356,7 +344,7 @@ bool CSerialPortUnixBase::isOpened()
 int CSerialPortUnixBase::readData(char *data, int maxSize)
 {
     int iRet = -1;
-    lock();
+    itas109::IAutoLock lock(p_mutex);
 
     if (isOpened())
     {
@@ -364,11 +352,9 @@ int CSerialPortUnixBase::readData(char *data, int maxSize)
     }
     else
     {
-        lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
         iRet = -1;
     }
-
-    unlock();
 
     return iRet;
 }
@@ -386,18 +372,16 @@ int CSerialPortUnixBase::readAllData(char *data)
 int CSerialPortUnixBase::readLineData(char *data, int maxSize)
 {
     int iRet = -1;
-    lock();
+    itas109::IAutoLock lock(p_mutex);
 
     if (isOpened())
     {
     }
     else
     {
-        lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
         iRet = -1;
     }
-
-    unlock();
 
     return iRet;
 }
@@ -405,7 +389,7 @@ int CSerialPortUnixBase::readLineData(char *data, int maxSize)
 int CSerialPortUnixBase::writeData(const char *data, int maxSize)
 {
     int iRet = -1;
-    lock();
+    itas109::IAutoLock lock(p_mutex);
 
     if (isOpened())
     {
@@ -414,11 +398,9 @@ int CSerialPortUnixBase::writeData(const char *data, int maxSize)
     }
     else
     {
-        lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
         iRet = -1;
     }
-
-    unlock();
 
     return iRet;
 }
@@ -440,12 +422,12 @@ void CSerialPortUnixBase::setMinByteReadNotify(unsigned int minByteReadNotify)
 
 int CSerialPortUnixBase::getLastError() const
 {
-    return lastError;
+    return m_lastError;
 }
 
 void CSerialPortUnixBase::clearError()
 {
-    lastError = itas109::NoError;
+    m_lastError = itas109::NoError;
 }
 
 void CSerialPortUnixBase::setPortName(std::string portName)
@@ -531,16 +513,6 @@ std::string CSerialPortUnixBase::getVersion()
 bool CSerialPortUnixBase::isThreadRunning()
 {
     return m_isThreadRunning;
-}
-
-void CSerialPortUnixBase::lock()
-{
-    pthread_mutex_lock(&m_communicationMutex);
-}
-
-void CSerialPortUnixBase::unlock()
-{
-    pthread_mutex_unlock(&m_communicationMutex);
 }
 
 int CSerialPortUnixBase::rate2Constant(int baudrate)
