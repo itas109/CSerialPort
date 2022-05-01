@@ -65,7 +65,7 @@ void CSerialPortWinBase::init(std::string portName,
                               itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/,
                               unsigned int readBufferSize /*= 512*/)
 {
-    m_portName = "\\\\.\\" + portName; // support COM10 above \\\\.\\COM10
+    m_portName = portName;
     m_baudRate = baudRate;
     m_parity = parity;
     m_dataBits = dataBits;
@@ -81,6 +81,7 @@ bool CSerialPortWinBase::openPort()
     bool bRet = false;
 
     TCHAR *tcPortName = NULL;
+    m_portName = "\\\\.\\" + m_portName; // support COM10 above \\\\.\\COM10
 #ifdef UNICODE
     std::wstring wstr = stringToWString(m_portName);
     tcPortName = const_cast<TCHAR *>(wstr.c_str());
@@ -612,7 +613,7 @@ void CSerialPortWinBase::setPortName(std::string portName)
 {
     // Windows : COM1
     // Linux : /dev/ttyS0
-    m_portName = "\\\\.\\" + portName; // support COM10 above \\\\.\\COM10
+    m_portName = portName;
 }
 
 std::string CSerialPortWinBase::getPortName() const
