@@ -55,8 +55,8 @@ CSerialPort has been tested to the following platforms:
 ## Short-term Goal
 
 - [x] 1.cross-platform OS identify class
-- [ ] 2.cross-platform Thread class
-- [ ] 3.cross-platform Lock class
+- [x] 2.cross-platform Thread class
+- [x] 3.cross-platform Lock class
 - [ ] 4.cross-platform higher efficiency Timer class
 - [ ] 5.Performance test report(Throughput && delay && packet dropout rates)
 
