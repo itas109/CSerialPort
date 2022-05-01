@@ -74,8 +74,7 @@ bool enumDetailsSerialPorts(vector<SerialPortInfo> &portInfoList)
 
             // get friendly name
             TCHAR fname[256];
-            SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, NULL, (PBYTE)fname,
-                                             sizeof(fname), NULL);
+            SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, NULL, (PBYTE)fname, sizeof(fname), NULL);
 
 #ifdef UNICODE
             strPortName = wstringToString(portName);

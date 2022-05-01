@@ -31,8 +31,7 @@
 
 // os platform
 // Windows
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(WIN64) || defined(_WIN64) || \
-     defined(__WIN64__) || defined(__NT__))
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(WIN64) || defined(_WIN64) || defined(__WIN64__) || defined(__NT__))
 #define I_OS_WIN
 // LINUX
 #elif defined(__linux__) || defined(__linux)

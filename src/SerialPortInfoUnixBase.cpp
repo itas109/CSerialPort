@@ -161,8 +161,7 @@ vector<std::string> getPortInfoListLinux()
     {
         while (n--)
         {
-            if (strcmp(namelist[n]->d_name, "..") && strcmp(namelist[n]->d_name, ".") &&
-                strcmp(namelist[n]->d_name, "ptmx"))
+            if (strcmp(namelist[n]->d_name, "..") && strcmp(namelist[n]->d_name, ".") && strcmp(namelist[n]->d_name, "ptmx"))
             {
                 // Construct full absolute file path
                 std::string ptsName = ptsDir;
