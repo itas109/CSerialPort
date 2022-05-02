@@ -265,9 +265,9 @@ bool CSerialPortUnixBase::stopThreadMonitor()
 
 bool CSerialPortUnixBase::openPort()
 {
-    bool bRet = false;
-
     itas109::IAutoLock lock(p_mutex);
+
+    bool bRet = false;
 
     // fd = open(m_portName.c_str(),O_RDWR | O_NOCTTY);//阻塞
 
@@ -341,14 +341,15 @@ bool CSerialPortUnixBase::isOpened()
     return fd != -1;
 }
 
-int CSerialPortUnixBase::readData(char *data, int maxSize)
+int CSerialPortUnixBase::readData(char *data, int size)
 {
-    int iRet = -1;
     itas109::IAutoLock lock(p_mutex);
+
+    int iRet = -1;
 
     if (isOpened())
     {
-        iRet = read(fd, data, maxSize);
+        iRet = read(fd, data, size);
     }
     else
     {
@@ -361,18 +362,19 @@ int CSerialPortUnixBase::readData(char *data, int maxSize)
 
 int CSerialPortUnixBase::readAllData(char *data)
 {
-    int readbytes = 0;
+    int maxSize = 0;
 
     // read前获取可读的字节数,不区分阻塞和非阻塞
-    ioctl(fd, FIONREAD, &readbytes);
+    ioctl(fd, FIONREAD, &maxSize);
 
-    return readData(data, readbytes);
+    return readData(data, maxSize);
 }
 
-int CSerialPortUnixBase::readLineData(char *data, int maxSize)
+int CSerialPortUnixBase::readLineData(char *data, int size)
 {
-    int iRet = -1;
     itas109::IAutoLock lock(p_mutex);
+
+    int iRet = -1;
 
     if (isOpened())
     {
@@ -386,15 +388,16 @@ int CSerialPortUnixBase::readLineData(char *data, int maxSize)
     return iRet;
 }
 
-int CSerialPortUnixBase::writeData(const char *data, int maxSize)
+int CSerialPortUnixBase::writeData(const char *data, int size)
 {
-    int iRet = -1;
     itas109::IAutoLock lock(p_mutex);
+
+    int iRet = -1;
 
     if (isOpened())
     {
         // Write N bytes of BUF to FD.  Return the number written, or -1
-        iRet = write(fd, data, maxSize);
+        iRet = write(fd, data, size);
     }
     else
     {
@@ -503,12 +506,6 @@ unsigned int CSerialPortUnixBase::getReadBufferSize() const
 void CSerialPortUnixBase::setDtr(bool set /*= true*/) {}
 
 void CSerialPortUnixBase::setRts(bool set /*= true*/) {}
-
-std::string CSerialPortUnixBase::getVersion()
-{
-    std::string m_version = "CSerialPortUnixBase V1.0.1.190728";
-    return m_version;
-}
 
 bool CSerialPortUnixBase::isThreadRunning()
 {

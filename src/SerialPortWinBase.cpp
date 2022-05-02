@@ -317,11 +317,11 @@ bool CSerialPortWinBase::isOpened()
     return m_handle != INVALID_HANDLE_VALUE;
 }
 
-int CSerialPortWinBase::readData(char *data, int maxSize)
+int CSerialPortWinBase::readData(char *data, int size)
 {
-    DWORD dRet = 0;
-
     itas109::IAutoLock lock(p_mutex);
+
+    DWORD numBytes = 0;
 
     if (isOpened())
     {
@@ -332,43 +332,43 @@ int CSerialPortWinBase::readData(char *data, int maxSize)
             m_overlapRead.Offset = 0;
             m_overlapRead.OffsetHigh = 0;
             m_overlapRead.hEvent = CreateEvent(NULL, true, false, NULL);
-            if (ReadFile(m_handle, (void *)data, (DWORD)maxSize, &dRet, &m_overlapRead))
+            if (ReadFile(m_handle, (void *)data, (DWORD)size, &numBytes, &m_overlapRead))
             {
-                // data[dRet] = '\0';
+                // data[numBytes] = '\0';
             }
             else
             {
-                if (GetLastError() == ERROR_IO_PENDING) // Normal, No data read - error code:997
+                if (ERROR_IO_PENDING == GetLastError()) // Normal, No data read - error code:997
                 {
-                    GetOverlappedResult(m_handle, &m_overlapRead, &dRet, true);
+                    GetOverlappedResult(m_handle, &m_overlapRead, &numBytes, true);
                 }
                 else
                 {
                     m_lastError = itas109::/*SerialPortError::*/ ReadError;
-                    dRet = (DWORD)-1;
+                    numBytes = (DWORD)-1;
                 }
             }
             CloseHandle(m_overlapRead.hEvent);
         }
         else
         {
-            if (ReadFile(m_handle, (void *)data, (DWORD)maxSize, &dRet, NULL))
+            if (ReadFile(m_handle, (void *)data, (DWORD)size, &numBytes, NULL))
             {
             }
             else
             {
                 m_lastError = itas109::/*SerialPortError::*/ ReadError;
-                dRet = (DWORD)-1;
+                numBytes = (DWORD)-1;
             }
         }
     }
     else
     {
         m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
-        dRet = (DWORD)-1;
+        numBytes = (DWORD)-1;
     }
 
-    return dRet;
+    return numBytes;
 }
 
 int CSerialPortWinBase::readAllData(char *data)
@@ -390,10 +390,11 @@ int CSerialPortWinBase::readAllData(char *data)
     return readData(data, maxSize);
 }
 
-int CSerialPortWinBase::readLineData(char *data, int maxSize)
+int CSerialPortWinBase::readLineData(char *data, int size)
 {
-    DWORD dRet = 0;
     itas109::IAutoLock lock(p_mutex);
+
+    DWORD numBytes = 0;
 
     if (isOpened())
     {
@@ -401,17 +402,17 @@ int CSerialPortWinBase::readLineData(char *data, int maxSize)
     else
     {
         m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
-        dRet = (DWORD)-1;
+        numBytes = (DWORD)-1;
     }
 
-    return dRet;
+    return numBytes;
 }
 
-int CSerialPortWinBase::writeData(const char *data, int maxSize)
+int CSerialPortWinBase::writeData(const char *data, int size)
 {
-    DWORD dRet = 0;
-
     itas109::IAutoLock lock(p_mutex);
+
+    DWORD numBytes = 0;
 
     if (isOpened())
     {
@@ -435,7 +436,7 @@ int CSerialPortWinBase::writeData(const char *data, int maxSize)
 
                 // The GetLastError code ERROR_IO_PENDING is not a failure; it designates the write operation is pending
                 // completion asynchronously.
-                bResult = WriteFile(m_handle, (void *)data, (DWORD)maxSize, &dRet, &m_overlapWrite);
+                bResult = WriteFile(m_handle, (void *)data, (DWORD)size, &numBytes, &m_overlapWrite);
 
                 // deal with any error codes
                 if (!bResult)
@@ -447,7 +448,7 @@ int CSerialPortWinBase::writeData(const char *data, int maxSize)
                         {
                             // continue to GetOverlappedResults()
                             bWrite = FALSE;
-                            dRet = (DWORD)-1;
+                            numBytes = (DWORD)-1;
                             break;
                         }
                         case ERROR_ACCESS_DENIED: ///拒绝访问 erroe code:5
@@ -479,7 +480,7 @@ int CSerialPortWinBase::writeData(const char *data, int maxSize)
             {
                 // bWrite = TRUE;
 
-                bResult = GetOverlappedResult(m_handle, &m_overlapWrite, &dRet, TRUE);
+                bResult = GetOverlappedResult(m_handle, &m_overlapWrite, &numBytes, TRUE);
             }
 
             if (bResult)
@@ -489,30 +490,30 @@ int CSerialPortWinBase::writeData(const char *data, int maxSize)
             else
             {
                 m_lastError = itas109::/*SerialPortError::*/ WriteError;
-                dRet = (DWORD)-1;
+                numBytes = (DWORD)-1;
             }
 
             CloseHandle(m_overlapWrite.hEvent);
         }
         else
         {
-            if (WriteFile(m_handle, (void *)data, (DWORD)maxSize, &dRet, NULL))
+            if (WriteFile(m_handle, (void *)data, (DWORD)size, &numBytes, NULL))
             {
             }
             else
             {
                 m_lastError = itas109::/*SerialPortError::*/ WriteError;
-                dRet = (DWORD)-1;
+                numBytes = (DWORD)-1;
             }
         }
     }
     else
     {
         m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
-        dRet = (DWORD)-1;
+        numBytes = (DWORD)-1;
     }
 
-    return dRet;
+    return numBytes;
 }
 
 void CSerialPortWinBase::setDebugModel(bool isDebug)
@@ -800,13 +801,6 @@ void CSerialPortWinBase::setRts(bool set /*= true*/)
             EscapeCommFunction(m_handle, CLRRTS);
         }
     }
-}
-
-std::string CSerialPortWinBase::getVersion()
-{
-    // Finished
-    std::string m_version = "CSerialPortWinBase V1.0.0.181117";
-    return m_version;
 }
 
 OVERLAPPED CSerialPortWinBase::getOverlapMonitor()

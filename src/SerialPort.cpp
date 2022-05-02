@@ -99,11 +99,11 @@ bool itas109::CSerialPort::isOpened()
     }
 }
 
-int itas109::CSerialPort::readData(char *data, int maxSize)
+int itas109::CSerialPort::readData(char *data, int size)
 {
     if (p_serialPortBase)
     {
-        return p_serialPortBase->readData(data, maxSize);
+        return p_serialPortBase->readData(data, size);
     }
     else
     {
@@ -123,11 +123,11 @@ int itas109::CSerialPort::readAllData(char *data)
     }
 }
 
-int itas109::CSerialPort::readLineData(char *data, int maxSize)
+int itas109::CSerialPort::readLineData(char *data, int size)
 {
     if (p_serialPortBase)
     {
-        return p_serialPortBase->readLineData(data, maxSize);
+        return p_serialPortBase->readLineData(data, size);
     }
     else
     {
@@ -135,11 +135,11 @@ int itas109::CSerialPort::readLineData(char *data, int maxSize)
     }
 }
 
-int itas109::CSerialPort::writeData(const char *data, int maxSize)
+int itas109::CSerialPort::writeData(const char *data, int size)
 {
     if (p_serialPortBase)
     {
-        return p_serialPortBase->writeData(data, maxSize);
+        return p_serialPortBase->writeData(data, size);
     }
     else
     {

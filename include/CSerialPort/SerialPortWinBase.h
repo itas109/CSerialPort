@@ -109,12 +109,12 @@ public:
      * @brief read specified length data 读取指定长度数据
      *
      * @param data [out] read data result 读取结果
-     * @param maxSize [in] read length 读取长度
+     * @param size [in] read length 读取长度
      * @return return number Of bytes read 返回读取字节数
      * @retval -1 read error 读取错误
      * @retval [other] return number Of bytes read 返回读取字节数
      */
-    virtual int readData(char *data, int maxSize);
+    virtual int readData(char *data, int size);
     /**
      * @brief read all data 读取所有数据
      *
@@ -129,20 +129,20 @@ public:
      * @todo Not implemented 未实现
      *
      * @param data
-     * @param maxSize
+     * @param size
      * @return int
      */
-    virtual int readLineData(char *data, int maxSize);
+    virtual int readLineData(char *data, int size);
     /**
      * @brief write specified lenfth data 写入指定长度数据
      *
      * @param data [in] write data 待写入数据
-     * @param maxSize [in] wtite length 写入长度
+     * @param size [in] wtite length 写入长度
      * @return return number Of bytes write 返回写入字节数
      * @retval -1 read error 写入错误
      * @retval [other] return number Of bytes write 返回写入字节数
      */
-    virtual int writeData(const char *data, int maxSize);
+    virtual int writeData(const char *data, int size);
 
     /**
      * @brief Set Debug Model 设置调试模式
@@ -286,13 +286,6 @@ public:
      * @param set [in]
      */
     virtual void setRts(bool set = true);
-
-    /**
-     * @brief Get the Version object 获取版本信息
-     *
-     * @return return version 返回版本信息
-     */
-    std::string getVersion();
 
 public:
     /**
