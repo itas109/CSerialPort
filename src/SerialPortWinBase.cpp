@@ -332,13 +332,10 @@ int CSerialPortWinBase::readData(char *data, int size)
             m_overlapRead.Offset = 0;
             m_overlapRead.OffsetHigh = 0;
             m_overlapRead.hEvent = CreateEvent(NULL, true, false, NULL);
-            if (ReadFile(m_handle, (void *)data, (DWORD)size, &numBytes, &m_overlapRead))
+
+            if (!ReadFile(m_handle, (void *)data, (DWORD)size, &numBytes, &m_overlapRead))
             {
-                // data[numBytes] = '\0';
-            }
-            else
-            {
-                if (ERROR_IO_PENDING == GetLastError()) // Normal, No data read - error code:997
+                if (ERROR_IO_PENDING == GetLastError())
                 {
                     GetOverlappedResult(m_handle, &m_overlapRead, &numBytes, true);
                 }
@@ -348,6 +345,7 @@ int CSerialPortWinBase::readData(char *data, int size)
                     numBytes = (DWORD)-1;
                 }
             }
+
             CloseHandle(m_overlapRead.hEvent);
         }
         else
@@ -423,74 +421,23 @@ int CSerialPortWinBase::writeData(const char *data, int size)
 
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
         {
-            BOOL bWrite = TRUE;
-            BOOL bResult = TRUE;
+            m_overlapWrite.Internal = 0;
+            m_overlapWrite.InternalHigh = 0;
+            m_overlapWrite.Offset = 0;
+            m_overlapWrite.OffsetHigh = 0;
+            m_overlapWrite.hEvent = CreateEvent(NULL, true, false, NULL);
 
-            if (bWrite)
+            if (!WriteFile(m_handle, (void *)data, (DWORD)size, &numBytes, &m_overlapWrite))
             {
-                m_overlapWrite.Internal = 0;
-                m_overlapWrite.InternalHigh = 0;
-                m_overlapWrite.Offset = 0;
-                m_overlapWrite.OffsetHigh = 0;
-                m_overlapWrite.hEvent = CreateEvent(NULL, true, false, NULL);
-
-                // The GetLastError code ERROR_IO_PENDING is not a failure; it designates the write operation is pending
-                // completion asynchronously.
-                bResult = WriteFile(m_handle, (void *)data, (DWORD)size, &numBytes, &m_overlapWrite);
-
-                // deal with any error codes
-                if (!bResult)
+                if (ERROR_IO_PENDING == GetLastError())
                 {
-                    DWORD dwError = GetLastError();
-                    switch (dwError)
-                    {
-                        case ERROR_IO_PENDING:
-                        {
-                            // continue to GetOverlappedResults()
-                            bWrite = FALSE;
-                            numBytes = (DWORD)-1;
-                            break;
-                        }
-                        case ERROR_ACCESS_DENIED: ///拒绝访问 erroe code:5
-                        {
-                            break;
-                        }
-                        case ERROR_INVALID_HANDLE: ///打开串口失败 erroe code:6
-                        {
-                            break;
-                        }
-                        case ERROR_BAD_COMMAND: ///连接过程中非法断开 erroe code:22
-                        {
-                            break;
-                        }
-                        default:
-                        {
-                            // all other error codes
-                            break;
-                        }
-                    }
+                    GetOverlappedResult(m_handle, &m_overlapWrite, &numBytes, true);
                 }
                 else
                 {
-                    // write ok
+                    m_lastError = itas109::/*SerialPortError::*/ WriteError;
+                    numBytes = (DWORD)-1;
                 }
-            }
-
-            if (!bWrite)
-            {
-                // bWrite = TRUE;
-
-                bResult = GetOverlappedResult(m_handle, &m_overlapWrite, &numBytes, TRUE);
-            }
-
-            if (bResult)
-            {
-                // write ok
-            }
-            else
-            {
-                m_lastError = itas109::/*SerialPortError::*/ WriteError;
-                numBytes = (DWORD)-1;
             }
 
             CloseHandle(m_overlapWrite.hEvent);
