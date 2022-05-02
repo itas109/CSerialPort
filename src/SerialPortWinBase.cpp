@@ -135,16 +135,6 @@ bool CSerialPortWinBase::openPort()
 
             setFlowControl(m_flowControl); // @todo
 
-            //            COMMTIMEOUTS m_commTimeouts;
-            //            //set read timeout
-            //            m_commTimeouts.ReadIntervalTimeout = MAXWORD;
-            //            m_commTimeouts.ReadTotalTimeoutMultiplier = 0;
-            //            m_commTimeouts.ReadTotalTimeoutConstant = 0;
-            //            //set write timeout
-            //            m_commTimeouts.WriteTotalTimeoutConstant = 500;
-            //            m_commTimeouts.WriteTotalTimeoutMultiplier = 100;
-            //            SetCommTimeouts(m_handle,&m_commTimeouts); // @todo for test
-
             if (SetCommConfig(m_handle, &m_comConfigure, configSize))
             {
                 // @todo
@@ -163,7 +153,8 @@ bool CSerialPortWinBase::openPort()
                     SetCommTimeouts(m_handle, &m_comTimeout);
 
                     // set comm event
-                    if (SetCommMask(m_handle, EV_TXEMPTY | EV_RXCHAR | EV_DSR)) // @todo mask need modify
+                    // only need receive event
+                    if (SetCommMask(m_handle, EV_RXCHAR))
                     {
                         m_isThreadRunning = true;
                         bRet = startThreadMonitor();
@@ -281,92 +272,32 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
         HANDLE m_mainHandle = p_base->getMainHandle();
         OVERLAPPED m_overlapMonitor = p_base->getOverlapMonitor();
 
-        ResetEvent(m_mainHandle);
-
         for (; p_base->isThreadRunning();)
         {
+            eventMask = 0;
+            // https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-waitcommevent
             if (!WaitCommEvent(m_mainHandle, &eventMask, &m_overlapMonitor))
             {
-                switch (GetLastError())
+                if (ERROR_IO_PENDING == GetLastError())
                 {
-                    case ERROR_IO_PENDING: // normal, because no bytes. error code:997
-                    {
-                        // This is a normal return value if there are no bytes to read at the port.
-                        break;
-                    }
-                    case ERROR_INVALID_PARAMETER: // system error. error code:87
-                    {
-                        // Under Windows NT, this value is returned for some reason.
-                        // I have not investigated why, but it is also a valid reply
-                        // Also do nothing and continue.
-                        break;
-                    }
-                    case ERROR_ACCESS_DENIED: // Access denied. error code:5
-                    {
-                        // std::cout << "comm acess denied" << std::endl;
-                        break;
-                    }
-                    case ERROR_INVALID_HANDLE: // handle invalid. error code:6
-                    {
-                        // std::cout << "comm handle invalid" << std::endl;
-                        break;
-                    }
-                    case ERROR_BAD_COMMAND: // illegal disconnect. error code:22
-                    {
-                        // std::cout << "comm illegal disconnect" << std::endl;
-                        break;
-                    }
-                    default:
-                    {
-                        // All other error codes indicate a serious error has occured.  Process this error.
-                        p_base->m_handle = INVALID_HANDLE_VALUE;
-                        break;
-                    }
+                    // method 1
+                    WaitForSingleObject(m_overlapMonitor.hEvent, INFINITE);
+
+                    // method 2
+                    // DWORD numBytes;
+                    // GetOverlappedResult(m_mainHandle, &m_overlapMonitor, &numBytes, TRUE);
                 }
             }
-            else
+
+            if (eventMask & EV_RXCHAR)
             {
-                // If WaitCommEvent() returns TRUE, check to be sure there are actually bytes in the buffer to read
+                // std::cout << "EV_RXCHAR" << std::endl;
+
+                // solve 线程中循环的低效率问题
                 ClearCommError(m_mainHandle, &dwError, &comstat);
-                if (comstat.cbInQue == 0)
+                if (comstat.cbInQue >= p_base->getMinByteReadNotify()) //设定字符数,默认为2
                 {
-                    continue;
-                }
-            }
-
-            if (WaitForSingleObject(m_overlapMonitor.hEvent, INFINITE) == WAIT_OBJECT_0)
-            {
-                // overlap event occured
-                DWORD undefined;
-                if (!GetOverlappedResult(m_mainHandle, &m_overlapMonitor, &undefined, false))
-                {
-                    // Comm event overlapped error
-                    return 1; //@ todo
-                }
-
-                if (eventMask & EV_RXCHAR)
-                {
-
-                    // std::cout << "EV_RXCHAR" << std::endl;
-
-                    // solve 线程中循环的低效率问题
-                    ClearCommError(m_mainHandle, &dwError, &comstat);
-                    if (comstat.cbInQue >= p_base->getMinByteReadNotify()) //设定字符数,默认为2
-                    {
-                        p_base->readReady._emit();
-                    }
-                }
-
-                if (eventMask & EV_TXEMPTY)
-                {
-                    DWORD numBytes;
-                    GetOverlappedResult(m_mainHandle, &m_overlapMonitor, &numBytes, true);
-                    // std::cout << "EV_TXEMPTY" << std::endl;
-                }
-
-                if (eventMask & EV_DSR)
-                {
-                    // std::cout << "EV_DSR" << std::endl;
+                    p_base->readReady._emit();
                 }
             }
         }
