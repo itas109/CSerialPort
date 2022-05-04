@@ -78,7 +78,8 @@ private:
 class IAutoLock
 {
 public:
-    IAutoLock(IMutex *mutex) : m_mutex(mutex)
+    IAutoLock(IMutex *mutex)
+        : m_mutex(mutex)
     {
         m_mutex->lock();
     }

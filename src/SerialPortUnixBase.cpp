@@ -34,32 +34,32 @@ struct termios2
 #endif
 
 CSerialPortUnixBase::CSerialPortUnixBase()
+    : fd(-1)
+    , m_portName()
+    , m_baudRate(itas109::BaudRate9600)
+    , m_parity(itas109::ParityNone)
+    , m_dataBits(itas109::DataBits8)
+    , m_stopbits(itas109::StopOne)
+    , m_flowControl(itas109::FlowNone)
+    , m_readBufferSize(512)
+    , m_isThreadRunning(false)
 {
-    construct();
 }
 
 CSerialPortUnixBase::CSerialPortUnixBase(const std::string &portName)
+    : fd(-1)
+    , m_portName(portName)
+    , m_baudRate(itas109::BaudRate9600)
+    , m_parity(itas109::ParityNone)
+    , m_dataBits(itas109::DataBits8)
+    , m_stopbits(itas109::StopOne)
+    , m_flowControl(itas109::FlowNone)
+    , m_readBufferSize(512)
+    , m_isThreadRunning(false)
 {
-    construct();
 }
 
 CSerialPortUnixBase::~CSerialPortUnixBase() {}
-
-void CSerialPortUnixBase::construct()
-{
-    fd = -1;
-
-    m_baudRate = itas109::BaudRate9600;
-    m_parity = itas109::ParityNone;
-    m_dataBits = itas109::DataBits8;
-    m_stopbits = itas109::StopOne;
-    m_flowControl = itas109::FlowNone;
-    m_readBufferSize = 512;
-
-    m_isThreadRunning = false;
-
-    m_operateMode = itas109::AsynchronousOperate;
-}
 
 void CSerialPortUnixBase::init(std::string portName,
                                int baudRate /*= itas109::BaudRate::BaudRate9600*/,

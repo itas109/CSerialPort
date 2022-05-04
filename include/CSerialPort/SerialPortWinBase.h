@@ -58,12 +58,6 @@ public:
     virtual ~CSerialPortWinBase();
 
     /**
-     * @brief parameter init 参数初始化
-     *
-     */
-    virtual void construct();
-
-    /**
      * @brief init 初始化函数
      *
      * @param portName [in] the port name串口名称 Windows:COM1 Linux:/dev/ttyS0

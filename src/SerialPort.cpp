@@ -17,6 +17,7 @@
 using namespace itas109;
 
 CSerialPort::CSerialPort()
+    : p_serialPortBase(NULL)
 {
     p_serialPortBase = new CSERIALPORTBASE();
 
@@ -26,6 +27,7 @@ CSerialPort::CSerialPort()
 }
 
 itas109::CSerialPort::CSerialPort(const std::string &portName)
+    : p_serialPortBase(NULL)
 {
     p_serialPortBase = new CSERIALPORTBASE(portName);
 

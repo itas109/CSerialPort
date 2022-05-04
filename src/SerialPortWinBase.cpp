@@ -17,13 +17,39 @@ std::wstring stringToWString(const std::string &str)
 }
 
 CSerialPortWinBase::CSerialPortWinBase()
+    : m_handle(INVALID_HANDLE_VALUE)
+    , m_monitorThread(INVALID_HANDLE_VALUE)
+    , m_portName()
+    , m_baudRate(itas109::BaudRate9600)
+    , m_parity(itas109::ParityNone)
+    , m_dataBits(itas109::DataBits8)
+    , m_stopbits(itas109::StopOne)
+    , m_flowControl(itas109::FlowNone)
+    , m_readBufferSize(512)
 {
-    construct();
+    overlapMonitor.Internal = 0;
+    overlapMonitor.InternalHigh = 0;
+    overlapMonitor.Offset = 0;
+    overlapMonitor.OffsetHigh = 0;
+    overlapMonitor.hEvent = CreateEvent(NULL, true, false, NULL);
 }
 
 CSerialPortWinBase::CSerialPortWinBase(const std::string &portName)
+    : m_handle(INVALID_HANDLE_VALUE)
+    , m_monitorThread(INVALID_HANDLE_VALUE)
+    , m_portName(portName)
+    , m_baudRate(itas109::BaudRate9600)
+    , m_parity(itas109::ParityNone)
+    , m_dataBits(itas109::DataBits8)
+    , m_stopbits(itas109::StopOne)
+    , m_flowControl(itas109::FlowNone)
+    , m_readBufferSize(512)
 {
-    construct();
+    overlapMonitor.Internal = 0;
+    overlapMonitor.InternalHigh = 0;
+    overlapMonitor.Offset = 0;
+    overlapMonitor.OffsetHigh = 0;
+    overlapMonitor.hEvent = CreateEvent(NULL, true, false, NULL);
 }
 
 CSerialPortWinBase::~CSerialPortWinBase()
@@ -32,29 +58,8 @@ CSerialPortWinBase::~CSerialPortWinBase()
     {
         closePort();
     }
-}
 
-void CSerialPortWinBase::construct()
-{
-    m_handle = INVALID_HANDLE_VALUE;
-    m_monitorThread = INVALID_HANDLE_VALUE;
-
-    m_baudRate = itas109::BaudRate9600;
-    m_parity = itas109::ParityNone;
-    m_dataBits = itas109::DataBits8;
-    m_stopbits = itas109::StopOne;
-    m_flowControl = itas109::FlowNone;
-    m_readBufferSize = 512;
-
-    m_operateMode = itas109::AsynchronousOperate;
-
-    overlapMonitor.Internal = 0;
-    overlapMonitor.InternalHigh = 0;
-    overlapMonitor.Offset = 0;
-    overlapMonitor.OffsetHigh = 0;
-    overlapMonitor.hEvent = CreateEvent(NULL, true, false, NULL);
-
-    m_isThreadRunning = false;
+    CloseHandle(overlapMonitor.hEvent);
 }
 
 void CSerialPortWinBase::init(std::string portName,

@@ -1,12 +1,20 @@
 ﻿#include "CSerialPort/SerialPortBase.h"
 #include "CSerialPort/ithread.hpp"
 
-CSerialPortBase::CSerialPortBase() : p_mutex(NULL), m_lastError(0), m_minByteReadNotify(1), m_operateMode(itas109::AsynchronousOperate)
+CSerialPortBase::CSerialPortBase()
+    : p_mutex(NULL)
+    , m_lastError(0)
+    , m_minByteReadNotify(1)
+    , m_operateMode(itas109::AsynchronousOperate)
 {
     p_mutex = new itas109::IMutex();
 }
 
-CSerialPortBase::CSerialPortBase(const std::string &portName) : p_mutex(NULL), m_lastError(0), m_minByteReadNotify(1), m_operateMode(itas109::AsynchronousOperate)
+CSerialPortBase::CSerialPortBase(const std::string &portName)
+    : p_mutex(NULL)
+    , m_lastError(0)
+    , m_minByteReadNotify(1)
+    , m_operateMode(itas109::AsynchronousOperate)
 {
     p_mutex = new itas109::IMutex();
 }
