@@ -26,45 +26,10 @@
 
 // Serial Programming Guide for POSIX Operating Systems
 // https://digilander.libero.it/robang/rubrica/serial.htm
-// https://blog.csdn.net/u014650722/article/details/51610587
 
 // sigslot
 // https://sourceforge.net/p/sigslot/bugs/8/
 #include "sigslot.h"
-
-// https://blog.csdn.net/u010317005/article/details/52384890
-
-// Linux compile 1
-// g++ SerialPort.cpp SerialPortBase.cpp SerialPortUnixBase.cpp -fPIC -lpthread -shared -o libsp.so
-// g++ t.cpp -o sp -L. -lsp
-// export LD_LIBRARY_PATH=./
-// ./sp
-
-// Linux compile 2
-// g++ sp.cpp SerialPort.cpp SerialPortBase.cpp SerialPortUnixBase.cpp -lpthread -o sp
-// ./sp
-
-// sp.cpp
-/*
-#include <iostream>
-
-#include "SerialPort.h"
-#include "sigslot.h"
-
-using namespace itas109;
-using namespace std;
-
-int main()
-{
-    CSerialPort sp;
-    sp.init("/dev/ttyS0");
-    sp.open();
-    cout << sp.isOpened() <<endl;
-
-    while (1);
-    return 0;
-}
-*/
 
 /**
  * @brief the CSerialPort unix Base class unix串口基类
@@ -339,21 +304,21 @@ private:
     int rate2Constant(int baudrate);
 
     /**
-     * @brief uart_set
-     * @param fd
-     * @param baude
-     * @param c_flow
-     * @param bits
-     * @param parity
-     * @param stop
+     * @brief uartSet
+     * @param fd [in] file discriptor 文件描述符
+     * @param baudRate [in] the baudRate 波特率
+     * @param parity [in] the parity 校验位
+     * @param dataBits [in] the dataBits 数据位
+     * @param stopbits [in] the stopbits 停止位
+     * @param flowControl [in] flowControl type 流控制
      * @return 0 success -1 error
      */
-    int uart_set(int fd,
-                 int baudRate = itas109::BaudRate9600,
-                 itas109::Parity parity = itas109::ParityNone,
-                 itas109::DataBits dataBits = itas109::DataBits8,
-                 itas109::StopBits stopbits = itas109::StopOne,
-                 itas109::FlowControl flowControl = itas109::FlowNone);
+    int uartSet(int fd,
+                int baudRate = itas109::BaudRate9600,
+                itas109::Parity parity = itas109::ParityNone,
+                itas109::DataBits dataBits = itas109::DataBits8,
+                itas109::StopBits stopbits = itas109::StopOne,
+                itas109::FlowControl flowControl = itas109::FlowNone);
 
     /**
      * @brief thread monitor 多线程监视器

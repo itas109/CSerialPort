@@ -2,6 +2,37 @@
 #include "CSerialPort/ithread.hpp"
 #include <unistd.h> // usleep
 
+#ifdef I_OS_LINUX
+// termios2 for custom baud rate at least linux kernel 2.6.32 (RHEL 6.0)
+
+// linux/include/uapi/asm-generic/termbits.h
+struct termios2
+{
+    tcflag_t c_iflag; /* input mode flags */
+    tcflag_t c_oflag; /* output mode flags */
+    tcflag_t c_cflag; /* control mode flags */
+    tcflag_t c_lflag; /* local mode flags */
+    cc_t c_line;      /* line discipline */
+    cc_t c_cc[19];    /* control characters */
+    speed_t c_ispeed; /* input speed */
+    speed_t c_ospeed; /* output speed */
+};
+
+#ifndef BOTHER
+#define BOTHER 0010000
+#endif
+
+// linux/include/uapi/asm-generic/ioctls.h
+#ifndef TCGETS2
+#define TCGETS2 _IOR('T', 0x2A, struct termios2)
+#endif
+
+#ifndef TCSETS2
+#define TCSETS2 _IOW('T', 0x2B, struct termios2)
+#endif
+
+#endif
+
 CSerialPortUnixBase::CSerialPortUnixBase()
 {
     construct();
@@ -47,18 +78,18 @@ void CSerialPortUnixBase::init(std::string portName,
     m_readBufferSize = readBufferSize;
 }
 
-int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl)
+int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl)
 {
     struct termios options;
 
-    //获取终端属性
+    // 获取终端属性
     if (tcgetattr(fd, &options) < 0)
     {
-        perror("tcgetattr error");
+        fprintf(stderr, "tcgetattr error");
         return -1;
     }
 
-    //设置输入输出波特率
+    // 设置输入输出波特率
     int baudRateConstant = 0;
     baudRateConstant = rate2Constant(baudRate);
 
@@ -69,45 +100,67 @@ int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, 
     }
     else
     {
-        // TODO: custom baudrate
-        fprintf(stderr, "Unkown baudrate!\n");
+#ifdef I_OS_LINUX
+        struct termios2 tio2;
+
+        if (-1 != ioctl(fd, TCGETS2, &tio2))
+        {
+            tio2.c_cflag &= ~CBAUD; // remove current baud rate
+            tio2.c_cflag |= BOTHER; // allow custom baud rate using int input
+
+            tio2.c_ispeed = baudRate; // set the input baud rate
+            tio2.c_ospeed = baudRate; // set the output baud rate
+
+            if (-1 == ioctl(fd, TCSETS2, &tio2) || -1 == ioctl(fd, TCGETS2, &tio2))
+            {
+                fprintf(stderr, "termios2 set custom baudrate error\n");
+                return -1;
+            }
+        }
+        else
+        {
+            fprintf(stderr, "termios2 ioctl error\n");
+            return -1;
+        }
+#else
+        fprintf(stderr, "not support custom baudrate\n");
         return -1;
+#endif
     }
 
-    //设置校验位
+    // 设置校验位
     switch (parity)
     {
-        /*无奇偶校验位*/
+        // 无奇偶校验位
         case itas109::ParityNone:
-        case 'N':
             options.c_cflag &= ~PARENB; // PARENB：产生奇偶位，执行奇偶校验
             options.c_cflag &= ~INPCK;  // INPCK：使奇偶校验起作用
             break;
-        /*设置奇校验*/
+        // 设置奇校验
         case itas109::ParityOdd:
             options.c_cflag |= PARENB; // PARENB：产生奇偶位，执行奇偶校验
             options.c_cflag |= PARODD; // PARODD：若设置则为奇校验,否则为偶校验
             options.c_cflag |= INPCK;  // INPCK：使奇偶校验起作用
             options.c_cflag |= ISTRIP; // ISTRIP：若设置则有效输入数字被剥离7个字节，否则保留全部8位
             break;
-        /*设置偶校验*/
+        // 设置偶校验
         case itas109::ParityEven:
             options.c_cflag |= PARENB;  // PARENB：产生奇偶位，执行奇偶校验
             options.c_cflag &= ~PARODD; // PARODD：若设置则为奇校验,否则为偶校验
             options.c_cflag |= INPCK;   // INPCK：使奇偶校验起作用
             options.c_cflag |= ISTRIP;  // ISTRIP：若设置则有效输入数字被剥离7个字节，否则保留全部8位
             break;
-            /*设为空格,即停止位为2位*/
+        // 设置0校验
         case itas109::ParitySpace:
             options.c_cflag &= ~PARENB; // PARENB：产生奇偶位，执行奇偶校验
             options.c_cflag &= ~CSTOPB; // CSTOPB：使用两位停止位
             break;
         default:
-            fprintf(stderr, "Unkown parity!\n");
+            fprintf(stderr, "unknown parity\n");
             return -1;
     }
 
-    //设置数据位
+    // 设置数据位
     switch (dataBits)
     {
         case itas109::DataBits5:
@@ -127,24 +180,24 @@ int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, 
             options.c_cflag |= CS8;
             break;
         default:
-            fprintf(stderr, "Unkown bits!\n");
+            fprintf(stderr, "unknown data bits\n");
             return -1;
     }
 
-    //停止位
+    // 停止位
     switch (stopbits)
     {
         case itas109::StopOne:
             options.c_cflag &= ~CSTOPB; // CSTOPB：使用两位停止位
             break;
         case itas109::StopOneAndHalf:
-            fprintf(stderr, "POSIX does not support 1.5 stop bits!\n");
+            fprintf(stderr, "POSIX does not support 1.5 stop bits\n");
             return -1;
         case itas109::StopTwo:
             options.c_cflag |= CSTOPB; // CSTOPB：使用两位停止位
             break;
         default:
-            fprintf(stderr, "Unkown stop!\n");
+            fprintf(stderr, "unknown stop\n");
             return -1;
     }
 
@@ -152,7 +205,7 @@ int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, 
     options.c_cflag |= CLOCAL; //保证程序不占用串口
     options.c_cflag |= CREAD;  //保证程序可以从串口中读取数据
 
-    //流控制
+    // 流控制
     switch (flowControl)
     {
         case itas109::FlowNone: ///< No flow control 无流控制
@@ -165,11 +218,11 @@ int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, 
             options.c_cflag |= IXON | IXOFF | IXANY;
             break;
         default:
-            fprintf(stderr, "Unkown c_flow!\n");
+            fprintf(stderr, "unknown flow control\n");
             return -1;
     }
 
-    //设置输出模式为原始输出
+    // 设置输出模式为原始输出
     options.c_oflag &= ~OPOST; // OPOST：若设置则按定义的输出处理，否则所有c_oflag失效
 
     //设置本地模式为原始模式
@@ -190,14 +243,14 @@ int CSerialPortUnixBase::uart_set(int fd, int baudRate, itas109::Parity parity, 
      *IXON：允许输出时对XON/XOFF流进行控制 (0x11 0x13)
      */
 
-    //设置等待时间和最小接受字符
-    options.c_cc[VTIME] = 0; //可以在select中设置
-    options.c_cc[VMIN] = 1;  //最少读取一个字符
+    // 设置等待时间和最小接受字符
+    options.c_cc[VTIME] = 0; // 可以在select中设置
+    options.c_cc[VMIN] = 1;  // 最少读取一个字符
 
     //如果发生数据溢出，只接受数据，但是不进行读操作
     tcflush(fd, TCIFLUSH);
 
-    //激活配置
+    // 激活配置
     if (tcsetattr(fd, TCSANOW, &options) < 0)
     {
         perror("tcsetattr failed");
@@ -279,10 +332,9 @@ bool CSerialPortUnixBase::openPort()
         if (fcntl(fd, F_SETFL, 0) >= 0) // 阻塞，即使前面在open串口设备时设置的是非阻塞的，这里设为阻塞后，以此为准
         {
             // set param
-            if (uart_set(fd, m_baudRate, m_parity, m_dataBits, m_stopbits, m_flowControl) == -1)
+            if (uartSet(fd, m_baudRate, m_parity, m_dataBits, m_stopbits, m_flowControl) == -1)
             {
-                fprintf(stderr, "uart set failed!\n");
-                // exit(EXIT_FAILURE);
+                fprintf(stderr, "uart set failed\n");
 
                 bRet = false;
                 m_lastError = itas109::/*SerialPortError::*/ InvalidParameterError;
@@ -514,8 +566,6 @@ bool CSerialPortUnixBase::isThreadRunning()
 
 int CSerialPortUnixBase::rate2Constant(int baudrate)
 {
-    // https://jim.sh/ftx/files/linux-custom-baudrate.c
-
 #define B(x) \
     case x:  \
         return B##x
@@ -612,7 +662,6 @@ int CSerialPortUnixBase::rate2Constant(int baudrate)
 #ifdef B4000000
         B(4000000);
 #endif
-
         default:
             return 0;
     }
