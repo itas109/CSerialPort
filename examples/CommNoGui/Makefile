@@ -3,7 +3,7 @@ CUR_DIR=.
 DEMO_DIR=${CUR_DIR}
 SRC_DIR=${CUR_DIR}/../../src
 
-INC_DIR= -I${SRC_DIR}
+INC_DIR=-I${CUR_DIR}/../../include
 
 
 SRC =   ${DEMO_DIR}/CSerialPortDemoNoGui.cpp \
