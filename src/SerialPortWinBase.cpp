@@ -26,6 +26,13 @@ CSerialPortWinBase::CSerialPortWinBase()
     , m_stopbits(itas109::StopOne)
     , m_flowControl(itas109::FlowNone)
     , m_readBufferSize(512)
+    , m_isThreadRunning(false)
+    , overlapMonitor()
+    , m_overlapRead()
+    , m_overlapWrite()
+    , m_comConfigure()
+    , m_comTimeout()
+    , m_communicationMutex()
 {
     overlapMonitor.Internal = 0;
     overlapMonitor.InternalHigh = 0;
@@ -44,6 +51,13 @@ CSerialPortWinBase::CSerialPortWinBase(const std::string &portName)
     , m_stopbits(itas109::StopOne)
     , m_flowControl(itas109::FlowNone)
     , m_readBufferSize(512)
+    , m_isThreadRunning(false)
+    , overlapMonitor()
+    , m_overlapRead()
+    , m_overlapWrite()
+    , m_comConfigure()
+    , m_comTimeout()
+    , m_communicationMutex()
 {
     overlapMonitor.Internal = 0;
     overlapMonitor.InternalHigh = 0;

@@ -355,7 +355,5 @@ private:
     pthread_t m_monitorThread; /**< read thread */
 
     bool m_isThreadRunning;
-
-    pthread_mutex_t m_communicationMutex; ///< mutex
 };
 #endif //__CSERIALPORTUNIXBASE_H__
