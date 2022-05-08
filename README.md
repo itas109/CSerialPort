@@ -31,7 +31,7 @@ CSerialPort已经在以下平台做过测试:
 
    - DOS ( x86_64 )
    - Windows ( x86_64 )
-   - Linux ( x86_64, aarch64, mips64el, s390x, ppc64le )
+   - Linux ( x86_64, aarch64, mips64el, riscv, s390x, ppc64le )
    - macOS ( x86_64 )
    - Raspberry Pi ( armv7l )
    - FreeBSD ( x86_64 )
@@ -130,6 +130,15 @@ $ sudo apt-get install g++-mips64el-linux-gnuabi64
 $ cd CSerialPort
 $ mkdir bin_mips64el && cd bin_mips64el
 $ cmake .. -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_mips64el.cmake
+$ cmake --build .
+```
+- riscv64 on ubuntu 20.04
+
+```
+$ sudo apt-get install g++-riscv64-linux-gnu
+$ cd CSerialPort
+$ mkdir bin_riscv64 && cd bin_riscv64
+$ cmake .. -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_riscv64.cmake
 $ cmake --build .
 ```
 
