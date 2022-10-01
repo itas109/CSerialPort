@@ -53,12 +53,12 @@ jobs:
       os: linux
       arch: s390x
       dist: xenial
-      addons:
-          apt:
-            packages:
-              - g++-7
-            sources:
-              - ubuntu-toolchain-r-test
+      # addons:
+      #     apt:
+      #       packages:
+      #         - g++-7
+      #       sources:
+      #         - ubuntu-toolchain-r-test
 
     - env: GCC_VERSION=7 BUILD_TYPE=Release
       os: linux
