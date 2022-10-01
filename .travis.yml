@@ -48,8 +48,8 @@ jobs:
             sources:
               - ubuntu-toolchain-r-test
 
-    # Test gcc-7: Build=Debug/Release
-    - env: GCC_VERSION=7 BUILD_TYPE=Debug
+    # Test gcc-5.4.0: Build=Debug/Release
+    - env: GCC_VERSION=5 BUILD_TYPE=Debug
       os: linux
       arch: s390x
       dist: xenial
