@@ -33,6 +33,7 @@ CSerialPortWinBase::CSerialPortWinBase()
     , m_comConfigure()
     , m_comTimeout()
     , m_communicationMutex()
+    , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
     overlapMonitor.Internal = 0;
     overlapMonitor.InternalHigh = 0;
@@ -58,6 +59,7 @@ CSerialPortWinBase::CSerialPortWinBase(const std::string &portName)
     , m_comConfigure()
     , m_comTimeout()
     , m_communicationMutex()
+    , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
     overlapMonitor.Internal = 0;
     overlapMonitor.InternalHigh = 0;
@@ -74,6 +76,12 @@ CSerialPortWinBase::~CSerialPortWinBase()
     }
 
     CloseHandle(overlapMonitor.hEvent);
+
+    if (p_buffer)
+    {
+        delete p_buffer;
+        p_buffer = NULL;
+    }
 }
 
 void CSerialPortWinBase::init(std::string portName,
@@ -314,9 +322,20 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
 
                 // solve 线程中循环的低效率问题
                 ClearCommError(m_mainHandle, &dwError, &comstat);
-                if (comstat.cbInQue >= p_base->getMinByteReadNotify()) //设定字符数,默认为2
+                if (comstat.cbInQue >= p_base->getMinByteReadNotify()) //设定字符数,默认为1
                 {
-                    p_base->readReady._emit();
+                    char *data = NULL;
+                    data = new char[comstat.cbInQue];
+                    if (data && p_base->p_buffer)
+                    {
+                        int len = p_base->readDataWin(data, comstat.cbInQue);
+                        p_base->p_buffer->write(data, len);
+
+                        p_base->readReady._emit();
+
+                        delete[] data;
+                        data = NULL;
+                    }
                 }
             }
         }
@@ -336,7 +355,7 @@ bool CSerialPortWinBase::isOpened()
     return m_handle != INVALID_HANDLE_VALUE;
 }
 
-int CSerialPortWinBase::readData(char *data, int size)
+int CSerialPortWinBase::readDataWin(char *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
 
@@ -388,16 +407,46 @@ int CSerialPortWinBase::readData(char *data, int size)
     return numBytes;
 }
 
+int CSerialPortWinBase::readData(char *data, int size)
+{
+    itas109::IAutoLock lock(p_mutex);
+
+    DWORD numBytes = 0;
+
+    if (isOpened())
+    {
+        if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
+        {
+            numBytes = p_buffer->read(data, size);
+        }
+        else
+        {
+            if (ReadFile(m_handle, (void *)data, (DWORD)size, &numBytes, NULL))
+            {
+            }
+            else
+            {
+                m_lastError = itas109::/*SerialPortError::*/ ReadError;
+                numBytes = (DWORD)-1;
+            }
+        }
+    }
+    else
+    {
+        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        numBytes = (DWORD)-1;
+    }
+
+    return numBytes;
+}
+
 int CSerialPortWinBase::readAllData(char *data)
 {
     int maxSize = 0;
 
     if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
     {
-        DWORD dwError = 0;
-        COMSTAT comstat;
-        ClearCommError(m_handle, &dwError, &comstat);
-        maxSize = comstat.cbInQue;
+        maxSize = p_buffer->getUsedLen();
     }
     else
     {

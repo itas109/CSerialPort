@@ -14,6 +14,7 @@
 #define __CSERIALPORTWINBASE_H__
 
 #include "SerialPortBase.h"
+#include "ibuffer.hpp"
 
 // windows need
 #include <process.h> //_beginthreadex
@@ -326,6 +327,17 @@ private:
      */
     bool stopThreadMonitor();
 
+    /**
+     * @brief read specified length data 读取指定长度数据
+     *
+     * @param data [out] read data result 读取结果
+     * @param size [in] read length 读取长度
+     * @return return number Of bytes read 返回读取字节数
+     * @retval -1 read error 读取错误
+     * @retval [other] return number Of bytes read 返回读取字节数
+     */
+    virtual int readDataWin(char *data, int size);
+
 public:
     sigslot::signal0<> readReady; ///< sigslot for read 读数据信号
 
@@ -353,5 +365,7 @@ private:
     CRITICAL_SECTION m_communicationMutex; ///< mutex
 
     bool m_isThreadRunning;
+
+    itas109::RingBuffer<char> *p_buffer; ///< receive buffer
 };
 #endif //__CSERIALPORTWINBASE_H__

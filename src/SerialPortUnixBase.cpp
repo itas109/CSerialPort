@@ -43,6 +43,7 @@ CSerialPortUnixBase::CSerialPortUnixBase()
     , m_flowControl(itas109::FlowNone)
     , m_readBufferSize(512)
     , m_isThreadRunning(false)
+    , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
 }
 
@@ -56,10 +57,23 @@ CSerialPortUnixBase::CSerialPortUnixBase(const std::string &portName)
     , m_flowControl(itas109::FlowNone)
     , m_readBufferSize(512)
     , m_isThreadRunning(false)
+    , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
 }
 
-CSerialPortUnixBase::~CSerialPortUnixBase() {}
+CSerialPortUnixBase::~CSerialPortUnixBase()
+{
+    if (isOpened())
+    {
+        closePort();
+    }
+
+    if (p_buffer)
+    {
+        delete p_buffer;
+        p_buffer = NULL;
+    }
+}
 
 void CSerialPortUnixBase::init(std::string portName,
                                int baudRate /*= itas109::BaudRate::BaudRate9600*/,
@@ -274,9 +288,20 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
 
             // read前获取可读的字节数,不区分阻塞和非阻塞
             ioctl(p_base->fd, FIONREAD, &readbytes);
-            if (readbytes >= p_base->getMinByteReadNotify()) //设定字符数，默认为2
+            if (readbytes >= p_base->getMinByteReadNotify()) //设定字符数，默认为1
             {
-                p_base->readReady._emit();
+                char *data = NULL;
+                data = new char[readbytes];
+                if (data && p_base->p_buffer)
+                {
+                    int len = p_base->readDataUnix(data, readbytes);
+                    p_base->p_buffer->write(data, len);
+
+                    p_base->readReady._emit();
+
+                    delete[] data;
+                    data = NULL;
+                }
             }
             else
             {
@@ -393,7 +418,7 @@ bool CSerialPortUnixBase::isOpened()
     return fd != -1;
 }
 
-int CSerialPortUnixBase::readData(char *data, int size)
+int CSerialPortUnixBase::readDataUnix(char *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
 
@@ -412,12 +437,45 @@ int CSerialPortUnixBase::readData(char *data, int size)
     return iRet;
 }
 
+int CSerialPortUnixBase::readData(char *data, int size)
+{
+    itas109::IAutoLock lock(p_mutex);
+
+    int iRet = -1;
+
+    if (isOpened())
+    {
+        if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
+        {
+            iRet = p_buffer->read(data, size);
+        }
+        else
+        {
+            iRet = read(fd, data, size);
+        }
+    }
+    else
+    {
+        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        iRet = -1;
+    }
+
+    return iRet;
+}
+
 int CSerialPortUnixBase::readAllData(char *data)
 {
     int maxSize = 0;
 
-    // read前获取可读的字节数,不区分阻塞和非阻塞
-    ioctl(fd, FIONREAD, &maxSize);
+    if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
+    {
+        maxSize = p_buffer->getUsedLen();
+    }
+    else
+    {
+        // read前获取可读的字节数,不区分阻塞和非阻塞
+        ioctl(fd, FIONREAD, &maxSize);
+    }
 
     return readData(data, maxSize);
 }
