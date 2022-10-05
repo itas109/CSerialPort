@@ -101,10 +101,10 @@ public:
      *
      * @param maxBuffSize [in] buffer size 缓冲区大小
      */
-    RingBuffer(unsigned int maxBuffSize)
+    RingBuffer(unsigned int maxBufferSize)
         : m_head(0)
         , m_tail(0)
-        , m_maxBufferSize((!maxBuffSize & (maxBuffSize & (maxBuffSize - 1))) ? maxBuffSize : 512) ///< must power of two
+        , m_maxBufferSize((maxBufferSize && (0 == (maxBufferSize & (maxBufferSize - 1)))) ? maxBufferSize : 512) ///< must power of two
         , m_maxMirrorBufferIndex(2 * m_maxBufferSize - 1)
         , m_buffer(new T[m_maxBufferSize])
     {
