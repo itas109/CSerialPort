@@ -3,6 +3,22 @@
 
 ---
 
+## v4.2.0 (2022-10-01)
+
+Fixed:
+* #60 application compiled with source code under windows still has export information 在windows下以源码方式编译仍然带有导出信息
+
+Feature:
+* modify examples 优化示例程序
+* add cross compile toochain.cmake for arm aarch64 mips64el riscv 增加arm aarch64 mips64el riscv的交叉编译cmake 文件
+* improve windows receive performance 优化windows接收性能
+* add custom baud rate for linux 新增linux下设置自定义波特率
+* add cross-platform thread library 新增跨平台线程库
+* add cross-platform ringbuffer library 新增跨平台环形缓冲区库
+* add cross-platform timer based condition variable 新增基于条件变量的跨平台定时器库
+* add ringbuffer for receive data(asynchronous mode) 新增环形缓冲区接收数据(异步模式)
+* add read interval timeout setting(default 50ms, asynchronous mode) 新增读取超时设置(默认20ms, 异步模式)
+
 ## v4.1.1 (2021-09-03)
 
 Fixed:
