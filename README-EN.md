@@ -57,13 +57,13 @@ CSerialPort has been tested to the following platforms:
 - [x] 1.cross-platform OS identify class
 - [x] 2.cross-platform Thread class
 - [x] 3.cross-platform Lock class
-- [ ] 4.cross-platform higher efficiency Timer class
+- [x] 4.cross-platform higher efficiency Timer class
 - [ ] 5.Performance test report(Throughput && delay && packet dropout rates)
 
 # Last Modify
 
-## Version: 4.1.1.210903
-by itas109 on 2021-09-03
+## Version: 4.2.0.221001
+by itas109 on 2022-10-01
 
 # Quick Start
 
