@@ -1,6 +1,8 @@
 ﻿#include "CSerialPort/SerialPort.h"
 #include "CSerialPort/SerialPort_version.h"
 
+#include "CSerialPort/itimer.hpp"
+
 #ifdef I_OS_WIN
 #include "CSerialPort/SerialPortWinBase.h"
 #define CSERIALPORTBASE CSerialPortWinBase
@@ -18,9 +20,13 @@ using namespace itas109;
 
 CSerialPort::CSerialPort()
     : p_serialPortBase(NULL)
+    , p_timer(NULL)
 {
     p_serialPortBase = new CSERIALPORTBASE();
 
+    p_timer = new ITimer<sigslot::signal0<>>();
+
+    p_serialPortBase->setReadIntervalTimeout(50);
     p_serialPortBase->setMinByteReadNotify(1);
 
     ((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
@@ -28,9 +34,13 @@ CSerialPort::CSerialPort()
 
 itas109::CSerialPort::CSerialPort(const std::string &portName)
     : p_serialPortBase(NULL)
+    , p_timer(NULL)
 {
     p_serialPortBase = new CSERIALPORTBASE(portName);
 
+    p_timer = new ITimer<sigslot::signal0<>>();
+
+    p_serialPortBase->setReadIntervalTimeout(50);
     p_serialPortBase->setMinByteReadNotify(1);
 
     ((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
@@ -44,6 +54,12 @@ CSerialPort::~CSerialPort()
     {
         delete p_serialPortBase;
         p_serialPortBase = NULL;
+    }
+
+    if (p_timer)
+    {
+        delete p_timer;
+        p_timer = NULL;
     }
 }
 
@@ -157,11 +173,23 @@ void itas109::CSerialPort::setDebugModel(bool isDebug)
     }
 }
 
-void itas109::CSerialPort::setReadTimeInterval(int msecs)
+void itas109::CSerialPort::setReadIntervalTimeout(unsigned int msecs)
 {
     if (p_serialPortBase)
     {
-        p_serialPortBase->setReadTimeInterval(msecs);
+        p_serialPortBase->setReadIntervalTimeout(msecs);
+    }
+}
+
+unsigned int itas109::CSerialPort::getReadIntervalTimeout()
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->getReadIntervalTimeout();
+    }
+    else
+    {
+        return 0;
     }
 }
 
@@ -361,5 +389,21 @@ std::string itas109::CSerialPort::getVersion()
 
 void itas109::CSerialPort::onReadReady()
 {
-    readReady._emit();
+    if (p_serialPortBase)
+    {
+        unsigned int readIntervalTimeoutMS = getReadIntervalTimeout();
+        if (readIntervalTimeoutMS > 0)
+        {
+            if (p_timer && p_timer->isRunning())
+            {
+                p_timer->stop();
+            }
+
+            p_timer->startOnce(readIntervalTimeoutMS, &readReady, &sigslot::signal0<>::_emit);
+        }
+        else
+        {
+            readReady._emit();
+        }
+    }
 }

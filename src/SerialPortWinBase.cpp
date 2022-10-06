@@ -543,9 +543,9 @@ void CSerialPortWinBase::setDebugModel(bool isDebug)
     //@todo
 }
 
-void CSerialPortWinBase::setReadTimeInterval(int msecs)
+void CSerialPortWinBase::setReadIntervalTimeout(unsigned int msecs)
 {
-    //@todo
+    m_readIntervalTimeoutMS = msecs;
 }
 
 void CSerialPortWinBase::setMinByteReadNotify(unsigned int minByteReadNotify)

@@ -142,12 +142,19 @@ public:
     virtual void setDebugModel(bool isDebug) = 0;
 
     /**
-     * @brief Set the Read Time Interval object
+     * @brief Set Read Interval Timeout millisecond
      * @details use timer import effectiveness 使用定时器提高效率
      *
-     * @param msecs read time micro second 读取间隔时间，单位：毫秒
+     * @param msecs read time timeout millisecond 读取间隔时间，单位：毫秒
      */
-    virtual void setReadTimeInterval(int msecs) = 0;
+    virtual void setReadIntervalTimeout(unsigned int msecs) = 0;
+
+    /**
+     * @brief Get Read Interval Timeout millisecond
+     *
+     * @return read time timeout millisecond 读取间隔时间，单位：毫秒
+     */
+    virtual unsigned int getReadIntervalTimeout();
 
     /**
      * @brief setMinByteReadNotify set minimum byte of read notify 设置读取通知触发最小字节数
@@ -278,10 +285,11 @@ public:
     virtual void setRts(bool set = true) = 0;
 
 protected:
-    int m_lastError;                    ///< last error code 最后的错误代码
-    itas109::OperateMode m_operateMode; ///< operate mode 串口操作类型
-    unsigned int m_minByteReadNotify;   ///< minimum byte of read notify 读取通知触发最小字节数
-    itas109::IMutex *p_mutex;           ///< mutex 互斥锁
+    int m_lastError;                      ///< last error code 最后的错误代码
+    itas109::OperateMode m_operateMode;   ///< operate mode 串口操作类型
+    unsigned int m_readIntervalTimeoutMS; ///< read time timeout millisecond 读取间隔时间，单位：毫秒
+    unsigned int m_minByteReadNotify;     ///< minimum byte of read notify 读取通知触发最小字节数
+    itas109::IMutex *p_mutex;             ///< mutex 互斥锁
 private:
 };
 #endif //__CSERIALPORTBASE_H__

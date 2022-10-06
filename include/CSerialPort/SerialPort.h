@@ -20,6 +20,11 @@
 #include "sigslot.h"
 using namespace sigslot;
 
+namespace itas109
+{
+template <class T> class ITimer;
+};
+
 class CSerialPortBase;
 
 namespace itas109
@@ -146,13 +151,19 @@ public:
     void setDebugModel(bool isDebug);
 
     /**
-     * @brief Set the Read Time Interval object
+     * @brief Set Read Interval Timeout millisecond
      * @details use timer import effectiveness 使用定时器提高效率
-     * @todo  Not implemented 未实现
      *
-     * @param msecs read time micro second 读取间隔时间，单位：毫秒
+     * @param msecs read time timeout millisecond 读取间隔时间，单位：毫秒
      */
-    void setReadTimeInterval(int msecs);
+    void setReadIntervalTimeout(unsigned int msecs);
+
+    /**
+     * @brief Get Read Interval Timeout millisecond
+     *
+     * @return read time timeout millisecond 读取间隔时间，单位：毫秒
+     */
+    unsigned int getReadIntervalTimeout();
 
     /**
      * @brief setMinByteReadNotify set minimum byte of read notify 设置读取通知触发最小字节数
@@ -292,6 +303,7 @@ public:
 
 private:
     CSerialPortBase *p_serialPortBase;
+    itas109::ITimer<sigslot::signal0<>> *p_timer;
 };
 } // namespace itas109
 #endif //__CSERIALPORT_H__

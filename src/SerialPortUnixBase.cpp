@@ -530,9 +530,9 @@ void CSerialPortUnixBase::setDebugModel(bool isDebug)
     //@todo
 }
 
-void CSerialPortUnixBase::setReadTimeInterval(int msecs)
+void CSerialPortUnixBase::setReadIntervalTimeout(unsigned int msecs)
 {
-    //@todo
+    m_readIntervalTimeoutMS = msecs;
 }
 
 void CSerialPortUnixBase::setMinByteReadNotify(unsigned int minByteReadNotify)

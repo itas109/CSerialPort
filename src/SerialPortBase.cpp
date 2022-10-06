@@ -4,6 +4,7 @@
 CSerialPortBase::CSerialPortBase()
     : p_mutex(NULL)
     , m_lastError(0)
+    , m_readIntervalTimeoutMS(50)
     , m_minByteReadNotify(1)
     , m_operateMode(itas109::AsynchronousOperate)
 {
@@ -13,6 +14,7 @@ CSerialPortBase::CSerialPortBase()
 CSerialPortBase::CSerialPortBase(const std::string &portName)
     : p_mutex(NULL)
     , m_lastError(0)
+    , m_readIntervalTimeoutMS(50)
     , m_minByteReadNotify(1)
     , m_operateMode(itas109::AsynchronousOperate)
 {
@@ -31,6 +33,11 @@ CSerialPortBase::~CSerialPortBase()
 void CSerialPortBase::setOperateMode(itas109::OperateMode operateMode)
 {
     m_operateMode = operateMode;
+}
+
+unsigned int CSerialPortBase::getReadIntervalTimeout()
+{
+    return m_readIntervalTimeoutMS;
 }
 
 unsigned int CSerialPortBase::getMinByteReadNotify()

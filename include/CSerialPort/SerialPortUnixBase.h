@@ -148,13 +148,12 @@ public:
     virtual void setDebugModel(bool isDebug);
 
     /**
-     * @brief Set the Read Time Interval object
+     * @brief Set Read Interval Timeout millisecond
      * @details use timer import effectiveness 使用定时器提高效率
-     * @todo  Not implemented 未实现
      *
-     * @param msecs read time micro second 读取间隔时间，单位：毫秒
+     * @param msecs read time timeout millisecond 读取间隔时间，单位：毫秒
      */
-    virtual void setReadTimeInterval(int msecs);
+    virtual void setReadIntervalTimeout(unsigned int msecs);
 
     /**
      * @brief setMinByteReadNotify set minimum byte of read notify 设置读取通知触发最小字节数
