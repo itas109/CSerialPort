@@ -14,9 +14,9 @@
 #include <process.h>
 #include <windows.h>
 #else
+#include <errno.h> // ETIMEDOUT
 #include <pthread.h>
 #include <time.h> // clock_gettime
-#include <errno.h> // ETIMEDOUT
 #endif
 
 namespace itas109
@@ -110,6 +110,7 @@ private:
 };
 
 #if defined(_WIN32)
+#define I_THREAD_INITIALIZER INVALID_HANDLE_VALUE
 typedef HANDLE i_thread_t;
 
 inline int i_thread_create(i_thread_t *thread, void const *, unsigned(__stdcall *thread_function)(void *), void *args)
@@ -136,6 +137,7 @@ inline void i_thread_join(i_thread_t thread)
     ::CloseHandle(thread);
 }
 #else
+#define I_THREAD_INITIALIZER 0
 typedef ::pthread_t i_thread_t;
 
 inline int i_thread_create(i_thread_t *thread, const pthread_attr_t *attr, void *(*thread_function)(void *), void *args)
@@ -146,92 +148,124 @@ inline int i_thread_create(i_thread_t *thread, const pthread_attr_t *attr, void 
 inline void i_thread_join(i_thread_t thread)
 {
     ::pthread_join(thread, 0);
+	thread = I_THREAD_INITIALIZER;
 }
 #endif
 
 #if defined(_WIN32)
+#define I_COND_INITIALIZER INVALID_HANDLE_VALUE
 typedef HANDLE i_condition_variable_t;
 
 class IConditionVariable
 {
 public:
     IConditionVariable()
-        : cond(INVALID_HANDLE_VALUE)
+        : cond(I_COND_INITIALIZER)
     {
-        cond = CreateEvent(NULL,  // default security attributes
-                           FALSE, // auto-reset event
-                           FALSE, // initial state is nonsignaled
-                           NULL   // object name
+        cond = ::CreateEvent(NULL,  // default security attributes
+                             FALSE, // auto-reset event
+                             FALSE, // initial state is nonsignaled
+                             NULL   // object name
         );
     }
 
     ~IConditionVariable()
     {
-        CloseHandle(cond);
+        ::CloseHandle(cond);
     }
 
     virtual void wait(IMutex &mutex)
     {
-        IAutoLock lock(&mutex);
+        mutex.unlock();
         WaitForSingleObject(cond, INFINITE);
-    };
+        mutex.lock();
+    }
 
-    virtual int timeWait(IMutex &mutex, unsigned int timeoutMS)
+    virtual bool timeWait(IMutex &mutex, unsigned int timeoutMS)
     {
-        IAutoLock lock(&mutex);
+        mutex.unlock();
         DWORD ret = WaitForSingleObject(cond, timeoutMS);
+        mutex.lock();
         if (WAIT_TIMEOUT == ret)
         {
-            return 1;
+            return true;
         }
         else
         {
             ResetEvent(cond);
-            return 0;
+            return false;
         }
-    };
+    }
+
+    virtual void wait(IMutex &mutex, volatile bool predicate)
+    {
+        while (!predicate)
+        {
+            wait(mutex);
+        }
+    }
+
+    virtual bool timeWait(IMutex &mutex, unsigned int timeoutMS, volatile bool predicate)
+    {
+        while (!predicate)
+        {
+            if (timeWait(mutex, timeoutMS))
+            {
+                break;
+            }
+        }
+
+        return !predicate;
+    }
 
     virtual void notifyOne()
     {
-        SetEvent(cond);
-    };
+        ::SetEvent(cond);
+    }
 
     virtual void notifyAll()
     {
-        SetEvent(cond);
-    };
+        ::SetEvent(cond);
+    }
 
 private:
     i_condition_variable_t cond;
 };
 #else
+#define I_COND_INITIALIZER PTHREAD_COND_INITIALIZER
 typedef pthread_cond_t i_condition_variable_t;
 
 class IConditionVariable
 {
 public:
     IConditionVariable()
+        : cond(I_COND_INITIALIZER)
     {
-        pthread_cond_init(&cond, NULL);
+        pthread_condattr_t attr;
+        ::pthread_condattr_init(&attr);
+        ::pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
+        ::pthread_cond_init(&cond, &attr);
+        ::pthread_condattr_destroy(&attr);
     }
 
     ~IConditionVariable()
     {
-        pthread_cond_destroy(&cond);
+        ::pthread_cond_destroy(&cond);
     }
 
     virtual void wait(IMutex &mutex)
     {
-        IAutoLock lock(&mutex);
-        i_mutex_t imutex = mutex.getLock();
-        pthread_cond_wait(&cond, &imutex);
-    };
+        i_mutex_t imutex = internal_mutex.getLock();
+        mutex.unlock();
+        ::pthread_cond_wait(&cond, &imutex);
+        mutex.lock();
+    }
 
-    virtual int timeWait(IMutex &mutex, unsigned int timeoutMS)
+    virtual bool timeWait(IMutex &mutex, unsigned int timeoutMS)
     {
-        IAutoLock lock(&mutex);
         timespec abstime;
-        clock_gettime(CLOCK_REALTIME, &abstime);
+		// monotonic time is better
+        clock_gettime(CLOCK_MONOTONIC, &abstime);
         abstime.tv_sec += (time_t)(timeoutMS / 1000);
         abstime.tv_nsec += (timeoutMS % 1000) * 1000000;
         if (abstime.tv_nsec > 1000000000) // 1ms = 1000000ns
@@ -239,30 +273,56 @@ public:
             abstime.tv_sec += 1;
             abstime.tv_nsec -= 1000000000;
         }
-        i_mutex_t imutex = mutex.getLock();
-        int ret = pthread_cond_timedwait(&cond, &imutex, &abstime);
+        i_mutex_t imutex = internal_mutex.getLock();
+        mutex.unlock();
+        int ret = ::pthread_cond_timedwait(&cond, &imutex, &abstime);
+        mutex.lock();
         if (ETIMEDOUT == ret)
         {
-            return 1;
+            return true;
         }
         else
         {
-            return 0;
+            return false;
         }
-    };
+    }
+
+    virtual void wait(IMutex &mutex, volatile bool predicate)
+    {
+        while (!predicate)
+        {
+            wait(mutex);
+        }
+    }
+
+    virtual bool timeWait(IMutex &mutex, unsigned int timeoutMS, volatile bool predicate)
+    {
+        while (!predicate)
+        {
+            if (timeWait(mutex, timeoutMS))
+            {
+                break;
+            }
+        }
+
+        return !predicate;
+    }
 
     virtual void notifyOne()
     {
-        pthread_cond_signal(&cond);
-    };
+        IAutoLock lock(&internal_mutex);
+        ::pthread_cond_signal(&cond);
+    }
 
     virtual void notifyAll()
     {
-        pthread_cond_broadcast(&cond);
-    };
+        IAutoLock lock(&internal_mutex);
+        ::pthread_cond_broadcast(&cond);
+    }
 
 private:
     i_condition_variable_t cond;
+    IMutex internal_mutex;
 };
 #endif
 } // namespace itas109
