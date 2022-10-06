@@ -1,7 +1,5 @@
 #include <iostream>
 
-#include "itimer.hpp"
-
 #include "CSerialPort/SerialPort.h"
 #include "CSerialPort/SerialPortInfo.h"
 
@@ -30,25 +28,16 @@ public:
 
     void OnSendMessage()
     {
-        if (timer.isRunning())
+        // read
+        recLen = p_sp->readAllData(str);
+
+        if (recLen > 0)
         {
-            timer.stop();
+            countRead++;
+
+            str[recLen] = '\0';
+            std::cout << "receive data : " << str << ", receive size : " << recLen << ", receive count : " << countRead << std::endl;
         }
-
-        timer.startOnce(50,
-                        [this]
-                        {
-                            // read
-                            recLen = p_sp->readAllData(str);
-
-                            if (recLen > 0)
-                            {
-                                countRead++;
-
-                                str[recLen] = '\0';
-                                std::cout << "receive data : " << str << ", receive size : " << recLen << ", receive count : " << countRead << std::endl;
-                            }
-                        });
     };
 
 private:
@@ -59,8 +48,6 @@ private:
 
     char str[1024];
     int recLen;
-
-    ITimer timer;
 };
 
 int main()
@@ -106,8 +93,16 @@ int main()
         portName = m_availablePortsList[index].portName;
         std::cout << "select port name : " << portName << std::endl;
 
-        sp.init(portName, // windows:COM1 Linux:/dev/ttyS0
-                itas109::BaudRate9600, itas109::ParityNone, itas109::DataBits8, itas109::StopOne);
+        sp.init(portName,              // windows:COM1 Linux:/dev/ttyS0
+                itas109::BaudRate9600, // baudrate
+                itas109::ParityNone,   // parity
+                itas109::DataBits8,    // data bit
+                itas109::StopOne,      // stop bit
+                itas109::FlowNone,     // flow
+                1024                   // read buffer size
+        );
+
+        sp.setReadIntervalTimeout(2000); // 2s read interval timeout
 
         sp.open();
 
