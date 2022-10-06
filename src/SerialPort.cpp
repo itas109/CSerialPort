@@ -24,7 +24,7 @@ CSerialPort::CSerialPort()
 {
     p_serialPortBase = new CSERIALPORTBASE();
 
-    p_timer = new ITimer<sigslot::signal0<>>();
+    p_timer = new ITimer< sigslot::signal0<> >(); // add a space between consecutive right angle brackets
 
     p_serialPortBase->setReadIntervalTimeout(50);
     p_serialPortBase->setMinByteReadNotify(1);
@@ -38,7 +38,7 @@ itas109::CSerialPort::CSerialPort(const std::string &portName)
 {
     p_serialPortBase = new CSERIALPORTBASE(portName);
 
-    p_timer = new ITimer<sigslot::signal0<>>();
+    p_timer = new ITimer< sigslot::signal0<> >();  // add a space between consecutive right angle brackets
 
     p_serialPortBase->setReadIntervalTimeout(50);
     p_serialPortBase->setMinByteReadNotify(1);

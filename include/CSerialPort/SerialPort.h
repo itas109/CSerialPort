@@ -303,7 +303,7 @@ public:
 
 private:
     CSerialPortBase *p_serialPortBase;
-    itas109::ITimer<sigslot::signal0<>> *p_timer;
+    itas109::ITimer< sigslot::signal0<> > *p_timer;
 };
 } // namespace itas109
 #endif //__CSERIALPORT_H__
