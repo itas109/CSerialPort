@@ -90,6 +90,13 @@ void CSerialPortUnixBase::init(std::string portName,
     m_stopbits = stopbits;
     m_flowControl = flowControl;
     m_readBufferSize = readBufferSize;
+
+    if (p_buffer)
+    {
+        delete p_buffer;
+        p_buffer = NULL;
+    }
+    p_buffer = new itas109::RingBuffer<char>(m_readBufferSize);
 }
 
 int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl)
