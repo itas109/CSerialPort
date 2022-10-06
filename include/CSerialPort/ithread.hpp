@@ -251,7 +251,7 @@ public:
         ::pthread_cond_init(&cond, &attr);
         ::pthread_condattr_destroy(&attr);
 #else
-        return ::pthread_cond_init(&cond, NULL);
+        ::pthread_cond_init(&cond, NULL);
 #endif
     }
 
