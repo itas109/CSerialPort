@@ -148,7 +148,7 @@ inline int i_thread_create(i_thread_t *thread, const pthread_attr_t *attr, void 
 inline void i_thread_join(i_thread_t thread)
 {
     ::pthread_join(thread, 0);
-	thread = I_THREAD_INITIALIZER;
+    thread = I_THREAD_INITIALIZER;
 }
 #endif
 
@@ -235,17 +235,24 @@ private:
 #define I_COND_INITIALIZER PTHREAD_COND_INITIALIZER
 typedef pthread_cond_t i_condition_variable_t;
 
+#ifndef __APPLE__
+#define USE_MONOTONIC_CLOCK
+#endif
+
 class IConditionVariable
 {
 public:
     IConditionVariable()
-        : cond(I_COND_INITIALIZER)
     {
+#ifdef USE_MONOTONIC_CLOCK
         pthread_condattr_t attr;
         ::pthread_condattr_init(&attr);
         ::pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
         ::pthread_cond_init(&cond, &attr);
         ::pthread_condattr_destroy(&attr);
+#else
+        return ::pthread_cond_init(&cond, NULL);
+#endif
     }
 
     ~IConditionVariable()
@@ -264,8 +271,12 @@ public:
     virtual bool timeWait(IMutex &mutex, unsigned int timeoutMS)
     {
         timespec abstime;
-		// monotonic time is better
+#ifdef USE_MONOTONIC_CLOCK
+        // monotonic time is better
         clock_gettime(CLOCK_MONOTONIC, &abstime);
+#else
+        clock_gettime(CLOCK_REALTIME, &abstime);
+#endif
         abstime.tv_sec += (time_t)(timeoutMS / 1000);
         abstime.tv_nsec += (timeoutMS % 1000) * 1000000;
         if (abstime.tv_nsec > 1000000000) // 1ms = 1000000ns
