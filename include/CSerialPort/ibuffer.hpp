@@ -99,7 +99,7 @@ public:
     /**
      * @brief Construct a new Ring Buffer object 通过缓冲区大小构造
      *
-     * @param maxBuffSize [in] buffer size 缓冲区大小
+     * @param maxBufferSize [in] buffer size 缓冲区大小
      */
     RingBuffer(unsigned int maxBufferSize)
         : m_head(0)

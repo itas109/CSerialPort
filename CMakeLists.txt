@@ -4,7 +4,7 @@
 # Blog : https://blog.csdn.net/itas109 \n
 # Github : https://github.com/itas109 \n
 # Gitee : https://gitee.com/itas109 \n
-# QQ Group : 12951803
+# QQ Group : 129518033
 # @brief Lightweight cross-platform serial port library based on C++
 # @copyright The CSerialPort is Copyright (C) 2014 itas109 <itas109@qq.com>.
 # You may use, copy, modify, and distribute the CSerialPort, under the terms
@@ -28,6 +28,7 @@ endif()
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(CSERIALPORT_BUILD_EXAMPLES "Build CSerialPort examples" ON)
+option(CSERIALPORT_BUILD_DOC "Build CSerialPort Doc" OFF)
 option(CSERIALPORT_BUILD_TEST "Build CSerialPort Test" OFF)
 
 message(STATUS "CSerialPort CMake Info")
@@ -37,6 +38,7 @@ message(STATUS "    CPU Architecture : ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "    Build Type : ${CMAKE_BUILD_TYPE}")
 message(STATUS "    Shared Library  : ${BUILD_SHARED_LIBS}")
 message(STATUS "    Build Examples  : ${CSERIALPORT_BUILD_EXAMPLES}")
+message(STATUS "    Build Doc  : ${CSERIALPORT_BUILD_DOC}")
 message(STATUS "    Build Test  : ${CSERIALPORT_BUILD_TEST}")
 message(STATUS "=======================================================")
 
@@ -51,4 +53,9 @@ endif ()
 # test
 if (CSERIALPORT_BUILD_TEST)
 	add_subdirectory(test)
+endif ()
+
+# doc
+if (CSERIALPORT_BUILD_DOC)
+	add_subdirectory(doc)
 endif ()
