@@ -2,21 +2,22 @@
 #include "CSerialPort/ithread.hpp"
 
 CSerialPortBase::CSerialPortBase()
-    : p_mutex(NULL)
-    , m_lastError(0)
+    : m_lastError(0)
+    , m_operateMode(itas109::AsynchronousOperate)
     , m_readIntervalTimeoutMS(50)
     , m_minByteReadNotify(1)
-    , m_operateMode(itas109::AsynchronousOperate)
+    , p_mutex(NULL)
 {
     p_mutex = new itas109::IMutex();
 }
 
 CSerialPortBase::CSerialPortBase(const std::string &portName)
-    : p_mutex(NULL)
-    , m_lastError(0)
-    , m_readIntervalTimeoutMS(50)
-    , m_minByteReadNotify(1)
+    : m_lastError(0)
     , m_operateMode(itas109::AsynchronousOperate)
+    , m_readIntervalTimeoutMS(50)
+    , m_minByteReadNotify(1),
+    p_mutex(NULL)
+    
 {
     p_mutex = new itas109::IMutex();
 }

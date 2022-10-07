@@ -63,11 +63,6 @@ CSerialPortUnixBase::CSerialPortUnixBase(const std::string &portName)
 
 CSerialPortUnixBase::~CSerialPortUnixBase()
 {
-    if (isOpened())
-    {
-        closePort();
-    }
-
     if (p_buffer)
     {
         delete p_buffer;
@@ -299,12 +294,15 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
             {
                 char *data = NULL;
                 data = new char[readbytes];
-                if (data && p_base->p_buffer)
+                if (data)
                 {
-                    int len = p_base->readDataUnix(data, readbytes);
-                    p_base->p_buffer->write(data, len);
+                    if (p_base->p_buffer)
+                    {
+                        int len = p_base->readDataUnix(data, readbytes);
+                        p_base->p_buffer->write(data, len);
 
-                    p_base->readReady._emit();
+                        p_base->readReady._emit();
+                    }
 
                     delete[] data;
                     data = NULL;

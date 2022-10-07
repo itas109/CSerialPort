@@ -17,22 +17,22 @@ std::wstring stringToWString(const std::string &str)
 }
 
 CSerialPortWinBase::CSerialPortWinBase()
-    : m_handle(INVALID_HANDLE_VALUE)
-    , m_monitorThread(INVALID_HANDLE_VALUE)
-    , m_portName()
+    : m_portName()
     , m_baudRate(itas109::BaudRate9600)
     , m_parity(itas109::ParityNone)
     , m_dataBits(itas109::DataBits8)
     , m_stopbits(itas109::StopOne)
     , m_flowControl(itas109::FlowNone)
     , m_readBufferSize(512)
-    , m_isThreadRunning(false)
+    , m_handle(INVALID_HANDLE_VALUE)
+    , m_monitorThread(INVALID_HANDLE_VALUE)
     , overlapMonitor()
     , m_overlapRead()
     , m_overlapWrite()
     , m_comConfigure()
     , m_comTimeout()
     , m_communicationMutex()
+    , m_isThreadRunning(false)
     , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
     overlapMonitor.Internal = 0;
@@ -43,22 +43,22 @@ CSerialPortWinBase::CSerialPortWinBase()
 }
 
 CSerialPortWinBase::CSerialPortWinBase(const std::string &portName)
-    : m_handle(INVALID_HANDLE_VALUE)
-    , m_monitorThread(INVALID_HANDLE_VALUE)
-    , m_portName(portName)
+    : m_portName()
     , m_baudRate(itas109::BaudRate9600)
     , m_parity(itas109::ParityNone)
     , m_dataBits(itas109::DataBits8)
     , m_stopbits(itas109::StopOne)
     , m_flowControl(itas109::FlowNone)
     , m_readBufferSize(512)
-    , m_isThreadRunning(false)
+    , m_handle(INVALID_HANDLE_VALUE)
+    , m_monitorThread(INVALID_HANDLE_VALUE)
     , overlapMonitor()
     , m_overlapRead()
     , m_overlapWrite()
     , m_comConfigure()
     , m_comTimeout()
     , m_communicationMutex()
+    , m_isThreadRunning(false)
     , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
     overlapMonitor.Internal = 0;
@@ -70,11 +70,6 @@ CSerialPortWinBase::CSerialPortWinBase(const std::string &portName)
 
 CSerialPortWinBase::~CSerialPortWinBase()
 {
-    if (isOpened())
-    {
-        closePort();
-    }
-
     CloseHandle(overlapMonitor.hEvent);
 
     if (p_buffer)
@@ -333,12 +328,15 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
                 {
                     char *data = NULL;
                     data = new char[comstat.cbInQue];
-                    if (data && p_base->p_buffer)
+                    if (data)
                     {
-                        int len = p_base->readDataWin(data, comstat.cbInQue);
-                        p_base->p_buffer->write(data, len);
+                        if (p_base->p_buffer)
+                        {
+                            int len = p_base->readDataWin(data, comstat.cbInQue);
+                            p_base->p_buffer->write(data, len);
 
-                        p_base->readReady._emit();
+                            p_base->readReady._emit();
+                        }
 
                         delete[] data;
                         data = NULL;

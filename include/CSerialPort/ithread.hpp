@@ -32,7 +32,7 @@ public:
         InitializeCriticalSection(&m_mutex);
     }
 
-    ~IMutex()
+    virtual ~IMutex()
     {
         DeleteCriticalSection(&m_mutex);
     }
@@ -66,7 +66,7 @@ public:
         pthread_mutex_init(&m_mutex, NULL);
     }
 
-    ~IMutex()
+    virtual ~IMutex()
     {
         pthread_mutex_destroy(&m_mutex);
     }

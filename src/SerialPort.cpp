@@ -394,12 +394,15 @@ void itas109::CSerialPort::onReadReady()
         unsigned int readIntervalTimeoutMS = getReadIntervalTimeout();
         if (readIntervalTimeoutMS > 0)
         {
-            if (p_timer && p_timer->isRunning())
+            if (p_timer)
             {
-                p_timer->stop();
-            }
+                if (p_timer->isRunning())
+                {
+                    p_timer->stop();
+                }
 
-            p_timer->startOnce(readIntervalTimeoutMS, &readReady, &sigslot::signal0<>::_emit);
+                p_timer->startOnce(readIntervalTimeoutMS, &readReady, &sigslot::signal0<>::_emit);
+            }
         }
         else
         {
