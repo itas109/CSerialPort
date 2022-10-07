@@ -34,7 +34,23 @@ elseif (UNIX)
     list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortInfoUnixBase.cpp ${CSerialPortRootPath}/src/SerialPortUnixBase.cpp)
 endif ()
 
+if (NOT MSVC)
+# unix clang-tidy
+# $ run-clang-tidy
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+endif()
+
 add_library( ${PROJECT_NAME} ${CSerialPortSourceFiles})
+
+if(MSVC)
+# msvc clang-tidy
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    VS_GLOBAL_RunCodeAnalysis true
+    VS_GLOBAL_EnableMicrosoftCodeAnalysis false
+    VS_GLOBAL_CodeAnalysisRuleSet NativeRecommendedRules.ruleset
+    VS_GLOBAL_EnableClangTidyCodeAnalysis true
+)
+endif()
 
 # remove prefix
 set_target_properties( ${PROJECT_NAME} PROPERTIES PREFIX "")
