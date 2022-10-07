@@ -47,7 +47,7 @@ CSerialPort已经在以下平台做过测试:
 - [ ] 4.更高效的通知模块
 - [ ] 5.支持其他语言，如C, C#, Python, Java, Golang等
 - [x] 6.同步串口通信
-- [X] 7.全新的跨平台串口调试助手
+- [x] 7.全新的跨平台串口调试助手
 - [ ] 8.增加一个类库的介绍和使用视频
 - [ ] 9.串口侦听hook
 
@@ -79,7 +79,7 @@ $ cmake --build .
 
 ```
 CSerialPort/bin $ ./bin/CSerialPortDemoNoGui
-Version : https://github.com/itas109/CSerialPort - V4.1.1.210903
+Version : https://github.com/itas109/CSerialPort - V4.2.0.221001
 
 availableFriendlyPorts :
 0 - /dev/ttyS0
@@ -148,31 +148,31 @@ $ cmake --build .
 
 示例路径: CSerialPort/examples/CommQT
 
-![image](./pic/linux.jpg)
+![image](pic/linux.jpg)
 
 ## Tui 终端用户界面 
 
 示例路径: CSerialPort/examples/CommTui
 
-![image](./pic/linux_tui.jpg)
+![image](pic/linux_tui.jpg)
 
 ## No Gui 无界面
 
 示例路径: CSerialPort/examples/CommNoGui
 
-![image](./pic/linux_no_gui.jpg)
+![image](pic/linux_no_gui.jpg)
 
 # Directory List 目录列表
 
-[目录列表文档](./doc/directory_list.md)
+[目录列表文档](doc/directory_list.md)
 
 # Error Guide 错误指南文档
 
-[错误指南文档](./doc/error_guide.md)
+[错误指南文档](doc/error_guide.md)
 
 # Frequently Asked Questions 常见问题回答
 
-[常见问题回答](./doc/FAQ.md)
+[常见问题回答](doc/FAQ.md)
 
 # Contacting 联系方式
 
@@ -187,7 +187,7 @@ $ cmake --build .
 * [Gitee码云](https://gitee.com/itas109/CSerialPort)
 
 # CSerialPort-based Applications 基于CSerialPort的应用
-## 1.[CommMaster通信大师](https://gitee.com/itas109/CommMaster)
+## 1. [CommMaster通信大师](https://gitee.com/itas109/CommMaster)
 * 支持windows/linux/macos/raspberrypi等等
 * 支持自定义串口名称
 * 支持自定义波特率
@@ -196,9 +196,9 @@ $ cmake --build .
 
 https://gitee.com/itas109/CommMaster
 
-![image](./pic/CommMaster.png)
+![image](pic/CommMaster.png)
 
-## 2.[CommLite](https://github.com/itas109/CommLite)
+## 2. [CommLite](https://github.com/itas109/CommLite)
 
 CommLite是一款基于CSerialPort的文本UI串口调试助手
 
@@ -207,7 +207,7 @@ CommLite是一款基于CSerialPort的文本UI串口调试助手
 
 https://github.com/itas109/CommLite
 
-![image](./pic/commlite.gif)
+![image](pic/commlite.gif)
 
 # Donate 捐助
 

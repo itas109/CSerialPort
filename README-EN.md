@@ -48,7 +48,7 @@ CSerialPort has been tested to the following platforms:
 - [ ] 4.higher efficiency notify module
 - [ ] 5.support other language,such as C, C#, Python, Java, Golang
 - [x] 6.sync serial port communication
-- [X] 7.new cross-platform gui serial port tool
+- [x] 7.new cross-platform gui serial port tool
 - [ ] 8.add a video description of this class
 - [ ] 9.comm monitor hook
 
@@ -79,7 +79,7 @@ run demo ( for example serial port lookback test on linux)
 
 ```
 CSerialPort/bin $ ./bin/CSerialPortDemoNoGui
-Version : https://github.com/itas109/CSerialPort - V4.1.1.210903
+Version : https://github.com/itas109/CSerialPort - V4.2.0.221001
 
 availableFriendlyPorts :
 0 - /dev/ttyS0
@@ -149,31 +149,31 @@ $ cmake --build .
 
 Demo Path: CSerialPort/examples/CommQT
 
-![image](./pic/linux.jpg)
+![image](pic/linux.jpg)
 
 ## Tui
 
 Demo Path: CSerialPort/examples/CommTui
 
-![image](./pic/linux_tui.jpg)
+![image](pic/linux_tui.jpg)
 
 ## No Gui
 
 Demo Path: CSerialPort/examples/CommNoGui
 
-![image](./pic/linux_no_gui.jpg)
+![image](pic/linux_no_gui.jpg)
 
 # Directory List
 
-[Directory List Document](./doc/directory_list.md)
+[Directory List Document](doc/directory_list.md)
 
 # Error Guide
 
-[Error Guide Document](./doc/error_guide.md)
+[Error Guide Document](doc/error_guide.md)
 
 # Frequently Asked Questions
 
-[Frequently Asked Questions](./doc/FAQ.md)
+[Frequently Asked Questions](doc/FAQ.md)
 
 # Contacting
 
@@ -188,7 +188,7 @@ Demo Path: CSerialPort/examples/CommNoGui
 * [Gitee](https://gitee.com/itas109/CSerialPort)
 
 # CSerialPort-based Applications
-## 1.[CommMaster](https://gitee.com/itas109/CommMaster)
+## 1. [CommMaster](https://gitee.com/itas109/CommMaster)
 * support windows/linux/macos/raspberrypi and so on
 * support custom port name
 * support custom baudrate
@@ -197,9 +197,9 @@ Demo Path: CSerialPort/examples/CommNoGui
 
 https://gitee.com/itas109/CommMaster
 
-![image](./pic/CommMaster.png)
+![image](pic/CommMaster.png)
 
-## 2.[CommLite](https://github.com/itas109/CommLite)
+## 2. [CommLite](https://github.com/itas109/CommLite)
 
 CommLite is tui's serial port tool based CSerialPort
 
@@ -208,7 +208,7 @@ CommLite is tui's serial port tool based CSerialPort
 
 https://github.com/itas109/CommLite
 
-![image](./pic/commlite.gif)
+![image](pic/commlite.gif)
 
 # Donate
 
