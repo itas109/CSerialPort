@@ -17,7 +17,8 @@ Feature:
 * add cross-platform ringbuffer library 新增跨平台环形缓冲区库
 * add cross-platform timer based condition variable 新增基于条件变量的跨平台定时器库
 * add ringbuffer for receive data(asynchronous mode) 新增环形缓冲区接收数据(异步模式)
-* add read interval timeout setting(default 50ms, asynchronous mode) 新增读取超时设置(默认20ms, 异步模式)
+* add read interval timeout setting(default 50ms, asynchronous mode) 新增读取超时设置(默认50ms, 异步模式)
+* add clang-tidy 增加clang-tidy代码检测
 
 ## v4.1.1 (2021-09-03)
 
