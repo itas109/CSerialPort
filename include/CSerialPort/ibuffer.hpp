@@ -10,6 +10,31 @@
 #ifndef __I_BUFFER_HPP__
 #define __I_BUFFER_HPP__
 
+static unsigned int nextPowerOf2(unsigned int num)
+{
+    // 2^30 = 1 << 30 = 1073741824
+    // 2^31 = 1 << 31 = 2147483648
+    // unsigned int(Max PowerOf2) 2^31 = 1 << 31 = 2147483648
+    // unsigned int(Max) 2^32 -1 = 4294967295
+
+    // because MSB(mirroring significant bit), so 2^30 not 2^31
+    // m_maxBufferSize = 1073741824;// 2^30
+    // m_maxMirrorBufferIndex = 2 * m_maxBufferSize - 1 = 2147483647
+    if (num == 0 || num > 1073741824 /* 2^30 */)
+    {
+        return 4096;
+    }
+
+    --num;
+    num |= num >> 1;
+    num |= num >> 2;
+    num |= num >> 4;
+    num |= num >> 8;
+    num |= num >> 16;
+
+    return ++num;
+}
+
 namespace itas109
 {
 /**
@@ -104,7 +129,7 @@ public:
     RingBuffer(unsigned int maxBufferSize)
         : m_head(0)
         , m_tail(0)
-        , m_maxBufferSize((maxBufferSize && (0 == (maxBufferSize & (maxBufferSize - 1)))) ? maxBufferSize : 4096) ///< must power of two
+        , m_maxBufferSize((maxBufferSize && (0 == (maxBufferSize & (maxBufferSize - 1)))) ? maxBufferSize : nextPowerOf2(maxBufferSize)) ///< must power of two
         , m_maxMirrorBufferIndex(2 * m_maxBufferSize - 1)
         , m_buffer(new T[m_maxBufferSize])
     {
