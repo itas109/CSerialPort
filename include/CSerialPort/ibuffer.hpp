@@ -90,7 +90,7 @@ public:
     RingBuffer()
         : m_head(0)
         , m_tail(0)
-        , m_maxBufferSize(512) ///< must power of two
+        , m_maxBufferSize(4096) ///< must power of two
         , m_maxMirrorBufferIndex(2 * m_maxBufferSize - 1)
         , m_buffer(new T[m_maxBufferSize])
     {
@@ -104,7 +104,7 @@ public:
     RingBuffer(unsigned int maxBufferSize)
         : m_head(0)
         , m_tail(0)
-        , m_maxBufferSize((maxBufferSize && (0 == (maxBufferSize & (maxBufferSize - 1)))) ? maxBufferSize : 512) ///< must power of two
+        , m_maxBufferSize((maxBufferSize && (0 == (maxBufferSize & (maxBufferSize - 1)))) ? maxBufferSize : 4096) ///< must power of two
         , m_maxMirrorBufferIndex(2 * m_maxBufferSize - 1)
         , m_buffer(new T[m_maxBufferSize])
     {

@@ -41,7 +41,7 @@ CSerialPortUnixBase::CSerialPortUnixBase()
     , m_dataBits(itas109::DataBits8)
     , m_stopbits(itas109::StopOne)
     , m_flowControl(itas109::FlowNone)
-    , m_readBufferSize(512)
+    , m_readBufferSize(4096)
     , m_isThreadRunning(false)
     , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
@@ -55,7 +55,7 @@ CSerialPortUnixBase::CSerialPortUnixBase(const std::string &portName)
     , m_dataBits(itas109::DataBits8)
     , m_stopbits(itas109::StopOne)
     , m_flowControl(itas109::FlowNone)
-    , m_readBufferSize(512)
+    , m_readBufferSize(4096)
     , m_isThreadRunning(false)
     , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
@@ -76,7 +76,7 @@ void CSerialPortUnixBase::init(std::string portName,
                                itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/,
                                itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/,
                                itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/,
-                               unsigned int readBufferSize /*= 512*/)
+                               unsigned int readBufferSize /*= 4096*/)
 {
     m_portName = portName; // portName;//串口 /dev/ttySn, USB /dev/ttyUSBn
     m_baudRate = baudRate;

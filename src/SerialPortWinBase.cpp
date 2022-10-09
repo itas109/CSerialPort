@@ -23,7 +23,7 @@ CSerialPortWinBase::CSerialPortWinBase()
     , m_dataBits(itas109::DataBits8)
     , m_stopbits(itas109::StopOne)
     , m_flowControl(itas109::FlowNone)
-    , m_readBufferSize(512)
+    , m_readBufferSize(4096)
     , m_handle(INVALID_HANDLE_VALUE)
     , m_monitorThread(INVALID_HANDLE_VALUE)
     , overlapMonitor()
@@ -49,7 +49,7 @@ CSerialPortWinBase::CSerialPortWinBase(const std::string &portName)
     , m_dataBits(itas109::DataBits8)
     , m_stopbits(itas109::StopOne)
     , m_flowControl(itas109::FlowNone)
-    , m_readBufferSize(512)
+    , m_readBufferSize(4096)
     , m_handle(INVALID_HANDLE_VALUE)
     , m_monitorThread(INVALID_HANDLE_VALUE)
     , overlapMonitor()
@@ -85,7 +85,7 @@ void CSerialPortWinBase::init(std::string portName,
                               itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/,
                               itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/,
                               itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/,
-                              unsigned int readBufferSize /*= 512*/)
+                              unsigned int readBufferSize /*= 4096*/)
 {
     m_portName = portName;
     m_baudRate = baudRate;

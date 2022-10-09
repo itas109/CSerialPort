@@ -69,7 +69,7 @@ void itas109::CSerialPort::init(std::string portName,
                                 itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/,
                                 itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/,
                                 itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/,
-                                unsigned int readBufferSize /*= 512*/)
+                                unsigned int readBufferSize /*= 4096*/)
 {
     if (p_serialPortBase)
     {

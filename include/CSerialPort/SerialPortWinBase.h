@@ -75,7 +75,7 @@ public:
                       itas109::DataBits dataBits = itas109::DataBits8,
                       itas109::StopBits stopbits = itas109::StopOne,
                       itas109::FlowControl flowControl = itas109::FlowNone,
-                      unsigned int readBufferSize = 512);
+                      unsigned int readBufferSize = 4096);
 
     /**
      * @brief open serial port 打开串口
