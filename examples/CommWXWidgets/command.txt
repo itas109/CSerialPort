@@ -1,0 +1,4 @@
+mkdir bin
+cd bin
+cmake -G "Unix Makefiles" ..
+cmake --build .
