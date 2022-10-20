@@ -1,56 +1,51 @@
-<p align="center">CSerialPort</p>
+# [CSerialPort](https://github.com/itas109/CSerialPort)
 
-<p align="center">
+[中文](README_zh_CN.md)
+
+CSerialPort is a lightweight cross-platform serial port library based on C/C++, which can easy to read and write serial port on multiple operating system.
+
+<p>
 <a href="https://github.com/itas109/CSerialPort/releases"><img alt="Version" src="https://img.shields.io/github/release/itas109/CSerialPort"/></a>
 <a href="https://github.com/itas109/CSerialPort/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/itas109/CSerialPort"/></a>
 <a href="https://gitee.com/itas109/CSerialPort"><img alt="Stars" src="https://gitee.com/itas109/CSerialPort/badge/star.svg?theme=dark"/></a>
-<a href="https://github.com/itas109/CSerialPort/network/members"><img alt="Forks" src="https://img.shields.io/github/forks/itas109/CSerialPort"/></a>
 <a href="https://github.com/itas109/CSerialPort/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-LGPL%203.0-orange"/></a>
 <img alt="language" src="https://img.shields.io/badge/language-c++-red"/>
-<img alt="platform" src="https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20macos%20%7C%20raspberrypi%20%7C%20freebsd-lightgrey"/>
 <img alt="appveyor-ci" src="https://ci.appveyor.com/api/projects/status/a4t6ddubhns561kh?svg=true"/>
 <img alt="travis-ci" src="https://www.travis-ci.org/itas109/CSerialPort.svg?branch=master"/>
-<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/itas109/CSerialPort">
 </p>
-
-<p align="center">
-Language: <strong>English</strong> / <a href="README.md">中文</a>
-</p>
-
-Lightweight cross-platform serial port library based on C++, which can easy to read and write serial port on mutiple operating system
 
 ---
 
 # Design Principles
 
-* Cross-platform
-* Easy use
-* higher efficiency
+- Cross-platform
+- Easy to use
+- Higher efficiency
 
 # Platform
-CSerialPort has been tested to the following platforms:
 
-   - DOS ( x86_64 )
-   - Windows ( x86_64 )
-   - Linux ( x86_64, aarch64, mips64el, riscv, s390x, ppc64le )
-   - macOS ( x86_64 )
-   - Raspberry Pi ( armv7l )
-   - FreeBSD ( x86_64 )
-   - ...
+CSerialPort was tested on the following platforms
+
+- Windows ( x86, x86_64, arm64 )
+- Linux ( x86, x86_64, arm, arm64/aarch64, mips64el, riscv, s390x, ppc64le )
+- macOS ( x86_64 )
+- Raspberry Pi ( armv7l )
+- FreeBSD ( x86_64 )
+- ...
 
 # Todo List
 
-## Strategic Goal
+## Long-term Goal
 
 - [x] 1.support windows and linux first
 - [ ] 2.add communicating protocol
-- [ ] 3.support hot swap
+- [x] 3.support hot swap - [CSerialPortExtend](https://github.com/itas109/CSerialPortExtend)
 - [ ] 4.higher efficiency notify module
 - [ ] 5.support other language,such as C, C#, Python, Java, Golang
 - [x] 6.sync serial port communication
-- [x] 7.new cross-platform gui serial port tool
-- [ ] 8.add a video description of this class
-- [ ] 9.comm monitor hook
+- [x] 7.new cross-platform gui serial port tool - [CommMaster](https://gitee.com/itas109/CommMaster)
+- [x] 8.add introduction and tutorial of CSerialPort - [CSerialPort Tutorial ](https://blog.csdn.net/itas109/category_11520540.html)
+- [ ] 9.serial port monitor hook
 
 ## Short-term Goal
 
@@ -60,7 +55,7 @@ CSerialPort has been tested to the following platforms:
 - [x] 4.cross-platform higher efficiency Timer class
 - [ ] 5.Performance test report(Throughput && delay && packet dropout rates)
 
-# Last Modify
+# Latest version
 
 ## Version: 4.2.0.221001
 by itas109 on 2022-10-01
@@ -83,22 +78,23 @@ Version : https://github.com/itas109/CSerialPort - V4.2.0.221001
 
 availableFriendlyPorts :
 0 - /dev/ttyS0
-1 - /dev/pts/0
-2 - /dev/pts/1
 
-Please input index of the port(0 - 2 ) :
+Please input index of the port(0 - 0) :
 0
 select port name : /dev/ttyS0
 open /dev/ttyS0 success
-receive data : i, receive size : 1, receive count : 1
-receive data : t, receive size : 1, receive count : 2
-receive data : a, receive size : 1, receive count : 3
-receive data : s, receive size : 1, receive count : 4
-receive data : 1, receive size : 1, receive count : 5
-receive data : 0, receive size : 1, receive count : 6
-receive data : 9, receive size : 1, receive count : 7
-receive data : i, receive size : 1, receive count : 8
-close serial port when receive count > 7
+receive data : itas109, receive size : 7, receive count : 1
+```
+
+# Install CSerialPort Using Vcpkg
+
+You can download and install CSerialPort using the [vcpkg](https://github.com/Microsoft/vcpkg/) dependency manager
+
+```
+$ git clone https://github.com/Microsoft/vcpkg.git
+$ cd vcpkg
+$ ./bootstrap-vcpkg.sh
+$ ./vcpkg install cserialport
 ```
 
 # Cross Compile
@@ -163,37 +159,32 @@ Demo Path: CSerialPort/examples/CommNoGui
 
 ![image](pic/linux_no_gui.jpg)
 
-# Directory List
+# Documents
 
+[API Document](doc/CSerialPort_doc_en.chm)
 [Directory List Document](doc/directory_list.md)
-
-# Error Guide
-
 [Error Guide Document](doc/error_guide.md)
-
-# Frequently Asked Questions
-
 [Frequently Asked Questions](doc/FAQ.md)
 
 # Contacting
 
-* Email : itas109@qq.com
-
-* QQ Group : [129518033](http://shang.qq.com/wpa/qunwpa?idkey=2888fa15c4513e6bfb9347052f36e437d919b2377161862948b2a49576679fc6)
+- Email : itas109@qq.com
+- QQ Group : [129518033](http://shang.qq.com/wpa/qunwpa?idkey=2888fa15c4513e6bfb9347052f36e437d919b2377161862948b2a49576679fc6)
 
 # Links
 
-* [CSDN Blog](https://blog.csdn.net/itas109)
-* [Github](https://github.com/itas109/CSerialPort)
-* [Gitee](https://gitee.com/itas109/CSerialPort)
+- [CSDN Blog](https://blog.csdn.net/itas109)
+- [Github](https://github.com/itas109/CSerialPort)
+- [Gitee](https://gitee.com/itas109/CSerialPort)
 
 # CSerialPort-based Applications
 ## 1. [CommMaster](https://gitee.com/itas109/CommMaster)
-* support windows/linux/macos/raspberrypi and so on
-* support custom port name
-* support custom baudrate
-* support custom language
-* support custom theme
+
+- support windows/linux/macos/raspberrypi and so on
+- support custom port name
+- support custom baudrate
+- support custom language
+- support custom theme
 
 https://gitee.com/itas109/CommMaster
 
@@ -203,8 +194,8 @@ https://gitee.com/itas109/CommMaster
 
 CommLite is tui's serial port tool based CSerialPort
 
-* support x86, arm, mips cpu architecture
-* support windows dos, linux, macos,raspberrypi, freebsd operating system
+- support x86, arm, mips cpu architecture
+- support windows dos, linux, macos,raspberrypi, freebsd operating system
 
 https://github.com/itas109/CommLite
 
@@ -215,14 +206,12 @@ https://github.com/itas109/CommLite
 [CSDN Blog](https://blog.csdn.net/itas109)
 
 ---
+
 # Other branches
 
-Remon Spekreijse's serial library has had a profound impact on me, thanks again to Remon Spekreijse
-http://www.codeguru.com/cpp/i-n/network/serialcommunications/article.php/c2483/A-communication-class-for-serial-port.htm
+Only for windows branch : https://github.com/itas109/CSerialPort/tree/CSerialPort_win_3.0.3
 
-
-only for windows branches : 
-https://github.com/itas109/CSerialPort/tree/CSerialPort_win_3.0.3
+Thanks for [Remon Spekreijse's serial library](http://www.codeguru.com/cpp/i-n/network/serialcommunications/article.php/c2483/A-communication-class-for-serial-port.htm)
 
 ---
 
