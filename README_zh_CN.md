@@ -1,54 +1,50 @@
-<p align="center"><strong>CSerialPort</strong></p>
+# [CSerialPort](https://github.com/itas109/CSerialPort)
 
-<p align="center">
+[English](README.md)
+
+CSerialPort是一个基于C/C++的轻量级开源跨平台串口类库，可以轻松实现跨平台多操作系统的串口读写
+
+<p>
 <a href="https://github.com/itas109/CSerialPort/releases"><img alt="Version" src="https://img.shields.io/github/release/itas109/CSerialPort"/></a>
 <a href="https://github.com/itas109/CSerialPort/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/itas109/CSerialPort"/></a>
 <a href="https://gitee.com/itas109/CSerialPort"><img alt="Stars" src="https://gitee.com/itas109/CSerialPort/badge/star.svg?theme=dark"/></a>
-<a href="https://github.com/itas109/CSerialPort/network/members"><img alt="Forks" src="https://img.shields.io/github/forks/itas109/CSerialPort"/></a>
 <a href="https://github.com/itas109/CSerialPort/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-LGPL%203.0-orange"/></a>
 <img alt="language" src="https://img.shields.io/badge/language-c++-red"/>
-<img alt="platform" src="https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20macos%20%7C%20raspberrypi%20%7C%20freebsd-lightgrey"/>
 <img alt="appveyor-ci" src="https://ci.appveyor.com/api/projects/status/a4t6ddubhns561kh?svg=true"/>
 <img alt="travis-ci" src="https://www.travis-ci.org/itas109/CSerialPort.svg?branch=master"/>
-<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/itas109/CSerialPort">
 </p>
-
-<p align="center">
-语言：<a href="README-EN.md">English</a> / <strong>中文</strong>
-</p>
-
-基于C++的轻量级开源跨平台串口类库，可以轻松实现跨平台多操作系统的串口读写
 
 ---
+
 # Design Principles 设计原则
 
-* 跨平台
-* 简单易用
-* 高效
+- 跨平台
+- 简单易用
+- 高效
 
 # Platform 平台
-CSerialPort已经在以下平台做过测试:
 
-   - DOS ( x86_64 )
-   - Windows ( x86_64 )
-   - Linux ( x86_64, aarch64, mips64el, riscv, s390x, ppc64le )
-   - macOS ( x86_64 )
-   - Raspberry Pi ( armv7l )
-   - FreeBSD ( x86_64 )
-   - ...
+CSerialPort已经在以下平台做过测试
+
+- Windows ( x86, x86_64, arm64 )
+- Linux ( x86, x86_64, arm, arm64/aarch64, mips64el, riscv, s390x, ppc64le )
+- macOS ( x86_64 )
+- Raspberry Pi ( armv7l )
+- FreeBSD ( x86_64 )
+- ...
 
 # Todo List 待处理事项
 
-## Strategic Goal 战略目标
+## Long-term Goal 长期目标
 
 - [x] 1.首先支持windows和linux平台
 - [ ] 2.增加通用串口通信协议
-- [ ] 3.支持热插拔
+- [x] 3.支持热插拔 - [CSerialPortExtend](https://github.com/itas109/CSerialPortExtend)
 - [ ] 4.更高效的通知模块
 - [ ] 5.支持其他语言，如C, C#, Python, Java, Golang等
 - [x] 6.同步串口通信
-- [x] 7.全新的跨平台串口调试助手
-- [ ] 8.增加一个类库的介绍和使用视频
+- [x] 7.全新的跨平台串口调试助手 - [CommMaster通信大师](https://gitee.com/itas109/CommMaster)
+- [x] 8.增加CSerialPort的介绍和使用教程 - [CSerialPort教程](https://blog.csdn.net/itas109/category_11520540.html)
 - [ ] 9.串口侦听hook
 
 ## Short-term Goal 短期目标
@@ -60,7 +56,7 @@ CSerialPort已经在以下平台做过测试:
 - [ ] 5.性能测试报告(吞吐量、时延、丢包率)
 
 
-# Last Modify 最新版本
+# Latest version 最新版本
 
 ## Version: 4.2.0.221001
 by itas109 on 2022-10-01
@@ -83,22 +79,23 @@ Version : https://github.com/itas109/CSerialPort - V4.2.0.221001
 
 availableFriendlyPorts :
 0 - /dev/ttyS0
-1 - /dev/pts/0
-2 - /dev/pts/1
 
-Please input index of the port(0 - 2 ) :
+Please input index of the port(0 - 0) :
 0
 select port name : /dev/ttyS0
 open /dev/ttyS0 success
-receive data : i, receive size : 1, receive count : 1
-receive data : t, receive size : 1, receive count : 2
-receive data : a, receive size : 1, receive count : 3
-receive data : s, receive size : 1, receive count : 4
-receive data : 1, receive size : 1, receive count : 5
-receive data : 0, receive size : 1, receive count : 6
-receive data : 9, receive size : 1, receive count : 7
-receive data : i, receive size : 1, receive count : 8
-close serial port when receive count > 7
+receive data : itas109, receive size : 7, receive count : 1
+```
+
+# Install CSerialPort Using Vcpkg 使用vcpkg安装CSerialPort
+
+您可以通过[vcpkg](https://github.com/Microsoft/vcpkg/)依赖包管理工具下载和安装CSerialPort
+
+```
+$ git clone https://github.com/Microsoft/vcpkg.git
+$ cd vcpkg
+$ ./bootstrap-vcpkg.sh
+$ ./vcpkg install cserialport
 ```
 
 # Cross Compile 交叉编译
@@ -132,6 +129,7 @@ $ mkdir bin_mips64el && cd bin_mips64el
 $ cmake .. -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_mips64el.cmake
 $ cmake --build .
 ```
+
 - riscv64 on ubuntu 20.04
 
 ```
@@ -162,37 +160,32 @@ $ cmake --build .
 
 ![image](pic/linux_no_gui.jpg)
 
-# Directory List 目录列表
+# Documents 文档
 
+[API接口文档](doc/CSerialPort_doc_cn.chm)
 [目录列表文档](doc/directory_list.md)
-
-# Error Guide 错误指南文档
-
 [错误指南文档](doc/error_guide.md)
-
-# Frequently Asked Questions 常见问题回答
-
 [常见问题回答](doc/FAQ.md)
 
 # Contacting 联系方式
 
-* Email : itas109@qq.com
-
-* QQ群 : [129518033](http://shang.qq.com/wpa/qunwpa?idkey=2888fa15c4513e6bfb9347052f36e437d919b2377161862948b2a49576679fc6)
+- Email : itas109@qq.com
+- QQ群 : [129518033](http://shang.qq.com/wpa/qunwpa?idkey=2888fa15c4513e6bfb9347052f36e437d919b2377161862948b2a49576679fc6)
 
 # Links 链接
 
-* [CSDN博客](https://blog.csdn.net/itas109)
-* [Github](https://github.com/itas109/CSerialPort)
-* [Gitee码云](https://gitee.com/itas109/CSerialPort)
+- [CSDN博客](https://blog.csdn.net/itas109)
+- [Github](https://github.com/itas109/CSerialPort)
+- [Gitee码云](https://gitee.com/itas109/CSerialPort)
 
 # CSerialPort-based Applications 基于CSerialPort的应用
 ## 1. [CommMaster通信大师](https://gitee.com/itas109/CommMaster)
-* 支持windows/linux/macos/raspberrypi等等
-* 支持自定义串口名称
-* 支持自定义波特率
-* 支持自定义语言
-* 支持自定义主题
+
+- 支持windows/linux/macos/raspberrypi等等
+- 支持自定义串口名称
+- 支持自定义波特率
+- 支持自定义语言
+- 支持自定义主题
 
 https://gitee.com/itas109/CommMaster
 
@@ -202,8 +195,8 @@ https://gitee.com/itas109/CommMaster
 
 CommLite是一款基于CSerialPort的文本UI串口调试助手
 
-* 支持x86, arm, mips等cpu架构
-* 支持windows dos, linux, macos, raspberrypi, freebsd等操作系统
+- 支持x86, arm, mips等cpu架构
+- 支持windows dos, linux, macos, raspberrypi, freebsd等操作系统
 
 https://github.com/itas109/CommLite
 
@@ -214,13 +207,12 @@ https://github.com/itas109/CommLite
 [CSDN博客](https://blog.csdn.net/itas109)
 
 ---
+
 # Other branches 其他分支
 
-Remon Spekreijse的串口类库对于本类库有着深远的影响，十分感谢Remon Spekreijse
-http://www.codeguru.com/cpp/i-n/network/serialcommunications/article.php/c2483/A-communication-class-for-serial-port.htm
+仅支持windows版本分支 : https://github.com/itas109/CSerialPort/tree/CSerialPort_win_3.0.3
 
-仅支持windows版本分支 : 
-https://github.com/itas109/CSerialPort/tree/CSerialPort_win_3.0.3
+非常感谢[Remon Spekreijse的串口通信库](http://www.codeguru.com/cpp/i-n/network/serialcommunications/article.php/c2483/A-communication-class-for-serial-port.htm)
 
 ---
 
