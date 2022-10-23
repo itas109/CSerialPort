@@ -230,7 +230,7 @@ std::vector<itas109::SerialPortInfo> getPortInfoListMac()
 
     while (serialPort = IOIteratorNext(serialPortIterator))
     {
-        string device_path = getSerialPath(serialPort);
+        std::string device_path = getSerialPath(serialPort);
         IOObjectRelease(serialPort);
 
         if (device_path.empty())
