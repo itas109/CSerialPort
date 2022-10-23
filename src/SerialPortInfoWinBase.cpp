@@ -1,5 +1,7 @@
 ﻿#include "CSerialPort/SerialPortInfoWinBase.h"
 
+#include "CSerialPort/SerialPort_global.h"
+
 #include "Windows.h"
 
 /********************* EnumDetailsSerialPorts ****************************************/
@@ -41,12 +43,12 @@ std::string wstringToString(const std::wstring &wstr)
  * @retval true true if excute success 执行成功返回true
  * @retval false false if excute failed 执行失败返回false
  */
-bool enumDetailsSerialPorts(vector<SerialPortInfo> &portInfoList)
+bool enumDetailsSerialPorts(std::vector<itas109::SerialPortInfo> &portInfoList)
 {
     // https://docs.microsoft.com/en-us/windows/win32/api/setupapi/nf-setupapi-setupdienumdeviceinfo
 
     bool bRet = false;
-    SerialPortInfo m_serialPortInfo;
+    itas109::SerialPortInfo m_serialPortInfo;
 
     std::string strFriendlyName;
     std::string strPortName;
@@ -111,9 +113,9 @@ CSerialPortInfoWinBase::CSerialPortInfoWinBase() {}
 
 CSerialPortInfoWinBase::~CSerialPortInfoWinBase() {}
 
-vector<SerialPortInfo> CSerialPortInfoWinBase::availablePortInfos()
+std::vector<itas109::SerialPortInfo> CSerialPortInfoWinBase::availablePortInfos()
 {
-    vector<SerialPortInfo> portInfoList;
+    std::vector<itas109::SerialPortInfo> portInfoList;
     enumDetailsSerialPorts(portInfoList);
 
     return portInfoList;

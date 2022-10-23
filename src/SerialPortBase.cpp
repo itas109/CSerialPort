@@ -15,9 +15,9 @@ CSerialPortBase::CSerialPortBase(const std::string &portName)
     : m_lastError(0)
     , m_operateMode(itas109::AsynchronousOperate)
     , m_readIntervalTimeoutMS(50)
-    , m_minByteReadNotify(1),
-    p_mutex(NULL)
-    
+    , m_minByteReadNotify(1)
+    , p_mutex(NULL)
+
 {
     p_mutex = new itas109::IMutex();
 }

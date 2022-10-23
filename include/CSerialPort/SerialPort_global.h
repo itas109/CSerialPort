@@ -16,6 +16,7 @@
 // enum is not a class or namespace error
 // https://stackoverflow.com/questions/5188554/my-enum-is-not-a-class-or-namespace
 
+#include <string>
 #include "osplatformutil.h"
 
 #ifdef I_OS_WIN
@@ -42,6 +43,16 @@
 
 namespace itas109
 {
+/**
+ * @brief serial port info struct 串口信息结构体
+ *
+ */
+struct SerialPortInfo
+{
+    std::string portName;		///< portName 串口名称
+    std::string description;	///< description 串口描述
+};
+
 /**
  * @brief the read and write serial port mode enum 读写串口模式
  *

@@ -38,6 +38,6 @@ public:
      * @brief availablePortInfos 获取串口信息列表
      * @return return available port infolist 返回可用串口名称列表
      */
-    static std::vector<SerialPortInfo> availablePortInfos();
+    static std::vector<itas109::SerialPortInfo> availablePortInfos();
 };
 #endif //__CSERIALPORTINFOWINBASE_H__

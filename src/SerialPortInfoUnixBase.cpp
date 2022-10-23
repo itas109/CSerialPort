@@ -1,12 +1,10 @@
 ﻿#include "CSerialPort/SerialPortInfoUnixBase.h"
 
-#include "CSerialPort/osplatformutil.h"
+#include "CSerialPort/SerialPort_global.h"
 
 #ifdef I_OS_LINUX
-#include <dirent.h> //scandir
-#include <stdlib.h> // free
-                    //    #include <stdio.h> // perror
-//#include <sys/types.h>
+#include <dirent.h>   //scandir
+#include <stdlib.h>   // free
 #include <sys/stat.h> //S_ISLNK
 #include <unistd.h>   // readlink close
 
@@ -16,7 +14,7 @@
 #include <linux/serial.h> //struct serial_struct
 #include <sys/ioctl.h>    //ioctl
 #include <termios.h>
-#elif defined I_OS_MAC
+#elif defined(I_OS_MAC)
 #include <sys/param.h>
 
 #include <CoreFoundation/CoreFoundation.h>
@@ -63,7 +61,7 @@ std::string get_driver(const std::string &tty)
     return "";
 }
 
-void register_comport(vector<std::string> &comList, vector<std::string> &comList8250, const std::string &dir)
+void register_comport(std::vector<std::string> &comList, std::vector<std::string> &comList8250, const std::string &dir)
 {
     // Get the driver the device is using
     std::string driver = get_driver(dir);
@@ -87,10 +85,10 @@ void register_comport(vector<std::string> &comList, vector<std::string> &comList
     }
 }
 
-void probe_serial8250_comports(vector<std::string> &comList, vector<std::string> comList8250)
+void probe_serial8250_comports(std::vector<std::string> &comList, std::vector<std::string> comList8250)
 {
     struct serial_struct serinfo;
-    vector<std::string>::iterator it = comList8250.begin();
+    std::vector<std::string>::iterator it = comList8250.begin();
 
     // Iterate over all serial8250-devices
     while (it != comList8250.end())
@@ -121,13 +119,13 @@ void probe_serial8250_comports(vector<std::string> &comList, vector<std::string>
     }
 }
 
-vector<std::string> getPortInfoListLinux()
+std::vector<std::string> getPortInfoListLinux()
 {
     // https://stackoverflow.com/questions/2530096/how-to-find-all-serial-devices-ttys-ttyusb-on-linux-without-opening-them
     int n = -1;
     struct dirent **namelist;
-    vector<std::string> comList;
-    vector<std::string> comList8250;
+    std::vector<std::string> comList;
+    std::vector<std::string> comList8250;
     const char *sysDir = "/sys/class/tty/";
     const char *ptsDir = "/dev/pts/";
 
@@ -202,11 +200,11 @@ std::string getSerialPath(io_object_t &serialPort)
     return result;
 }
 
-vector<SerialPortInfo> getPortInfoListMac()
+std::vector<itas109::SerialPortInfo> getPortInfoListMac()
 {
     // https://developer.apple.com/documentation/iokit/communicating_with_a_modem_on_a_serial_port
-    SerialPortInfo m_serialPortInfo;
-    vector<SerialPortInfo> portInfoList;
+    itas109::SerialPortInfo m_serialPortInfo;
+    std::vector<itas109::SerialPortInfo> portInfoList;
 
     // mach_port_t master_port;
 
@@ -248,13 +246,13 @@ vector<SerialPortInfo> getPortInfoListMac()
 }
 #endif
 
-vector<SerialPortInfo> getPortInfoList()
+std::vector<itas109::SerialPortInfo> getPortInfoList()
 {
-    vector<SerialPortInfo> portInfoList;
+    std::vector<itas109::SerialPortInfo> portInfoList;
 #ifdef I_OS_LINUX
     // TODO: need to optimize
-    SerialPortInfo m_serialPort;
-    vector<std::string> portList = getPortInfoListLinux();
+    itas109::SerialPortInfo m_serialPort;
+    std::vector<std::string> portList = getPortInfoListLinux();
 
     int count = portList.size();
 
@@ -275,7 +273,7 @@ CSerialPortInfoUnixBase::CSerialPortInfoUnixBase() {}
 
 CSerialPortInfoUnixBase::~CSerialPortInfoUnixBase() {}
 
-vector<SerialPortInfo> CSerialPortInfoUnixBase::availablePortInfos()
+std::vector<itas109::SerialPortInfo> CSerialPortInfoUnixBase::availablePortInfos()
 {
     return getPortInfoList();
 }

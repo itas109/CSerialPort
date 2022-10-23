@@ -13,11 +13,9 @@
 #ifndef __CSERIALPORTINFO_H__
 #define __CSERIALPORTINFO_H__
 
-#include "SerialPortInfoBase.h"
-#include "SerialPort_global.h"
+#include <vector>
 
-#include <list>
-#include <string>
+#include "SerialPort_global.h" // DLL_EXPORT
 
 namespace itas109
 {
@@ -43,7 +41,7 @@ public:
      * @brief availablePortInfos 获取串口信息列表
      * @return return available port infolist 返回可用串口名称列表
      */
-    static vector<SerialPortInfo> availablePortInfos();
+    static std::vector<itas109::SerialPortInfo> availablePortInfos();
 };
 } // namespace itas109
 #endif //__CSERIALPORTINFO_H__

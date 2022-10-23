@@ -1,5 +1,7 @@
 ﻿#include "CSerialPort/SerialPortInfo.h"
 
+#include "CSerialPort/SerialPort_global.h"
+
 #ifdef I_OS_WIN
 #include "CSerialPort/SerialPortInfoWinBase.h"
 #define CSERIALPORTINFOBASE CSerialPortInfoWinBase
@@ -17,7 +19,7 @@ CSerialPortInfo::CSerialPortInfo() {}
 
 CSerialPortInfo::~CSerialPortInfo() {}
 
-vector<SerialPortInfo> CSerialPortInfo::availablePortInfos()
+std::vector<itas109::SerialPortInfo> CSerialPortInfo::availablePortInfos()
 {
     return CSERIALPORTINFOBASE::availablePortInfos();
 }
