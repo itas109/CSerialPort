@@ -14,8 +14,10 @@
 #ifndef __CSERIALPORT_H__
 #define __CSERIALPORT_H__
 
-#include "SerialPort_global.h"
 #include <string>
+
+#include "SerialPort_global.h"
+#include "SerialPortListener.h"
 
 #include "sigslot.h"
 using namespace sigslot;
@@ -101,6 +103,27 @@ public:
      * @retval false serial port open failed 串口打开失败
      */
     bool isOpened();
+
+    /**
+     * @brief connect read event 连接读取事件
+	 * @todo Not implemented 未实现
+     *
+     * @param event [in] serial port listener 串口监听事件类
+     * @return return connect status 返回连接状态
+     * @retval 0 success 成功
+     * @retval 14 invalid parameter error 无效的参数
+     */
+    int connectReadEvent(itas109::CSerialPortListener* event);
+
+    /**
+     * @brief disconnect read event 断开连接读取事件
+	 * @todo Not implemented 未实现
+     *
+     * @return return disconnect status 返回断开连接状态
+     * @retval 0 success 成功
+     * @retval [other] failed 失败
+     */
+    int disconnectReadEvent();
 
     /**
      * @brief read specified length data 读取指定长度数据

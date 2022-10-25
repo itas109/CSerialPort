@@ -7,6 +7,7 @@ CSerialPortBase::CSerialPortBase()
     , m_readIntervalTimeoutMS(50)
     , m_minByteReadNotify(1)
     , p_mutex(NULL)
+    , p_readEvent(NULL)
 {
     p_mutex = new itas109::IMutex();
 }
@@ -17,6 +18,7 @@ CSerialPortBase::CSerialPortBase(const std::string &portName)
     , m_readIntervalTimeoutMS(50)
     , m_minByteReadNotify(1)
     , p_mutex(NULL)
+    , p_readEvent(NULL)
 
 {
     p_mutex = new itas109::IMutex();
@@ -52,3 +54,22 @@ int CSerialPortBase::getLastError() const
 }
 
 void CSerialPortBase::clearError() {}
+
+int CSerialPortBase::connectReadEvent(itas109::CSerialPortListener *event)
+{
+    if (event)
+    {
+        p_readEvent = event;
+        return itas109::NoError;
+    }
+    else
+    {
+        return itas109::InvalidParameterError;
+    }
+}
+
+int CSerialPortBase::disconnectReadEvent()
+{
+    p_readEvent = NULL;
+    return itas109::NoError;
+}

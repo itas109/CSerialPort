@@ -13,12 +13,14 @@
 #ifndef __CSERIALPORTBASE_H__
 #define __CSERIALPORTBASE_H__
 
-#include "SerialPort_global.h"
 #include <string>
+
+#include "SerialPort_global.h"
 
 namespace itas109
 {
 class IMutex;
+class CSerialPortListener;
 }
 
 /**
@@ -93,6 +95,25 @@ public:
      * @retval false serial port open failed 串口打开失败
      */
     virtual bool isOpened() = 0;
+
+    /**
+     * @brief connect read event 连接读取事件
+     *
+     * @param event [in] serial port listener 串口监听事件类
+     * @return return connect status 返回连接状态
+     * @retval 0 success 成功
+     * @retval 14 invalid parameter error 无效的参数
+     */
+    int connectReadEvent(itas109::CSerialPortListener *event);
+
+    /**
+     * @brief disconnect read event 断开连接读取事件
+     *
+     * @return return disconnect status 返回断开连接状态
+     * @retval 0 success 成功
+     * @retval [other] failed 失败
+     */
+    int disconnectReadEvent();
 
     /**
      * @brief read specified length data 读取指定长度数据
@@ -285,11 +306,12 @@ public:
     virtual void setRts(bool set = true) = 0;
 
 protected:
-    int m_lastError;                      ///< last error code 最后的错误代码
-    itas109::OperateMode m_operateMode;   ///< operate mode 串口操作类型
-    unsigned int m_readIntervalTimeoutMS; ///< read time timeout millisecond 读取间隔时间，单位：毫秒
-    unsigned int m_minByteReadNotify;     ///< minimum byte of read notify 读取通知触发最小字节数
-    itas109::IMutex *p_mutex;             ///< mutex 互斥锁
+    int m_lastError;                           ///< last error code 最后的错误代码
+    itas109::OperateMode m_operateMode;        ///< operate mode 串口操作类型
+    unsigned int m_readIntervalTimeoutMS;      ///< read time timeout millisecond 读取间隔时间，单位：毫秒
+    unsigned int m_minByteReadNotify;          ///< minimum byte of read notify 读取通知触发最小字节数
+    itas109::IMutex *p_mutex;                  ///< mutex 互斥锁
+    itas109::CSerialPortListener *p_readEvent; ///< read event 读取事件
 private:
 };
 #endif //__CSERIALPORTBASE_H__

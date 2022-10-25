@@ -117,6 +117,30 @@ bool itas109::CSerialPort::isOpened()
     }
 }
 
+int itas109::CSerialPort::connectReadEvent(itas109::CSerialPortListener *event)
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->connectReadEvent(event);
+    }
+    else
+    {
+        return itas109::SystemError;
+    }
+}
+
+int itas109::CSerialPort::disconnectReadEvent()
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->disconnectReadEvent();
+    }
+    else
+    {
+        return itas109::SystemError;
+    }
+}
+
 int itas109::CSerialPort::readData(char *data, int size)
 {
     if (p_serialPortBase)
@@ -125,7 +149,7 @@ int itas109::CSerialPort::readData(char *data, int size)
     }
     else
     {
-        return -1;
+        return itas109::SystemError;
     }
 }
 
@@ -137,7 +161,7 @@ int itas109::CSerialPort::readAllData(char *data)
     }
     else
     {
-        return -1;
+        return itas109::SystemError;
     }
 }
 
@@ -149,7 +173,7 @@ int itas109::CSerialPort::readLineData(char *data, int size)
     }
     else
     {
-        return -1;
+        return itas109::SystemError;
     }
 }
 
@@ -161,7 +185,7 @@ int itas109::CSerialPort::writeData(const char *data, int size)
     }
     else
     {
-        return -1;
+        return itas109::SystemError;
     }
 }
 
@@ -258,7 +282,7 @@ int itas109::CSerialPort::getBaudRate() const
     }
     else
     {
-        return -1;
+        return itas109::SystemError;
     }
 }
 
@@ -362,7 +386,7 @@ unsigned int itas109::CSerialPort::getReadBufferSize() const
     }
     else
     {
-        return -1;
+        return itas109::SystemError;
     }
 }
 
