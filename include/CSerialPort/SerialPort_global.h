@@ -13,11 +13,29 @@
 #ifndef __CSERIALPORT_GLOBAL_H__
 #define __CSERIALPORT_GLOBAL_H__
 
+#if defined(_WIN32) // Windows
+#define I_OS_WIN
+#elif defined(__linux__) || defined(__linux) // LINUX
+#define I_OS_LINUX
+#elif defined(__APPLE__) // MAC
+#define I_OS_MAC
+#elif defined(__ANDROID__) || defined(ANDROID) // ANDROID
+#define I_OS_ANDROID
+#define I_OS_LINUX
+#else
+#error "not support this OS"
+#endif
+
+#if defined(I_OS_WIN)
+#undef I_OS_UNIX
+#elif !defined(I_OS_UNIX)
+#define I_OS_UNIX
+#endif
+
 // enum is not a class or namespace error
 // https://stackoverflow.com/questions/5188554/my-enum-is-not-a-class-or-namespace
 
 #include <string>
-#include "osplatformutil.h"
 
 #ifdef I_OS_WIN
 #if defined(BUILDING_LIBCSERIALPORT)
@@ -49,8 +67,8 @@ namespace itas109
  */
 struct SerialPortInfo
 {
-    std::string portName;		///< portName 串口名称
-    std::string description;	///< description 串口描述
+    std::string portName;    ///< portName 串口名称
+    std::string description; ///< description 串口描述
 };
 
 /**
