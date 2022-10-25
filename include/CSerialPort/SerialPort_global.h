@@ -23,7 +23,7 @@
 #define I_OS_ANDROID
 #define I_OS_LINUX
 #else
-#error "not support this OS"
+// #error "not support this OS"
 #endif
 
 #if defined(I_OS_WIN)
