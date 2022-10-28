@@ -23,6 +23,12 @@ class CSerialPortListener
 {
 public:
     /**
+     * @brief Destroy the CSerialPortListener object 析构函数
+     *
+     */
+    virtual ~CSerialPortListener() {}
+
+    /**
      * @brief on read event 响应读取事件
      *
      */
