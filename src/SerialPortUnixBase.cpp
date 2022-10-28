@@ -423,7 +423,7 @@ bool CSerialPortUnixBase::isOpened()
     return fd != -1;
 }
 
-int CSerialPortUnixBase::readDataUnix(char *data, int size)
+int CSerialPortUnixBase::readDataUnix(void *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
 
@@ -442,7 +442,7 @@ int CSerialPortUnixBase::readDataUnix(char *data, int size)
     return iRet;
 }
 
-int CSerialPortUnixBase::readData(char *data, int size)
+int CSerialPortUnixBase::readData(void *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
 
@@ -468,7 +468,7 @@ int CSerialPortUnixBase::readData(char *data, int size)
     return iRet;
 }
 
-int CSerialPortUnixBase::readAllData(char *data)
+int CSerialPortUnixBase::readAllData(void *data)
 {
     int maxSize = 0;
 
@@ -485,7 +485,7 @@ int CSerialPortUnixBase::readAllData(char *data)
     return readData(data, maxSize);
 }
 
-int CSerialPortUnixBase::readLineData(char *data, int size)
+int CSerialPortUnixBase::readLineData(void *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
 
@@ -503,7 +503,7 @@ int CSerialPortUnixBase::readLineData(char *data, int size)
     return iRet;
 }
 
-int CSerialPortUnixBase::writeData(const char *data, int size)
+int CSerialPortUnixBase::writeData(const void *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
 

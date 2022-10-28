@@ -360,7 +360,7 @@ bool CSerialPortWinBase::isOpened()
     return m_handle != INVALID_HANDLE_VALUE;
 }
 
-int CSerialPortWinBase::readDataWin(char *data, int size)
+int CSerialPortWinBase::readDataWin(void *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
 
@@ -412,7 +412,7 @@ int CSerialPortWinBase::readDataWin(char *data, int size)
     return numBytes;
 }
 
-int CSerialPortWinBase::readData(char *data, int size)
+int CSerialPortWinBase::readData(void *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
 
@@ -445,7 +445,7 @@ int CSerialPortWinBase::readData(char *data, int size)
     return numBytes;
 }
 
-int CSerialPortWinBase::readAllData(char *data)
+int CSerialPortWinBase::readAllData(void *data)
 {
     int maxSize = 0;
 
@@ -461,7 +461,7 @@ int CSerialPortWinBase::readAllData(char *data)
     return readData(data, maxSize);
 }
 
-int CSerialPortWinBase::readLineData(char *data, int size)
+int CSerialPortWinBase::readLineData(void *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
 
@@ -479,7 +479,7 @@ int CSerialPortWinBase::readLineData(char *data, int size)
     return numBytes;
 }
 
-int CSerialPortWinBase::writeData(const char *data, int size)
+int CSerialPortWinBase::writeData(const void *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
 

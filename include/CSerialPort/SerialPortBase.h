@@ -124,7 +124,7 @@ public:
      * @retval -1 read error 读取错误
      * @retval [other] return number Of bytes read 返回读取字节数
      */
-    virtual int readData(char *data, int size) = 0;
+    virtual int readData(void *data, int size) = 0;
     /**
      * @brief read all data 读取所有数据
      *
@@ -133,7 +133,7 @@ public:
      * @retval -1 read error 读取错误
      * @retval [other] return number Of bytes read 返回读取字节数
      */
-    virtual int readAllData(char *data) = 0;
+    virtual int readAllData(void *data) = 0;
     /**
      * @brief read line data 读取一行字符串
      * @todo Not implemented 未实现
@@ -142,7 +142,7 @@ public:
      * @param size
      * @return int
      */
-    virtual int readLineData(char *data, int size) = 0;
+    virtual int readLineData(void *data, int size) = 0;
     /**
      * @brief write specified lenfth data 写入指定长度数据
      *
@@ -152,7 +152,7 @@ public:
      * @retval -1 read error 写入错误
      * @retval [other] return number Of bytes write 返回写入字节数
      */
-    virtual int writeData(const char *data, int size) = 0;
+    virtual int writeData(const void *data, int size) = 0;
 
     /**
      * @brief Set Debug Model 设置调试模式

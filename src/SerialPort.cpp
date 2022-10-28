@@ -141,7 +141,7 @@ int itas109::CSerialPort::disconnectReadEvent()
     }
 }
 
-int itas109::CSerialPort::readData(char *data, int size)
+int itas109::CSerialPort::readData(void *data, int size)
 {
     if (p_serialPortBase)
     {
@@ -153,7 +153,7 @@ int itas109::CSerialPort::readData(char *data, int size)
     }
 }
 
-int itas109::CSerialPort::readAllData(char *data)
+int itas109::CSerialPort::readAllData(void *data)
 {
     if (p_serialPortBase)
     {
@@ -165,7 +165,7 @@ int itas109::CSerialPort::readAllData(char *data)
     }
 }
 
-int itas109::CSerialPort::readLineData(char *data, int size)
+int itas109::CSerialPort::readLineData(void *data, int size)
 {
     if (p_serialPortBase)
     {
@@ -177,7 +177,7 @@ int itas109::CSerialPort::readLineData(char *data, int size)
     }
 }
 
-int itas109::CSerialPort::writeData(const char *data, int size)
+int itas109::CSerialPort::writeData(const void *data, int size)
 {
     if (p_serialPortBase)
     {
