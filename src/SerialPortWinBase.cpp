@@ -422,11 +422,11 @@ int CSerialPortWinBase::readData(void *data, int size)
     {
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
         {
-            numBytes = p_buffer->read(data, size);
+            numBytes = p_buffer->read((char*)data, size);
         }
         else
         {
-            if (ReadFile(m_handle, (void *)data, (DWORD)size, &numBytes, NULL))
+            if (ReadFile(m_handle, data, (DWORD)size, &numBytes, NULL))
             {
             }
             else

@@ -452,7 +452,7 @@ int CSerialPortUnixBase::readData(void *data, int size)
     {
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
         {
-            iRet = p_buffer->read(data, size);
+            iRet = p_buffer->read((char*)data, size);
         }
         else
         {
