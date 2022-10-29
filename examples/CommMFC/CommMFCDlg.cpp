@@ -9,15 +9,6 @@
 #define new DEBUG_NEW
 #endif
 
-#define RECEIVE_TIMER_EVENT 1
-
-int BaudRateArray[] = { 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 56000, 57600, 115200 };
-
-string ParityArray[] = { "None", "Odd", "Even", "Mark", "Space" };
-
-string DataBitsArray[] = { "5", "6", "7","8" };
-
-string StopArray[] = { "1", "1.5", "2"};
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
 class CAboutDlg : public CDialog
@@ -87,7 +78,6 @@ BEGIN_MESSAGE_MAP(CCommMFCDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_SEND, &CCommMFCDlg::OnBnClickedButtonSend)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR, &CCommMFCDlg::OnBnClickedButtonClear)
-	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -127,12 +117,12 @@ BOOL CCommMFCDlg::OnInitDialog()
 	m_recvCountCtrl.SetWindowText(CString("0"));
 	m_sendCountCtrl.SetWindowText(CString("0"));
 
-	m_isTimerRunning = FALSE;
 	// 默认接收超时时间(毫秒)
 	m_ReceiveTimeoutMSCtrl.SetWindowText(_T("50"));
 
 	CString temp;
 	//添加波特率到下拉列表
+    int BaudRateArray[] = {300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 56000, 57600, 115200};
 	for (int i = 0; i < sizeof(BaudRateArray) / sizeof(int); i++)
 	{
 		temp.Format(_T("%d"), BaudRateArray[i]);
@@ -143,7 +133,8 @@ BOOL CCommMFCDlg::OnInitDialog()
 	m_BaudRate.SetCurSel(m_BaudRate.FindString(0, temp));
 
 	//校验位
-	for (int i = 0; i < sizeof(ParityArray) / sizeof(string); i++)
+    std::string ParityArray[] = {"None", "Odd", "Even", "Mark", "Space"};
+	for (int i = 0; i < sizeof(ParityArray) / sizeof(std::string); i++)
 	{
 #ifdef UNICODE
 		temp.Format(_T("%S"), ParityArray[i].c_str());
@@ -155,7 +146,8 @@ BOOL CCommMFCDlg::OnInitDialog()
 	m_Parity.SetCurSel(0);
 
 	//数据位
-	for (int i = 0; i < sizeof(DataBitsArray) / sizeof(string); i++)
+    std::string DataBitsArray[] = {"5", "6", "7", "8"};
+	for (int i = 0; i < sizeof(DataBitsArray) / sizeof(std::string); i++)
 	{
 #ifdef UNICODE
 		temp.Format(_T("%S"), DataBitsArray[i].c_str());
@@ -167,7 +159,8 @@ BOOL CCommMFCDlg::OnInitDialog()
 	m_DataBits.SetCurSel(3);
 
 	//停止位
-	for (int i = 0; i < sizeof(StopArray) / sizeof(string); i++)
+    std::string StopArray[] = {"1", "1.5", "2"};
+	for (int i = 0; i < sizeof(StopArray) / sizeof(std::string); i++)
 	{
 #ifdef UNICODE
 		temp.Format(_T("%S"), StopArray[i].c_str());
@@ -179,7 +172,7 @@ BOOL CCommMFCDlg::OnInitDialog()
 	m_Stop.SetCurSel(0);
 
 	//获取串口号
-	vector<SerialPortInfo> m_portsList = CSerialPortInfo::availablePortInfos();
+	std::vector<SerialPortInfo> m_portsList = CSerialPortInfo::availablePortInfos();
 	TCHAR m_regKeyValue[255];
 	for (size_t i = 0; i < m_portsList.size(); i++)
 	{
@@ -199,7 +192,7 @@ BOOL CCommMFCDlg::OnInitDialog()
 
 	m_Send.SetWindowText(_T("https://blog.csdn.net/itas109"));
 
-	m_SerialPort.readReady.connect(this, &CCommMFCDlg::OnReceive);
+	m_SerialPort.readReady.connect(this, &CCommMFCDlg::onReadEvent);
 	
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -255,11 +248,7 @@ HCURSOR CCommMFCDlg::OnQueryDragIcon()
 
 void CCommMFCDlg::OnBnClickedButtonOpenClose()
 {
-	//GetDlgItem(IDC_SendEdit)->SetFocus();
-	CString temp;
-	m_OpenCloseCtrl.GetWindowText(temp);///获取按钮的文本
-	UpdateData(true);
-	if (temp == _T("关闭串口"))///表示点击后是"关闭串口"，也就是已经关闭了串口
+    if (m_SerialPort.isOpened())
 	{
 		m_SerialPort.close();
 		m_OpenCloseCtrl.SetWindowText(_T("打开串口"));///设置按钮文字为"打开串口"
@@ -267,14 +256,15 @@ void CCommMFCDlg::OnBnClickedButtonOpenClose()
 	///打开串口操作
 	else if (m_PortNr.GetCount() > 0)///当前列表的内容个数
 	{
-		string portName;
+		std::string portName;
 		int SelBaudRate;
 		int SelParity;
 		int SelDataBits;
 		int SelStop;
 
 		UpdateData(true);
-		m_PortNr.GetWindowText(temp);///CString temp
+        CString temp;
+		m_PortNr.GetWindowText(temp);
 #ifdef UNICODE
 		portName = CW2A(temp.GetString());
 #else
@@ -291,6 +281,7 @@ void CCommMFCDlg::OnBnClickedButtonOpenClose()
 
 		SelStop = m_Stop.GetCurSel();
 
+        m_SerialPort.setReadIntervalTimeout(m_ReceiveTimeoutMS);
 		m_SerialPort.init(portName, SelBaudRate, itas109::Parity(SelParity), itas109::DataBits(SelDataBits), itas109::StopBits(SelStop));
 		m_SerialPort.open();
 
@@ -300,6 +291,7 @@ void CCommMFCDlg::OnBnClickedButtonOpenClose()
 		}
 		else
 		{
+            m_OpenCloseCtrl.SetWindowText(_T("打开串口"));
 			AfxMessageBox(_T("串口已被占用！"));
 		}
 	}
@@ -313,15 +305,13 @@ void CCommMFCDlg::OnBnClickedButtonOpenClose()
 void CCommMFCDlg::OnBnClickedButtonSend()
 {
 	GetDlgItem(IDC_SendEdit)->SetFocus();
-	CString temp;
-	UpdateData(true);
-	m_OpenCloseCtrl.GetWindowText(temp);
-	if (temp == "打开串口")///没有打开串口
+    if (!m_SerialPort.isOpened()) ///没有打开串口
 	{
 		AfxMessageBox(_T("请首先打开串口"));
 		return;
 	}
 
+	CString temp;
 	m_Send.GetWindowText(temp);
 	int len = 0;
 	char* m_str = NULL;
@@ -351,34 +341,16 @@ void CCommMFCDlg::OnClose()
 	CDialog::OnClose();
 }
 
-void CCommMFCDlg::OnReceive()
+void CCommMFCDlg::onReadEvent()
 {
-	if(m_isTimerRunning)
-	{
-		KillTimer(RECEIVE_TIMER_EVENT);
-	}
+    char str[1024];
+    memset(str, 0, 1024);
 
-	if(0 != m_ReceiveTimeoutMS)
-	{
-		SetTimer(RECEIVE_TIMER_EVENT, m_ReceiveTimeoutMS, NULL);
-	}
-	else
-	{
-		OnReceiveBusiness();
-	}
-}
+	int recLen  = m_SerialPort.readAllData(str);
 
-void CCommMFCDlg::OnReceiveBusiness()
-{
-	char * str = NULL;
-	str = new char[1024];
-	int iRet  = m_SerialPort.readAllData(str);
-
-	if (iRet > 0)
+	if (recLen > 0)
 	{
-		str[iRet] = '\0';
-
-		CString str1((char*)str);
+		CString str1(str);
 
 		rx += str1.GetLength();
 
@@ -389,12 +361,6 @@ void CCommMFCDlg::OnReceiveBusiness()
 		str2.Format(_T("%d"), rx);
 		m_recvCountCtrl.SetWindowText(str2);
 	}
-
-	if(str)
-	{
-		delete [] str;
-		str = NULL;
-	}
 }
 
 
@@ -404,19 +370,4 @@ void CCommMFCDlg::OnBnClickedButtonClear()
 	tx = 0;
 	m_recvCountCtrl.SetWindowText(CString("0"));
 	m_sendCountCtrl.SetWindowText(CString("0"));
-}
-
-void CCommMFCDlg::OnTimer(UINT_PTR nIDEvent)
-{
-	switch (nIDEvent)
-	{
-	case RECEIVE_TIMER_EVENT:
-		KillTimer(RECEIVE_TIMER_EVENT);
-		OnReceiveBusiness();
-		break;
-	default:
-		break;
-	}
-
-	__super::OnTimer(nIDEvent);
 }

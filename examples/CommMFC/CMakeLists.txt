@@ -23,7 +23,6 @@ endif()
 add_definitions(-D_AFXDLL)
 set(CMAKE_MFC_FLAG 2) # 1 the static MFC library 2 shared MFC library
 
-# add by itas109
 set(CSerialPortRootPath "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 include_directories(${CSerialPortRootPath}/include)
 list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPort.cpp ${CSerialPortRootPath}/src/SerialPortBase.cpp ${CSerialPortRootPath}/src/SerialPortInfo.cpp ${CSerialPortRootPath}/src/SerialPortInfoBase.cpp)
@@ -32,13 +31,11 @@ if(WIN32)
 elseif(UNIX)
     list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortInfoUnixBase.cpp ${CSerialPortRootPath}/src/SerialPortUnixBase.cpp)
 endif()
-# end by itas109
 
 set(MFCFiles CommMFC.cpp CommMFC.h CommMFC.rc CommMFCDlg.cpp CommMFCDlg.h Resource.h stdafx.cpp stdafx.h targetver.h)
 
 add_executable(${PROJECT_NAME} WIN32 ${MFCFiles} ${CSerialPortSourceFiles})
 
-# add by itas109
 if (WIN32)
     # for function availableFriendlyPorts
     target_link_libraries( ${PROJECT_NAME} setupapi)
@@ -49,4 +46,3 @@ elseif(APPLE)
 elseif(UNIX)
     target_link_libraries( ${PROJECT_NAME} pthread)
 endif ()
-# end by itas109
