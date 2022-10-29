@@ -36,9 +36,9 @@ class MyListener : public has_slots<>
 public:
     MyListener(CSerialPort *sp)
         : p_sp(sp)
+        , data{0}
         , recLen(0)
     {
-        memset(data, 0, 1024);
     };
 
     void onReadEvent()
@@ -48,7 +48,7 @@ public:
 
         if (recLen > 0)
         {
-            recLen = recLen < 1024 ? recLen : 1024; // suppose receive length less than 1024
+            recLen = recLen < 1024 ? recLen : 1023; // suppose receive length less than 1024
             data[recLen] = '\0';
             std::cout << "Count: " << ++countRead << ", Length: " << recLen << ", Str: " << data << ", Hex: " << char2hexstr(data, recLen).c_str() << std::endl;
 

@@ -343,13 +343,15 @@ void CCommMFCDlg::OnClose()
 
 void CCommMFCDlg::onReadEvent()
 {
-    char str[1024];
-    memset(str, 0, 1024);
+    char str[1024] = {0};
 
 	int recLen  = m_SerialPort.readAllData(str);
 
 	if (recLen > 0)
 	{
+        recLen = recLen < 1024 ? recLen : 1023;
+        str[recLen] = '\0';
+
 		CString str1(str);
 
 		rx += str1.GetLength();

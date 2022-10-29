@@ -28,10 +28,11 @@ using namespace itas109;
 class mySlot : public has_slots<>
 {
 public:
-	mySlot(CSerialPort & sp)
+	mySlot(CSerialPort& sp)
+        : m_sp(sp)
+        , str{0}
+        , recLen(0)
     {
-	    recLen = -1;
-        m_sp = sp; 
     };
 
 	void onReadEvent()
@@ -41,6 +42,7 @@ public:
 
 		if(recLen > 0)
 		{
+            recLen = recLen < 1024 ? recLen : 1023;
 			str[recLen] = '\0';
 
             bodymsg("[RX] - ");
@@ -170,7 +172,7 @@ void setPortName(void)
             m_portName = m_availablePortsList[i].portName;
         }
 
-        char str[50];
+        char str[50] = {0};
         sprintf(str,"%d - %s %s\n",i,const_cast<char*>(m_availablePortsList[i].portName.c_str()),const_cast<char*>(m_availablePortsList[i].description.c_str()));
         bodymsg(str);
 	}
@@ -208,7 +210,7 @@ void open(void)
         setPortName();
     }
 
-    char str[50];
+    char str[50] = {0};
     sprintf(str,"open %s\n",const_cast<char*>(m_portName.c_str()));
     bodymsg(str);
 
@@ -218,7 +220,7 @@ void open(void)
 	
 	if(m_serialPort.isOpened())
 	{
-        char str[50];
+        char str[50] = {0};
         sprintf(str,"open success. %s,%d,%s,%d,%s\n",
                 const_cast<char*>(m_portName.c_str()),
                 m_serialPort.getBaudRate(),

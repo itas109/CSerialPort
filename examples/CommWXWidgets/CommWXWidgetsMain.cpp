@@ -197,12 +197,12 @@ CommWXWidgetsDialog::~CommWXWidgetsDialog()
 
 void CommWXWidgetsDialog::onReadEvent()
 {
-    char str[1024];
+    char str[1024] = {0};
 	int recLen  = m_SerialPort.readAllData(str);
 
 	if (recLen > 0)
 	{
-		recLen = recLen < 1024 ? recLen : 1024;
+		recLen = recLen < 1024 ? recLen : 1023;
 		str[recLen] = '\0';
 		RichTextCtrlReceive->AppendText(str);
 
