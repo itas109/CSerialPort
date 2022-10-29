@@ -24,7 +24,6 @@
 #include "CSerialPort/SerialPortInfo.h"
 #include <vector>
 using namespace itas109;
-using namespace std;
 
 class mySlot : public has_slots<>
 {
@@ -35,7 +34,7 @@ public:
         m_sp = sp; 
     };
 
-	void OnSendMessage()
+	void onReadEvent()
 	{
 		//read
 		recLen = m_sp.readAllData(str);
@@ -60,11 +59,11 @@ private:
 	int recLen;
 };
 
-string ParityArray[] = {"None", "Odd", "Even", "Mark", "Space" };
-string StopArray[] = {"1", "1.5", "2"};
+std::string ParityArray[] = {"None", "Odd", "Even", "Mark", "Space" };
+std::string StopArray[] = {"1", "1.5", "2"};
 
 std::string m_portName = "";
-vector<SerialPortInfo> m_availablePortsList;
+std::vector<SerialPortInfo> m_availablePortsList;
 CSerialPort m_serialPort;
 mySlot receive(m_serialPort);
 
@@ -231,7 +230,7 @@ void open(void)
 		// std::cout << "open success" << std::endl;
 
         //connect for read
-        m_serialPort.readReady.connect(&receive, &mySlot::OnSendMessage);
+        m_serialPort.readReady.connect(&receive, &mySlot::onReadEvent);
 	}
 	else
 	{
