@@ -172,7 +172,7 @@ CommWXWidgetsDialog::CommWXWidgetsDialog(wxWindow* parent,wxWindowID id)
     SetLabel(title);
 
     // get avaiable ports
-    vector<SerialPortInfo> m_portsList = CSerialPortInfo::availablePortInfos();
+    std::vector<SerialPortInfo> m_portsList = CSerialPortInfo::availablePortInfos();
 	for (size_t i = 0; i < m_portsList.size(); i++)
 	{
 	    if(0 == i)
@@ -186,7 +186,7 @@ CommWXWidgetsDialog::CommWXWidgetsDialog(wxWindow* parent,wxWindowID id)
 	}
 
     // bind receive function
-    m_SerialPort.readReady.connect(this, &CommWXWidgetsDialog::OnReceive);
+    m_SerialPort.readReady.connect(this, &CommWXWidgetsDialog::onReadEvent);
 }
 
 CommWXWidgetsDialog::~CommWXWidgetsDialog()
@@ -195,13 +195,14 @@ CommWXWidgetsDialog::~CommWXWidgetsDialog()
     //*)
 }
 
-void CommWXWidgetsDialog::OnReceive()
+void CommWXWidgetsDialog::onReadEvent()
 {
     char str[1024];
 	int recLen  = m_SerialPort.readAllData(str);
 
 	if (recLen > 0)
 	{
+		recLen = recLen < 1024 ? recLen : 1024;
 		str[recLen] = '\0';
 		RichTextCtrlReceive->AppendText(str);
 
