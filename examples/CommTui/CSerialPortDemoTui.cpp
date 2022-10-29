@@ -30,15 +30,14 @@ class mySlot : public has_slots<>
 public:
 	mySlot(CSerialPort& sp)
         : m_sp(sp)
-        , str{0}
-        , recLen(0)
     {
     };
 
 	void onReadEvent()
 	{
 		//read
-		recLen = m_sp.readAllData(str);
+        char str[1024] = {0};
+		int recLen = m_sp.readAllData(str);
 
 		if(recLen > 0)
 		{
@@ -56,9 +55,6 @@ private:
 
 private:
 	CSerialPort m_sp;
-
-	char str[1024];
-	int recLen;
 };
 
 std::string ParityArray[] = {"None", "Odd", "Even", "Mark", "Space" };

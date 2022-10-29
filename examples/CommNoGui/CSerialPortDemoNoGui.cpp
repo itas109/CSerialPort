@@ -36,15 +36,14 @@ class MyListener : public has_slots<>
 public:
     MyListener(CSerialPort *sp)
         : p_sp(sp)
-        , data{0}
-        , recLen(0)
     {
     };
 
     void onReadEvent()
     {
         // read
-        recLen = p_sp->readAllData(data);
+        char data[1024] = {0};
+        int recLen = p_sp->readAllData(data);
 
         if (recLen > 0)
         {
@@ -59,9 +58,6 @@ public:
 
 private:
     CSerialPort *p_sp;
-
-    char data[1024];
-    int recLen;
 };
 
 int main()
