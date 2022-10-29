@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->comboBoxPortName->insertItem(i,QString::fromLocal8Bit(portNameList[i].portName.c_str()));
     }
 
-    m_SerialPort.readReady.connect(this, &MainWindow::OnReceive);
+    m_SerialPort.readReady.connect(this, &MainWindow::onReadEvent);
 
     ui->comboBoxBaudrate->setCurrentText("9600");
     ui->comboBoxDataBit->setCurrentText("8");
@@ -49,7 +49,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::OnReceive()
+void MainWindow::onReadEvent()
 {
     int iRet = -1;
     char * str = NULL;
@@ -182,7 +182,7 @@ void MainWindow::on_checkBoxSync_stateChanged(int arg1)
 
 void MainWindow::on_pushButtonReadSync_clicked()
 {
-    OnReceive();
+    onReadEvent();
 }
 
 void MainWindow::on_checkBoxSync_clicked(bool checked)

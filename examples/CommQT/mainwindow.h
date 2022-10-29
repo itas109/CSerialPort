@@ -21,7 +21,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void OnReceive();
+    void onReadEvent();
 
     void OnUpdateReceive(QString str);
 
