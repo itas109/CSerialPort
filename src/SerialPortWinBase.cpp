@@ -1,4 +1,5 @@
 ﻿#include "CSerialPort/SerialPortWinBase.h"
+#include "CSerialPort/SerialPortListener.h"
 #include "CSerialPort/ithread.hpp"
 #include <iostream>
 
@@ -110,12 +111,12 @@ bool CSerialPortWinBase::openPort()
     bool bRet = false;
 
     TCHAR *tcPortName = NULL;
-    m_portName = "\\\\.\\" + m_portName; // support COM10 above \\\\.\\COM10
+    std::string portName = "\\\\.\\" + m_portName; // support COM10 above \\\\.\\COM10
 #ifdef UNICODE
-    std::wstring wstr = stringToWString(m_portName);
+    std::wstring wstr = stringToWString(portName);
     tcPortName = const_cast<TCHAR *>(wstr.c_str());
 #else
-    tcPortName = const_cast<TCHAR *>(m_portName.c_str());
+    tcPortName = const_cast<TCHAR *>(portName.c_str());
 #endif
     unsigned long configSize = sizeof(COMMCONFIG);
     m_comConfigure.dwSize = configSize;
@@ -335,7 +336,14 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
                             int len = p_base->readDataWin(data, comstat.cbInQue);
                             p_base->p_buffer->write(data, len);
 
+#ifdef USE_CSERIALPORT_LISTENER
+                            if (p_base->p_readEvent)
+                            {
+                                p_base->p_readEvent->onReadEvent(p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
+                            }
+#else
                             p_base->readReady._emit();
+#endif
                         }
 
                         delete[] data;
