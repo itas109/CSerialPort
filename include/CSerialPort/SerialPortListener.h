@@ -30,9 +30,10 @@ public:
 
     /**
      * @brief on read event 响应读取事件
-     *
+     * @param portName [out] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
+     * @param readBufferLen [out] read buffer length 读取缓冲区数据长度
      */
-    virtual void onReadEvent() = 0;
+    virtual void onReadEvent(const char *portName, unsigned int readBufferLen) = 0;
 };
 } // namespace itas109
 #endif //__CSERIALPORT_LISTENER_H__
