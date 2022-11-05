@@ -10,28 +10,25 @@
 # You may use, copy, modify, and distribute the CSerialPort, under the terms
 # of the LICENSE file.
 ############################################################################
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.8.2)
 
 project(CommCSharp LANGUAGES CSharp)
 
-# file(GLOB_RECURSE ALL_SRCS ../generate/itas109/*.cs ../generate/*.cs)
-# source_group(generate ${ALL_SRCS})
-
 set(ALL_SRCS
-${PROJECT_SOURCE_DIR}/../generate/itas109/CSerialPort.cs
-${PROJECT_SOURCE_DIR}/../generate/itas109/CSerialPortInfo.cs
-${PROJECT_SOURCE_DIR}/../generate/itas109/CSerialPortListener.cs
-${PROJECT_SOURCE_DIR}/../generate/itas109/BaudRate.cs
-${PROJECT_SOURCE_DIR}/../generate/itas109/DataBits.cs
-${PROJECT_SOURCE_DIR}/../generate/itas109/FlowControl.cs
-${PROJECT_SOURCE_DIR}/../generate/itas109/OperateMode.cs
-${PROJECT_SOURCE_DIR}/../generate/itas109/Parity.cs
-${PROJECT_SOURCE_DIR}/../generate/itas109/StopBits.cs
-${PROJECT_SOURCE_DIR}/../generate/itas109/SerialPortInfo.cs
-${PROJECT_SOURCE_DIR}/../generate/cserialportCSharp.cs
-${PROJECT_SOURCE_DIR}/../generate/cserialportCSharpPINVOKE.cs
-${PROJECT_SOURCE_DIR}/../generate/SerialPortError.cs
-${PROJECT_SOURCE_DIR}/../generate/SerialPortInfoVector.cs
+    ${CMAKE_SWIG_OUTDIR}/cserialportCSharp.cs
+    ${CMAKE_SWIG_OUTDIR}/cserialportCSharpPINVOKE.cs
+    ${CMAKE_SWIG_OUTDIR}/CSerialPort.cs
+    ${CMAKE_SWIG_OUTDIR}/CSerialPortInfo.cs
+    ${CMAKE_SWIG_OUTDIR}/CSerialPortListener.cs
+    ${CMAKE_SWIG_OUTDIR}/BaudRate.cs
+    ${CMAKE_SWIG_OUTDIR}/DataBits.cs
+    ${CMAKE_SWIG_OUTDIR}/FlowControl.cs
+    ${CMAKE_SWIG_OUTDIR}/OperateMode.cs
+    ${CMAKE_SWIG_OUTDIR}/Parity.cs
+    ${CMAKE_SWIG_OUTDIR}/StopBits.cs
+    ${CMAKE_SWIG_OUTDIR}/SerialPortError.cs
+    ${CMAKE_SWIG_OUTDIR}/SerialPortInfo.cs
+    ${CMAKE_SWIG_OUTDIR}/SerialPortInfoVector.cs
 )
 
 foreach(src ${ALL_SRCS})

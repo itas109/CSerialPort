@@ -8,15 +8,13 @@
  * @brief CSharp CSerialPort Example  C#的CSerialPort示例程序
  */
 using System;
-using System.Runtime.InteropServices; // Marshal
 
-using itas109;
 public class Program
 {
     static void Main()
     {
         CSerialPort sp = new CSerialPort();
-        Console.WriteLine("Version: {0}", sp.getVersion());
+        Console.WriteLine("Version: {0}\n", sp.getVersion());
 
         CSerialPortListener listener = new MyListener(sp);
 
@@ -36,7 +34,7 @@ public class Program
         }
         else
         {
-			int input = -1;
+            int input = -1;
             do
             {
                 Console.WriteLine("Please Input The Index Of Port(1 - {0})", spInfoVec.Count);
@@ -63,6 +61,7 @@ public class Program
                     FlowControl.FlowNone, // flow
                     4096                  // read buffer size
                     );
+            sp.setReadIntervalTimeout(0); // read interval timeout
 
             sp.open();
 
@@ -72,10 +71,10 @@ public class Program
             sp.connectReadEvent(listener);
 
             // write hex data
-            sp.writeData(Marshal.UnsafeAddrOfPinnedArrayElement(new byte[] { 0x31, 0x32, 0x33, 0x34, 0x35 }, 0), 5);
+            sp.writeData(new byte[] { 0x31, 0x32, 0x33, 0x34, 0x35 }, 5);
 
             // write str data
-            sp.writeData(Marshal.StringToHGlobalAnsi("itas109"), 7);
+            sp.writeData(System.Text.Encoding.Default.GetBytes("itas109"), 7);
         }
 
         for (; ; ) { }
@@ -88,26 +87,18 @@ public class MyListener : CSerialPortListener
       : base()
     {
         m_sp = sp;
-        data = Marshal.AllocHGlobal(1024);
-    }
-
-    ~MyListener()
-    {
-        Marshal.FreeHGlobal(data);
     }
 
     public override void onReadEvent(string portName, uint readBufferLen)
     {
-        // read
-        recLen = m_sp.readAllData(data);
-        if (recLen > 0)
+        if (readBufferLen > 0)
         {
-            // IntPtr to byte[]
-            byte[] hex = new byte[recLen];
-            Marshal.Copy(data, hex, 0, recLen);
-            // IntPtr to string
-            string str = Marshal.PtrToStringAnsi(data, recLen);
-            Console.WriteLine("{0} - Count: {1}, Length: {2}, Str: {3}, Hex: {4}", portName, ++countRead, recLen, str, BitConverter.ToString(hex));
+            // read
+            byte[] data = new byte[readBufferLen];
+            int recLen = m_sp.readAllData(data);
+
+            string str = System.Text.Encoding.Default.GetString(data);
+            Console.WriteLine("{0} - Count: {1}, Length: {2}, Str: {3}, Hex: {4}", portName, ++countRead, recLen, str, BitConverter.ToString(data));
 
             // return receive data
             m_sp.writeData(data, recLen);
@@ -115,7 +106,5 @@ public class MyListener : CSerialPortListener
     }
 
     CSerialPort m_sp;
-    IntPtr data = IntPtr.Zero;
-    int recLen = 0;
     int countRead = 0;
 }
