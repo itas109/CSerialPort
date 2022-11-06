@@ -230,7 +230,7 @@ public:
      */
     virtual unsigned int getUsedLen()
     {
-        return (m_tail > m_head) ? (m_tail - m_head) : (m_tail + 2 * m_maxBufferSize - m_head);
+        return (m_tail >= m_head) ? (m_tail - m_head) : (m_tail + 2 * m_maxBufferSize - m_head);
     }
 
     /**
