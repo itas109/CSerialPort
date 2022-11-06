@@ -74,7 +74,7 @@ else {
             let countRead = 0;
             for (; ;) {
                 let recLen = sp.readAllData(readData);
-                if (recLen > 0 && recLen != 4096) {
+                if (recLen > 0) {
                     let str = addon.cdata(readData, recLen);
                     console.log(util.format('Count: %d, Length: %d, Str: %s, Hex: %s', ++countRead, recLen, str, Buffer.from(str, 'utf8').toString('hex')));
 
