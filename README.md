@@ -2,7 +2,7 @@
 
 [中文](README_zh_CN.md)
 
-CSerialPort is a lightweight cross-platform serial port library based on C/C++, which can easy to read and write serial port on multiple operating system.
+CSerialPort is a lightweight cross-platform serial port library based on C/C++, which can easy to read and write serial port on multiple operating system. Also support C#, Java, Python, Node.js etc.
 
 <p>
 <a href="https://github.com/itas109/CSerialPort/releases"><img alt="Version" src="https://img.shields.io/github/release/itas109/CSerialPort"/></a>
@@ -40,8 +40,8 @@ CSerialPort was tested on the following platforms
 - [x] 1.support windows and linux first
 - [ ] 2.add communicating protocol
 - [x] 3.support hot swap - [CSerialPortExtend](https://github.com/itas109/CSerialPortExtend)
-- [ ] 4.higher efficiency notify module
-- [ ] 5.support other language,such as C, C#, Python, Java, Golang
+- [ ] 4.higher efficiency notify module - will replace sigslot.h with CSerialPortListener
+- [x] 5.support other language - C#, Java, Python, Node.js etc. - more information [bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
 - [x] 6.sync serial port communication
 - [x] 7.new cross-platform gui serial port tool - [CommMaster](https://gitee.com/itas109/CommMaster)
 - [x] 8.add introduction and tutorial of CSerialPort - [CSerialPort Tutorial ](https://blog.csdn.net/itas109/category_11520540.html)
@@ -50,10 +50,11 @@ CSerialPort was tested on the following platforms
 ## Short-term Goal
 
 - [x] 1.cross-platform OS identify class
-- [x] 2.cross-platform Thread class
-- [x] 3.cross-platform Lock class
-- [x] 4.cross-platform higher efficiency Timer class
-- [ ] 5.Performance test report(Throughput && delay && packet dropout rates)
+- [x] 2.cross-platform thread class
+- [x] 3.cross-platform lock class
+- [x] 4.cross-platform higher efficiency timer class
+- [ ] 5.cross-platform thread pool class
+- [ ] 6.Performance test report(Throughput && delay && packet dropout rates)
 
 # Latest version
 
