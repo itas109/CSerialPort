@@ -59,8 +59,8 @@ CSerialPort已经在以下平台做过测试
 
 # Latest version 最新版本
 
-## Version: 4.2.0.221001
-by itas109 on 2022-10-01
+## Version: 4.2.1.221107
+by itas109 on 2022-11-07
 
 # Quick Start 快速开始
 
@@ -76,16 +76,16 @@ $ cmake --build .
 
 ```
 CSerialPort/bin $ ./bin/CSerialPortDemoNoGui
-Version : https://github.com/itas109/CSerialPort - V4.2.0.221001
+Version: https://github.com/itas109/CSerialPort - V4.2.1.221107
 
-availableFriendlyPorts :
-0 - /dev/ttyS0
+availableFriendlyPorts:
+1 - /dev/ttyS0
 
-Please input index of the port(0 - 0) :
-0
-select port name : /dev/ttyS0
-open /dev/ttyS0 success
-receive data : itas109, receive size : 7, receive count : 1
+Please Input The Index Of Port(1 - 2)
+1
+Port Name: /dev/ttyS0
+Open /dev/ttyS0 Success
+Count: 1, Length: 29, Str: https://blog.csdn.net/itas109, Hex: 0x68 0x74 0x74 0x70 0x73 0x3A 0x2F 0x2F 0x62 0x6C 0x6F 0x67 0x2E 0x63 0x73 0x64 0x6E 0x2E 0x6E 0x65 0x74 0x2F 0x69 0x74 0x61 0x73 0x31 0x30 0x39
 ```
 
 # Install CSerialPort Using Vcpkg 使用vcpkg安装CSerialPort

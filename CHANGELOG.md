@@ -3,6 +3,21 @@
 
 ---
 
+## v4.2.1 (2022-11-07)
+
+Feature:
+* read buffer size deafult 4096 Bytes 读取缓冲区大小默认为4096字节
+* read interval timeout default 0ms  读取超时间隔默认0ms，即实时接收
+* vcpkg install CSerialPort 支持vcpkg安装CSerialPort
+* wxWidgets demo 新增wxWidgets示例程序
+
+Experimental:
+* new notify class CSerialPortListener(USE_CSERIALPORT_LISTENER) 新的事件通知类CSerialPortListener(宏定义USE_CSERIALPORT_LISTENER开启)
+* CSerialPort for C#(CSharp)  支持C#(CSharp)调用CSerialPort
+* CSerialPort for Java 支持Java调用CSerialPort
+* CSerialPort for Python 支持Python调用CSerialPort
+* CSerialPort for JavaScript 支持JavaScript调用CSerialPort
+
 ## v4.2.0 (2022-10-01)
 
 Fixed:
