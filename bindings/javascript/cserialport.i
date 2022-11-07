@@ -24,13 +24,13 @@
 %include "std_vector.i" // std::vector
 %include "cdata.i"      // cdata memmove for void*
 %include "cmalloc.i"    // malloc free for void*
-%malloc(void);          // malloc void*
-%free(void);            // free void*
+%malloc(void)           // malloc void*
+%free(void)             // free void*
 
-%template(SerialPortInfoVector) std::vector<itas109::SerialPortInfo>;
+%template(SerialPortInfoVector) std::vector<itas109::SerialPortInfo>
 
 // enable inherit CSerialPortListener interface to receive data
-%feature("director") itas109::CSerialPortListener;
+%feature("director") itas109::CSerialPortListener
 
 %include "CSerialPort/SerialPort_global.h"
 %include "CSerialPort/SerialPort.h"

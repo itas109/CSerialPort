@@ -24,12 +24,12 @@
 %include "std_vector.i" // std::vector
 
 %include "various.i" // typemaps for java
-%apply char* BYTE {void*}; // void* => byte[]
+%apply char* BYTE {void*} // void* => byte[]
 
-%template(SerialPortInfoVector) std::vector<itas109::SerialPortInfo>;
+%template(SerialPortInfoVector) std::vector<itas109::SerialPortInfo>
 
 // enable inherit CSerialPortListener interface to receive data
-%feature("director") itas109::CSerialPortListener;
+%feature("director") itas109::CSerialPortListener
 
 %include "CSerialPort/SerialPort_global.h"
 %include "CSerialPort/SerialPort.h"
