@@ -68,12 +68,12 @@ elseif (UNIX)
 	target_link_libraries( ${PROJECT_NAME} pthread)
 endif()
 
-install(DIRECTORY ../include/CSerialPort DESTINATION include FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY ../include/CSerialPort DESTINATION include FILES_MATCHING PATTERN "*.h" PATTERN "*Base.h" EXCLUDE)
 
 install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib
-		)
+        ARCHIVE DESTINATION lib
+)
 
 install(FILES ../cserialport-config.cmake.in DESTINATION lib/cmake/CSerialPort RENAME cserialport-config.cmake)
