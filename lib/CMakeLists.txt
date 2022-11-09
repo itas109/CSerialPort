@@ -15,10 +15,6 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(libcserialport)
 
-if (NOT BUILD_SHARED_LIBS)
-	set(BUILD_SHARED_LIBS ON)
-endif()
-
 # static libarary
 # add_compile_options(-static)
 
