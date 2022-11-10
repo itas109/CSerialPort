@@ -26,14 +26,29 @@ else()
 
   set(CSerialPortRootPath "${CMAKE_CURRENT_SOURCE_DIR}/../..")
   include_directories(${CSerialPortRootPath}/include)
+  list(APPEND CSerialPortHeaderFiles 
+    ${CSerialPortRootPath}/include/CSerialPort/SerialPort_global.h
+    ${CSerialPortRootPath}/include/CSerialPort/SerialPort_version.h
+    ${CSerialPortRootPath}/include/CSerialPort/SerialPort.h
+    ${CSerialPortRootPath}/include/CSerialPort/SerialPortInfo.h
+    ${CSerialPortRootPath}/include/CSerialPort/SerialPortBase.h
+    ${CSerialPortRootPath}/include/CSerialPort/SerialPortInfoBase.h
+    ${CSerialPortRootPath}/include/CSerialPort/sigslot.h
+    ${CSerialPortRootPath}/include/CSerialPort/SerialPortListener.h
+    ${CSerialPortRootPath}/include/CSerialPort/ibuffer.hpp
+    ${CSerialPortRootPath}/include/CSerialPort/ithread.hpp
+    ${CSerialPortRootPath}/include/CSerialPort/itimer.hpp
+  )
   list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPort.cpp ${CSerialPortRootPath}/src/SerialPortBase.cpp ${CSerialPortRootPath}/src/SerialPortInfo.cpp ${CSerialPortRootPath}/src/SerialPortInfoBase.cpp)
   if (WIN32)
+      list(APPEND CSerialPortHeaderFiles ${CSerialPortRootPath}/include/CSerialPort/SerialPortWinBase.h ${CSerialPortRootPath}/include/CSerialPort/SerialPortInfoWinBase.h)
       list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortInfoWinBase.cpp ${CSerialPortRootPath}/src/SerialPortWinBase.cpp)
   elseif (UNIX)
+      list(APPEND CSerialPortHeaderFiles ${CSerialPortRootPath}/include/CSerialPort/SerialPortUnixBase.h ${CSerialPortRootPath}/include/CSerialPort/SerialPortInfoUnixBase.h)
       list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortInfoUnixBase.cpp ${CSerialPortRootPath}/src/SerialPortUnixBase.cpp)
   endif ()
 
-  add_executable( ${PROJECT_NAME} CSerialPortDemoNoGui.cpp ${CSerialPortSourceFiles})
+  add_executable( ${PROJECT_NAME} CSerialPortDemoNoGui.cpp ${CSerialPortHeaderFiles} ${CSerialPortSourceFiles})
 
   if (WIN32)
 	# for function availableFriendlyPorts
