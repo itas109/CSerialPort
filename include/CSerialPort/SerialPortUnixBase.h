@@ -28,10 +28,6 @@
 // Serial Programming Guide for POSIX Operating Systems
 // https://digilander.libero.it/robang/rubrica/serial.htm
 
-// sigslot
-// https://sourceforge.net/p/sigslot/bugs/8/
-#include "sigslot.h"
-
 /**
  * @brief the CSerialPort unix Base class unix串口基类
  * @see inherit 继承 CSerialPortBase
@@ -347,9 +343,6 @@ private:
      * @retval [other] return number Of bytes read 返回读取字节数
      */
     virtual int readDataUnix(void *data, int size);
-
-public:
-    sigslot::signal0<> readReady; ///< sigslot for read 读数据信号
 
 private:
     std::string m_portName;

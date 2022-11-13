@@ -21,9 +21,6 @@
 #include <tchar.h>   //tchar
 #include <windows.h>
 
-// sigslot
-#include "sigslot.h"
-
 /**
  * @brief the CSerialPort Windows Base class windows串口基类
  * @see inherit 继承 CSerialPortBase
@@ -336,9 +333,6 @@ private:
      * @retval [other] return number Of bytes read 返回读取字节数
      */
     virtual int readDataWin(void *data, int size);
-
-public:
-    sigslot::signal0<> readReady; ///< sigslot for read 读数据信号
 
 private:
     std::string m_portName;

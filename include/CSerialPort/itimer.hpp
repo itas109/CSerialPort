@@ -22,6 +22,23 @@
 #include <condition_variable>
 #endif
 
+#define PORT_NAME_MAX_LEN 256
+
+char *my_strncpy(char *dest, const char *src, unsigned int count)
+{
+    // assert(dest != NULL && src != NULL && count != 0);
+
+    while (--count && (*dest++ = *src++))
+    {
+    }
+
+    if (0 == count)
+    {
+        *dest = '\0';
+    }
+    return dest;
+}
+
 namespace itas109
 {
 template <class T> class ITimer
@@ -65,7 +82,7 @@ public:
         if (p_base->m_cv.timeWait(mutex, p_base->m_timeoutMs, p_base->m_tryStop))
         {
             // timeout
-            ((p_base->p_class)->*(p_base->p_memfun))();
+            ((p_base->p_class)->*(p_base->p_memfun))(p_base->m_portName, p_base->m_readBufferLen);
         }
 #endif
 
@@ -83,18 +100,20 @@ public:
         return 0;
     }
 
-    void startOnce(unsigned int timeoutMs, T *pclass, void (T::*pmemfun)())
+    void startOnce(unsigned int timeoutMs, T *pclass, void (T::*pmemfun)(const char *, unsigned int), const char *portName, unsigned int readBufferLen)
     {
+        m_timeoutMs = timeoutMs;
+        p_class = pclass;
+        p_memfun = pmemfun;
+        my_strncpy(m_portName, portName, PORT_NAME_MAX_LEN);
+        m_readBufferLen = readBufferLen;
+
         if (m_isRunning)
         {
             return;
         }
 
         m_isRunning = true;
-
-        m_timeoutMs = timeoutMs;
-        p_class = pclass;
-        p_memfun = pmemfun;
 
         if (I_THREAD_INITIALIZER != handle)
         {
@@ -148,9 +167,11 @@ private:
 
     itas109::i_thread_t handle;
     unsigned int m_timeoutMs;
+    char m_portName[PORT_NAME_MAX_LEN];
+    unsigned int m_readBufferLen;
 
     T *p_class;
-    void (T::*p_memfun)();
+    void (T::*p_memfun)(const char *, unsigned int);
 };
 } // namespace itas109
 #endif // __I_TIMER_HPP__

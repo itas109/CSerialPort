@@ -21,7 +21,11 @@ namespace itas109
 {
 class IMutex;
 class CSerialPortListener;
-}
+template <class T> class ITimer;
+} // namespace itas109
+
+// sigslot
+#include "sigslot.h"
 
 /**
  * @brief the CSerialPort Base class 串口基类
@@ -304,6 +308,9 @@ public:
      * @param set [in]
      */
     virtual void setRts(bool set = true) = 0;
+
+public:
+    sigslot::signal2<const char *, unsigned int> readReady; ///< sigslot for read 读数据信号
 
 protected:
     int m_lastError;                           ///< last error code 最后的错误代码

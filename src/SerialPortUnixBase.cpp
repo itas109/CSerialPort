@@ -308,7 +308,7 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
                             p_base->p_readEvent->onReadEvent(p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
                         }
 #else
-                        p_base->readReady._emit();
+                        p_base->readReady._emit(p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
 #endif
                     }
 
@@ -460,7 +460,7 @@ int CSerialPortUnixBase::readData(void *data, int size)
     {
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
         {
-            iRet = p_buffer->read((char*)data, size);
+            iRet = p_buffer->read((char *)data, size);
         }
         else
         {

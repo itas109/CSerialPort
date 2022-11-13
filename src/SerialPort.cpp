@@ -24,12 +24,12 @@ CSerialPort::CSerialPort()
 {
     p_serialPortBase = new CSERIALPORTBASE();
 
-    p_timer = new ITimer< sigslot::signal0<> >(); // add a space between consecutive right angle brackets
+    p_timer = new ITimer<ISignal>();
 
     p_serialPortBase->setReadIntervalTimeout(0);
     p_serialPortBase->setMinByteReadNotify(1);
 
-    ((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
+    p_serialPortBase->readReady.connect(this, &CSerialPort::onReadReady);
 }
 
 itas109::CSerialPort::CSerialPort(const std::string &portName)
@@ -38,17 +38,17 @@ itas109::CSerialPort::CSerialPort(const std::string &portName)
 {
     p_serialPortBase = new CSERIALPORTBASE(portName);
 
-    p_timer = new ITimer< sigslot::signal0<> >();  // add a space between consecutive right angle brackets
+    p_timer = new ITimer<ISignal>();
 
     p_serialPortBase->setReadIntervalTimeout(0);
     p_serialPortBase->setMinByteReadNotify(1);
 
-    ((CSERIALPORTBASE *)p_serialPortBase)->readReady.connect(this, &CSerialPort::onReadReady);
+    p_serialPortBase->readReady.connect(this, &CSerialPort::onReadReady);
 }
 
 CSerialPort::~CSerialPort()
 {
-    ((CSERIALPORTBASE *)p_serialPortBase)->readReady.disconnect_all();
+    p_serialPortBase->readReady.disconnect_all();
 
     if (p_serialPortBase)
     {
@@ -411,7 +411,7 @@ std::string itas109::CSerialPort::getVersion()
     return std::string("https://github.com/itas109/CSerialPort - V") + std::string(CSERIALPORT_VERSION);
 }
 
-void itas109::CSerialPort::onReadReady()
+void itas109::CSerialPort::onReadReady(const char *portName, unsigned int readBufferLen)
 {
     if (p_serialPortBase)
     {
@@ -425,12 +425,12 @@ void itas109::CSerialPort::onReadReady()
                     p_timer->stop();
                 }
 
-                p_timer->startOnce(readIntervalTimeoutMS, &readReady, &sigslot::signal0<>::_emit);
+                p_timer->startOnce(readIntervalTimeoutMS, &readReady, &ISignal::_emit, portName, readBufferLen);
             }
         }
         else
         {
-            readReady._emit();
+            readReady._emit(portName, readBufferLen);
         }
     }
 }

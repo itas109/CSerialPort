@@ -16,18 +16,20 @@
 
 #include <string>
 
-#include "SerialPort_global.h"
 #include "SerialPortListener.h"
+#include "SerialPort_global.h"
 
 #include "sigslot.h" // will remove in the future
 #ifndef USE_CSERIALPORT_LISTENER
 using namespace sigslot;
 #endif
 
+typedef sigslot::signal2<const char *, unsigned int> ISignal;
+
 namespace itas109
 {
 template <class T> class ITimer;
-};
+}
 
 class CSerialPortBase;
 
@@ -108,18 +110,18 @@ public:
 
     /**
      * @brief connect read event 连接读取事件
-	 * @todo Not implemented 未实现
+     * @todo Not implemented 未实现
      *
      * @param event [in] serial port listener 串口监听事件类
      * @return return connect status 返回连接状态
      * @retval 0 success 成功
      * @retval 14 invalid parameter error 无效的参数
      */
-    int connectReadEvent(itas109::CSerialPortListener* event);
+    int connectReadEvent(itas109::CSerialPortListener *event);
 
     /**
      * @brief disconnect read event 断开连接读取事件
-	 * @todo Not implemented 未实现
+     * @todo Not implemented 未实现
      *
      * @return return disconnect status 返回断开连接状态
      * @retval 0 success 成功
@@ -325,12 +327,12 @@ public:
 #ifdef USE_CSERIALPORT_LISTENER
 private:
 #endif
-    void onReadReady();
-    sigslot::signal0<> readReady; // sigslot
+    void onReadReady(const char *portName, unsigned int readBufferLen);
+    ISignal readReady; // sigslot
 
 private:
     CSerialPortBase *p_serialPortBase;
-    itas109::ITimer< sigslot::signal0<> > *p_timer;
+    itas109::ITimer<ISignal> *p_timer;
 };
 } // namespace itas109
 #endif //__CSERIALPORT_H__
