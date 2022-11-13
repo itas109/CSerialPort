@@ -33,20 +33,29 @@ public:
     {
     };
 
-	void onReadEvent()
+	void onReadEvent(const char *portName, unsigned int readBufferLen)
 	{
-		//read
-        char str[1024] = {0};
-		int recLen = m_sp.readAllData(str);
-
-		if(recLen > 0)
+		if(readBufferLen > 0)
 		{
-            recLen = recLen < 1024 ? recLen : 1023;
-			str[recLen] = '\0';
+			char *data = new char[readBufferLen + 1]; // '\0'
 
-            bodymsg("[RX] - ");
-            bodymsg(str);
-            bodymsg("\n");
+            if (data)
+            {
+                // read
+                int recLen = m_sp.readData(data, readBufferLen);
+
+                if (recLen > 0)
+                {
+                    data[recLen] = '\0';
+                    
+					bodymsg("[RX] - ");
+					bodymsg(data);
+					bodymsg("\n");
+                }
+
+                delete[] data;
+                data = NULL;
+            }
 		}
 	};
 

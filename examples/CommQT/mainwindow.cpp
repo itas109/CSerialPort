@@ -49,35 +49,32 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::onReadEvent()
+void MainWindow::onReadEvent(const char *portName, unsigned int readBufferLen)
 {
-    int iRet = -1;
-    char * str = NULL;
-    str = new char[512];
-    iRet = m_SerialPort.readAllData(str);
-
-//    qDebug() << "read length : " << iRet;
-
-    if(iRet != -1)
+    if(readBufferLen > 0)
     {
-        // TODO: 中文需要由两个字符拼接，否则显示为空""
-        QString m_str = QString::fromLocal8Bit(str,iRet);
+        int recLen = 0;
+        char * str = NULL;
+        str = new char[readBufferLen];
+        recLen = m_SerialPort.readData(str, readBufferLen);
 
-//        qDebug() << "receive : " << m_str;
+        if(recLen > 0)
+        {
+            // TODO: 中文需要由两个字符拼接，否则显示为空""
+            QString m_str = QString::fromLocal8Bit(str,recLen);
+            emitUpdateReceive(m_str);
+        }
+        else
+        {
 
-        emitUpdateReceive(m_str);
-	}
-    else
-    {
+        }
 
+        if(str)
+        {
+            delete[] str;
+            str = NULL;
+        }
     }
-
-    if(str)
-    {
-        delete[] str;
-        str = NULL;
-    }
-
 }
 
 void MainWindow::OnUpdateReceive(QString str)
@@ -182,7 +179,20 @@ void MainWindow::on_checkBoxSync_stateChanged(int arg1)
 
 void MainWindow::on_pushButtonReadSync_clicked()
 {
-    onReadEvent();
+    int recLen = 0;
+    char str[4096] = {0};
+    recLen = m_SerialPort.readAllData(str);
+
+    if(recLen > 0)
+    {
+        // TODO: 中文需要由两个字符拼接，否则显示为空""
+        QString m_str = QString::fromLocal8Bit(str,recLen);
+        emitUpdateReceive(m_str);
+    }
+    else
+    {
+
+    }
 }
 
 void MainWindow::on_checkBoxSync_clicked(bool checked)

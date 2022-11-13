@@ -35,24 +35,32 @@ class MyListener : public has_slots<>
 {
 public:
     MyListener(CSerialPort *sp)
-        : p_sp(sp)
-    {
-    };
+        : p_sp(sp){};
 
-    void onReadEvent()
+    void onReadEvent(const char *portName, unsigned int readBufferLen)
     {
-        // read
-        char data[1024] = {0};
-        int recLen = p_sp->readAllData(data);
-
-        if (recLen > 0)
+        if (readBufferLen > 0)
         {
-            recLen = recLen < 1024 ? recLen : 1023; // suppose receive length less than 1024
-            data[recLen] = '\0';
-            std::cout << "Count: " << ++countRead << ", Length: " << recLen << ", Str: " << data << ", Hex: " << char2hexstr(data, recLen).c_str() << std::endl;
+            char *data = new char[readBufferLen + 1]; // '\0'
 
-            // return receive data
-            p_sp->writeData(data, recLen);
+            if (data)
+            {
+                // read
+                int recLen = p_sp->readData(data, readBufferLen);
+
+                if (recLen > 0)
+                {
+                    data[recLen] = '\0';
+                    std::cout << portName << " - Count: " << ++countRead << ", Length: " << recLen << ", Str: " << data << ", Hex: " << char2hexstr(data, recLen).c_str()
+                              << std::endl;
+
+                    // return receive data
+                    p_sp->writeData(data, recLen);
+                }
+
+                delete[] data;
+                data = NULL;
+            }
         }
     };
 

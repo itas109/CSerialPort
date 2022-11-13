@@ -195,20 +195,31 @@ CommWXWidgetsDialog::~CommWXWidgetsDialog()
     //*)
 }
 
-void CommWXWidgetsDialog::onReadEvent()
+void CommWXWidgetsDialog::onReadEvent(const char *portName, unsigned int readBufferLen)
 {
-    char str[1024] = {0};
-	int recLen  = m_SerialPort.readAllData(str);
+    if (readBufferLen > 0)
+    {
+        char *data = new char[readBufferLen + 1]; // '\0'
 
-	if (recLen > 0)
-	{
-		recLen = recLen < 1024 ? recLen : 1023;
-		str[recLen] = '\0';
-		RichTextCtrlReceive->AppendText(str);
+        if (data)
+        {
+            // read
+            int recLen = m_SerialPort.readData(data, readBufferLen);
 
-		rx += recLen;
-		StaticTextRXValue->SetLabel(wxString::Format(wxT("%i"),rx));
-	}
+            if (recLen > 0)
+            {
+                data[recLen] = '\0';
+
+                RichTextCtrlReceive->AppendText(data);
+
+                rx += recLen;
+                StaticTextRXValue->SetLabel(wxString::Format(wxT("%i"), rx));
+            }
+
+            delete[] data;
+            data = NULL;
+        }
+    }
 }
 
 void CommWXWidgetsDialog::OnButtonOpenCloseClick(wxCommandEvent& event)

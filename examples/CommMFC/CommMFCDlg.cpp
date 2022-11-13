@@ -341,27 +341,35 @@ void CCommMFCDlg::OnClose()
 	CDialog::OnClose();
 }
 
-void CCommMFCDlg::onReadEvent()
+void CCommMFCDlg::onReadEvent(const char *portName, unsigned int readBufferLen)
 {
-    char str[1024] = {0};
+    if (readBufferLen > 0)
+    {
+        char *data = new char[readBufferLen + 1]; // '\0'
 
-	int recLen  = m_SerialPort.readAllData(str);
+		if (data)
+        {
+            int recLen = m_SerialPort.readData(data, readBufferLen);
 
-	if (recLen > 0)
-	{
-        recLen = recLen < 1024 ? recLen : 1023;
-        str[recLen] = '\0';
+            if (recLen > 0)
+            {
+                data[recLen] = '\0';
 
-		CString str1(str);
+                CString str1(data);
 
-		rx += str1.GetLength();
+                rx += str1.GetLength();
 
-		m_ReceiveCtrl.SetSel(-1, -1);
-		m_ReceiveCtrl.ReplaceSel(str1);
+                m_ReceiveCtrl.SetSel(-1, -1);
+                m_ReceiveCtrl.ReplaceSel(str1);
 
-		CString str2;
-		str2.Format(_T("%d"), rx);
-		m_recvCountCtrl.SetWindowText(str2);
+                CString str2;
+                str2.Format(_T("%d"), rx);
+                m_recvCountCtrl.SetWindowText(str2);
+            }
+
+			delete[] data;
+            data = NULL;
+		}
 	}
 }
 

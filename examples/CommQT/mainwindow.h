@@ -21,7 +21,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void onReadEvent();
+    void onReadEvent(const char *portName, unsigned int readBufferLen);
 
     void OnUpdateReceive(QString str);
 

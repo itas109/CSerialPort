@@ -33,7 +33,7 @@ class CommWXWidgetsDialog: public wxDialog, public has_slots<>//About CSerialPor
         CommWXWidgetsDialog(wxWindow* parent,wxWindowID id = -1);
         virtual ~CommWXWidgetsDialog();
 
-        void onReadEvent();//About CSerialPort
+        void onReadEvent(const char *portName, unsigned int readBufferLen);//About CSerialPort
 
 private:
 	CSerialPort m_SerialPort; //About CSerialPort

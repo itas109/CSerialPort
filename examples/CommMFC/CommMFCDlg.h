@@ -23,7 +23,7 @@ public:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
-	void onReadEvent();       // About CSerialPort
+	void onReadEvent(const char *portName, unsigned int readBufferLen); // About CSerialPort
 
 
 // 实现

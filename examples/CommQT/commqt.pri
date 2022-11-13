@@ -1,4 +1,3 @@
-HEADERS += $$PWD/../../include/CSerialPort/osplatformutil.h
 HEADERS += $$PWD/../../include/CSerialPort/SerialPort_global.h
 HEADERS += $$PWD/../../include/CSerialPort/sigslot.h
 HEADERS += $$PWD/../../include/CSerialPort/SerialPortBase.h
