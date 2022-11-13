@@ -1,5 +1,6 @@
 ﻿#include "CSerialPort/SerialPortBase.h"
 #include "CSerialPort/ithread.hpp"
+#include "CSerialPort/itimer.hpp"
 
 CSerialPortBase::CSerialPortBase()
     : m_lastError(0)
@@ -8,8 +9,10 @@ CSerialPortBase::CSerialPortBase()
     , m_minByteReadNotify(1)
     , p_mutex(NULL)
     , p_readEvent(NULL)
+    , p_timer(NULL)
 {
     p_mutex = new itas109::IMutex();
+    p_timer = new itas109::ITimer<itas109::CSerialPortListener>();
 }
 
 CSerialPortBase::CSerialPortBase(const std::string &portName)
@@ -19,9 +22,11 @@ CSerialPortBase::CSerialPortBase(const std::string &portName)
     , m_minByteReadNotify(1)
     , p_mutex(NULL)
     , p_readEvent(NULL)
+    , p_timer(NULL)
 
 {
     p_mutex = new itas109::IMutex();
+    p_timer = new itas109::ITimer<itas109::CSerialPortListener>();
 }
 
 CSerialPortBase::~CSerialPortBase()
@@ -30,6 +35,12 @@ CSerialPortBase::~CSerialPortBase()
     {
         delete p_mutex;
         p_mutex = NULL;
+    }
+
+    if (p_timer)
+    {
+        delete p_timer;
+        p_timer = NULL;
     }
 }
 

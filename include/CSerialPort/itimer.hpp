@@ -24,7 +24,7 @@
 
 #define PORT_NAME_MAX_LEN 256
 
-char *my_strncpy(char *dest, const char *src, unsigned int count)
+static char *my_strncpy(char *dest, const char *src, unsigned int count)
 {
     // assert(dest != NULL && src != NULL && count != 0);
 

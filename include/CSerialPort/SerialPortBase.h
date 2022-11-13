@@ -313,12 +313,13 @@ public:
     sigslot::signal2<const char *, unsigned int> readReady; ///< sigslot for read 读数据信号
 
 protected:
-    int m_lastError;                           ///< last error code 最后的错误代码
-    itas109::OperateMode m_operateMode;        ///< operate mode 串口操作类型
-    unsigned int m_readIntervalTimeoutMS;      ///< read time timeout millisecond 读取间隔时间，单位：毫秒
-    unsigned int m_minByteReadNotify;          ///< minimum byte of read notify 读取通知触发最小字节数
-    itas109::IMutex *p_mutex;                  ///< mutex 互斥锁
-    itas109::CSerialPortListener *p_readEvent; ///< read event 读取事件
+    int m_lastError;                                        ///< last error code 最后的错误代码
+    itas109::OperateMode m_operateMode;                     ///< operate mode 串口操作类型
+    unsigned int m_readIntervalTimeoutMS;                   ///< read time timeout millisecond 读取间隔时间，单位：毫秒
+    unsigned int m_minByteReadNotify;                       ///< minimum byte of read notify 读取通知触发最小字节数
+    itas109::IMutex *p_mutex;                               ///< mutex 互斥锁
+    itas109::CSerialPortListener *p_readEvent;              ///< read event 读取事件
+    itas109::ITimer<itas109::CSerialPortListener> *p_timer; ///< read timer 读取定时器
 private:
 };
 #endif //__CSERIALPORTBASE_H__

@@ -1,6 +1,7 @@
 ﻿#include "CSerialPort/SerialPortUnixBase.h"
 #include "CSerialPort/SerialPortListener.h"
 #include "CSerialPort/ithread.hpp"
+#include "CSerialPort/itimer.hpp"
 #include <unistd.h> // usleep
 
 #ifdef I_OS_LINUX
@@ -305,7 +306,24 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
 #ifdef USE_CSERIALPORT_LISTENER
                         if (p_base->p_readEvent)
                         {
-                            p_base->p_readEvent->onReadEvent(p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
+                            unsigned int readIntervalTimeoutMS = p_base->getReadIntervalTimeout();
+                            if (readIntervalTimeoutMS > 0)
+                            {
+                                if (p_base->p_timer)
+                                {
+                                    if (p_base->p_timer->isRunning())
+                                    {
+                                        p_base->p_timer->stop();
+                                    }
+
+                                    p_base->p_timer->startOnce(readIntervalTimeoutMS, p_base->p_readEvent, &itas109::CSerialPortListener::onReadEvent,
+                                                               p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
+                                }
+                            }
+                            else
+                            {
+                                p_base->p_readEvent->onReadEvent(p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
+                            }
                         }
 #else
                         p_base->readReady._emit(p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
