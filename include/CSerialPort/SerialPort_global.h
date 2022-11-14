@@ -35,8 +35,6 @@
 // enum is not a class or namespace error
 // https://stackoverflow.com/questions/5188554/my-enum-is-not-a-class-or-namespace
 
-#include <string>
-
 #ifdef I_OS_WIN
 #if defined(BUILDING_LIBCSERIALPORT)
 #define DLL_EXPORT __declspec(dllexport) ///< define DLL_EXPORT windows 定义windows导出函数
@@ -67,8 +65,9 @@ namespace itas109
  */
 struct SerialPortInfo
 {
-    std::string portName;    ///< portName 串口名称
-    std::string description; ///< description 串口描述
+    char portName[256];    ///< portName 串口名称
+    char description[256]; ///< description 串口描述
+    char hardwareId[256];  ///< hardwareId 硬件id
 };
 
 /**

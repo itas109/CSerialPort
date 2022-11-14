@@ -21,19 +21,47 @@
 DEFINE_GUID(GUID_DEVINTERFACE_COMPORT, 0x86E0D1E0L, 0x8089, 0x11D0, 0x9C, 0xE4, 0x08, 0x00, 0x3E, 0x30, 0x1F, 0x73);
 #endif
 
-std::string wstringToString(const std::wstring &wstr)
+static char *my_strncpy(char *dest, const char *src, unsigned int count)
 {
-    // https://stackoverflow.com/questions/4804298/how-to-convert-wstring-into-string
-    if (wstr.empty())
+    // assert(dest != NULL && src != NULL && count != 0);
+
+    while (--count && (*dest++ = *src++))
     {
-        return std::string();
     }
 
-    int size = WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
-    std::string ret = std::string(size, 0);
-    WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), &ret[0], size, NULL, NULL); // CP_UTF8
+    if (0 == count)
+    {
+        *dest = '\0';
+    }
+    return dest;
+}
 
-    return ret;
+// static std::string wstringToString(const std::wstring &wstr)
+//{
+//    // https://stackoverflow.com/questions/4804298/how-to-convert-wstring-into-string
+//    if (wstr.empty())
+//    {
+//        return std::string();
+//    }
+//
+//    int size = WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL); // get wchar length
+//    std::string ret = std::string(size, 0);
+//    WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), &ret[0], size, NULL, NULL); // CP_UTF8
+//
+//    return ret;
+//}
+
+static char *WCharToChar(char *dest, const wchar_t *wstr)
+{
+    if (NULL == wstr)
+    {
+        return NULL;
+    }
+
+    int len = WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL); // get wchar length
+    WideCharToMultiByte(CP_ACP, 0, wstr, -1, dest, len, NULL, NULL);         // CP_UTF8
+
+    return dest;
 }
 
 /**
@@ -48,10 +76,6 @@ bool enumDetailsSerialPorts(std::vector<itas109::SerialPortInfo> &portInfoList)
     // https://docs.microsoft.com/en-us/windows/win32/api/setupapi/nf-setupapi-setupdienumdeviceinfo
 
     bool bRet = false;
-    itas109::SerialPortInfo m_serialPortInfo;
-
-    std::string strFriendlyName;
-    std::string strPortName;
 
     HDEVINFO hDevInfo = INVALID_HANDLE_VALUE;
 
@@ -79,21 +103,38 @@ bool enumDetailsSerialPorts(std::vector<itas109::SerialPortInfo> &portInfoList)
             }
 
             // get friendly name
-            TCHAR fname[256];
-            SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, NULL, (PBYTE)fname, sizeof(fname), NULL);
+            TCHAR friendlyName[256];
+            SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, NULL, (PBYTE)friendlyName, sizeof(friendlyName), NULL);
 
+            // get hardware id
+            TCHAR hardwareId[256];
+            SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_HARDWAREID, NULL, (PBYTE)hardwareId, sizeof(hardwareId), NULL);
+
+            itas109::SerialPortInfo m_serialPortInfo;
 #ifdef UNICODE
-            strPortName = wstringToString(portName);
-            strFriendlyName = wstringToString(fname);
+            char portNameChar[256], friendlyNameChar[256], hardwareIdChar[256];
+            my_strncpy(m_serialPortInfo.portName, WCharToChar(portNameChar, portName), 256);
+            my_strncpy(m_serialPortInfo.description, WCharToChar(friendlyNameChar, friendlyName), 256);
+            my_strncpy(m_serialPortInfo.hardwareId, WCharToChar(hardwareIdChar, hardwareId), 256);
 #else
-            strPortName = std::string(portName);
-            strFriendlyName = std::string(fname);
+            my_strncpy(m_serialPortInfo.portName, portName, 256);
+            my_strncpy(m_serialPortInfo.description, friendlyName, 256);
+            my_strncpy(m_serialPortInfo.hardwareId, hardwareId, 256);
 #endif
             // remove (COMxx)
-            strFriendlyName = strFriendlyName.substr(0, strFriendlyName.find(("(COM")));
+            int index = 0;
+            while (m_serialPortInfo.description[index])
+            {
+                if (m_serialPortInfo.description[index] == '(' && m_serialPortInfo.description[index + 1] == 'C' && m_serialPortInfo.description[index + 2] == 'O' &&
+                    m_serialPortInfo.description[index + 3] == 'M')
+                {
+                    m_serialPortInfo.description[index] = '\0';
+                    break;
+                }
 
-            m_serialPortInfo.portName = strPortName;
-            m_serialPortInfo.description = strFriendlyName;
+                ++index;
+            }
+
             portInfoList.push_back(m_serialPortInfo);
         }
 

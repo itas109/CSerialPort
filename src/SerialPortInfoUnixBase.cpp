@@ -2,6 +2,38 @@
 
 #include "CSerialPort/SerialPort_global.h"
 
+static char *my_strcat(char *dest, const char *src)
+{
+    // assert(dest != NULL && src != NULL);
+
+    char *p = dest;
+
+    while (*dest) // find dest end
+    {
+        dest++;
+    }
+
+    while (*dest++ = *src++)
+        ;
+
+    return p;
+}
+
+static char *my_strncpy(char *dest, const char *src, unsigned int count)
+{
+    // assert(dest != NULL && src != NULL && count != 0);
+
+    while (--count && (*dest++ = *src++))
+    {
+    }
+
+    if (0 == count)
+    {
+        *dest = '\0';
+    }
+    return dest;
+}
+
 #ifdef I_OS_LINUX
 #include <dirent.h>   //scandir
 #include <stdlib.h>   // free
@@ -9,6 +41,7 @@
 #include <unistd.h>   // readlink close
 
 #include <string.h> //basename memset strcmp
+#include <string>   // std::string
 
 #include <fcntl.h>
 #include <linux/serial.h> //struct serial_struct
@@ -179,25 +212,20 @@ std::vector<std::string> getPortInfoListLinux()
 #endif
 
 #ifdef I_OS_MAC
-std::string getSerialPath(io_object_t &serialPort)
+char *getSerialPath(char *dest, io_object_t &serialPort)
 {
-    char str[MAXPATHLEN];
-    std::string result;
     CFTypeRef calloutCFString;
 
     calloutCFString = IORegistryEntryCreateCFProperty(serialPort, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, 0);
 
     if (calloutCFString)
     {
-        if (CFStringGetCString(static_cast<CFStringRef>(calloutCFString), str, sizeof(str), kCFStringEncodingUTF8))
-        {
-            result = str;
-        }
+        CFStringGetCString(static_cast<CFStringRef>(calloutCFString), dest, sizeof(dest), kCFStringEncodingUTF8);
 
         CFRelease(calloutCFString);
     }
 
-    return result;
+    return dest;
 }
 
 std::vector<itas109::SerialPortInfo> getPortInfoListMac()
@@ -205,8 +233,6 @@ std::vector<itas109::SerialPortInfo> getPortInfoListMac()
     // https://developer.apple.com/documentation/iokit/communicating_with_a_modem_on_a_serial_port
     itas109::SerialPortInfo m_serialPortInfo;
     std::vector<itas109::SerialPortInfo> portInfoList;
-
-    // mach_port_t master_port;
 
     kern_return_t kernResult;
     CFMutableDictionaryRef classesToMatch;
@@ -230,14 +256,18 @@ std::vector<itas109::SerialPortInfo> getPortInfoListMac()
 
     while (serialPort = IOIteratorNext(serialPortIterator))
     {
-        std::string device_path = getSerialPath(serialPort);
+        char device_path[MAXPATHLEN] = {0};
+        getSerialPath(device_path, serialPort);
         IOObjectRelease(serialPort);
 
-        if (device_path.empty())
+        if ('\0' == device_path[0])
+        {
             continue;
+        }
 
-        m_serialPortInfo.portName = device_path;
-
+        my_strncpy(m_serialPortInfo.portName, device_path, MAXPATHLEN);
+        my_strncpy(m_serialPortInfo.description, "", 1);
+        my_strncpy(m_serialPortInfo.hardwareId, "", 1);
         portInfoList.push_back(m_serialPortInfo);
     }
 
@@ -251,15 +281,17 @@ std::vector<itas109::SerialPortInfo> getPortInfoList()
     std::vector<itas109::SerialPortInfo> portInfoList;
 #ifdef I_OS_LINUX
     // TODO: need to optimize
-    itas109::SerialPortInfo m_serialPort;
+    itas109::SerialPortInfo m_serialPortInfo;
     std::vector<std::string> portList = getPortInfoListLinux();
 
     int count = portList.size();
 
     for (int i = 0; i < count; i++)
     {
-        m_serialPort.portName = portList[i];
-        portInfoList.push_back(m_serialPort);
+        my_strncpy(m_serialPortInfo.portName, portList[i].c_str(), 256);
+        my_strncpy(m_serialPortInfo.description, "", 1);
+        my_strncpy(m_serialPortInfo.hardwareId, "", 1);
+        portInfoList.push_back(m_serialPortInfo);
     }
 #elif defined I_OS_MAC
     // ls /dev/{tty,cu}.*
