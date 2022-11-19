@@ -2,6 +2,8 @@
 
 #include "CSerialPort/SerialPort_global.h"
 
+#include "CSerialPort/iutils.hpp"
+
 #include "Windows.h"
 
 /********************* EnumDetailsSerialPorts ****************************************/
@@ -21,36 +23,7 @@
 DEFINE_GUID(GUID_DEVINTERFACE_COMPORT, 0x86E0D1E0L, 0x8089, 0x11D0, 0x9C, 0xE4, 0x08, 0x00, 0x3E, 0x30, 0x1F, 0x73);
 #endif
 
-static char *my_strncpy(char *dest, const char *src, unsigned int count)
-{
-    // assert(dest != NULL && src != NULL && count != 0);
-
-    while (--count && (*dest++ = *src++))
-    {
-    }
-
-    if (0 == count)
-    {
-        *dest = '\0';
-    }
-    return dest;
-}
-
-// static std::string wstringToString(const std::wstring &wstr)
-//{
-//    // https://stackoverflow.com/questions/4804298/how-to-convert-wstring-into-string
-//    if (wstr.empty())
-//    {
-//        return std::string();
-//    }
-//
-//    int size = WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL); // get wchar length
-//    std::string ret = std::string(size, 0);
-//    WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), &ret[0], size, NULL, NULL); // CP_UTF8
-//
-//    return ret;
-//}
-
+#ifdef UNICODE
 static char *WCharToChar(char *dest, const wchar_t *wstr)
 {
     if (NULL == wstr)
@@ -63,6 +36,7 @@ static char *WCharToChar(char *dest, const wchar_t *wstr)
 
     return dest;
 }
+#endif
 
 /**
  * @brief enumDetailsSerialPorts 通过setapi.lib枚举串口详细信息
@@ -93,7 +67,7 @@ bool enumDetailsSerialPorts(std::vector<itas109::SerialPortInfo> &portInfoList)
         for (DWORD i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, &devInfoData); i++)
         {
             // get port name
-            TCHAR portName[256];
+            TCHAR portName[256] = {0};
             HKEY hDevKey = SetupDiOpenDevRegKey(hDevInfo, &devInfoData, DICS_FLAG_GLOBAL, 0, DIREG_DEV, KEY_READ);
             if (INVALID_HANDLE_VALUE != hDevKey)
             {
@@ -103,23 +77,23 @@ bool enumDetailsSerialPorts(std::vector<itas109::SerialPortInfo> &portInfoList)
             }
 
             // get friendly name
-            TCHAR friendlyName[256];
+            TCHAR friendlyName[256] = {0};
             SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, NULL, (PBYTE)friendlyName, sizeof(friendlyName), NULL);
 
             // get hardware id
-            TCHAR hardwareId[256];
+            TCHAR hardwareId[256] = {0};
             SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_HARDWAREID, NULL, (PBYTE)hardwareId, sizeof(hardwareId), NULL);
 
             itas109::SerialPortInfo m_serialPortInfo;
 #ifdef UNICODE
             char portNameChar[256], friendlyNameChar[256], hardwareIdChar[256];
-            my_strncpy(m_serialPortInfo.portName, WCharToChar(portNameChar, portName), 256);
-            my_strncpy(m_serialPortInfo.description, WCharToChar(friendlyNameChar, friendlyName), 256);
-            my_strncpy(m_serialPortInfo.hardwareId, WCharToChar(hardwareIdChar, hardwareId), 256);
+            itas109::IUtils::strncpy(m_serialPortInfo.portName, WCharToChar(portNameChar, portName), 256);
+            itas109::IUtils::strncpy(m_serialPortInfo.description, WCharToChar(friendlyNameChar, friendlyName), 256);
+            itas109::IUtils::strncpy(m_serialPortInfo.hardwareId, WCharToChar(hardwareIdChar, hardwareId), 256);
 #else
-            my_strncpy(m_serialPortInfo.portName, portName, 256);
-            my_strncpy(m_serialPortInfo.description, friendlyName, 256);
-            my_strncpy(m_serialPortInfo.hardwareId, hardwareId, 256);
+            itas109::IUtils::strncpy(m_serialPortInfo.portName, portName, 256);
+            itas109::IUtils::strncpy(m_serialPortInfo.description, friendlyName, 256);
+            itas109::IUtils::strncpy(m_serialPortInfo.hardwareId, hardwareId, 256);
 #endif
             // remove (COMxx)
             int index = 0;

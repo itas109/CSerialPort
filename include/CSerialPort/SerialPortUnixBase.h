@@ -46,7 +46,7 @@ public:
      *
      * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
      */
-    CSerialPortUnixBase(const std::string &portName);
+    CSerialPortUnixBase(const char *portName);
     /**
      * @brief Destroy the CSerialPortUnixBase object 析构函数
      *
@@ -64,7 +64,7 @@ public:
      * @param flowControl [in] flowControl type 流控制
      * @param readBufferSize [in] the read buffer size 读取缓冲区大小
      */
-    virtual void init(std::string portName,
+    virtual void init(const char *portName,
                       int baudRate = itas109::BaudRate9600,
                       itas109::Parity parity = itas109::ParityNone,
                       itas109::DataBits dataBits = itas109::DataBits8,
@@ -174,13 +174,13 @@ public:
      *
      * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
      */
-    virtual void setPortName(std::string portName);
+    virtual void setPortName(const char *portName);
     /**
      * @brief Get the Port Name object 获取串口名称
      *
      * @return return port name 返回串口名称
      */
-    virtual std::string getPortName() const;
+    virtual const char *getPortName() const;
 
     /**
      * @brief Set the Baud Rate object 设置波特率
@@ -345,7 +345,7 @@ private:
     virtual int readDataUnix(void *data, int size);
 
 private:
-    std::string m_portName;
+    char m_portName[256];
     int m_baudRate;
     itas109::Parity m_parity;
     itas109::DataBits m_dataBits;

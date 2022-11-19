@@ -2,25 +2,26 @@
 #include "CSerialPort/SerialPortListener.h"
 #include "CSerialPort/ithread.hpp"
 #include "CSerialPort/itimer.hpp"
+#include "CSerialPort/iutils.hpp"
 #include <iostream>
 
-std::wstring stringToWString(const std::string &str)
+#ifdef UNICODE
+static wchar_t *CharToWChar(wchar_t *dest, const char *str)
 {
-    if (str.empty())
+    if (NULL == str)
     {
-        return std::wstring();
+        return NULL;
     }
 
-    int size = MultiByteToWideChar(CP_ACP, 0, &str[0], (int)str.size(), NULL, 0);
-    std::wstring ret = std::wstring(size, 0);
-    MultiByteToWideChar(CP_ACP, 0, &str[0], (int)str.size(), &ret[0], size);
+    int len = MultiByteToWideChar(CP_ACP, 0, str, -1, NULL, 0); // get char length
+    MultiByteToWideChar(CP_ACP, 0, str, -1, dest, len);         // CP_UTF8
 
-    return ret;
+    return dest;
 }
+#endif
 
 CSerialPortWinBase::CSerialPortWinBase()
-    : m_portName()
-    , m_baudRate(itas109::BaudRate9600)
+    : m_baudRate(itas109::BaudRate9600)
     , m_parity(itas109::ParityNone)
     , m_dataBits(itas109::DataBits8)
     , m_stopbits(itas109::StopOne)
@@ -44,9 +45,8 @@ CSerialPortWinBase::CSerialPortWinBase()
     overlapMonitor.hEvent = CreateEvent(NULL, true, false, NULL);
 }
 
-CSerialPortWinBase::CSerialPortWinBase(const std::string &portName)
-    : m_portName()
-    , m_baudRate(itas109::BaudRate9600)
+CSerialPortWinBase::CSerialPortWinBase(const char *portName)
+    : m_baudRate(itas109::BaudRate9600)
     , m_parity(itas109::ParityNone)
     , m_dataBits(itas109::DataBits8)
     , m_stopbits(itas109::StopOne)
@@ -63,6 +63,8 @@ CSerialPortWinBase::CSerialPortWinBase(const std::string &portName)
     , m_isThreadRunning(false)
     , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
+    itas109::IUtils::strncpy(m_portName, portName, 256);
+
     overlapMonitor.Internal = 0;
     overlapMonitor.InternalHigh = 0;
     overlapMonitor.Offset = 0;
@@ -81,7 +83,7 @@ CSerialPortWinBase::~CSerialPortWinBase()
     }
 }
 
-void CSerialPortWinBase::init(std::string portName,
+void CSerialPortWinBase::init(const char *portName,
                               int baudRate /*= itas109::BaudRate::BaudRate9600*/,
                               itas109::Parity parity /*= itas109::Parity::ParityNone*/,
                               itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/,
@@ -89,7 +91,7 @@ void CSerialPortWinBase::init(std::string portName,
                               itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/,
                               unsigned int readBufferSize /*= 4096*/)
 {
-    m_portName = portName;
+    itas109::IUtils::strncpy(m_portName, portName, 256);
     m_baudRate = baudRate;
     m_parity = parity;
     m_dataBits = dataBits;
@@ -112,12 +114,14 @@ bool CSerialPortWinBase::openPort()
     bool bRet = false;
 
     TCHAR *tcPortName = NULL;
-    std::string portName = "\\\\.\\" + m_portName; // support COM10 above \\\\.\\COM10
+    char portName[256] = "\\\\.\\"; // support COM10 above \\\\.\\COM10
+    itas109::IUtils::strcat(portName, m_portName);
+
 #ifdef UNICODE
-    std::wstring wstr = stringToWString(portName);
-    tcPortName = const_cast<TCHAR *>(wstr.c_str());
+    wchar_t wstr[256];
+    tcPortName = CharToWChar(wstr, portName);
 #else
-    tcPortName = const_cast<TCHAR *>(portName.c_str());
+    tcPortName = portName;
 #endif
     unsigned long configSize = sizeof(COMMCONFIG);
     m_comConfigure.dwSize = configSize;
@@ -350,17 +354,17 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
                                             p_base->p_timer->stop();
                                         }
 
-                                        p_base->p_timer->startOnce(readIntervalTimeoutMS, p_base->p_readEvent, &itas109::CSerialPortListener::onReadEvent,
-                                                                   p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
+                                        p_base->p_timer->startOnce(readIntervalTimeoutMS, p_base->p_readEvent, &itas109::CSerialPortListener::onReadEvent, p_base->getPortName(),
+                                                                   p_base->p_buffer->getUsedLen());
                                     }
                                 }
                                 else
                                 {
-                                    p_base->p_readEvent->onReadEvent(p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
+                                    p_base->p_readEvent->onReadEvent(p_base->getPortName(), p_base->p_buffer->getUsedLen());
                                 }
                             }
 #else
-                            p_base->readReady._emit(p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
+                            p_base->readReady._emit(p_base->getPortName(), p_base->p_buffer->getUsedLen());
 #endif
                         }
 
@@ -587,14 +591,14 @@ void CSerialPortWinBase::clearError()
     m_lastError = itas109::/*SerialPortError::*/ NoError;
 }
 
-void CSerialPortWinBase::setPortName(std::string portName)
+void CSerialPortWinBase::setPortName(const char *portName)
 {
     // Windows : COM1
     // Linux : /dev/ttyS0
-    m_portName = portName;
+    itas109::IUtils::strncpy(m_portName, portName, 256);
 }
 
-std::string CSerialPortWinBase::getPortName() const
+const char *CSerialPortWinBase::getPortName() const
 {
     return m_portName;
 }

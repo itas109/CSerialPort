@@ -37,7 +37,6 @@ struct termios2
 
 CSerialPortUnixBase::CSerialPortUnixBase()
     : fd(-1)
-    , m_portName()
     , m_baudRate(itas109::BaudRate9600)
     , m_parity(itas109::ParityNone)
     , m_dataBits(itas109::DataBits8)
@@ -49,9 +48,8 @@ CSerialPortUnixBase::CSerialPortUnixBase()
 {
 }
 
-CSerialPortUnixBase::CSerialPortUnixBase(const std::string &portName)
+CSerialPortUnixBase::CSerialPortUnixBase(const char *portName)
     : fd(-1)
-    , m_portName(portName)
     , m_baudRate(itas109::BaudRate9600)
     , m_parity(itas109::ParityNone)
     , m_dataBits(itas109::DataBits8)
@@ -61,6 +59,7 @@ CSerialPortUnixBase::CSerialPortUnixBase(const std::string &portName)
     , m_isThreadRunning(false)
     , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
+    itas109::IUtils::strncpy(m_portName, portName, 256);
 }
 
 CSerialPortUnixBase::~CSerialPortUnixBase()
@@ -72,7 +71,7 @@ CSerialPortUnixBase::~CSerialPortUnixBase()
     }
 }
 
-void CSerialPortUnixBase::init(std::string portName,
+void CSerialPortUnixBase::init(const char *portName,
                                int baudRate /*= itas109::BaudRate::BaudRate9600*/,
                                itas109::Parity parity /*= itas109::Parity::ParityNone*/,
                                itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/,
@@ -80,7 +79,7 @@ void CSerialPortUnixBase::init(std::string portName,
                                itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/,
                                unsigned int readBufferSize /*= 4096*/)
 {
-    m_portName = portName; // portName;//串口 /dev/ttySn, USB /dev/ttyUSBn
+    itas109::IUtils::strncpy(m_portName, portName, 256); // portName;//串口 /dev/ttySn, USB /dev/ttyUSBn
     m_baudRate = baudRate;
     m_parity = parity;
     m_dataBits = dataBits;
@@ -316,17 +315,17 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
                                         p_base->p_timer->stop();
                                     }
 
-                                    p_base->p_timer->startOnce(readIntervalTimeoutMS, p_base->p_readEvent, &itas109::CSerialPortListener::onReadEvent,
-                                                               p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
+                                    p_base->p_timer->startOnce(readIntervalTimeoutMS, p_base->p_readEvent, &itas109::CSerialPortListener::onReadEvent, p_base->getPortName(),
+                                                               p_base->p_buffer->getUsedLen());
                                 }
                             }
                             else
                             {
-                                p_base->p_readEvent->onReadEvent(p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
+                                p_base->p_readEvent->onReadEvent(p_base->getPortName(), p_base->p_buffer->getUsedLen());
                             }
                         }
 #else
-                        p_base->readReady._emit(p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
+                        p_base->readReady._emit(p_base->getPortName(), p_base->p_buffer->getUsedLen());
 #endif
                     }
 
@@ -378,9 +377,9 @@ bool CSerialPortUnixBase::openPort()
 
     bool bRet = false;
 
-    // fd = open(m_portName.c_str(),O_RDWR | O_NOCTTY);//阻塞
+    // fd = open(m_portName,O_RDWR | O_NOCTTY);//阻塞
 
-    fd = open(m_portName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY); //非阻塞
+    fd = open(m_portName, O_RDWR | O_NOCTTY | O_NDELAY); //非阻塞
 
     if (fd != -1)
     {
@@ -416,8 +415,8 @@ bool CSerialPortUnixBase::openPort()
     else
     {
         // Could not open the port
-        char str[256];
-        snprintf(str, sizeof(str), "open port error: Unable to open %s", m_portName.c_str());
+        char str[300];
+        snprintf(str, sizeof(str), "open port error: Unable to open %s", m_portName);
         perror(str);
 
         bRet = false;
@@ -574,12 +573,12 @@ void CSerialPortUnixBase::clearError()
     m_lastError = itas109::NoError;
 }
 
-void CSerialPortUnixBase::setPortName(std::string portName)
+void CSerialPortUnixBase::setPortName(const char *portName)
 {
-    m_portName = portName;
+    itas109::IUtils::strncpy(m_portName, portName, 256);
 }
 
-std::string CSerialPortUnixBase::getPortName() const
+const char *CSerialPortUnixBase::getPortName() const
 {
     return m_portName;
 }

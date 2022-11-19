@@ -52,7 +52,7 @@ public:
      *
      * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
      */
-    CSerialPort(const std::string &portName);
+    CSerialPort(const char *portName);
     /**
      * @brief Destroy the CSerialPort object 析构函数
      *
@@ -70,7 +70,7 @@ public:
      * @param flowControl [in] flowControl type 流控制
      * @param readBufferSize [in] the read buffer size 读取缓冲区大小
      */
-    void init(std::string portName,
+    void init(const char *portName,
               int baudRate = itas109::BaudRate9600,
               itas109::Parity parity = itas109::ParityNone,
               itas109::DataBits dataBits = itas109::DataBits8,
@@ -215,13 +215,13 @@ public:
      *
      * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
      */
-    void setPortName(std::string portName);
+    void setPortName(const char *portName);
     /**
      * @brief Get the Port Name object 获取串口名称
      *
      * @return return port name 返回串口名称
      */
-    std::string getPortName() const;
+    const char *getPortName() const;
     /**
      * @brief Set the Baud Rate object 设置波特率
      *
@@ -322,7 +322,7 @@ public:
      *
      * @return return version 返回版本信息
      */
-    std::string getVersion();
+    const char *getVersion();
 
 #ifdef USE_CSERIALPORT_LISTENER
 private:

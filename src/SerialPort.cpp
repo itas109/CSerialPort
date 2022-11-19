@@ -2,6 +2,7 @@
 #include "CSerialPort/SerialPort_version.h"
 
 #include "CSerialPort/itimer.hpp"
+#include "CSerialPort/iutils.hpp"
 
 #ifdef I_OS_WIN
 #include "CSerialPort/SerialPortWinBase.h"
@@ -32,7 +33,7 @@ CSerialPort::CSerialPort()
     p_serialPortBase->readReady.connect(this, &CSerialPort::onReadReady);
 }
 
-itas109::CSerialPort::CSerialPort(const std::string &portName)
+itas109::CSerialPort::CSerialPort(const char *portName)
     : p_serialPortBase(NULL)
     , p_timer(NULL)
 {
@@ -63,7 +64,7 @@ CSerialPort::~CSerialPort()
     }
 }
 
-void itas109::CSerialPort::init(std::string portName,
+void itas109::CSerialPort::init(const char *portName,
                                 int baudRate /*= itas109::BaudRate::BaudRate9600*/,
                                 itas109::Parity parity /*= itas109::Parity::ParityNone*/,
                                 itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/,
@@ -246,7 +247,7 @@ void itas109::CSerialPort::clearError()
     }
 }
 
-void itas109::CSerialPort::setPortName(std::string portName)
+void itas109::CSerialPort::setPortName(const char *portName)
 {
     if (p_serialPortBase)
     {
@@ -254,7 +255,7 @@ void itas109::CSerialPort::setPortName(std::string portName)
     }
 }
 
-std::string itas109::CSerialPort::getPortName() const
+const char *itas109::CSerialPort::getPortName() const
 {
     if (p_serialPortBase)
     {
@@ -406,9 +407,11 @@ void itas109::CSerialPort::setRts(bool set /*= true*/)
     }
 }
 
-std::string itas109::CSerialPort::getVersion()
+const char *itas109::CSerialPort::getVersion()
 {
-    return std::string("https://github.com/itas109/CSerialPort - V") + std::string(CSERIALPORT_VERSION);
+    static char version[256];
+    itas109::IUtils::strncpy(version, "https://github.com/itas109/CSerialPort - V", 256);
+    return itas109::IUtils::strcat(version, CSERIALPORT_VERSION);
 }
 
 void itas109::CSerialPort::onReadReady(const char *portName, unsigned int readBufferLen)

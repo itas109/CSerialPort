@@ -2,37 +2,7 @@
 
 #include "CSerialPort/SerialPort_global.h"
 
-static char *my_strcat(char *dest, const char *src)
-{
-    // assert(dest != NULL && src != NULL);
-
-    char *p = dest;
-
-    while (*dest) // find dest end
-    {
-        dest++;
-    }
-
-    while (*dest++ = *src++)
-        ;
-
-    return p;
-}
-
-static char *my_strncpy(char *dest, const char *src, unsigned int count)
-{
-    // assert(dest != NULL && src != NULL && count != 0);
-
-    while (--count && (*dest++ = *src++))
-    {
-    }
-
-    if (0 == count)
-    {
-        *dest = '\0';
-    }
-    return dest;
-}
+#include "CSerialPort/iutils.hpp"
 
 #ifdef I_OS_LINUX
 #include <dirent.h>   //scandir
@@ -265,9 +235,9 @@ std::vector<itas109::SerialPortInfo> getPortInfoListMac()
             continue;
         }
 
-        my_strncpy(m_serialPortInfo.portName, device_path, MAXPATHLEN);
-        my_strncpy(m_serialPortInfo.description, "", 1);
-        my_strncpy(m_serialPortInfo.hardwareId, "", 1);
+        itas109::IUtils::strncpy(m_serialPortInfo.portName, device_path, MAXPATHLEN);
+        itas109::IUtils::strncpy(m_serialPortInfo.description, "", 1);
+        itas109::IUtils::strncpy(m_serialPortInfo.hardwareId, "", 1);
         portInfoList.push_back(m_serialPortInfo);
     }
 
@@ -288,9 +258,9 @@ std::vector<itas109::SerialPortInfo> getPortInfoList()
 
     for (int i = 0; i < count; i++)
     {
-        my_strncpy(m_serialPortInfo.portName, portList[i].c_str(), 256);
-        my_strncpy(m_serialPortInfo.description, "", 1);
-        my_strncpy(m_serialPortInfo.hardwareId, "", 1);
+        itas109::IUtils::strncpy(m_serialPortInfo.portName, portList[i].c_str(), 256);
+        itas109::IUtils::strncpy(m_serialPortInfo.description, "", 1);
+        itas109::IUtils::strncpy(m_serialPortInfo.hardwareId, "", 1);
         portInfoList.push_back(m_serialPortInfo);
     }
 #elif defined I_OS_MAC

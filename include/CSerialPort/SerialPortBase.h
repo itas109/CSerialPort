@@ -13,8 +13,6 @@
 #ifndef __CSERIALPORTBASE_H__
 #define __CSERIALPORTBASE_H__
 
-#include <string>
-
 #include "SerialPort_global.h"
 
 namespace itas109
@@ -44,7 +42,7 @@ public:
      *
      * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
      */
-    CSerialPortBase(const std::string &portName);
+    CSerialPortBase(const char *portName);
     /**
      * @brief Destroy the CSerialPortBase object 析构函数
      *
@@ -62,7 +60,7 @@ public:
      * @param flowControl [in] flowControl type 流控制
      * @param readBufferSize [in] the read buffer size 读取缓冲区大小
      */
-    virtual void init(std::string portName,
+    virtual void init(const char *portName,
                       int baudRate,
                       itas109::Parity parity,
                       itas109::DataBits dataBits,
@@ -210,13 +208,13 @@ public:
      *
      * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
      */
-    virtual void setPortName(std::string portName) = 0;
+    virtual void setPortName(const char *portName) = 0;
     /**
      * @brief Get the Port Name object 获取串口名称
      *
      * @return return port name 返回串口名称
      */
-    virtual std::string getPortName() const = 0;
+    virtual const char *getPortName() const = 0;
 
     /**
      * @brief Set the Baud Rate object 设置波特率

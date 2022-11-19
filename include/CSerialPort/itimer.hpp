@@ -11,6 +11,7 @@
 #define __I_TIMER_HPP__
 
 #include "ithread.hpp"
+#include "iutils.hpp"
 
 // #if (__cplusplus >= 201103L) || (defined(_MSC_VER) && _MSC_VER >= 1800)
 // // C++11 support: msvc2013 gcc4.8.5 clang3.0 etc.
@@ -23,21 +24,6 @@
 #endif
 
 #define PORT_NAME_MAX_LEN 256
-
-static char *my_strncpy(char *dest, const char *src, unsigned int count)
-{
-    // assert(dest != NULL && src != NULL && count != 0);
-
-    while (--count && (*dest++ = *src++))
-    {
-    }
-
-    if (0 == count)
-    {
-        *dest = '\0';
-    }
-    return dest;
-}
 
 namespace itas109
 {
@@ -105,7 +91,7 @@ public:
         m_timeoutMs = timeoutMs;
         p_class = pclass;
         p_memfun = pmemfun;
-        my_strncpy(m_portName, portName, PORT_NAME_MAX_LEN);
+        itas109::IUtils::strncpy(m_portName, portName, PORT_NAME_MAX_LEN);
         m_readBufferLen = readBufferLen;
 
         if (m_isRunning)

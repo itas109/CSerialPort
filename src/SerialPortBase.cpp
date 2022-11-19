@@ -15,7 +15,7 @@ CSerialPortBase::CSerialPortBase()
     p_timer = new itas109::ITimer<itas109::CSerialPortListener>();
 }
 
-CSerialPortBase::CSerialPortBase(const std::string &portName)
+CSerialPortBase::CSerialPortBase(const char *portName)
     : m_lastError(0)
     , m_operateMode(itas109::AsynchronousOperate)
     , m_readIntervalTimeoutMS(50)
