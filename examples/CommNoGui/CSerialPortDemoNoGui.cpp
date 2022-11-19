@@ -81,7 +81,8 @@ int main()
 
     for (size_t i = 1; i <= m_availablePortsList.size(); ++i)
     {
-        std::cout << i << " - " << m_availablePortsList[i - 1].portName << " " << m_availablePortsList[i - 1].description << std::endl;
+        SerialPortInfo serialPortInfo = m_availablePortsList[i - 1];
+        std::cout << i << " - " << serialPortInfo.portName << " " << serialPortInfo.description << " " << serialPortInfo.hardwareId << std::endl;
     }
 
     if (m_availablePortsList.size() == 0)
@@ -105,7 +106,7 @@ int main()
             }
         } while (true);
 
-        std::string portName = m_availablePortsList[input - 1].portName;
+        const char* portName = m_availablePortsList[input - 1].portName;
         std::cout << "Port Name: " << portName << std::endl;
 
         sp.init(portName,              // windows:COM1 Linux:/dev/ttyS0

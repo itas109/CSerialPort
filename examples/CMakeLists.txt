@@ -15,3 +15,10 @@ cmake_minimum_required(VERSION 2.8.12)
 
 # CommNoGui
 add_subdirectory(CommNoGui)
+
+if(WIN32)
+find_package(MFC)
+if (MFC_FOUND)
+  add_subdirectory(CommMFC)
+endif()
+endif()

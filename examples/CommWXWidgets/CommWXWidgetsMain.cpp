@@ -177,11 +177,11 @@ CommWXWidgetsDialog::CommWXWidgetsDialog(wxWindow* parent,wxWindowID id)
 	{
 	    if(0 == i)
         {
-            ChoicePortName->SetSelection(ChoicePortName->Append(m_portsList[i].portName.c_str()));
+            ChoicePortName->SetSelection(ChoicePortName->Append(m_portsList[i].portName));
         }
         else
         {
-            ChoicePortName->Append(m_portsList[i].portName.c_str());
+            ChoicePortName->Append(m_portsList[i].portName);
         }
 	}
 
@@ -230,7 +230,7 @@ void CommWXWidgetsDialog::OnButtonOpenCloseClick(wxCommandEvent& event)
         long baudrate,DataBits = 0;
         ChoiceBaudrate->GetString(ChoiceBaudrate->GetCurrentSelection()).ToLong(&baudrate);
         ChoiceDataBit->GetString(ChoiceDataBit->GetCurrentSelection()).ToLong(&DataBits);
-        m_SerialPort.init(ChoicePortName->GetString(ChoicePortName->GetCurrentSelection()).ToStdString(),
+        m_SerialPort.init(ChoicePortName->GetString(ChoicePortName->GetCurrentSelection()).ToStdString().c_str(),
                           baudrate,
                           itas109::Parity(ChoiceParity->GetCurrentSelection()),
                           itas109::DataBits(DataBits),
@@ -246,7 +246,7 @@ void CommWXWidgetsDialog::OnButtonOpenCloseClick(wxCommandEvent& event)
         {
             wxMessageBox(wxString::Format("open serial port error(%i)\nPortName: %s\nBaudrate: %i\nParity: %i\nDataBits: %i\nStopBits: %i",
                                           m_SerialPort.getLastError(),
-                                          m_SerialPort.getPortName().c_str(),
+                                          m_SerialPort.getPortName(),
                                           m_SerialPort.getBaudRate(),
                                           m_SerialPort.getParity(),
                                           m_SerialPort.getDataBits(),

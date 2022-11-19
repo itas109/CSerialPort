@@ -178,7 +178,7 @@ void setPortName(void)
         }
 
         char str[50] = {0};
-        sprintf(str,"%d - %s %s\n",i,const_cast<char*>(m_availablePortsList[i].portName.c_str()),const_cast<char*>(m_availablePortsList[i].description.c_str()));
+        sprintf(str,"%d - %s %s\n",i,m_availablePortsList[i].portName, m_availablePortsList[i].description);
         bodymsg(str);
 	}
 
@@ -219,7 +219,7 @@ void open(void)
     sprintf(str,"open %s\n",const_cast<char*>(m_portName.c_str()));
     bodymsg(str);
 
-    m_serialPort.init(m_portName);//windows:COM1 Linux:/dev/ttyS0
+    m_serialPort.init(m_portName.c_str());//windows:COM1 Linux:/dev/ttyS0
 
 	m_serialPort.open();
 	
@@ -294,7 +294,7 @@ void clearReceive(void)
 
 void about(void)
 {
-    bodymsg(const_cast<char*>(m_serialPort.getVersion().c_str()));
+    bodymsg(const_cast<char*>(m_serialPort.getVersion()));
     bodymsg("\n");
 }
 

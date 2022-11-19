@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     for (int i = 0; i < portNameList.size(); i++)
     {
-        ui->comboBoxPortName->insertItem(i,QString::fromLocal8Bit(portNameList[i].portName.c_str()));
+        ui->comboBoxPortName->insertItem(i,QString::fromLocal8Bit(portNameList[i].portName));
     }
 
     m_SerialPort.readReady.connect(this, &MainWindow::onReadEvent);
@@ -101,7 +101,7 @@ void MainWindow::on_pushButtonOpen_clicked()
     {
         if(ui->comboBoxPortName->count() > 0)
         {
-            m_SerialPort.init(ui->comboBoxPortName->currentText().toStdString(),
+            m_SerialPort.init(ui->comboBoxPortName->currentText().toStdString().c_str(),
                               ui->comboBoxBaudrate->currentText().toInt(),
                               itas109::Parity(ui->comboBoxParity->currentIndex()),
                               itas109::DataBits(ui->comboBoxDataBit->currentText().toInt()),

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>716</width>
-    <height>548</height>
+    <height>595</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -521,7 +521,7 @@
          <item>
           <widget class="QPlainTextEdit" name="plainTextEditSend">
            <property name="plainText">
-            <string>http://blog.csdn.net/itas109</string>
+            <string>https://blog.csdn.net/itas109</string>
            </property>
           </widget>
          </item>
@@ -623,7 +623,7 @@
      <x>0</x>
      <y>0</y>
      <width>716</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

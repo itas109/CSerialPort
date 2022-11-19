@@ -173,16 +173,16 @@ BOOL CCommMFCDlg::OnInitDialog()
 
 	//获取串口号
 	std::vector<SerialPortInfo> m_portsList = CSerialPortInfo::availablePortInfos();
-	TCHAR m_regKeyValue[255];
+	TCHAR m_regKeyValue[256];
 	for (size_t i = 0; i < m_portsList.size(); i++)
 	{
 #ifdef UNICODE
 		int iLength;
-		const char * _char = m_portsList[i].portName.c_str();
+		const char * _char = m_portsList[i].portName;
 		iLength = MultiByteToWideChar(CP_ACP, 0, _char, strlen(_char) + 1, NULL, 0);
 		MultiByteToWideChar(CP_ACP, 0, _char, strlen(_char) + 1, m_regKeyValue, iLength);
 #else
-		strcpy_s(m_regKeyValue, 255, m_portsList[i].portName.c_str());
+		strcpy_s(m_regKeyValue, 256, m_portsList[i].portName);
 #endif
 		m_PortNr.AddString(m_regKeyValue);
 	}
@@ -256,7 +256,7 @@ void CCommMFCDlg::OnBnClickedButtonOpenClose()
 	///打开串口操作
 	else if (m_PortNr.GetCount() > 0)///当前列表的内容个数
 	{
-		std::string portName;
+        char portName[256] = {0};
 		int SelBaudRate;
 		int SelParity;
 		int SelDataBits;
@@ -266,9 +266,9 @@ void CCommMFCDlg::OnBnClickedButtonOpenClose()
         CString temp;
 		m_PortNr.GetWindowText(temp);
 #ifdef UNICODE
-		portName = CW2A(temp.GetString());
+		strcpy_s(portName, 256, CW2A(temp.GetString()));
 #else
-		portName = temp.GetBuffer();
+		strcpy_s(portName, 256, temp.GetBuffer());
 #endif	
 
 		m_BaudRate.GetWindowText(temp);
@@ -282,7 +282,7 @@ void CCommMFCDlg::OnBnClickedButtonOpenClose()
 		SelStop = m_Stop.GetCurSel();
 
         m_SerialPort.setReadIntervalTimeout(m_ReceiveTimeoutMS);
-		m_SerialPort.init(portName, SelBaudRate, itas109::Parity(SelParity), itas109::DataBits(SelDataBits), itas109::StopBits(SelStop));
+        m_SerialPort.init(portName, SelBaudRate, itas109::Parity(SelParity), itas109::DataBits(SelDataBits), itas109::StopBits(SelStop));
 		m_SerialPort.open();
 
 		if (m_SerialPort.isOpened())
