@@ -224,7 +224,7 @@ void CommWXWidgetsDialog::onReadEvent(const char *portName, unsigned int readBuf
 
 void CommWXWidgetsDialog::OnButtonOpenCloseClick(wxCommandEvent& event)
 {
-    if(!m_SerialPort.isOpened())
+    if(!m_SerialPort.isOpen())
     {
         // wx3.0 not support wxString::ToInt
         long baudrate,DataBits = 0;
@@ -238,7 +238,7 @@ void CommWXWidgetsDialog::OnButtonOpenCloseClick(wxCommandEvent& event)
                           );
         m_SerialPort.open();
 
-        if(m_SerialPort.isOpened())
+        if(m_SerialPort.isOpen())
         {
             ButtonOpenClose->SetLabel("close");
         }
@@ -264,7 +264,7 @@ void CommWXWidgetsDialog::OnButtonOpenCloseClick(wxCommandEvent& event)
 
 void CommWXWidgetsDialog::OnButtonSendClick(wxCommandEvent& event)
 {
-    if(!m_SerialPort.isOpened())
+    if(!m_SerialPort.isOpen())
     {
         wxMessageBox("Please open serial port first");
         return;

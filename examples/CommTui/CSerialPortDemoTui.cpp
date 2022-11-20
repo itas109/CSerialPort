@@ -223,7 +223,7 @@ void open(void)
 
 	m_serialPort.open();
 	
-	if(m_serialPort.isOpened())
+	if(m_serialPort.isOpen())
 	{
         char str[50] = {0};
         sprintf(str,"open success. %s,%d,%s,%d,%s\n",
@@ -258,7 +258,7 @@ void close(void)
 
 void send(void)
 {
-    if(m_serialPort.isOpened())
+    if(m_serialPort.isOpen())
     {
         bodymsg("\n[TX] - itas109\n");
         //write

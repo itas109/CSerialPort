@@ -248,7 +248,7 @@ HCURSOR CCommMFCDlg::OnQueryDragIcon()
 
 void CCommMFCDlg::OnBnClickedButtonOpenClose()
 {
-    if (m_SerialPort.isOpened())
+    if (m_SerialPort.isOpen())
 	{
 		m_SerialPort.close();
 		m_OpenCloseCtrl.SetWindowText(_T("打开串口"));///设置按钮文字为"打开串口"
@@ -285,7 +285,7 @@ void CCommMFCDlg::OnBnClickedButtonOpenClose()
         m_SerialPort.init(portName, SelBaudRate, itas109::Parity(SelParity), itas109::DataBits(SelDataBits), itas109::StopBits(SelStop));
 		m_SerialPort.open();
 
-		if (m_SerialPort.isOpened())
+		if (m_SerialPort.isOpen())
 		{
 			m_OpenCloseCtrl.SetWindowText(_T("关闭串口"));
 		}
@@ -305,7 +305,7 @@ void CCommMFCDlg::OnBnClickedButtonOpenClose()
 void CCommMFCDlg::OnBnClickedButtonSend()
 {
 	GetDlgItem(IDC_SendEdit)->SetFocus();
-    if (!m_SerialPort.isOpened()) ///没有打开串口
+    if (!m_SerialPort.isOpen()) ///没有打开串口
 	{
 		AfxMessageBox(_T("请首先打开串口"));
 		return;

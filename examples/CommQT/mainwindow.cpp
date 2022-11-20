@@ -134,7 +134,7 @@ void MainWindow::on_pushButtonOpen_clicked()
 
 void MainWindow::on_pushButtonSend_clicked()
 {
-    if(m_SerialPort.isOpened())
+    if(m_SerialPort.isOpen())
     {
         QString sendStr = ui->plainTextEditSend->toPlainText();
 
