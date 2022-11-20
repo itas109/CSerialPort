@@ -39,8 +39,9 @@ def main():
                 cserialport.FlowNone,   # flow
                 4096                    # read buffer size
                 )
+        sp.setReadIntervalTimeout(0); # read interval timeout
         sp.open()
-        print("Open %s %s" %(portName, "Success" if sp.isOpened() else "Failed"))
+        print("Open %s %s" %(portName, "Success" if sp.isOpen() else "Failed"))
 
         # connect for read
         sp.connectReadEvent(listener)

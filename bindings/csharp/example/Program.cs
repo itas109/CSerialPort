@@ -65,7 +65,7 @@ public class Program
 
             sp.open();
 
-            Console.WriteLine("Open {0} {1}", portName, sp.isOpened() ? "Success" : "Failed");
+            Console.WriteLine("Open {0} {1}", portName, sp.isOpen() ? "Success" : "Failed");
 
             // connect for read
             sp.connectReadEvent(listener);

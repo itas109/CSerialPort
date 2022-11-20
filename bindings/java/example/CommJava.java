@@ -62,10 +62,11 @@ public class CommJava {
                     FlowControl.FlowNone, // flow
                     4096 // read buffer size
             );
+            sp.setReadIntervalTimeout(0); // read interval timeout
 
             sp.open();
 
-            System.out.printf("Open %s %s\n", portName, sp.isOpened() ? "Success" : "Failed");
+            System.out.printf("Open %s %s\n", portName, sp.isOpen() ? "Success" : "Failed");
 
             // connect for read
             sp.connectReadEvent(listener);

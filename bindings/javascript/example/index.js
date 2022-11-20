@@ -53,7 +53,7 @@ else {
                 4096              // read buffer size
             );
             sp.open();
-            console.log(util.format('Open %s %s', portName, sp.isOpened() ? 'Success' : 'Failed'));
+            console.log(util.format('Open %s %s', portName, sp.isOpen() ? 'Success' : 'Failed'));
 
             // connect for read
             // sp.connectReadEvent(listener)
