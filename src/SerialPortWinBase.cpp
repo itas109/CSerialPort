@@ -132,7 +132,7 @@ bool CSerialPortWinBase::openPort()
         dwFlagsAndAttributes += FILE_FLAG_OVERLAPPED;
     }
 
-    if (!isOpened())
+    if (!isOpen())
     {
         // get a handle to the port
         m_handle = CreateFile(tcPortName,                   // communication port string (COMX)
@@ -268,7 +268,7 @@ bool CSerialPortWinBase::openPort()
 void CSerialPortWinBase::closePort()
 {
     // Finished
-    if (isOpened())
+    if (isOpen())
     {
         stopThreadMonitor();
 
@@ -384,7 +384,7 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
     return iRet;
 }
 
-bool CSerialPortWinBase::isOpened()
+bool CSerialPortWinBase::isOpen()
 {
     // Finished
     return m_handle != INVALID_HANDLE_VALUE;
@@ -396,7 +396,7 @@ int CSerialPortWinBase::readDataWin(void *data, int size)
 
     DWORD numBytes = 0;
 
-    if (isOpened())
+    if (isOpen())
     {
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
         {
@@ -448,7 +448,7 @@ int CSerialPortWinBase::readData(void *data, int size)
 
     DWORD numBytes = 0;
 
-    if (isOpened())
+    if (isOpen())
     {
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
         {
@@ -497,7 +497,7 @@ int CSerialPortWinBase::readLineData(void *data, int size)
 
     DWORD numBytes = 0;
 
-    if (isOpened())
+    if (isOpen())
     {
     }
     else
@@ -515,7 +515,7 @@ int CSerialPortWinBase::writeData(const void *data, int size)
 
     DWORD numBytes = 0;
 
-    if (isOpened())
+    if (isOpen())
     {
         // @todo maybe mutile thread not need this
         // Discards all characters from the output or input buffer of a specified communications resource. It can also
@@ -621,7 +621,7 @@ void CSerialPortWinBase::setParity(itas109::Parity parity)
     itas109::IAutoLock lock(p_mutex);
     m_parity = parity;
 
-    if (isOpened())
+    if (isOpen())
     {
         m_comConfigure.dcb.Parity = (unsigned char)parity;
         switch (parity)
@@ -661,7 +661,7 @@ void CSerialPortWinBase::setDataBits(itas109::DataBits dataBits)
     itas109::IAutoLock lock(p_mutex);
     m_dataBits = dataBits;
 
-    if (isOpened())
+    if (isOpen())
     {
         switch (dataBits)
         {
@@ -723,7 +723,7 @@ void CSerialPortWinBase::setStopBits(itas109::StopBits stopbits)
     itas109::IAutoLock lock(p_mutex);
     m_stopbits = stopbits;
 
-    if (isOpened())
+    if (isOpen())
     {
         switch (m_stopbits)
         {
@@ -770,7 +770,7 @@ void CSerialPortWinBase::setFlowControl(itas109::FlowControl flowControl)
 
     m_flowControl = flowControl;
 
-    if (isOpened())
+    if (isOpen())
     {
         switch (m_flowControl)
         {
@@ -810,7 +810,7 @@ itas109::FlowControl CSerialPortWinBase::getFlowControl() const
 void CSerialPortWinBase::setReadBufferSize(unsigned int size)
 {
     itas109::IAutoLock lock(p_mutex);
-    if (isOpened())
+    if (isOpen())
     {
         m_readBufferSize = size;
     }
@@ -824,7 +824,7 @@ unsigned int CSerialPortWinBase::getReadBufferSize() const
 void CSerialPortWinBase::setDtr(bool set /*= true*/)
 {
     itas109::IAutoLock lock(p_mutex);
-    if (isOpened())
+    if (isOpen())
     {
         if (set)
         {
@@ -840,7 +840,7 @@ void CSerialPortWinBase::setDtr(bool set /*= true*/)
 void CSerialPortWinBase::setRts(bool set /*= true*/)
 {
     itas109::IAutoLock lock(p_mutex);
-    if (isOpened())
+    if (isOpen())
     {
         if (set)
         {

@@ -433,7 +433,7 @@ bool CSerialPortUnixBase::openPort()
 
 void CSerialPortUnixBase::closePort()
 {
-    if (isOpened())
+    if (isOpen())
     {
         stopThreadMonitor();
 
@@ -443,7 +443,7 @@ void CSerialPortUnixBase::closePort()
     }
 }
 
-bool CSerialPortUnixBase::isOpened()
+bool CSerialPortUnixBase::isOpen()
 {
     return fd != -1;
 }
@@ -454,7 +454,7 @@ int CSerialPortUnixBase::readDataUnix(void *data, int size)
 
     int iRet = -1;
 
-    if (isOpened())
+    if (isOpen())
     {
         iRet = read(fd, data, size);
     }
@@ -473,7 +473,7 @@ int CSerialPortUnixBase::readData(void *data, int size)
 
     int iRet = -1;
 
-    if (isOpened())
+    if (isOpen())
     {
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
         {
@@ -516,7 +516,7 @@ int CSerialPortUnixBase::readLineData(void *data, int size)
 
     int iRet = -1;
 
-    if (isOpened())
+    if (isOpen())
     {
     }
     else
@@ -534,7 +534,7 @@ int CSerialPortUnixBase::writeData(const void *data, int size)
 
     int iRet = -1;
 
-    if (isOpened())
+    if (isOpen())
     {
         // Write N bytes of BUF to FD.  Return the number written, or -1
         iRet = write(fd, data, size);

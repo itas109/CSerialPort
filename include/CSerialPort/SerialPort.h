@@ -106,7 +106,7 @@ public:
      * @retval true serial port open success 串口打开成功
      * @retval false serial port open failed 串口打开失败
      */
-    bool isOpened();
+    bool isOpen();
 
     /**
      * @brief connect read event 连接读取事件

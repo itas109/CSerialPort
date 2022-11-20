@@ -106,11 +106,11 @@ void itas109::CSerialPort::close()
     }
 }
 
-bool itas109::CSerialPort::isOpened()
+bool itas109::CSerialPort::isOpen()
 {
     if (p_serialPortBase)
     {
-        return p_serialPortBase->isOpened();
+        return p_serialPortBase->isOpen();
     }
     else
     {

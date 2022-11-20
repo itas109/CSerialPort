@@ -93,7 +93,7 @@ public:
      * @retval true serial port open success 串口打开成功
      * @retval false serial port open failed 串口打开失败
      */
-    virtual bool isOpened();
+    virtual bool isOpen();
 
     /**
      * @brief read specified length data 读取指定长度数据
