@@ -37,16 +37,16 @@ jobs:
             sources:
               - ubuntu-toolchain-r-test
 
-    - env: GCC_VERSION=4.8 BUILD_TYPE=Release
-      os: linux
-      arch: arm64
-      dist: trusty
-      addons:
-          apt:
-            packages:
-              - g++-4.8
-            sources:
-              - ubuntu-toolchain-r-test
+    # - env: GCC_VERSION=4.8 BUILD_TYPE=Release
+    #   os: linux
+    #   arch: arm64
+    #   dist: trusty
+    #   addons:
+    #       apt:
+    #         packages:
+    #           - g++-4.8
+    #         sources:
+    #           - ubuntu-toolchain-r-test
 
     # Test gcc-5.4.0: Build=Debug/Release
     # - env: GCC_VERSION=5 BUILD_TYPE=Debug
