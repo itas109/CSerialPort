@@ -40,7 +40,7 @@ CSerialPort已经在以下平台做过测试
 - [x] 1.首先支持windows和linux平台
 - [ ] 2.增加通用串口通信协议
 - [x] 3.支持热插拔 - [CSerialPortExtend](https://github.com/itas109/CSerialPortExtend)
-- [ ] 4.更高效的通知模块 - 将使用CSerialPortListener替代sigslot.h
+- [x] 4.更高效的通知模块 - CSerialPortListener
 - [x] 5.支持其他语言 - C#, Python, Java, Node.js - 详见[bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
 - [x] 6.同步串口通信
 - [x] 7.全新的跨平台串口调试助手 - [CommMaster通信大师](https://gitee.com/itas109/CommMaster)

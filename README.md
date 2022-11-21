@@ -40,7 +40,7 @@ CSerialPort was tested on the following platforms
 - [x] 1.support windows and linux first
 - [ ] 2.add communicating protocol
 - [x] 3.support hot swap - [CSerialPortExtend](https://github.com/itas109/CSerialPortExtend)
-- [ ] 4.higher efficiency notify module - will replace sigslot.h with CSerialPortListener
+- [x] 4.higher efficiency notify module - replace with CSerialPortListener
 - [x] 5.support other language - C#, Java, Python, Node.js etc. - more information [bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
 - [x] 6.sync serial port communication
 - [x] 7.new cross-platform gui serial port tool - [CommMaster](https://gitee.com/itas109/CommMaster)
