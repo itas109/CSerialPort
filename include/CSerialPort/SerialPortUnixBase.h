@@ -21,6 +21,7 @@
 #include <unistd.h>    // UNIX standard function definitions
 #include <errno.h>     // Error number definitions
 
+#include "ithread.hpp"
 #include "ibuffer.hpp"
 #include "SerialPortBase.h"
 
@@ -355,7 +356,7 @@ private:
     int fd; /* File descriptor for the port */
 
 private:
-    pthread_t m_monitorThread; /**< read thread */
+    itas109::i_thread_t m_monitorThread; /**< read thread */
 
     bool m_isThreadRunning;
 

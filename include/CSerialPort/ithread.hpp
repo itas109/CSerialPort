@@ -12,7 +12,7 @@
 
 #if defined(_WIN32)
 #include <windows.h>
-#include <process.h>
+#include <process.h> // _beginthreadex
 #else
 #include <pthread.h>
 #include <time.h>  // clock_gettime

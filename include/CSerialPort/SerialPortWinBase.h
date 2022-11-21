@@ -13,11 +13,9 @@
 #ifndef __CSERIALPORTWINBASE_H__
 #define __CSERIALPORTWINBASE_H__
 
-// windows need
-#include <windows.h>
-#include <process.h> //_beginthreadex
 #include <tchar.h>   //tchar
 
+#include "ithread.hpp"
 #include "ibuffer.hpp"
 #include "SerialPortBase.h"
 
@@ -346,7 +344,7 @@ private:
 private:
     HANDLE m_handle;
 
-    HANDLE m_monitorThread;
+    itas109::i_thread_t m_monitorThread;
     OVERLAPPED overlapMonitor; ///< monitor overlapped
 
     OVERLAPPED m_overlapRead;  ///< read overlapped
