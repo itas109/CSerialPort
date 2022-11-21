@@ -1,5 +1,4 @@
 ﻿#include "CSerialPort/SerialPortInfo.h"
-
 #include "CSerialPort/SerialPort_global.h"
 
 #ifdef I_OS_WIN

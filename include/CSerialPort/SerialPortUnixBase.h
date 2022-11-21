@@ -13,17 +13,16 @@
 #ifndef __CSERIALPORTUNIXBASE_H__
 #define __CSERIALPORTUNIXBASE_H__
 
-#include "SerialPortBase.h"
+#include <stdio.h>     // Standard input/output definitions
+#include <string.h>    // String function definitions
+#include <sys/ioctl.h> // ioctl
+#include <termios.h>   // POSIX terminal control definitions
+#include <fcntl.h>     // File control definitions
+#include <unistd.h>    // UNIX standard function definitions
+#include <errno.h>     // Error number definitions
+
 #include "ibuffer.hpp"
-
-#include <errno.h>   /* Error number definitions */
-#include <fcntl.h>   /* File control definitions */
-#include <stdio.h>   /* Standard input/output definitions */
-#include <string.h>  /* String function definitions */
-#include <termios.h> /* POSIX terminal control definitions */
-#include <unistd.h>  /* UNIX standard function definitions */
-
-#include <sys/ioctl.h> //ioctl
+#include "SerialPortBase.h"
 
 // Serial Programming Guide for POSIX Operating Systems
 // https://digilander.libero.it/robang/rubrica/serial.htm

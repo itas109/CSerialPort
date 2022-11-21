@@ -14,17 +14,8 @@
 #ifndef __CSERIALPORT_H__
 #define __CSERIALPORT_H__
 
-#include <string>
-
-#include "SerialPortListener.h"
 #include "SerialPort_global.h"
-
-#include "sigslot.h" // will remove in the future
-#ifndef USE_CSERIALPORT_LISTENER
-using namespace sigslot;
-#endif
-
-typedef sigslot::signal2<const char *, unsigned int> ISignal;
+#include "SerialPortListener.h"
 
 namespace itas109
 {
@@ -39,7 +30,7 @@ namespace itas109
  * @brief the CSerialPort class 串口类库
  * @see reference 引用 CSerialPortBase
  */
-class DLL_EXPORT CSerialPort : public sigslot::has_slots<>
+class DLL_EXPORT CSerialPort
 {
 public:
     /**
@@ -324,15 +315,8 @@ public:
      */
     const char *getVersion();
 
-#ifdef USE_CSERIALPORT_LISTENER
-private:
-#endif
-    void onReadReady(const char *portName, unsigned int readBufferLen);
-    ISignal readReady; // sigslot
-
 private:
     CSerialPortBase *p_serialPortBase;
-    itas109::ITimer<ISignal> *p_timer;
 };
 } // namespace itas109
 #endif //__CSERIALPORT_H__

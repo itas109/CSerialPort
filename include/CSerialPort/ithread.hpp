@@ -11,12 +11,12 @@
 #define __I_THREAD_HPP__
 
 #if defined(_WIN32)
-#include <process.h>
 #include <windows.h>
+#include <process.h>
 #else
-#include <errno.h> // ETIMEDOUT
 #include <pthread.h>
-#include <time.h> // clock_gettime
+#include <time.h>  // clock_gettime
+#include <errno.h> // ETIMEDOUT
 #endif
 
 namespace itas109

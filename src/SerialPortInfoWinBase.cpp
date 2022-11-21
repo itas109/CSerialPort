@@ -1,18 +1,15 @@
-﻿#include "CSerialPort/SerialPortInfoWinBase.h"
-
-#include "CSerialPort/SerialPort_global.h"
+﻿#include <Windows.h>
+#include <initguid.h> // GUID
+#include <Setupapi.h> // SetupDiGetClassDevs Setup*
+#include <tchar.h>    // _T
 
 #include "CSerialPort/iutils.hpp"
-
-#include "Windows.h"
+#include "CSerialPort/SerialPort_global.h"
+#include "CSerialPort/SerialPortInfoWinBase.h"
 
 /********************* EnumDetailsSerialPorts ****************************************/
 #undef PHYSICAL_ADDRESS
 #define PHYSICAL_ADDRESS LARGE_INTEGER
-
-#include <Setupapi.h> //SetupDiGetClassDevs Setup*
-#include <initguid.h> //GUID
-#include <tchar.h>    //_T
 
 #if defined(_MSC_VER)
 #pragma comment(lib, "setupapi.lib")

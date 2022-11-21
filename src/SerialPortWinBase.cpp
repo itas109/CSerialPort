@@ -1,9 +1,8 @@
 ﻿#include "CSerialPort/SerialPortWinBase.h"
 #include "CSerialPort/SerialPortListener.h"
+#include "CSerialPort/iutils.hpp"
 #include "CSerialPort/ithread.hpp"
 #include "CSerialPort/itimer.hpp"
-#include "CSerialPort/iutils.hpp"
-#include <iostream>
 
 #ifdef UNICODE
 static wchar_t *CharToWChar(wchar_t *dest, const char *str)
@@ -326,8 +325,6 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
 
             if (eventMask & EV_RXCHAR)
             {
-                // std::cout << "EV_RXCHAR" << std::endl;
-
                 // solve 线程中循环的低效率问题
                 ClearCommError(m_mainHandle, &dwError, &comstat);
                 if (comstat.cbInQue >= p_base->getMinByteReadNotify()) //设定字符数,默认为1
@@ -341,7 +338,6 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
                             int len = p_base->readDataWin(data, comstat.cbInQue);
                             p_base->p_buffer->write(data, len);
 
-#ifdef USE_CSERIALPORT_LISTENER
                             if (p_base->p_readEvent)
                             {
                                 unsigned int readIntervalTimeoutMS = p_base->getReadIntervalTimeout();
@@ -363,9 +359,6 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
                                     p_base->p_readEvent->onReadEvent(p_base->getPortName(), p_base->p_buffer->getUsedLen());
                                 }
                             }
-#else
-                            p_base->readReady._emit(p_base->getPortName(), p_base->p_buffer->getUsedLen());
-#endif
                         }
 
                         delete[] data;

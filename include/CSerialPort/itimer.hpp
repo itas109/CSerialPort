@@ -10,9 +10,6 @@
 #ifndef __I_TIMER_HPP__
 #define __I_TIMER_HPP__
 
-#include "ithread.hpp"
-#include "iutils.hpp"
-
 // #if (__cplusplus >= 201103L) || (defined(_MSC_VER) && _MSC_VER >= 1800)
 // // C++11 support: msvc2013 gcc4.8.5 clang3.0 etc.
 // #define CPP11_TIMER
@@ -22,6 +19,9 @@
 #include <chrono>
 #include <condition_variable>
 #endif
+
+#include "iutils.hpp"
+#include "ithread.hpp"
 
 #define PORT_NAME_MAX_LEN 256
 

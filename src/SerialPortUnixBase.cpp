@@ -1,8 +1,9 @@
-﻿#include "CSerialPort/SerialPortUnixBase.h"
+﻿#include <unistd.h> // usleep
+
+#include "CSerialPort/SerialPortUnixBase.h"
 #include "CSerialPort/SerialPortListener.h"
 #include "CSerialPort/ithread.hpp"
 #include "CSerialPort/itimer.hpp"
-#include <unistd.h> // usleep
 
 #ifdef I_OS_LINUX
 // termios2 for custom baud rate at least linux kernel 2.6.32 (RHEL 6.0)
@@ -302,7 +303,6 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
                         int len = p_base->readDataUnix(data, readbytes);
                         p_base->p_buffer->write(data, len);
 
-#ifdef USE_CSERIALPORT_LISTENER
                         if (p_base->p_readEvent)
                         {
                             unsigned int readIntervalTimeoutMS = p_base->getReadIntervalTimeout();
@@ -324,9 +324,6 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
                                 p_base->p_readEvent->onReadEvent(p_base->getPortName(), p_base->p_buffer->getUsedLen());
                             }
                         }
-#else
-                        p_base->readReady._emit(p_base->getPortName(), p_base->p_buffer->getUsedLen());
-#endif
                     }
 
                     delete[] data;

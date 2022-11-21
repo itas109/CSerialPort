@@ -13,13 +13,13 @@
 #ifndef __CSERIALPORTWINBASE_H__
 #define __CSERIALPORTWINBASE_H__
 
-#include "SerialPortBase.h"
-#include "ibuffer.hpp"
-
 // windows need
+#include <windows.h>
 #include <process.h> //_beginthreadex
 #include <tchar.h>   //tchar
-#include <windows.h>
+
+#include "ibuffer.hpp"
+#include "SerialPortBase.h"
 
 /**
  * @brief the CSerialPort Windows Base class windows串口基类

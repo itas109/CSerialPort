@@ -1,8 +1,9 @@
-﻿#include "CSerialPort/SerialPort.h"
-#include "CSerialPort/SerialPort_version.h"
+﻿#include <iostream>
 
-#include "CSerialPort/itimer.hpp"
+#include "CSerialPort/SerialPort.h"
+#include "CSerialPort/SerialPort_version.h"
 #include "CSerialPort/iutils.hpp"
+#include "CSerialPort/itimer.hpp"
 
 #ifdef I_OS_WIN
 #include "CSerialPort/SerialPortWinBase.h"
@@ -15,52 +16,32 @@
 #define CSERIALPORTBASE
 #endif // I_OS_WIN
 
-#include <iostream>
-
 using namespace itas109;
 
 CSerialPort::CSerialPort()
     : p_serialPortBase(NULL)
-    , p_timer(NULL)
 {
     p_serialPortBase = new CSERIALPORTBASE();
 
-    p_timer = new ITimer<ISignal>();
-
     p_serialPortBase->setReadIntervalTimeout(0);
     p_serialPortBase->setMinByteReadNotify(1);
-
-    p_serialPortBase->readReady.connect(this, &CSerialPort::onReadReady);
 }
 
 itas109::CSerialPort::CSerialPort(const char *portName)
     : p_serialPortBase(NULL)
-    , p_timer(NULL)
 {
     p_serialPortBase = new CSERIALPORTBASE(portName);
 
-    p_timer = new ITimer<ISignal>();
-
     p_serialPortBase->setReadIntervalTimeout(0);
     p_serialPortBase->setMinByteReadNotify(1);
-
-    p_serialPortBase->readReady.connect(this, &CSerialPort::onReadReady);
 }
 
 CSerialPort::~CSerialPort()
 {
-    p_serialPortBase->readReady.disconnect_all();
-
     if (p_serialPortBase)
     {
         delete p_serialPortBase;
         p_serialPortBase = NULL;
-    }
-
-    if (p_timer)
-    {
-        delete p_timer;
-        p_timer = NULL;
     }
 }
 
@@ -412,28 +393,4 @@ const char *itas109::CSerialPort::getVersion()
     static char version[256];
     itas109::IUtils::strncpy(version, "https://github.com/itas109/CSerialPort - V", 256);
     return itas109::IUtils::strcat(version, CSERIALPORT_VERSION);
-}
-
-void itas109::CSerialPort::onReadReady(const char *portName, unsigned int readBufferLen)
-{
-    if (p_serialPortBase)
-    {
-        unsigned int readIntervalTimeoutMS = getReadIntervalTimeout();
-        if (readIntervalTimeoutMS > 0)
-        {
-            if (p_timer)
-            {
-                if (p_timer->isRunning())
-                {
-                    p_timer->stop();
-                }
-
-                p_timer->startOnce(readIntervalTimeoutMS, &readReady, &ISignal::_emit, portName, readBufferLen);
-            }
-        }
-        else
-        {
-            readReady._emit(portName, readBufferLen);
-        }
-    }
 }

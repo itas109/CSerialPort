@@ -1,7 +1,5 @@
 ﻿#include "CSerialPort/SerialPortInfoUnixBase.h"
-
 #include "CSerialPort/SerialPort_global.h"
-
 #include "CSerialPort/iutils.hpp"
 
 #ifdef I_OS_LINUX
