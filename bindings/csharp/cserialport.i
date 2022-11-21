@@ -12,7 +12,6 @@
 %module(directors="1") cserialportCSharp
 
 #define DLL_EXPORT
-#define USE_CSERIALPORT_LISTENER
 
 %{
 #include "CSerialPort/SerialPort_global.h"
@@ -21,7 +20,6 @@
 #include "CSerialPort/SerialPortInfo.h"
 %}
 
-%include "std_string.i" // std::string
 %include "std_vector.i" // std::vector
 
 %include "arrays_csharp.i" // typemaps for csharp

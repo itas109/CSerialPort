@@ -11,7 +11,6 @@
 %module(directors="1") cserialportJava
 
 #define DLL_EXPORT
-#define USE_CSERIALPORT_LISTENER
 
 %{
 #include "CSerialPort/SerialPort_global.h"
@@ -20,7 +19,6 @@
 #include "CSerialPort/SerialPortInfo.h"
 %}
 
-%include "std_string.i" // std::string
 %include "std_vector.i" // std::vector
 
 %include "various.i" // typemaps for java
