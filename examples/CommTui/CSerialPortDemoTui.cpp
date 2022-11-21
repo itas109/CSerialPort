@@ -25,7 +25,7 @@
 #include <vector>
 using namespace itas109;
 
-class mySlot : public has_slots<>
+class mySlot : public CSerialPortListener
 {
 public:
 	mySlot(CSerialPort& sp)
@@ -237,7 +237,7 @@ void open(void)
 		// std::cout << "open success" << std::endl;
 
         //connect for read
-        m_serialPort.readReady.connect(&receive, &mySlot::onReadEvent);
+        m_serialPort.connectReadEvent(&receive);
 	}
 	else
 	{
@@ -250,7 +250,6 @@ void open(void)
 void close(void)
 {
     bodymsg("close \n");
-    m_serialPort.readReady.disconnect_all();
     m_serialPort.close();
 }
 

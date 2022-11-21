@@ -33,11 +33,11 @@ else()
     ${CSerialPortRootPath}/include/CSerialPort/SerialPortInfo.h
     ${CSerialPortRootPath}/include/CSerialPort/SerialPortBase.h
     ${CSerialPortRootPath}/include/CSerialPort/SerialPortInfoBase.h
-    ${CSerialPortRootPath}/include/CSerialPort/sigslot.h
     ${CSerialPortRootPath}/include/CSerialPort/SerialPortListener.h
     ${CSerialPortRootPath}/include/CSerialPort/ibuffer.hpp
     ${CSerialPortRootPath}/include/CSerialPort/ithread.hpp
     ${CSerialPortRootPath}/include/CSerialPort/itimer.hpp
+    ${CSerialPortRootPath}/include/CSerialPort/iutils.hpp
   )
   list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPort.cpp ${CSerialPortRootPath}/src/SerialPortBase.cpp ${CSerialPortRootPath}/src/SerialPortInfo.cpp ${CSerialPortRootPath}/src/SerialPortInfoBase.cpp)
   if (WIN32)

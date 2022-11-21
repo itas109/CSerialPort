@@ -192,7 +192,7 @@ BOOL CCommMFCDlg::OnInitDialog()
 
 	m_Send.SetWindowText(_T("https://blog.csdn.net/itas109"));
 
-	m_SerialPort.readReady.connect(this, &CCommMFCDlg::onReadEvent);
+	m_SerialPort.connectReadEvent(this);
 	
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }

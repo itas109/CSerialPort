@@ -12,7 +12,7 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow, public has_slots<>
+class MainWindow : public QMainWindow, public CSerialPortListener
 {
     Q_OBJECT
 

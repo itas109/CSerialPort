@@ -186,7 +186,7 @@ CommWXWidgetsDialog::CommWXWidgetsDialog(wxWindow* parent,wxWindowID id)
 	}
 
     // bind receive function
-    m_SerialPort.readReady.connect(this, &CommWXWidgetsDialog::onReadEvent);
+    m_SerialPort.connectReadEvent(this);
 }
 
 CommWXWidgetsDialog::~CommWXWidgetsDialog()

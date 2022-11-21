@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifdef _WIN32
-#include <windows.h>
+#include <Windows.h>
 #define imsleep(microsecond) Sleep(microsecond) // ms
 #else
 #include <unistd.h>
@@ -31,7 +31,7 @@ std::string char2hexstr(const char *str, int len)
 
 int countRead = 0;
 
-class MyListener : public has_slots<>
+class MyListener : public CSerialPortListener
 {
 public:
     MyListener(CSerialPort *sp)
@@ -106,7 +106,7 @@ int main()
             }
         } while (true);
 
-        const char* portName = m_availablePortsList[input - 1].portName;
+        const char *portName = m_availablePortsList[input - 1].portName;
         std::cout << "Port Name: " << portName << std::endl;
 
         sp.init(portName,              // windows:COM1 Linux:/dev/ttyS0
@@ -117,13 +117,13 @@ int main()
                 itas109::FlowNone,     // flow
                 4096                   // read buffer size
         );
-        sp.setReadIntervalTimeout(30); // read interval timeout 30ms
+        sp.setReadIntervalTimeout(0); // read interval timeout 0ms
 
         sp.open();
         std::cout << "Open " << portName << (sp.isOpen() ? " Success" : " Failed") << std::endl;
 
         // connect for read
-        sp.readReady.connect(&listener, &MyListener::onReadEvent);
+        sp.connectReadEvent(&listener);
 
         // write hex data
         char hex[5];

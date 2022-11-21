@@ -26,7 +26,7 @@
 using namespace itas109;
 //About CSerialPort end
 
-class CommWXWidgetsDialog: public wxDialog, public has_slots<>//About CSerialPort
+class CommWXWidgetsDialog: public wxDialog, public CSerialPortListener // About CSerialPort
 {
     public:
 

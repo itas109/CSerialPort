@@ -31,12 +31,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     vector<SerialPortInfo> portNameList = CSerialPortInfo::availablePortInfos();
 
-    for (int i = 0; i < portNameList.size(); i++)
+    for (size_t i = 0; i < portNameList.size(); i++)
     {
         ui->comboBoxPortName->insertItem(i,QString::fromLocal8Bit(portNameList[i].portName));
     }
 
-    m_SerialPort.readReady.connect(this, &MainWindow::onReadEvent);
+    m_SerialPort.connectReadEvent(this);
 
     ui->comboBoxBaudrate->setCurrentText("9600");
     ui->comboBoxDataBit->setCurrentText("8");

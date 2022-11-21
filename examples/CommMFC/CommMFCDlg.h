@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <string>
+
 //About CSerialPort start
 #include "CSerialPort/SerialPort.h"
 #include "CSerialPort/SerialPortInfo.h"
@@ -11,7 +13,7 @@ using namespace itas109;
 
 
 // CCommMFCDlg 对话框
-class CCommMFCDlg : public CDialog, public has_slots<>//About CSerialPort 
+class CCommMFCDlg : public CDialog, public CSerialPortListener // About CSerialPort 
 {
 // 构造
 public:
