@@ -486,6 +486,11 @@ int CSerialPortUnixBase::readData(void *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
 
+    if (size <= 0)
+    {
+        return 0;
+    }
+
     int iRet = -1;
 
     if (isOpen())

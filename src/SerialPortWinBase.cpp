@@ -460,6 +460,11 @@ int CSerialPortWinBase::readData(void *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
 
+    if (size <= 0)
+    {
+        return 0;
+    }
+
     DWORD numBytes = 0;
 
     if (isOpen())
