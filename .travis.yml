@@ -26,7 +26,7 @@ git:
 jobs:
   include:
     # Test gcc-4.8: Build=Debug/Release
-    - env: GCC_VERSION=4.8 BUILD_TYPE=Debug
+    - env: GCC_VERSION=4.8 BUILD_TYPE=Debug BUILD_TEST=OFF
       os: linux
       arch: amd64
       dist: trusty
@@ -37,7 +37,7 @@ jobs:
             sources:
               - ubuntu-toolchain-r-test
 
-    # - env: GCC_VERSION=4.8 BUILD_TYPE=Release
+    # - env: GCC_VERSION=4.8 BUILD_TYPE=Release BUILD_TEST=OFF
     #   os: linux
     #   arch: arm64
     #   dist: trusty
@@ -49,7 +49,7 @@ jobs:
     #           - ubuntu-toolchain-r-test
 
     # Test gcc-5.4.0: Build=Debug/Release
-    # - env: GCC_VERSION=5 BUILD_TYPE=Debug
+    # - env: GCC_VERSION=5 BUILD_TYPE=Debug BUILD_TEST=OFF
     #   os: linux
     #   arch: s390x
     #   dist: xenial
@@ -60,7 +60,7 @@ jobs:
     #   #       sources:
     #   #         - ubuntu-toolchain-r-test
 
-    - env: GCC_VERSION=7 BUILD_TYPE=Release
+    - env: GCC_VERSION=7 BUILD_TYPE=Release BUILD_TEST=OFF
       os: linux
       arch: ppc64le
       dist: xenial
@@ -72,7 +72,7 @@ jobs:
               - ubuntu-toolchain-r-test
 
     # Test clang-3.5: Build=Debug/Release
-    - env: CLANG_VERSION=3.5 BUILD_TYPE=Debug
+    - env: CLANG_VERSION=3.5 BUILD_TYPE=Debug BUILD_TEST=OFF
       os: linux
       arch: amd64
       dist: xenial
@@ -84,7 +84,7 @@ jobs:
               - ubuntu-toolchain-r-test
               - llvm-toolchain-precise-3.5
 
-    - env: CLANG_VERSION=3.5 BUILD_TYPE=Release
+    - env: CLANG_VERSION=3.5 BUILD_TYPE=Release BUILD_TEST=OFF
       os: linux
       arch: amd64
       dist: xenial
@@ -97,7 +97,7 @@ jobs:
               - llvm-toolchain-precise-3.5
 
     # Test clang-10.0: Build=Debug/Release
-    - env: CLANG_VERSION=10 BUILD_TYPE=Debug
+    - env: CLANG_VERSION=10 BUILD_TYPE=Debug BUILD_TEST=OFF
       os: linux
       arch: arm64
       dist: bionic
@@ -109,7 +109,7 @@ jobs:
               - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
                 key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
 
-    - env: CLANG_VERSION=10 BUILD_TYPE=Release
+    - env: CLANG_VERSION=10 BUILD_TYPE=Release BUILD_TEST=OFF
       os: linux
       arch: amd64
       dist: bionic
@@ -121,12 +121,17 @@ jobs:
               - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
                 key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
 
+    # ubuntu 22.04
+    - env: BUILD_TYPE=Release BUILD_TEST=ON
+      os: linux
+      dist: jammy
+
     # osx default macOS 10.13
-    - env: BUILD_TYPE=Release
+    - env: BUILD_TYPE=Release BUILD_TEST=OFF
       os: osx
 
     # freebsd default FreeBSD 12.1
-    - env: BUILD_TYPE=Release
+    - env: BUILD_TYPE=Release BUILD_TEST=OFF
       os: freebsd
     
 before_script:
@@ -147,7 +152,8 @@ script:
     cmake .. \
       -DCMAKE_INSTALL_PREFIX=install \
       -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-      -DCSERIALPORT_BUILD_TEST=OFF
+      -DCSERIALPORT_BUILD_TEST=$BUILD_TEST
       
   - cmake --build .
   - cmake --install .
+  - if [ "$BUILD_TEST" = "ON" ]; then ./bin/CSerialPortTest; fi
