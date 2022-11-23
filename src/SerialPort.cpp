@@ -141,6 +141,18 @@ int itas109::CSerialPort::disconnectReadEvent()
     }
 }
 
+unsigned int itas109::CSerialPort::getReadBufferUsedLen() const
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->getReadBufferUsedLen();
+    }
+    else
+    {
+        return itas109::SystemError;
+    }
+}
+
 int itas109::CSerialPort::readData(void *data, int size)
 {
     if (p_serialPortBase)

@@ -386,14 +386,28 @@ bool CSerialPortWinBase::isOpened()
     return m_handle != INVALID_HANDLE_VALUE;
 }
 
+unsigned int CSerialPortWinBase::getReadBufferUsedLen() const
+{
+    unsigned int usedLen = 0;
+
+    if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
+    {
+        usedLen = p_buffer->getUsedLen();
+    }
+    else
+    {
+        DWORD dwError = 0;
+        COMSTAT comstat;
+        ClearCommError(m_handle, &dwError, &comstat);
+        usedLen = comstat.cbInQue;
+    }
+
+    return usedLen;
+}
+
 int CSerialPortWinBase::readDataWin(void *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
-	
-	if (size <= 0)
-    {
-        return 0;
-    }
 
     DWORD numBytes = 0;
 
@@ -447,6 +461,11 @@ int CSerialPortWinBase::readData(void *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
 
+    if (size <= 0)
+    {
+        return 0;
+    }
+
     DWORD numBytes = 0;
 
     if (isOpened())
@@ -478,18 +497,7 @@ int CSerialPortWinBase::readData(void *data, int size)
 
 int CSerialPortWinBase::readAllData(void *data)
 {
-    int maxSize = 0;
-
-    if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
-    {
-        maxSize = p_buffer->getUsedLen();
-    }
-    else
-    {
-        maxSize = 1024; // Synchronous ClearCommError not work
-    }
-
-    return readData(data, maxSize);
+    return readData(data, getReadBufferUsedLen());
 }
 
 int CSerialPortWinBase::readLineData(void *data, int size)
