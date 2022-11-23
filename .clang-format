@@ -135,7 +135,7 @@ PointerAlignment: Right
 # 允许重新排版注释
 ReflowComments: true
 # 允许排序#include
-SortIncludes: true
+SortIncludes: false
 # 在C风格类型转换后添加空格
 SpaceAfterCStyleCast: false
 # 在赋值运算符之前添加空格
