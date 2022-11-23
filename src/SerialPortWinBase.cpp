@@ -37,7 +37,7 @@ CSerialPortWinBase::CSerialPortWinBase()
     , m_isThreadRunning(false)
     , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
-    itas109::IUtils::strncpy(m_portName, '\0', 1);
+    itas109::IUtils::strncpy(m_portName, "", 1);
 
     overlapMonitor.Internal = 0;
     overlapMonitor.InternalHigh = 0;
