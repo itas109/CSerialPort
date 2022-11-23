@@ -37,6 +37,8 @@ CSerialPortWinBase::CSerialPortWinBase()
     , m_isThreadRunning(false)
     , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
+    itas109::IUtils::strncpy(m_portName, '\0', 1);
+
     overlapMonitor.Internal = 0;
     overlapMonitor.InternalHigh = 0;
     overlapMonitor.Offset = 0;
@@ -383,6 +385,25 @@ bool CSerialPortWinBase::isOpen()
     return m_handle != INVALID_HANDLE_VALUE;
 }
 
+unsigned int CSerialPortWinBase::getReadBufferUsedLen() const
+{
+    unsigned int usedLen = 0;
+
+    if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
+    {
+        usedLen = p_buffer->getUsedLen();
+    }
+    else
+    {
+        DWORD dwError = 0;
+        COMSTAT comstat;
+        ClearCommError(m_handle, &dwError, &comstat);
+        usedLen = comstat.cbInQue;
+    }
+
+    return usedLen;
+}
+
 int CSerialPortWinBase::readDataWin(void *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
@@ -470,18 +491,7 @@ int CSerialPortWinBase::readData(void *data, int size)
 
 int CSerialPortWinBase::readAllData(void *data)
 {
-    int maxSize = 0;
-
-    if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
-    {
-        maxSize = p_buffer->getUsedLen();
-    }
-    else
-    {
-        maxSize = 1024; // Synchronous ClearCommError not work
-    }
-
-    return readData(data, maxSize);
+    return readData(data, getReadBufferUsedLen());
 }
 
 int CSerialPortWinBase::readLineData(void *data, int size)

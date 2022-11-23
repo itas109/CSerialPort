@@ -96,6 +96,13 @@ public:
     virtual bool isOpen();
 
     /**
+     * @brief get used length of buffer 获取读取缓冲区已使用大小
+     *
+     * @return return used length of buffer 返回读取缓冲区已使用大小
+     */
+    virtual unsigned int getReadBufferUsedLen() const;
+
+    /**
      * @brief read specified length data 读取指定长度数据
      *
      * @param data [out] read data result 读取结果

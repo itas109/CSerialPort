@@ -13,7 +13,7 @@
 #ifndef __CSERIALPORTWINBASE_H__
 #define __CSERIALPORTWINBASE_H__
 
-#include <tchar.h>   //tchar
+#include <tchar.h> //tchar
 
 #include "ithread.hpp"
 #include "ibuffer.hpp"
@@ -94,6 +94,13 @@ public:
      * @retval false serial port open failed 串口打开失败
      */
     virtual bool isOpen();
+
+    /**
+     * @brief get used length of buffer 获取读取缓冲区已使用大小
+     *
+     * @return return used length of buffer 返回读取缓冲区已使用大小
+     */
+    virtual unsigned int getReadBufferUsedLen() const;
 
     /**
      * @brief read specified length data 读取指定长度数据
