@@ -113,8 +113,8 @@ bool CSerialPortWinBase::openPort()
     bool bRet = false;
 
     TCHAR *tcPortName = NULL;
-    char portName[256] = "\\\\.\\"; // support COM10 above \\\\.\\COM10
-    itas109::IUtils::strcat(portName, m_portName);
+    char portName[256] = "\\\\.\\";                    // support COM10 above \\\\.\\COM10
+    itas109::IUtils::strncat(portName, m_portName, 6); // COM254
 
 #ifdef UNICODE
     wchar_t wstr[256];

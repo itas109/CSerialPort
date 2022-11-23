@@ -40,7 +40,7 @@ public:
         return (dest);
     }
 
-    static char *strcat(char *dest, const char *src)
+    static char *strncat(char *dest, const char *src, unsigned int count)
     {
         // assert(dest != NULL && src != NULL);
 
@@ -51,10 +51,14 @@ public:
             cp++;
         }
 
-        while ((*cp++ = *src++) != '\0')
+        while (--count && (*cp++ = *src++) != '\0')
         {
         }
 
+        if (0 == count)
+        {
+            *cp = '\0';
+        }
         return (dest);
     }
 };

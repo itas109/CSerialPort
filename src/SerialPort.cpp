@@ -392,5 +392,5 @@ const char *itas109::CSerialPort::getVersion()
 {
     static char version[256];
     itas109::IUtils::strncpy(version, "https://github.com/itas109/CSerialPort - V", 256);
-    return itas109::IUtils::strcat(version, CSERIALPORT_VERSION);
+    return itas109::IUtils::strncat(version, CSERIALPORT_VERSION, 20);
 }
