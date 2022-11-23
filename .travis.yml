@@ -60,16 +60,16 @@ jobs:
     #   #       sources:
     #   #         - ubuntu-toolchain-r-test
 
-    - env: GCC_VERSION=7 BUILD_TYPE=Release BUILD_TEST=OFF
-      os: linux
-      arch: ppc64le
-      dist: xenial
-      addons:
-          apt:
-            packages:
-              - g++-7
-            sources:
-              - ubuntu-toolchain-r-test
+    # - env: GCC_VERSION=7 BUILD_TYPE=Release BUILD_TEST=OFF
+    #   os: linux
+    #   arch: ppc64le
+    #   dist: xenial
+    #   addons:
+    #       apt:
+    #         packages:
+    #           - g++-7
+    #         sources:
+    #           - ubuntu-toolchain-r-test
 
     # Test clang-3.5: Build=Debug/Release
     - env: CLANG_VERSION=3.5 BUILD_TYPE=Debug BUILD_TEST=OFF
@@ -121,7 +121,12 @@ jobs:
               - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
                 key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
 
-    # ubuntu 22.04
+    # ubuntu 20.04 gcc 9.3.0
+    - env: BUILD_TYPE=Release BUILD_TEST=OFF
+      os: linux
+      dist: focal
+
+    # ubuntu 22.04 gcc 11.2.0
     - env: BUILD_TYPE=Release BUILD_TEST=ON
       os: linux
       dist: jammy
