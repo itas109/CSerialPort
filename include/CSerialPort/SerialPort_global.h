@@ -61,6 +61,9 @@
 #include <stdio.h>
 #include <string.h> // strrchr
 #ifdef _WIN32
+#ifndef __func__
+#define __func__ __FUNCTION__
+#endif
 // #define LOG_INFO(format, ...) printf("[CSERIALPORT_DEBUG] %s - " format " (%s:%d)\n", __func__, ##__VA_ARGS__, (strrchr("\\" __FILE__, '\\') + 1), __LINE__)
 #define LOG_INFO(format, ...) printf("[CSERIALPORT_DEBUG] %s - " format "\n", __func__, ##__VA_ARGS__)
 #else
