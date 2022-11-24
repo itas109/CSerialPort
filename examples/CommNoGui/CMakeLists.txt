@@ -15,6 +15,8 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(CSerialPortDemoNoGui)
 
+add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+
 find_package(CSerialPort QUIET)
 if (CSerialPort_FOUND)
   add_executable( ${PROJECT_NAME} CSerialPortDemoNoGui.cpp)
