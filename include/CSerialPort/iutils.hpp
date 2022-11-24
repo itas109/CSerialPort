@@ -61,6 +61,22 @@ public:
         }
         return (dest);
     }
+
+    static char *charToHexStr(char *dest, const char *src, unsigned int count)
+    {
+        // assert(dest != NULL && src != NULL);
+
+        static const char hexTable[17] = "0123456789ABCDEF";
+
+        for (unsigned int i = 0; i < count; ++i)
+        {
+            dest[i * 2] = hexTable[(unsigned char)src[i] / 16];
+            dest[i * 2 + 1] = hexTable[(unsigned char)src[i] % 16];
+        }
+        dest[count * 2] = '\0';
+
+        return (dest);
+    }
 };
 } // namespace itas109
 #endif // __I_UTILS_HPP__

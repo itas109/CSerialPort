@@ -112,6 +112,10 @@ bool CSerialPortWinBase::openPort()
 {
     itas109::IAutoLock lock(p_mutex);
 
+    LOG_INFO("portName: %s, baudRate: %d, dataBit: %d, parity: %d, stopBit: %d, flowControl: %d, mode: %s, readBufferSize:%u(%u), readIntervalTimeoutMS: %u, minByteReadNotify: %u",
+             m_portName, m_baudRate, m_dataBits, m_parity, m_stopbits, m_flowControl, m_operateMode == itas109::AsynchronousOperate ? "async" : "sync", m_readBufferSize,
+             p_buffer->getBufferSize(), m_readIntervalTimeoutMS, m_minByteReadNotify);
+
     bool bRet = false;
 
     TCHAR *tcPortName = NULL;
@@ -339,6 +343,11 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
                         {
                             int len = p_base->readDataWin(data, comstat.cbInQue);
                             p_base->p_buffer->write(data, len);
+#ifdef CSERIALPORT_DEBUG
+                            char hexStr[201]; // 100*2 + 1
+                            LOG_INFO("write buffer(usedLen %u). len: %d, hex(top100): %s", p_base->p_buffer->getUsedLen(), len,
+                                     itas109::IUtils::charToHexStr(hexStr, data, len > 100 ? 100 : len));
+#endif
 
                             if (p_base->p_readEvent)
                             {
@@ -352,12 +361,14 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
                                             p_base->p_timer->stop();
                                         }
 
+                                        LOG_INFO("onReadEvent. portName: %s, readLen: %u", p_base->getPortName(), p_base->p_buffer->getUsedLen());
                                         p_base->p_timer->startOnce(readIntervalTimeoutMS, p_base->p_readEvent, &itas109::CSerialPortListener::onReadEvent, p_base->getPortName(),
                                                                    p_base->p_buffer->getUsedLen());
                                     }
                                 }
                                 else
                                 {
+                                    LOG_INFO("onReadEvent. portName: %s, readLen: %u", p_base->getPortName(), p_base->p_buffer->getUsedLen());
                                     p_base->p_readEvent->onReadEvent(p_base->getPortName(), p_base->p_buffer->getUsedLen());
                                 }
                             }
@@ -400,6 +411,8 @@ unsigned int CSerialPortWinBase::getReadBufferUsedLen() const
         ClearCommError(m_handle, &dwError, &comstat);
         usedLen = comstat.cbInQue;
     }
+
+    LOG_INFO("getReadBufferUsedLen: %u", usedLen);
 
     return usedLen;
 }
@@ -491,6 +504,11 @@ int CSerialPortWinBase::readData(void *data, int size)
         numBytes = (DWORD)-1;
     }
 
+#ifdef CSERIALPORT_DEBUG
+    char hexStr[201]; // 100*2 + 1
+    LOG_INFO("read. len: %d, hex(top100): %s", numBytes, itas109::IUtils::charToHexStr(hexStr, (const char *)data, numBytes > 100 ? 100 : numBytes));
+#endif
+
     return numBytes;
 }
 
@@ -529,6 +547,11 @@ int CSerialPortWinBase::writeData(const void *data, int size)
         // Discards all characters from the output or input buffer of a specified communications resource. It can also
         // terminate pending read or write operations on the resource.
         //::PurgeComm(m_handle, PURGE_TXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_RXABORT);
+
+#ifdef CSERIALPORT_DEBUG
+        char hexStr[201]; // 100*2 + 1
+        LOG_INFO("write. len: %d, hex(top100): %s", size, itas109::IUtils::charToHexStr(hexStr, (const char *)data, size > 100 ? 100 : size));
+#endif
 
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
         {
