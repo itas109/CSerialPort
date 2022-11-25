@@ -13,6 +13,8 @@
 
 cmake_minimum_required(VERSION 2.8.12)
 
+add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+
 project(CSerialPortDemoNoGui)
 
 find_package(CSerialPort QUIET)
