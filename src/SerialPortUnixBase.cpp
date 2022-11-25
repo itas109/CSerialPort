@@ -4,6 +4,22 @@
 #include "CSerialPort/itimer.hpp"
 #include <unistd.h> // usleep
 
+static char *charToHexStr(char *dest, const char *src, unsigned int count)
+{
+    // assert(dest != NULL && src != NULL);
+
+    static const char hexTable[17] = "0123456789ABCDEF";
+
+    for (unsigned int i = 0; i < count; ++i)
+    {
+        dest[i * 2] = hexTable[(unsigned char)src[i] / 16];
+        dest[i * 2 + 1] = hexTable[(unsigned char)src[i] % 16];
+    }
+    dest[count * 2] = '\0';
+
+    return (dest);
+}
+
 #ifdef I_OS_LINUX
 // termios2 for custom baud rate at least linux kernel 2.6.32 (RHEL 6.0)
 
@@ -302,6 +318,10 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
                     {
                         int len = p_base->readDataUnix(data, readbytes);
                         p_base->p_buffer->write(data, len);
+#ifdef CSERIALPORT_DEBUG
+                        char hexStr[201]; // 100*2 + 1
+                        LOG_INFO("write buffer(usedLen %u). len: %d, hex(top100): %s", p_base->p_buffer->getUsedLen(), len, charToHexStr(hexStr, data, len > 100 ? 100 : len));
+#endif
 
 #ifdef USE_CSERIALPORT_LISTENER
                         if (p_base->p_readEvent)
@@ -316,16 +336,19 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
                                         p_base->p_timer->stop();
                                     }
 
+                                    LOG_INFO("onReadEvent. portName: %s, readLen: %u", p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
                                     p_base->p_timer->startOnce(readIntervalTimeoutMS, p_base->p_readEvent, &itas109::CSerialPortListener::onReadEvent,
                                                                p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
                                 }
                             }
                             else
                             {
+                                LOG_INFO("onReadEvent. portName: %s, readLen: %u", p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
                                 p_base->p_readEvent->onReadEvent(p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
                             }
                         }
 #else
+                        LOG_INFO("onReadEvent. portName: %s, readLen: %u", p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
                         p_base->readReady._emit(p_base->getPortName().c_str(), p_base->p_buffer->getUsedLen());
 #endif
                     }
@@ -375,6 +398,10 @@ bool CSerialPortUnixBase::stopThreadMonitor()
 bool CSerialPortUnixBase::openPort()
 {
     itas109::IAutoLock lock(p_mutex);
+
+    LOG_INFO("portName: %s, baudRate: %d, dataBit: %d, parity: %d, stopBit: %d, flowControl: %d, mode: %s, readBufferSize:%u(%u), readIntervalTimeoutMS: %u, minByteReadNotify: %u",
+             m_portName.c_str(), m_baudRate, m_dataBits, m_parity, m_stopbits, m_flowControl, m_operateMode == itas109::AsynchronousOperate ? "async" : "sync", m_readBufferSize,
+             p_buffer->getBufferSize(), m_readIntervalTimeoutMS, m_minByteReadNotify);
 
     bool bRet = false;
 
@@ -463,6 +490,8 @@ unsigned int CSerialPortUnixBase::getReadBufferUsedLen() const
         ioctl(fd, FIONREAD, &usedLen);
     }
 
+    LOG_INFO("getReadBufferUsedLen: %u", usedLen);
+
     return usedLen;
 }
 
@@ -489,6 +518,11 @@ int CSerialPortUnixBase::readData(void *data, int size)
 {
     itas109::IAutoLock lock(p_mutex);
 
+    if (size <= 0)
+    {
+        return 0;
+    }
+
     int iRet = -1;
 
     if (isOpened())
@@ -508,6 +542,10 @@ int CSerialPortUnixBase::readData(void *data, int size)
         iRet = -1;
     }
 
+#ifdef CSERIALPORT_DEBUG
+    char hexStr[201]; // 100*2 + 1
+    LOG_INFO("read. len: %d, hex(top100): %s", iRet, charToHexStr(hexStr, (const char *)data, iRet > 100 ? 100 : iRet));
+#endif
     return iRet;
 }
 
@@ -521,11 +559,6 @@ int CSerialPortUnixBase::readLineData(void *data, int size)
     itas109::IAutoLock lock(p_mutex);
 
     int iRet = -1;
-
-    if (size <= 0)
-    {
-        return 0;
-    }
 
     if (isOpened())
     {
@@ -555,6 +588,11 @@ int CSerialPortUnixBase::writeData(const void *data, int size)
         m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
         iRet = -1;
     }
+
+#ifdef CSERIALPORT_DEBUG
+    char hexStr[201]; // 100*2 + 1
+    LOG_INFO("write. len: %d, hex(top100): %s", size, charToHexStr(hexStr, (const char *)data, size > 100 ? 100 : size));
+#endif
 
     return iRet;
 }
