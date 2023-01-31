@@ -272,14 +272,12 @@ public:
 
     /**
      * @brief Set the Dtr object 设置DTR
-     * @todo Not implemented 未实现
      *
      * @param set [in]
      */
     virtual void setDtr(bool set = true);
     /**
      * @brief Set the Rts object 设置RTS
-     * @todo Not implemented 未实现
      *
      * @param set [in]
      */
@@ -349,6 +347,7 @@ private:
     itas109::StopBits m_stopbits;
     enum itas109::FlowControl m_flowControl;
     unsigned int m_readBufferSize;
+    bool m_setDtr, m_setRts;
 
 private:
     HANDLE m_handle;

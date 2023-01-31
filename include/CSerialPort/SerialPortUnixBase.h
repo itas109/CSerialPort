@@ -270,14 +270,12 @@ public:
 
     /**
      * @brief Set the Dtr object 设置DTR
-     * @todo Not implemented 未实现
      *
      * @param set [in]
      */
     virtual void setDtr(bool set = true);
     /**
      * @brief Set the Rts object 设置RTS
-     * @todo Not implemented 未实现
      *
      * @param set [in]
      */
@@ -315,7 +313,9 @@ private:
                 itas109::Parity parity = itas109::ParityNone,
                 itas109::DataBits dataBits = itas109::DataBits8,
                 itas109::StopBits stopbits = itas109::StopOne,
-                itas109::FlowControl flowControl = itas109::FlowNone);
+                itas109::FlowControl flowControl = itas109::FlowNone,
+                bool setDtr = false,
+                bool setRts = false);
 
     /**
      * @brief thread monitor 多线程监视器
@@ -359,6 +359,7 @@ private:
     itas109::StopBits m_stopbits;
     itas109::FlowControl m_flowControl;
     unsigned int m_readBufferSize;
+    bool m_setDtr, m_setRts;
 
     int fd; /* File descriptor for the port */
 

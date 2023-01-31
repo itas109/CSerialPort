@@ -52,6 +52,8 @@ CSerialPortWinBase::CSerialPortWinBase()
     , m_communicationMutex()
     , m_isThreadRunning(false)
     , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
+    , m_setDtr(false)
+    , m_setRts(false)
 {
     overlapMonitor.Internal = 0;
     overlapMonitor.InternalHigh = 0;
@@ -78,6 +80,8 @@ CSerialPortWinBase::CSerialPortWinBase(const std::string &portName)
     , m_communicationMutex()
     , m_isThreadRunning(false)
     , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
+    , m_setDtr(false)
+    , m_setRts(false)
 {
     overlapMonitor.Internal = 0;
     overlapMonitor.InternalHigh = 0;
@@ -170,8 +174,8 @@ bool CSerialPortWinBase::openPort()
             m_comConfigure.dcb.ByteSize = m_dataBits;
             m_comConfigure.dcb.Parity = m_parity;
             m_comConfigure.dcb.StopBits = m_stopbits;
-            // m_comConfigure.dcb.fDtrControl;
-            // m_comConfigure.dcb.fRtsControl;
+            m_comConfigure.dcb.fDtrControl = m_setDtr ? DTR_CONTROL_ENABLE : DTR_CONTROL_DISABLE;
+            m_comConfigure.dcb.fRtsControl = m_setRts ? RTS_CONTROL_ENABLE : RTS_CONTROL_DISABLE;
 
             m_comConfigure.dcb.fBinary = true;
             m_comConfigure.dcb.fInX = false;
@@ -883,6 +887,7 @@ void CSerialPortWinBase::setDtr(bool set /*= true*/)
             EscapeCommFunction(m_handle, CLRDTR);
         }
     }
+    m_setDtr = set;
 }
 
 void CSerialPortWinBase::setRts(bool set /*= true*/)
@@ -899,6 +904,7 @@ void CSerialPortWinBase::setRts(bool set /*= true*/)
             EscapeCommFunction(m_handle, CLRRTS);
         }
     }
+    m_setRts = set;
 }
 
 OVERLAPPED CSerialPortWinBase::getOverlapMonitor()
