@@ -19,10 +19,11 @@ public:
     CSerialPortVirtual();
     ~CSerialPortVirtual();
 
-    static bool createPair(char *portName1, char *portName2);
-    static bool deletePair(char *portName);
+    static bool createPair(char* portName1, char* portName2);
+    static bool deletePair(char* portName);
 
 private:
+    
 };
 } // namespace itas109
 #endif //__CSERIALPORT_VIRTUAL_H__

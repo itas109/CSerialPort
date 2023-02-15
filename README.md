@@ -58,8 +58,8 @@ CSerialPort was tested on the following platforms
 
 # Latest version
 
-## Version: 4.2.1.221107
-by itas109 on 2022-11-07
+## Version: 4.3.0.230215
+by itas109 on 2023-02-15
 
 # Quick Start
 
@@ -75,7 +75,7 @@ run demo ( for example serial port lookback test on linux)
 
 ```
 CSerialPort/bin $ ./bin/CSerialPortDemoNoGui
-Version: https://github.com/itas109/CSerialPort - V4.2.1.221107
+Version: https://github.com/itas109/CSerialPort - V4.3.0.230215
 
 availableFriendlyPorts:
 1 - /dev/ttyS0

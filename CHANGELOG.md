@@ -1,7 +1,21 @@
 # CSerialPort Changelog
 
-
 ---
+
+## v4.3.0 (2023-02-15)
+
+Feature:
+* readEvent replace with CSerialPortListener 使用CSerialPortListener进行读取事件通知
+* replace std::string with const char* as much as possible 尽可能使用const char*代替std::string
+* add function getReadBufferUsedLen() to get used buffer length 增加getReadBufferUsedLen函数用于获取缓冲区长度
+* add LOG_INFO to output CSerialPort info 增加LOG_INFO输出串口信息
+
+## v4.2.2 (2023-02-15)
+
+Feature:
+* read event notify with portName and readBufferLen 读取事件通知支持串口名称与长度
+* add function getReadBufferUsedLen() to get used buffer length 增加getReadBufferUsedLen函数用于获取缓冲区长度
+* add LOG_INFO to output CSerialPort info 增加LOG_INFO输出串口信息
 
 ## v4.2.1 (2022-11-07)
 

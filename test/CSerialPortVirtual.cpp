@@ -3,7 +3,7 @@
 
 #ifdef _WIN32
 #include <Windows.h>
-#include <tchar.h> // _T
+#include <tchar.h> //_T
 #else
 #include <errno.h>      // perror
 #include <pty.h>        // openpty
@@ -24,7 +24,30 @@ CSerialPortVirtual::~CSerialPortVirtual() {}
 bool CSerialPortVirtual::createPair(char *portName1, char *portName2)
 {
 #ifdef _WIN32
-    return false;
+    bool ret = false;
+    HINSTANCE libInst;
+
+    if (8 == sizeof(char *)) // 64bit application
+    {
+        libInst = LoadLibrary(_T("VSPDCTL64.DLL"));
+    }
+    else
+    {
+        libInst = LoadLibrary(_T("VSPDCTL.DLL"));
+    }
+
+    if (libInst)
+    {
+        typedef bool(__stdcall * CreatePairFn)(char *Port1, char *Port2);
+        CreatePairFn CreatePair = (CreatePairFn)GetProcAddress(libInst, "CreatePair");
+        if (CreatePair)
+        {
+            ret = CreatePair(portName1, portName2); // portName1 = "COM1", portName2 = "COM2"
+        }
+        FreeLibrary(libInst);
+    }
+
+    return ret;
 #else
     int error = -1;
 
@@ -109,7 +132,30 @@ bool CSerialPortVirtual::createPair(char *portName1, char *portName2)
 bool itas109::CSerialPortVirtual::deletePair(char *portName)
 {
 #ifdef _WIN32
-    return false;
+    bool ret = false;
+    HINSTANCE libInst;
+
+    if (8 == sizeof(char *)) // 64bit application
+    {
+        libInst = LoadLibrary(_T("VSPDCTL64.DLL"));
+    }
+    else
+    {
+        libInst = LoadLibrary(_T("VSPDCTL.DLL"));
+    }
+
+    if (libInst)
+    {
+        typedef bool(__stdcall * DeletePairFn)(char *Port1);
+        DeletePairFn DeletePair = (DeletePairFn)GetProcAddress(libInst, "DeletePair");
+        if (DeletePair)
+        {
+            ret = DeletePair(portName);
+        }
+        FreeLibrary(libInst);
+    }
+
+    return ret;
 #else
     return true;
 #endif
