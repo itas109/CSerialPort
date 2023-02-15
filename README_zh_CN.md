@@ -59,8 +59,8 @@ CSerialPort已经在以下平台做过测试
 
 # Latest version 最新版本
 
-## Version: 4.2.1.221107
-by itas109 on 2022-11-07
+## Version: 4.2.2.230215
+by itas109 on 2023-02-15
 
 # Quick Start 快速开始
 
