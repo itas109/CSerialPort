@@ -62,6 +62,8 @@ CSerialPortUnixBase::CSerialPortUnixBase()
     , m_readBufferSize(4096)
     , m_isThreadRunning(false)
     , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
+    , m_setDtr(false)
+    , m_setRts(false)
 {
 }
 
@@ -76,6 +78,8 @@ CSerialPortUnixBase::CSerialPortUnixBase(const std::string &portName)
     , m_readBufferSize(4096)
     , m_isThreadRunning(false)
     , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
+    , m_setDtr(false)
+    , m_setRts(false)
 {
 }
 
@@ -112,7 +116,7 @@ void CSerialPortUnixBase::init(std::string portName,
     p_buffer = new itas109::RingBuffer<char>(m_readBufferSize);
 }
 
-int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl)
+int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl, bool setDtr, bool setRts)
 {
     struct termios options;
 
@@ -291,6 +295,23 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
         return -1;
     }
 
+    int flags = 0;
+    if (setDtr) flags |= TIOCM_DTR;
+    if (setRts) flags |= TIOCM_RTS;
+    if (ioctl(fd, TIOCMBIS, &flags) < 0)
+    {
+        perror("set flags failed");
+        return -1;
+    }
+    flags = 0;
+    if (!setDtr) flags |= TIOCM_DTR;
+    if (!setRts) flags |= TIOCM_RTS;
+    if (ioctl(fd, TIOCMBIC, &flags) < 0)
+    {
+        perror("clear flags failed");
+        return -1;
+    }
+
     return 0;
 }
 
@@ -415,7 +436,7 @@ bool CSerialPortUnixBase::openPort()
         if (fcntl(fd, F_SETFL, 0) >= 0) // 阻塞，即使前面在open串口设备时设置的是非阻塞的，这里设为阻塞后，以此为准
         {
             // set param
-            if (uartSet(fd, m_baudRate, m_parity, m_dataBits, m_stopbits, m_flowControl) == -1)
+            if (uartSet(fd, m_baudRate, m_parity, m_dataBits, m_stopbits, m_flowControl, m_setDtr, m_setRts) == -1)
             {
                 fprintf(stderr, "uart set failed\n");
 
@@ -692,9 +713,15 @@ unsigned int CSerialPortUnixBase::getReadBufferSize() const
     return m_readBufferSize;
 }
 
-void CSerialPortUnixBase::setDtr(bool set /*= true*/) {}
+void CSerialPortUnixBase::setDtr(bool set)
+{
+    m_setDtr = set;
+}
 
-void CSerialPortUnixBase::setRts(bool set /*= true*/) {}
+void CSerialPortUnixBase::setRts(bool set)
+{
+    m_setRts = set;
+}
 
 bool CSerialPortUnixBase::isThreadRunning()
 {
