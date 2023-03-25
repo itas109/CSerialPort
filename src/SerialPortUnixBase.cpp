@@ -183,19 +183,19 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
     switch (dataBits)
     {
         case itas109::DataBits5:
-            options.c_cflag &= ~CSIZE; //屏蔽其它标志位
+            options.c_cflag &= ~CSIZE; // 屏蔽其它标志位
             options.c_cflag |= CS5;
             break;
         case itas109::DataBits6:
-            options.c_cflag &= ~CSIZE; //屏蔽其它标志位
+            options.c_cflag &= ~CSIZE; // 屏蔽其它标志位
             options.c_cflag |= CS6;
             break;
         case itas109::DataBits7:
-            options.c_cflag &= ~CSIZE; //屏蔽其它标志位
+            options.c_cflag &= ~CSIZE; // 屏蔽其它标志位
             options.c_cflag |= CS7;
             break;
         case itas109::DataBits8:
-            options.c_cflag &= ~CSIZE; //屏蔽其它标志位
+            options.c_cflag &= ~CSIZE; // 屏蔽其它标志位
             options.c_cflag |= CS8;
             break;
         default:
@@ -220,9 +220,9 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
             return -1;
     }
 
-    //控制模式
-    options.c_cflag |= CLOCAL; //保证程序不占用串口
-    options.c_cflag |= CREAD;  //保证程序可以从串口中读取数据
+    // 控制模式
+    options.c_cflag |= CLOCAL; // 保证程序不占用串口
+    options.c_cflag |= CREAD;  // 保证程序可以从串口中读取数据
 
     // 流控制
     switch (flowControl)
@@ -244,7 +244,7 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
     // 设置输出模式为原始输出
     options.c_oflag &= ~OPOST; // OPOST：若设置则按定义的输出处理，否则所有c_oflag失效
 
-    //设置本地模式为原始模式
+    // 设置本地模式为原始模式
     options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
     /*
      *ICANON：允许规范模式进行输入处理
@@ -266,7 +266,7 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
     options.c_cc[VTIME] = 0; // 可以在select中设置
     options.c_cc[VMIN] = 1;  // 最少读取一个字符
 
-    //如果发生数据溢出，只接受数据，但是不进行读操作
+    // 如果发生数据溢出，只接受数据，但是不进行读操作
     tcflush(fd, TCIFLUSH);
 
     // 激活配置
@@ -293,7 +293,7 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
 
             // read前获取可读的字节数,不区分阻塞和非阻塞
             ioctl(p_base->fd, FIONREAD, &readbytes);
-            if (readbytes >= p_base->getMinByteReadNotify()) //设定字符数，默认为1
+            if (readbytes >= p_base->getMinByteReadNotify()) // 设定字符数，默认为1
             {
                 char *data = NULL;
                 data = new char[readbytes];
@@ -388,7 +388,7 @@ bool CSerialPortUnixBase::openPort()
 
     // fd = open(m_portName,O_RDWR | O_NOCTTY);//阻塞
 
-    fd = open(m_portName, O_RDWR | O_NOCTTY | O_NDELAY); //非阻塞
+    fd = open(m_portName, O_RDWR | O_NOCTTY | O_NDELAY); // 非阻塞
 
     if (fd != -1)
     {
@@ -592,6 +592,48 @@ void CSerialPortUnixBase::setReadIntervalTimeout(unsigned int msecs)
 void CSerialPortUnixBase::setMinByteReadNotify(unsigned int minByteReadNotify)
 {
     m_minByteReadNotify = minByteReadNotify;
+}
+
+bool CSerialPortUnixBase::flushBuffers()
+{
+    itas109::IAutoLock lock(p_mutex);
+
+    if (isOpen())
+    {
+        return 0 == tcdrain(fd);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool CSerialPortUnixBase::flushReadBuffers()
+{
+    itas109::IAutoLock lock(p_mutex);
+
+    if (isOpen())
+    {
+        return 0 == tcflush(fd, TCIFLUSH);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool CSerialPortUnixBase::flushWriteBuffers()
+{
+    itas109::IAutoLock lock(p_mutex);
+
+    if (isOpen())
+    {
+        return 0 == tcflush(fd, TCOFLUSH);
+    }
+    else
+    {
+        return false;
+    }
 }
 
 int CSerialPortUnixBase::getLastError() const

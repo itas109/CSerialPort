@@ -199,6 +199,41 @@ void itas109::CSerialPort::setReadIntervalTimeout(unsigned int msecs)
     }
 }
 
+bool itas109::CSerialPort::flushBuffers()
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->flushBuffers();
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool itas109::CSerialPort::flushReadBuffers()
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->flushReadBuffers();
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool itas109::CSerialPort::flushWriteBuffers()
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->flushWriteBuffers();
+    }
+    else
+    {
+        return false;
+    }
+}
 unsigned int itas109::CSerialPort::getReadIntervalTimeout()
 {
     if (p_serialPortBase)

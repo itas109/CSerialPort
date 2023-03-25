@@ -196,6 +196,33 @@ public:
     virtual unsigned int getMinByteReadNotify();
 
     /**
+     * @brief flush buffers after write 等待发送完成后刷新缓冲区
+     *
+     * @return
+     * @retval true flush success 刷新缓冲区成功
+     * @retval false flush failed 刷新缓冲区失败
+     */
+    virtual bool flushBuffers() = 0;
+
+    /**
+     * @brief flush read buffers 刷新接收缓冲区
+     *
+     * @return
+     * @retval true flush success 刷新缓冲区成功
+     * @retval false flush failed 刷新缓冲区失败
+     */
+    virtual bool flushReadBuffers() = 0;
+
+    /**
+     * @brief flush write buffers 刷新发送缓冲区
+     *
+     * @return
+     * @retval true flush success 刷新缓冲区成功
+     * @retval false flush failed 刷新缓冲区失败
+     */
+    virtual bool flushWriteBuffers() = 0;
+
+    /**
      * @brief Get the Last Error object 获取最后的错误代码
      *
      * @return return last error code, refrence {@link itas109::SerialPortError} 错误代码

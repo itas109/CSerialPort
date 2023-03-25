@@ -233,17 +233,17 @@ bool CSerialPortWinBase::openPort()
         }
         else
         {
-            //串口打开失败，增加提示信息
+            // 串口打开失败，增加提示信息
             switch (GetLastError())
             {
-                //串口不存在
+                // 串口不存在
                 case ERROR_FILE_NOT_FOUND:
                 {
                     m_lastError = itas109::/*SerialPortError::*/ DeviceNotFoundError;
 
                     break;
                 }
-                    //串口拒绝访问
+                    // 串口拒绝访问
                 case ERROR_ACCESS_DENIED:
                 {
                     m_lastError = itas109::/*SerialPortError::*/ PermissionError;
@@ -333,7 +333,7 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
             {
                 // solve 线程中循环的低效率问题
                 ClearCommError(m_mainHandle, &dwError, &comstat);
-                if (comstat.cbInQue >= p_base->getMinByteReadNotify()) //设定字符数,默认为1
+                if (comstat.cbInQue >= p_base->getMinByteReadNotify()) // 设定字符数,默认为1
                 {
                     char *data = NULL;
                     data = new char[comstat.cbInQue];
@@ -610,6 +610,48 @@ void CSerialPortWinBase::setReadIntervalTimeout(unsigned int msecs)
 void CSerialPortWinBase::setMinByteReadNotify(unsigned int minByteReadNotify)
 {
     m_minByteReadNotify = minByteReadNotify;
+}
+
+bool CSerialPortWinBase::flushBuffers()
+{
+    itas109::IAutoLock lock(p_mutex);
+
+    if (isOpen())
+    {
+        return TRUE == FlushFileBuffers(m_handle);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool CSerialPortWinBase::flushReadBuffers()
+{
+    itas109::IAutoLock lock(p_mutex);
+
+    if (isOpen())
+    {
+        return TRUE == PurgeComm(m_handle, PURGE_RXCLEAR);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool CSerialPortWinBase::flushWriteBuffers()
+{
+    itas109::IAutoLock lock(p_mutex);
+
+    if (isOpen())
+    {
+        return TRUE == PurgeComm(m_handle, PURGE_TXCLEAR);
+    }
+    else
+    {
+        return false;
+    }
 }
 
 int CSerialPortWinBase::getLastError() const
