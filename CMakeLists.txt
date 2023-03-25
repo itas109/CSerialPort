@@ -16,9 +16,11 @@ cmake_minimum_required(VERSION 2.8.12)
 project(CSerialPort LANGUAGES CXX)
 
 # set output directory
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+if (CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+endif()
 
 # set build tpye
 if (NOT CMAKE_BUILD_TYPE)
@@ -30,6 +32,13 @@ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(CSERIALPORT_BUILD_EXAMPLES "Build CSerialPort examples" ON)
 option(CSERIALPORT_BUILD_DOC "Build CSerialPort Doc" OFF)
 option(CSERIALPORT_BUILD_TEST "Build CSerialPort Test" OFF)
+
+# only build library if add CSeiralPort as subdirectory
+if (NOT CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+    set(CSERIALPORT_BUILD_EXAMPLES OFF)
+    set(CSERIALPORT_BUILD_DOC OFF)
+    set(CSERIALPORT_BUILD_TEST OFF)
+endif()
 
 message(STATUS "CSerialPort CMake Info")
 message(STATUS "=======================================================")
