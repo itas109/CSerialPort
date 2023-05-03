@@ -19,10 +19,8 @@
 // Chinese (P.R.C.) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
-#ifdef _WIN32
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 #pragma code_page(936)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -72,6 +70,7 @@ END
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\CommMFC.ico"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
@@ -94,11 +93,11 @@ EXSTYLE WS_EX_APPWINDOW
 CAPTION "CommMFC"
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    PUSHBUTTON      "打开串口",IDC_BUTTON_OPEN_CLOSE,44,100,50,14
-    COMBOBOX        IDC_COMBO_PORT_Nr,43,20,48,49,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "串口号",IDC_STATIC,16,22,22,8
-    COMBOBOX        IDC_COMBO_BAUDRATE,43,37,48,49,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "波特率",IDC_STATIC,16,39,22,8
+    PUSHBUTTON      "打开串口",IDC_BUTTON_OPEN_CLOSE,74,99,36,14
+    COMBOBOX        IDC_COMBO_PORT_Nr,55,20,48,49,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "串口号",IDC_STATIC,16,22,34,8
+    COMBOBOX        IDC_COMBO_BAUDRATE,55,37,48,49,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "波特率",IDC_STATIC,16,39,34,8
     EDITTEXT        IDC_ReceiveEdit,121,35,138,57,ES_AUTOHSCROLL
     EDITTEXT        IDC_SendEdit,122,117,137,43,ES_AUTOHSCROLL
     GROUPBOX        "接收区",IDC_STATIC,117,24,148,76
@@ -111,14 +110,16 @@ BEGIN
     LTEXT           "TX : ",IDC_STATIC_SEND_COUNT,184,171,16,8
     LTEXT           "",IDC_STATIC_SEND_COUNT_VALUE,203,171,44,8
     PUSHBUTTON      "CL",IDC_BUTTON_CLEAR,250,169,16,13
-    COMBOBOX        IDC_COMBO_PARITY,43,53,48,49,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "校验位",IDC_STATIC,16,55,22,8
-    COMBOBOX        IDC_COMBO_STOP,43,84,48,49,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "停止位",IDC_STATIC,16,86,22,8
-    COMBOBOX        IDC_COMBO_DATABITS,43,68,48,49,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "数据位",IDC_STATIC,16,70,22,8
+    COMBOBOX        IDC_COMBO_PARITY,55,53,48,49,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "校验位",IDC_STATIC,16,55,34,8
+    COMBOBOX        IDC_COMBO_STOP,55,84,48,49,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "停止位",IDC_STATIC,16,86,34,8
+    COMBOBOX        IDC_COMBO_DATABITS,55,68,48,49,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "数据位",IDC_STATIC,16,70,33,8
     EDITTEXT        IDC_EDIT_RECEIVE_TIMEOUT_MS,190,10,40,14,ES_AUTOHSCROLL
     LTEXT           "接收超时(ms): ",IDC_STATIC_RECEVICE_TIMEOUT_MS,122,12,59,8
+    CONTROL         "DTR",IDC_CHECK_DTR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,101,27,10
+    CONTROL         "RTS",IDC_CHECK_RTS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,44,101,27,10
 END
 
 
@@ -167,7 +168,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -190,10 +191,21 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_COMMMFC_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_ABOUTBOX            "关于 CommMFC(&A)..."
 END

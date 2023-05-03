@@ -37,6 +37,10 @@ private slots:
 
     void on_checkBoxSync_clicked(bool checked);
 
+    void on_checkBoxDTR_clicked(bool checked);
+
+    void on_checkBoxRTS_clicked(bool checked);
+
 signals:
     void emitUpdateReceive(QString str);
 

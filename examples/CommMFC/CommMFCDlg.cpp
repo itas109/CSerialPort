@@ -54,20 +54,22 @@ CCommMFCDlg::CCommMFCDlg(CWnd* pParent /*=NULL*/)
 
 void CCommMFCDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_COMBO_PORT_Nr, m_PortNr);
-	DDX_Control(pDX, IDC_COMBO_BAUDRATE, m_BaudRate);
-	DDX_Control(pDX, IDC_BUTTON_OPEN_CLOSE, m_OpenCloseCtrl);
-	DDX_Control(pDX, IDC_SendEdit, m_Send);
-	DDX_Control(pDX, IDC_ReceiveEdit, m_ReceiveCtrl);
-	DDX_Control(pDX, IDC_STATIC_RECV_COUNT_VALUE, m_recvCountCtrl);
-	DDX_Control(pDX, IDC_STATIC_SEND_COUNT_VALUE, m_sendCountCtrl);
-	DDX_Control(pDX, IDC_COMBO_PARITY, m_Parity);
-	DDX_Control(pDX, IDC_COMBO_STOP, m_Stop);
-	DDX_Control(pDX, IDC_COMBO_DATABITS, m_DataBits);
-	DDX_Text(pDX, IDC_EDIT_RECEIVE_TIMEOUT_MS, m_ReceiveTimeoutMS);
-	DDV_MinMaxUInt(pDX, m_ReceiveTimeoutMS, 0, 999999);
-	DDX_Control(pDX, IDC_EDIT_RECEIVE_TIMEOUT_MS, m_ReceiveTimeoutMSCtrl);
+    CDialog::DoDataExchange(pDX);
+    DDX_Control(pDX, IDC_COMBO_PORT_Nr, m_PortNr);
+    DDX_Control(pDX, IDC_COMBO_BAUDRATE, m_BaudRate);
+    DDX_Control(pDX, IDC_BUTTON_OPEN_CLOSE, m_OpenCloseCtrl);
+    DDX_Control(pDX, IDC_SendEdit, m_Send);
+    DDX_Control(pDX, IDC_ReceiveEdit, m_ReceiveCtrl);
+    DDX_Control(pDX, IDC_STATIC_RECV_COUNT_VALUE, m_recvCountCtrl);
+    DDX_Control(pDX, IDC_STATIC_SEND_COUNT_VALUE, m_sendCountCtrl);
+    DDX_Control(pDX, IDC_COMBO_PARITY, m_Parity);
+    DDX_Control(pDX, IDC_COMBO_STOP, m_Stop);
+    DDX_Control(pDX, IDC_COMBO_DATABITS, m_DataBits);
+    DDX_Text(pDX, IDC_EDIT_RECEIVE_TIMEOUT_MS, m_ReceiveTimeoutMS);
+    DDV_MinMaxUInt(pDX, m_ReceiveTimeoutMS, 0, 999999);
+    DDX_Control(pDX, IDC_EDIT_RECEIVE_TIMEOUT_MS, m_ReceiveTimeoutMSCtrl);
+    DDX_Control(pDX, IDC_CHECK_DTR, m_dtrCtrl);
+    DDX_Control(pDX, IDC_CHECK_RTS, m_rtsCtrl);
 }
 
 BEGIN_MESSAGE_MAP(CCommMFCDlg, CDialog)
@@ -78,7 +80,9 @@ BEGIN_MESSAGE_MAP(CCommMFCDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_SEND, &CCommMFCDlg::OnBnClickedButtonSend)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR, &CCommMFCDlg::OnBnClickedButtonClear)
-END_MESSAGE_MAP()
+    ON_BN_CLICKED(IDC_CHECK_DTR, &CCommMFCDlg::OnBnClickedCheckDtr)
+    ON_BN_CLICKED(IDC_CHECK_RTS, &CCommMFCDlg::OnBnClickedCheckRts)
+    END_MESSAGE_MAP()
 
 
 // CCommMFCDlg 消息处理程序
@@ -118,7 +122,7 @@ BOOL CCommMFCDlg::OnInitDialog()
 	m_sendCountCtrl.SetWindowText(CString("0"));
 
 	// 默认接收超时时间(毫秒)
-	m_ReceiveTimeoutMSCtrl.SetWindowText(_T("50"));
+	m_ReceiveTimeoutMSCtrl.SetWindowText(_T("0"));
 
 	CString temp;
 	//添加波特率到下拉列表
@@ -380,4 +384,28 @@ void CCommMFCDlg::OnBnClickedButtonClear()
 	tx = 0;
 	m_recvCountCtrl.SetWindowText(CString("0"));
 	m_sendCountCtrl.SetWindowText(CString("0"));
+}
+
+void CCommMFCDlg::OnBnClickedCheckDtr()
+{
+    if(BST_CHECKED == m_dtrCtrl.GetCheck())
+    {
+        m_SerialPort.setDtr(true);
+    }
+    else
+    {
+        m_SerialPort.setDtr(false);
+	}
+}
+
+void CCommMFCDlg::OnBnClickedCheckRts()
+{
+    if (BST_CHECKED == m_rtsCtrl.GetCheck())
+    {
+        m_SerialPort.setRts(true);
+    }
+    else
+    {
+        m_SerialPort.setRts(false);
+    }
 }

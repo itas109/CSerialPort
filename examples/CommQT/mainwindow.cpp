@@ -107,6 +107,8 @@ void MainWindow::on_pushButtonOpen_clicked()
                               itas109::DataBits(ui->comboBoxDataBit->currentText().toInt()),
                               itas109::StopBits(ui->comboBoxStopBit->currentIndex()));
 
+            m_SerialPort.setReadIntervalTimeout(ui->lineEditReadIntervalTimeoutMS->text().toInt());
+
             if(m_SerialPort.open())
             {
                 ui->pushButtonOpen->setText(tr("close"));
@@ -211,4 +213,14 @@ void MainWindow::on_checkBoxSync_clicked(bool checked)
         ui->pushButtonReadSync->hide();
     }
 
+}
+
+void MainWindow::on_checkBoxDTR_clicked(bool checked)
+{
+    m_SerialPort.setDtr(checked);
+}
+
+void MainWindow::on_checkBoxRTS_clicked(bool checked)
+{
+    m_SerialPort.setRts(checked);
 }

@@ -63,4 +63,9 @@ private:
 
 	int rx; 
 	int tx;	
+public:
+    CButton m_dtrCtrl;
+    CButton m_rtsCtrl;
+    afx_msg void OnBnClickedCheckDtr();
+    afx_msg void OnBnClickedCheckRts();
 };
