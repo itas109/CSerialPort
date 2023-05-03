@@ -52,8 +52,8 @@ jobs:
     - name: Install Dependencies
       run: |
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-          sudo apt update
-          sudo apt install ${{ matrix.cxx }}
+          sudo apt-get update
+          sudo apt-get install ${{ matrix.cxx }}
 
     - uses: actions/checkout@v3
 
