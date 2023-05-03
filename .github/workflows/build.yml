@@ -1,0 +1,70 @@
+#***************************************************************************
+# @file build.yml
+# @author itas109 (itas109@qq.com) \n\n
+# Blog : https://blog.csdn.net/itas109 \n
+# Github : https://github.com/itas109 \n
+# Gitee : https://gitee.com/itas109 \n
+# QQ Group : 129518033
+# @brief Lightweight cross-platform serial port library based on C++
+# @copyright The CSerialPort is Copyright (C) 2014 itas109 <itas109@qq.com>.
+# You may use, copy, modify, and distribute the CSerialPort, under the terms
+# of the LICENSE file.
+############################################################################
+name: build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  win:
+    runs-on: windows-latest
+    
+    env:
+      BUILD_TEST: OFF
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: |
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=install -DCSERIALPORT_BUILD_TEST=$BUILD_TEST
+          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+  linux:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        cc: [gcc, clang]
+    
+    env:
+      BUILD_TEST: OFF
+      CC: ${{ matrix.cc }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: |
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=install -DCSERIALPORT_BUILD_TEST=$BUILD_TEST
+          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+  osx:
+    runs-on: macos-10
+    
+    env:
+      BUILD_TEST: OFF
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: |
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=install -DCSERIALPORT_BUILD_TEST=$BUILD_TEST
+          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
