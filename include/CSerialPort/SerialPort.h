@@ -329,14 +329,12 @@ public:
 
     /**
      * @brief Set the Dtr object 设置DTR
-     * @todo Not implemented 未实现
      *
      * @param set [in]
      */
     void setDtr(bool set = true);
     /**
      * @brief Set the Rts object 设置RTS
-     * @todo Not implemented 未实现
      *
      * @param set [in]
      */

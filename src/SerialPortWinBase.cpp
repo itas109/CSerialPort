@@ -899,14 +899,7 @@ void CSerialPortWinBase::setDtr(bool set /*= true*/)
     itas109::IAutoLock lock(p_mutex);
     if (isOpen())
     {
-        if (set)
-        {
-            EscapeCommFunction(m_handle, SETDTR);
-        }
-        else
-        {
-            EscapeCommFunction(m_handle, CLRDTR);
-        }
+        EscapeCommFunction(m_handle, set ? SETDTR : CLRDTR);
     }
 }
 
@@ -915,14 +908,7 @@ void CSerialPortWinBase::setRts(bool set /*= true*/)
     itas109::IAutoLock lock(p_mutex);
     if (isOpen())
     {
-        if (set)
-        {
-            EscapeCommFunction(m_handle, SETRTS);
-        }
-        else
-        {
-            EscapeCommFunction(m_handle, CLRRTS);
-        }
+        EscapeCommFunction(m_handle, set ? SETRTS : CLRRTS);
     }
 }
 

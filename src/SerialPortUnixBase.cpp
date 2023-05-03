@@ -716,9 +716,31 @@ unsigned int CSerialPortUnixBase::getReadBufferSize() const
     return m_readBufferSize;
 }
 
-void CSerialPortUnixBase::setDtr(bool set /*= true*/) {}
+void CSerialPortUnixBase::setDtr(bool set /*= true*/)
+{
+    itas109::IAutoLock lock(p_mutex);
+    if (isOpen())
+    {
+        int status = TIOCM_DTR;
+        if (ioctl(fd, set ? TIOCMBIS : TIOCMBIC, &status) < 0)
+        {
+            perror("setDtr error");
+        }
+    }
+}
 
-void CSerialPortUnixBase::setRts(bool set /*= true*/) {}
+void CSerialPortUnixBase::setRts(bool set /*= true*/)
+{
+    itas109::IAutoLock lock(p_mutex);
+    if (isOpen())
+    {
+        int status = TIOCM_RTS;
+        if (ioctl(fd, set ? TIOCMBIS : TIOCMBIC, &status) < 0)
+        {
+            perror("setRts error");
+        }
+    }
+}
 
 bool CSerialPortUnixBase::isThreadRunning()
 {
