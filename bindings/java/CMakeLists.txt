@@ -45,7 +45,9 @@ set(CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_SOURCE_DIR}/generate")
 
 # call swig in c++ mode
 set_property(SOURCE cserialport.i PROPERTY CPLUSPLUS ON)
-# swig -java -c++ -outdir generate -I../../include cserialport.i
+# set swig package
+set(CMAKE_SWIG_FLAGS -package com.itas109.cserialport)
+# swig -java -c++ -outdir generate -I../../include -package com.itas109.cserialport cserialport.i
 swig_add_library(${PROJECT_NAME} LANGUAGE java SOURCES cserialport.i ${CSerialPortSourceFiles})
 
 # example

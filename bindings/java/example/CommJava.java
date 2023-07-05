@@ -9,6 +9,8 @@
  */
 import java.util.Scanner;
 
+import com.itas109.cserialport.*;
+
 public class CommJava {
     static {
         try {
