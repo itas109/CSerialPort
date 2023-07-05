@@ -43,6 +43,7 @@ jobs:
     env:
       BUILD_TEST: OFF
 
+    steps:
     - uses: actions/checkout@v3
 
     - name: Build
