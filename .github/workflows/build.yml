@@ -39,21 +39,9 @@ jobs:
 
   linux:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        cxx: [g++-4.8, clang-3.5]
     
     env:
       BUILD_TEST: OFF
-      CXX: ${{ matrix.cxx }}
-
-    steps:
-    - name: Install Dependencies
-      run: |
-          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-          sudo apt-get update
-          sudo apt-get install ${{ matrix.cxx }}
 
     - uses: actions/checkout@v3
 
