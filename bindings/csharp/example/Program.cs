@@ -8,6 +8,7 @@
  * @brief CSharp CSerialPort Example  C#的CSerialPort示例程序
  */
 using System;
+using itas109;
 
 public class Program
 {

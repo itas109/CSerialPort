@@ -39,7 +39,9 @@ set(CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_SOURCE_DIR}/generate")
 
 # call swig in c++ mode
 set_property(SOURCE cserialport.i PROPERTY CPLUSPLUS ON)
-# swig -csharp -c++ -outdir generate -I../../include cserialport.i
+# set namespace
+set(CMAKE_SWIG_FLAGS -namespace itas109)
+# swig -csharp -c++ -outdir generate -I../../include -namespace itas109 cserialport.i
 swig_add_library(${PROJECT_NAME} LANGUAGE csharp SOURCES cserialport.i ${CSerialPortSourceFiles})
 
 # example
