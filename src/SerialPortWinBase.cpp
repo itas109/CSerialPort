@@ -202,14 +202,14 @@ bool CSerialPortWinBase::openPort()
                         if (!bRet)
                         {
                             m_isThreadRunning = false;
-                            m_lastError = itas109::/*SerialPortError::*/ SystemError;
+                            m_lastError = itas109::/*SerialPortError::*/ ErrorInner;
                         }
                     }
                     else
                     {
                         // Failed to set Comm Mask
                         bRet = false;
-                        m_lastError = itas109::/*SerialPortError::*/ InvalidParameterError;
+                        m_lastError = itas109::/*SerialPortError::*/ ErrorInvalidParam;
                     }
                 }
                 else
@@ -228,7 +228,7 @@ bool CSerialPortWinBase::openPort()
             {
                 // set com configure error
                 bRet = false;
-                m_lastError = itas109::/*SerialPortError::*/ InvalidParameterError;
+                m_lastError = itas109::/*SerialPortError::*/ ErrorInvalidParam;
             }
         }
         else
@@ -239,19 +239,19 @@ bool CSerialPortWinBase::openPort()
                 // 串口不存在
                 case ERROR_FILE_NOT_FOUND:
                 {
-                    m_lastError = itas109::/*SerialPortError::*/ DeviceNotFoundError;
+                    m_lastError = itas109::/*SerialPortError::*/ ErrorNotExist;
 
                     break;
                 }
                     // 串口拒绝访问
                 case ERROR_ACCESS_DENIED:
                 {
-                    m_lastError = itas109::/*SerialPortError::*/ PermissionError;
+                    m_lastError = itas109::/*SerialPortError::*/ ErrorAccessDenied;
 
                     break;
                 }
                 default:
-                    m_lastError = itas109::/*SerialPortError::*/ UnknownError;
+                    m_lastError = itas109::/*SerialPortError::*/ ErrorOpenFailed;
                     break;
             }
         }
@@ -259,13 +259,15 @@ bool CSerialPortWinBase::openPort()
     else
     {
         bRet = false;
-        m_lastError = itas109::/*SerialPortError::*/ OpenError;
+        m_lastError = itas109::/*SerialPortError::*/ ErrorOpenFailed;
     }
 
     if (!bRet)
     {
         closePort();
     }
+
+    LOG_INFO("open %s. code: %d, message: %s", m_portName, getLastError(), getLastErrorMsg());
 
     return bRet;
 }
@@ -441,7 +443,7 @@ int CSerialPortWinBase::readDataWin(void *data, int size)
                 }
                 else
                 {
-                    m_lastError = itas109::/*SerialPortError::*/ ReadError;
+                    m_lastError = itas109::/*SerialPortError::*/ ErrorReadFailed;
                     numBytes = (DWORD)-1;
                 }
             }
@@ -455,14 +457,14 @@ int CSerialPortWinBase::readDataWin(void *data, int size)
             }
             else
             {
-                m_lastError = itas109::/*SerialPortError::*/ ReadError;
+                m_lastError = itas109::/*SerialPortError::*/ ErrorReadFailed;
                 numBytes = (DWORD)-1;
             }
         }
     }
     else
     {
-        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        m_lastError = itas109::/*SerialPortError::*/ ErrorNotOpen;
         numBytes = (DWORD)-1;
     }
 
@@ -493,14 +495,14 @@ int CSerialPortWinBase::readData(void *data, int size)
             }
             else
             {
-                m_lastError = itas109::/*SerialPortError::*/ ReadError;
+                m_lastError = itas109::/*SerialPortError::*/ ErrorReadFailed;
                 numBytes = (DWORD)-1;
             }
         }
     }
     else
     {
-        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        m_lastError = itas109::/*SerialPortError::*/ ErrorNotOpen;
         numBytes = (DWORD)-1;
     }
 
@@ -525,10 +527,12 @@ int CSerialPortWinBase::readLineData(void *data, int size)
 
     if (isOpen())
     {
+        m_lastError = itas109::/*SerialPortError::*/ ErrorNotImplemented;
+        numBytes = (DWORD)-1;
     }
     else
     {
-        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        m_lastError = itas109::/*SerialPortError::*/ ErrorNotOpen;
         numBytes = (DWORD)-1;
     }
 
@@ -569,7 +573,7 @@ int CSerialPortWinBase::writeData(const void *data, int size)
                 }
                 else
                 {
-                    m_lastError = itas109::/*SerialPortError::*/ WriteError;
+                    m_lastError = itas109::/*SerialPortError::*/ ErrorWriteFailed;
                     numBytes = (DWORD)-1;
                 }
             }
@@ -583,14 +587,14 @@ int CSerialPortWinBase::writeData(const void *data, int size)
             }
             else
             {
-                m_lastError = itas109::/*SerialPortError::*/ WriteError;
+                m_lastError = itas109::/*SerialPortError::*/ ErrorWriteFailed;
                 numBytes = (DWORD)-1;
             }
         }
     }
     else
     {
-        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        m_lastError = itas109::/*SerialPortError::*/ ErrorNotOpen;
         numBytes = (DWORD)-1;
     }
 
@@ -652,16 +656,6 @@ bool CSerialPortWinBase::flushWriteBuffers()
     {
         return false;
     }
-}
-
-int CSerialPortWinBase::getLastError() const
-{
-    return m_lastError;
-}
-
-void CSerialPortWinBase::clearError()
-{
-    m_lastError = itas109::/*SerialPortError::*/ NoError;
 }
 
 void CSerialPortWinBase::setPortName(const char *portName)

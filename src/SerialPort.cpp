@@ -107,7 +107,7 @@ int itas109::CSerialPort::connectReadEvent(itas109::CSerialPortListener *event)
     }
     else
     {
-        return itas109::SystemError;
+        return itas109::ErrorNullPointer;
     }
 }
 
@@ -119,7 +119,7 @@ int itas109::CSerialPort::disconnectReadEvent()
     }
     else
     {
-        return itas109::SystemError;
+        return itas109::ErrorNullPointer;
     }
 }
 
@@ -131,7 +131,7 @@ unsigned int itas109::CSerialPort::getReadBufferUsedLen() const
     }
     else
     {
-        return itas109::SystemError;
+        return itas109::ErrorNullPointer;
     }
 }
 
@@ -143,7 +143,7 @@ int itas109::CSerialPort::readData(void *data, int size)
     }
     else
     {
-        return itas109::SystemError;
+        return itas109::ErrorNullPointer;
     }
 }
 
@@ -155,7 +155,7 @@ int itas109::CSerialPort::readAllData(void *data)
     }
     else
     {
-        return itas109::SystemError;
+        return itas109::ErrorNullPointer;
     }
 }
 
@@ -167,7 +167,7 @@ int itas109::CSerialPort::readLineData(void *data, int size)
     }
     else
     {
-        return itas109::SystemError;
+        return itas109::ErrorNullPointer;
     }
 }
 
@@ -179,7 +179,7 @@ int itas109::CSerialPort::writeData(const void *data, int size)
     }
     else
     {
-        return itas109::SystemError;
+        return itas109::ErrorNullPointer;
     }
 }
 
@@ -263,7 +263,19 @@ int itas109::CSerialPort::getLastError() const
     else
     {
         // null error
-        return itas109::/*SerialPortError::*/ SystemError;
+        return itas109::/*SerialPortError::*/ ErrorNullPointer;
+    }
+}
+
+const char *itas109::CSerialPort::getLastErrorMsg() const
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->getLastErrorMsg();
+    }
+    else
+    {
+        return "";
     }
 }
 
@@ -311,7 +323,7 @@ int itas109::CSerialPort::getBaudRate() const
     }
     else
     {
-        return itas109::SystemError;
+        return itas109::ErrorNullPointer;
     }
 }
 
@@ -415,7 +427,7 @@ unsigned int itas109::CSerialPort::getReadBufferSize() const
     }
     else
     {
-        return itas109::SystemError;
+        return itas109::ErrorNullPointer;
     }
 }
 

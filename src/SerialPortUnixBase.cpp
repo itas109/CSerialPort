@@ -130,7 +130,7 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
             tio2.c_ispeed = baudRate; // set the input baud rate
             tio2.c_ospeed = baudRate; // set the output baud rate
 
-            if (-1 == ioctl(fd, TCSETS2, &tio2) || -1 == ioctl(fd, TCGETS2, &tio2))
+            if (-1 == ioctl(fd, TCSETS2, &tio2))
             {
                 fprintf(stderr, "termios2 set custom baudrate error\n");
                 return -1;
@@ -401,7 +401,7 @@ bool CSerialPortUnixBase::openPort()
                 fprintf(stderr, "uart set failed\n");
 
                 bRet = false;
-                m_lastError = itas109::/*SerialPortError::*/ InvalidParameterError;
+                m_lastError = itas109::/*SerialPortError::*/ ErrorInvalidParam;
             }
             else
             {
@@ -411,31 +411,45 @@ bool CSerialPortUnixBase::openPort()
                 if (!bRet)
                 {
                     m_isThreadRunning = false;
-                    m_lastError = itas109::/*SerialPortError::*/ SystemError;
+                    m_lastError = itas109::/*SerialPortError::*/ ErrorInner;
                 }
             }
         }
         else
         {
             bRet = false;
-            m_lastError = itas109::/*SerialPortError::*/ SystemError;
+            m_lastError = itas109::/*SerialPortError::*/ ErrorInner;
         }
     }
     else
     {
         // Could not open the port
-        char str[300];
-        snprintf(str, sizeof(str), "open port error: Unable to open %s", m_portName);
-        perror(str);
+        // char str[300];
+        // snprintf(str, sizeof(str), "open port error: Unable to open %s", m_portName);
+        // perror(str);
+
+        if (EACCES == errno)
+        {
+            m_lastError = itas109::/*SerialPortError::*/ ErrorAccessDenied;
+        }
+        else if (ENOENT == errno)
+        {
+            m_lastError = itas109::/*SerialPortError::*/ ErrorNotExist;
+        }
+        else
+        {
+            m_lastError = itas109::/*SerialPortError::*/ ErrorOpenFailed;
+        }
 
         bRet = false;
-        m_lastError = itas109::/*SerialPortError::*/ OpenError;
     }
 
     if (!bRet)
     {
         closePort();
     }
+
+    LOG_INFO("open %s. code: %d, message: %s", m_portName, getLastError(), getLastErrorMsg());
 
     return bRet;
 }
@@ -488,7 +502,7 @@ int CSerialPortUnixBase::readDataUnix(void *data, int size)
     }
     else
     {
-        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        m_lastError = itas109::/*SerialPortError::*/ ErrorNotOpen;
         iRet = -1;
     }
 
@@ -519,7 +533,7 @@ int CSerialPortUnixBase::readData(void *data, int size)
     }
     else
     {
-        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        m_lastError = itas109::/*SerialPortError::*/ ErrorNotOpen;
         iRet = -1;
     }
 
@@ -544,10 +558,12 @@ int CSerialPortUnixBase::readLineData(void *data, int size)
 
     if (isOpen())
     {
+        m_lastError = itas109::/*SerialPortError::*/ ErrorNotImplemented;
+        iRet = -1;
     }
     else
     {
-        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        m_lastError = itas109::/*SerialPortError::*/ ErrorNotOpen;
         iRet = -1;
     }
 
@@ -567,7 +583,7 @@ int CSerialPortUnixBase::writeData(const void *data, int size)
     }
     else
     {
-        m_lastError = itas109::/*SerialPortError::*/ NotOpenError;
+        m_lastError = itas109::/*SerialPortError::*/ ErrorNotOpen;
         iRet = -1;
     }
 
@@ -634,16 +650,6 @@ bool CSerialPortUnixBase::flushWriteBuffers()
     {
         return false;
     }
-}
-
-int CSerialPortUnixBase::getLastError() const
-{
-    return m_lastError;
-}
-
-void CSerialPortUnixBase::clearError()
-{
-    m_lastError = itas109::NoError;
 }
 
 void CSerialPortUnixBase::setPortName(const char *portName)

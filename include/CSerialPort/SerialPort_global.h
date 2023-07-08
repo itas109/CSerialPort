@@ -182,22 +182,27 @@ enum FlowControl
  */
 enum SerialPortError
 {
-    SystemError = -1,          ///< system error 系统错误(如空指针、内存访问异常等)
-    NoError = 0,               ///< No error occurred 没有错误
-    DeviceNotFoundError,       ///< device not found 未找到设备
-    PermissionError,           ///< permission error 权限错误
-    OpenError,                 ///< open error 打开串口错误
-    ParityError,               ///< parity error 校验位错误
-    FramingError,              ///<
-    BreakConditionError,       ///<
-    WriteError,                ///< write error 写数据错误
-    ReadError,                 ///< read error 读数据错误
-    ResourceError,             ///<
-    UnsupportedOperationError, ///<
-    UnknownError,              ///< unknown error 未知错误
-    TimeoutError,              ///< time out error 超时
-    NotOpenError,              ///< not open serial port error 串口未打开
-    InvalidParameterError      ///< invalid parameter error 无效的参数
+    ErrorUnknown = -1,   ///< unknown error 未知错误
+    ErrorOK = 0,         ///< ok 成功
+    ErrorFail = 1,       ///< general error一般性错误
+    ErrorNotImplemented, ///< not implemented 未实现
+    ErrorInner,          ///< inner error 内部错误(如内存访问异常等)
+    ErrorNullPointer,    ///< null pointer error 空指针错误
+    ErrorInvalidParam,   ///< invalid parameter error 无效的参数
+    ErrorAccessDenied,   ///< access denied error 权限错误
+    ErrorOutOfMemory,    ///< out of memory 内存不足
+    ErrorTimeout,        ///< time out error 超时
+
+    ErrorNotInit,      ///< not init 未初始化
+    ErrorInitFailed,   ///< init failed 初始化失败
+    ErrorAlreadyExist, ///< already exist 已经存在
+    ErrorNotExist,     ///< not exist 不存在
+    ErrorAlreadyOpen,  ///< already open 已经打开
+    ErrorNotOpen,      ///< not open 未打开
+    ErrorOpenFailed,   ///< open failed 打开失败
+    ErrorCloseFailed,  ///< close failed 关闭失败
+    ErrorWriteFailed,  ///< write failed 写入失败
+    ErrorReadFailed    ///< read failed 读取失败
 };
 } // namespace itas109
 

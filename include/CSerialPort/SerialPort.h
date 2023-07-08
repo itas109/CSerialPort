@@ -230,6 +230,12 @@ public:
      */
     int getLastError() const;
     /**
+     * @brief Get the Last Error Code Message 获取错误码信息
+     *
+     * @return return last error code message 返回错误码信息
+     */
+    const char *getLastErrorMsg() const;
+    /**
      * @brief clear error 清除错误信息
      *
      */

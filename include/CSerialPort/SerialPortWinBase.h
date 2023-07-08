@@ -192,18 +192,6 @@ public:
     virtual bool flushWriteBuffers();
 
     /**
-     * @brief Get the Last Error object 获取最后的错误代码
-     *
-     * @return return last error code, refrence {@link itas109::SerialPortError} 错误代码
-     */
-    virtual int getLastError() const;
-    /**
-     * @brief clear error 清除错误信息
-     *
-     */
-    virtual void clearError();
-
-    /**
      * @brief Set the Port Name object 设置串口名称
      *
      * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
