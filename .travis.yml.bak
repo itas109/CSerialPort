@@ -1,0 +1,164 @@
+#***************************************************************************
+# @file .travis.yml
+# @author itas109 (itas109@qq.com) \n\n
+# Blog : https://blog.csdn.net/itas109 \n
+# Github : https://github.com/itas109 \n
+# Gitee : https://gitee.com/itas109 \n
+# QQ Group : 129518033
+# @brief Lightweight cross-platform serial port library based on C++
+# @copyright The CSerialPort is Copyright (C) 2014 itas109 <itas109@qq.com>.
+# You may use, copy, modify, and distribute the CSerialPort, under the terms
+# of the LICENSE file.
+############################################################################
+
+language: cpp
+
+# https://docs.travis-ci.com/user/languages/cpp
+
+# default
+os: linux
+dist: xenial
+
+git:
+  depth: 1
+  submodules: false
+
+jobs:
+  include:
+    # Test gcc-4.8: Build=Debug/Release
+    - env: GCC_VERSION=4.8 BUILD_TYPE=Debug BUILD_TEST=OFF
+      os: linux
+      arch: amd64
+      dist: trusty
+      addons:
+          apt:
+            packages:
+              - g++-4.8
+            sources:
+              - ubuntu-toolchain-r-test
+
+    # - env: GCC_VERSION=4.8 BUILD_TYPE=Release BUILD_TEST=OFF
+    #   os: linux
+    #   arch: arm64
+    #   dist: trusty
+    #   addons:
+    #       apt:
+    #         packages:
+    #           - g++-4.8
+    #         sources:
+    #           - ubuntu-toolchain-r-test
+
+    # Test gcc-5.4.0: Build=Debug/Release
+    # - env: GCC_VERSION=5 BUILD_TYPE=Debug BUILD_TEST=OFF
+    #   os: linux
+    #   arch: s390x
+    #   dist: xenial
+    #   # addons:
+    #   #     apt:
+    #   #       packages:
+    #   #         - g++-7
+    #   #       sources:
+    #   #         - ubuntu-toolchain-r-test
+
+    # - env: GCC_VERSION=7 BUILD_TYPE=Release BUILD_TEST=OFF
+    #   os: linux
+    #   arch: ppc64le
+    #   dist: xenial
+    #   addons:
+    #       apt:
+    #         packages:
+    #           - g++-7
+    #         sources:
+    #           - ubuntu-toolchain-r-test
+
+    # Test clang-3.5: Build=Debug/Release
+    - env: CLANG_VERSION=3.5 BUILD_TYPE=Debug BUILD_TEST=OFF
+      os: linux
+      arch: amd64
+      dist: xenial
+      addons:
+          apt:
+            packages:
+              - clang-3.5
+            sources:
+              - ubuntu-toolchain-r-test
+              - llvm-toolchain-precise-3.5
+
+    - env: CLANG_VERSION=3.5 BUILD_TYPE=Release BUILD_TEST=OFF
+      os: linux
+      arch: amd64
+      dist: xenial
+      addons:
+          apt:
+            packages:
+              - clang-3.5
+            sources:
+              - ubuntu-toolchain-r-test
+              - llvm-toolchain-precise-3.5
+
+    # Test clang-10.0: Build=Debug/Release
+    - env: CLANG_VERSION=10 BUILD_TYPE=Debug BUILD_TEST=OFF
+      os: linux
+      arch: arm64
+      dist: bionic
+      addons:
+          apt:
+            packages:
+              - clang-10
+            sources:
+              - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
+                key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
+
+    - env: CLANG_VERSION=10 BUILD_TYPE=Release BUILD_TEST=OFF
+      os: linux
+      arch: amd64
+      dist: bionic
+      addons:
+          apt:
+            packages:
+              - clang-10
+            sources:
+              - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
+                key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
+
+    # ubuntu 20.04 gcc 9.3.0
+    - env: BUILD_TYPE=Release BUILD_TEST=OFF
+      os: linux
+      dist: focal
+
+    # ubuntu 22.04 gcc 11.2.0
+    - env: BUILD_TYPE=Release BUILD_TEST=ON
+      os: linux
+      dist: jammy
+
+    # osx default macOS 10.13
+    - env: BUILD_TYPE=Release BUILD_TEST=OFF
+      os: osx
+
+    # freebsd default FreeBSD 12.1
+    - env: BUILD_TYPE=Release BUILD_TEST=OFF
+      os: freebsd
+    
+before_script:
+  - if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
+  - if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CXX="clang++" CC="clang"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "freebsd" ]]; then export CXX="clang++" CC="clang"; fi
+  - which $CXX
+  - which $CC
+  - $CXX --version
+  - cmake --version
+
+script:
+  - cd ${TRAVIS_BUILD_DIR}
+  - mkdir bin
+  - cd bin
+  - |
+    cmake .. \
+      -DCMAKE_INSTALL_PREFIX=install \
+      -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+      -DCSERIALPORT_BUILD_TEST=$BUILD_TEST
+      
+  - cmake --build .
+  - cmake --install .
+  - if [ "$BUILD_TEST" = "ON" ]; then ./bin/CSerialPortTest; fi
