@@ -244,8 +244,9 @@ void CommWXWidgetsDialog::OnButtonOpenCloseClick(wxCommandEvent& event)
         }
         else
         {
-            wxMessageBox(wxString::Format("open serial port error(%i)\nPortName: %s\nBaudrate: %i\nParity: %i\nDataBits: %i\nStopBits: %i",
+            wxMessageBox(wxString::Format("open error\ncode: %i, message: %s\nPortName: %s\nBaudrate: %i\nParity: %i\nDataBits: %i\nStopBits: %i",
                                           m_SerialPort.getLastError(),
+                                          m_SerialPort.getLastErrorMsg(),
                                           m_SerialPort.getPortName(),
                                           m_SerialPort.getBaudRate(),
                                           m_SerialPort.getParity(),

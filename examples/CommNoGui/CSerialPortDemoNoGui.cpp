@@ -120,7 +120,8 @@ int main()
         sp.setReadIntervalTimeout(0); // read interval timeout 0ms
 
         sp.open();
-        std::cout << "Open " << portName << (sp.isOpen() ? " Success" : " Failed") << std::endl;
+        std::cout << "Open " << portName << (sp.isOpen() ? " Success. " : " Failed. ");
+        std::cout << "Code: " << sp.getLastError() << ", Message: " << sp.getLastErrorMsg() << std::endl;
 
         // connect for read
         sp.connectReadEvent(&listener);

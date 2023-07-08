@@ -242,7 +242,7 @@ void open(void)
 	else
 	{
         char errorCodeStr[256];
-        sprintf(errorCodeStr,"open failed, error code : %d\n",m_serialPort.getLastError()); 
+        sprintf(errorCodeStr,"open failed, code : %d, message: %s\n",m_serialPort.getLastError(),m_serialPort.getLastErrorMsg()); 
         bodymsg(errorCodeStr);
 	}
 }

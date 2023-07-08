@@ -115,7 +115,7 @@ void MainWindow::on_pushButtonOpen_clicked()
             }
             else
             {
-                QMessageBox::information(NULL,tr("information"),tr("open port error"));
+                QMessageBox::information(NULL,tr("information"),tr("open port error") + QString("\n\ncode: %1\nmessage: %2").arg(m_SerialPort.getLastError()).arg(m_SerialPort.getLastErrorStr()));
                 ui->pushButtonOpen->setText(tr("open"));
                 qDebug()<< m_SerialPort.getLastError();
             }
