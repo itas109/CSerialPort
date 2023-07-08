@@ -188,7 +188,7 @@ char *getSerialPath(char *dest, io_object_t &serialPort)
 
     if (calloutCFString)
     {
-        CFStringGetCString(static_cast<CFStringRef>(calloutCFString), dest, sizeof(dest), kCFStringEncodingUTF8);
+        CFStringGetCString(static_cast<CFStringRef>(calloutCFString), dest, MAXPATHLEN, kCFStringEncodingUTF8);
 
         CFRelease(calloutCFString);
     }
