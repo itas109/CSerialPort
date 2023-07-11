@@ -117,35 +117,6 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
         cfsetispeed(&options, baudRateConstant);
         cfsetospeed(&options, baudRateConstant);
     }
-    else
-    {
-#ifdef I_OS_LINUX
-        struct termios2 tio2;
-
-        if (-1 != ioctl(fd, TCGETS2, &tio2))
-        {
-            tio2.c_cflag &= ~CBAUD; // remove current baud rate
-            tio2.c_cflag |= BOTHER; // allow custom baud rate using int input
-
-            tio2.c_ispeed = baudRate; // set the input baud rate
-            tio2.c_ospeed = baudRate; // set the output baud rate
-
-            if (-1 == ioctl(fd, TCSETS2, &tio2))
-            {
-                fprintf(stderr, "termios2 set custom baudrate error\n");
-                return -1;
-            }
-        }
-        else
-        {
-            fprintf(stderr, "termios2 ioctl error\n");
-            return -1;
-        }
-#else
-        fprintf(stderr, "not support custom baudrate\n");
-        return -1;
-#endif
-    }
 
     // 设置校验位
     switch (parity)
@@ -274,6 +245,37 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
     {
         perror("tcsetattr failed");
         return -1;
+    }
+
+    // set custom baud rate, after tcsetattr
+    if (0 == baudRateConstant)
+    {
+#ifdef I_OS_LINUX
+        struct termios2 tio2;
+
+        if (-1 != ioctl(fd, TCGETS2, &tio2))
+        {
+            tio2.c_cflag &= ~CBAUD; // remove current baud rate
+            tio2.c_cflag |= BOTHER; // allow custom baud rate using int input
+
+            tio2.c_ispeed = baudRate; // set the input baud rate
+            tio2.c_ospeed = baudRate; // set the output baud rate
+
+            if (-1 == ioctl(fd, TCSETS2, &tio2))
+            {
+                fprintf(stderr, "termios2 set custom baudrate error\n");
+                return -1;
+            }
+        }
+        else
+        {
+            fprintf(stderr, "termios2 ioctl error\n");
+            return -1;
+        }
+#else
+        fprintf(stderr, "not support custom baudrate\n");
+        return -1;
+#endif
     }
 
     return 0;
