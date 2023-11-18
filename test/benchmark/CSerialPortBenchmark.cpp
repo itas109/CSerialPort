@@ -2,6 +2,7 @@
 #include <chrono>
 #include <thread>
 #include <vector>
+#include <string.h>
 
 #include "CSerialPort/SerialPort.h"
 #include "CSerialPort/SerialPortInfo.h"
@@ -23,7 +24,7 @@ unsigned long long count = 0;
 
 unsigned char writeIndex = 0xFF;
 
-std::chrono::steady_clock::time_point startReadTime;
+auto startReadTime = std::chrono::high_resolution_clock::now();
 
 class MyListener : public CSerialPortListener
 {
