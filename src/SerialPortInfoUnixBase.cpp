@@ -20,6 +20,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
+#include <IOKit/usb/IOUSBLib.h> // kUSBVendorID kUSBProductID
 #include <IOKit/serial/IOSerialKeys.h>
 #endif
 
@@ -196,6 +197,46 @@ char *getSerialPath(char *dest, io_object_t &serialPort)
     return dest;
 }
 
+char *getHardwareId(char *hardwareId, io_registry_entry_t &device)
+{
+    CFNumberRef vidNumber = (CFNumberRef)IORegistryEntryCreateCFProperty(device, CFSTR(kUSBVendorID), kCFAllocatorDefault, 0);
+    CFNumberRef pidNumber = (CFNumberRef)IORegistryEntryCreateCFProperty(device, CFSTR(kUSBProductID), kCFAllocatorDefault, 0);
+
+    if (vidNumber && pidNumber)
+    {
+        uint32_t vid = 0, pid = 0;
+        CFNumberGetValue(vidNumber, kCFNumberIntType, &vid);
+        CFNumberGetValue(pidNumber, kCFNumberIntType, &pid);
+        CFRelease(vidNumber);
+        CFRelease(pidNumber);
+
+        snprintf(hardwareId, MAXPATHLEN, "VID_%04X&PID_%04X", vid, pid);
+        return hardwareId;
+    }
+
+    if (vidNumber)
+    {
+        CFRelease(vidNumber);
+    }
+    if (pidNumber)
+    {
+        CFRelease(pidNumber);
+    }
+
+    // parent device
+    io_registry_entry_t parent = 0;
+    kern_return_t result = IORegistryEntryGetParentEntry(device, kIOServicePlane, &parent);
+    if (KERN_SUCCESS == result)
+    {
+        getHardwareId(hardwareId, parent);
+        IOObjectRelease(parent);
+        return hardwareId;
+    }
+
+    // not found
+    return hardwareId;
+}
+
 std::vector<itas109::SerialPortInfo> getPortInfoListMac()
 {
     // https://developer.apple.com/documentation/iokit/communicating_with_a_modem_on_a_serial_port
@@ -225,7 +266,10 @@ std::vector<itas109::SerialPortInfo> getPortInfoListMac()
     while (serialPort = IOIteratorNext(serialPortIterator))
     {
         char device_path[MAXPATHLEN] = {0};
+        char device_hardware_id[MAXPATHLEN] = {0};
         getSerialPath(device_path, serialPort);
+        getHardwareId(device_hardware_id, serialPort);
+
         IOObjectRelease(serialPort);
 
         if ('\0' == device_path[0])
@@ -235,7 +279,7 @@ std::vector<itas109::SerialPortInfo> getPortInfoListMac()
 
         itas109::IUtils::strncpy(m_serialPortInfo.portName, device_path, MAXPATHLEN);
         itas109::IUtils::strncpy(m_serialPortInfo.description, "", 1);
-        itas109::IUtils::strncpy(m_serialPortInfo.hardwareId, "", 1);
+        itas109::IUtils::strncpy(m_serialPortInfo.hardwareId, device_hardware_id, MAXPATHLEN);
         portInfoList.push_back(m_serialPortInfo);
     }
 
