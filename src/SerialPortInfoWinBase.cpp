@@ -1,6 +1,6 @@
-﻿#include <Windows.h>
+﻿#include <windows.h>
 #include <initguid.h> // GUID
-#include <Setupapi.h> // SetupDiGetClassDevs Setup*
+#include <setupapi.h> // SetupDiGetClassDevs Setup*
 #include <tchar.h>    // _T
 
 #include "CSerialPort/iutils.hpp"

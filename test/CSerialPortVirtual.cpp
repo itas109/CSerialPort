@@ -2,7 +2,7 @@
 #include "CSerialPort/iutils.hpp"
 
 #ifdef _WIN32
-#include <Windows.h>
+#include <windows.h>
 #include <tchar.h> //_T
 #else
 #include <errno.h>      // perror

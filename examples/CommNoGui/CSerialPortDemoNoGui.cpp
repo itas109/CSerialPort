@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifdef _WIN32
-#include <Windows.h>
+#include <windows.h>
 #define imsleep(microsecond) Sleep(microsecond) // ms
 #else
 #include <unistd.h>
