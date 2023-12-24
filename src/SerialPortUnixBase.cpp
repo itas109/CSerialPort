@@ -235,7 +235,7 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
 
     // 设置等待时间和最小接受字符
     options.c_cc[VTIME] = 0; // 可以在select中设置
-    options.c_cc[VMIN] = 1;  // 最少读取一个字符
+    options.c_cc[VMIN] = 0;  // read function will undefinite wait when no read data
 
     // 如果发生数据溢出，只接受数据，但是不进行读操作
     tcflush(fd, TCIFLUSH);
@@ -407,13 +407,20 @@ bool CSerialPortUnixBase::openPort()
             }
             else
             {
-                m_isThreadRunning = true;
-                bRet = startThreadMonitor();
-
-                if (!bRet)
+                if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
                 {
-                    m_isThreadRunning = false;
-                    m_lastError = itas109::/*SerialPortError::*/ ErrorInner;
+                    m_isThreadRunning = true;
+                    bRet = startThreadMonitor();
+
+                    if (!bRet)
+                    {
+                        m_isThreadRunning = false;
+                        m_lastError = itas109::/*SerialPortError::*/ ErrorInner;
+                    }
+                }
+                else
+                {
+                    bRet = true;
                 }
             }
         }
