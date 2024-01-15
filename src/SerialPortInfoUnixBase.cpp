@@ -9,7 +9,6 @@
 #include <unistd.h>   // readlink close
 
 #include <string.h> //basename memset strcmp
-#include <string>   // std::string
 
 #include <fcntl.h>
 #include <linux/serial.h> //struct serial_struct
@@ -25,157 +24,194 @@
 #endif
 
 #ifdef I_OS_LINUX
-std::string get_driver(const std::string &tty)
+void getDriver(const char *tty, char *driverName)
 {
-    struct stat st;
-    std::string devicedir = tty;
-
-    // Append '/device' to the tty-path
-    /// sys/class/tty/ttyS0/device
-    devicedir += "/device";
+    if (NULL == tty || NULL == driverName)
+    {
+        return;
+    }
+    char deviceDir[256] = {0};
+    // /sys/class/tty/ttyUSB0/device
+    itas109::IUtils::strFormat(deviceDir, 256, "%s/device", tty);
 
     // Stat the devicedir and handle it if it is a symlink
-    if (lstat(devicedir.c_str(), &st) == 0 && S_ISLNK(st.st_mode))
+    struct stat st;
+    if (lstat(deviceDir, &st) == 0 && S_ISLNK(st.st_mode))
     {
-        char buffer[1024];
-        memset(buffer, 0, sizeof(buffer));
+        // /sys/class/tty/ttyUSB0/device/driver
+        char driverDir[256] = {0};
+        itas109::IUtils::strFormat(driverDir, 256, "%s/driver", deviceDir);
 
-        // Append '/driver' and return basename of the target
-        // VCs, ptys, etc don't have /sys/class/tty/<tty>/device/driver's
-        // /sys/class/tty/ttyS0/device/driver
-        devicedir += "/driver";
-
-        if (readlink(devicedir.c_str(), buffer, sizeof(buffer)) > 0)
+        char buffer[256] = {0};
+        // VCs, ptys, etc don't have /sys/class/tty/<tty>/device/driver
+        if (readlink(driverDir, buffer, 256) > 0)
         {
-            // std::cout << "readlink " << devicedir << ", baseName " << basename(buffer) << std::endl;
+            itas109::IUtils::strncpy(driverName, basename(buffer), 256);
+        }
+    }
+}
 
-            return basename(buffer);
-        }
-        else
+void getVidAndPPid(const char *tty, char *vidAndPid)
+{
+    if (NULL == tty || NULL == vidAndPid)
+    {
+        return;
+    }
+    char modaliasFile[256] = {0};
+    // /sys/class/tty/ttyUSB0/device/modalias
+    itas109::IUtils::strFormat(modaliasFile, 256, "%s/device/modalias", tty);
+
+    // get vid and pid
+    FILE *fp;
+    fp = fopen(modaliasFile, "r");
+    if (NULL != fp)
+    {
+        char buffer[100];
+        fread(buffer, 100, 1, fp);
+        // usb:v1A86p7523d0264dcFFdsc00dp00icFFisc01ip02in00
+        int pos = itas109::IUtils::strFind(buffer, "usb:v");
+        if (-1 != pos)
         {
-            // std::cout << "readlink error " << devicedir << std::endl;
+            char *vid = new char[5];
+            char *pid = new char[5];
+            itas109::IUtils::strncpy(vid, buffer + 5, 5);
+            vid = itas109::IUtils::strLower(vid);
+            itas109::IUtils::strncpy(pid, buffer + 10, 5);
+            pid = itas109::IUtils::strLower(pid);
+            itas109::IUtils::strFormat(vidAndPid, 10, "%s:%s", vid, pid);
+            delete[] vid;
+            delete[] pid;
         }
+    }
+
+    fclose(fp);
+}
+
+bool isSerial8250Valid(const char *com8250)
+{
+    bool bRet = false;
+    // check /dev/ttyUSB0, not /sys/class/tty/ttyUSB0
+    int fd = open(com8250, O_RDWR | O_NONBLOCK | O_NOCTTY);
+    if (fd >= 0)
+    {
+        struct serial_struct serialInfo;
+        if (0 == ioctl(fd, TIOCGSERIAL, &serialInfo))
+        {
+            if (PORT_UNKNOWN != serialInfo.type)
+            {
+                bRet = true;
+            }
+        }
+        close(fd);
+    }
+
+    return bRet;
+}
+
+void getTtyPortInfoListLinux(std::vector<const char *> &ttyComList, std::vector<itas109::SerialPortInfo> &portInfoList)
+{
+    for (size_t i = 0; i < ttyComList.size(); i++)
+    {
+        const char *ttyDir = ttyComList[i];
+        // get driver name
+        char driverName[256] = {0};
+        getDriver(ttyDir, driverName);
+
+        // only tty device has driver
+        if (0 != strcmp(driverName, ""))
+        {
+            char devName[256] = {0};
+            itas109::IUtils::strFormat(devName, 256, "/dev/%s", basename(ttyDir));
+
+            // serial8250 must check
+            if (0 == strcmp(driverName, "serial8250") && !isSerial8250Valid(devName))
+            {
+                continue;
+            }
+
+            // TODO: get vid and pid
+            // /sys/class/tty/ttyUSB0/device/uevent
+            char vidAndPid[256] = {0};
+            getVidAndPPid(ttyDir, vidAndPid);
+
+            itas109::SerialPortInfo serialPortInfo;
+            itas109::IUtils::strncpy(serialPortInfo.portName, devName, 256);
+            itas109::IUtils::strncpy(serialPortInfo.description, basename(devName), 256);
+            itas109::IUtils::strncpy(serialPortInfo.hardwareId, vidAndPid, 256);
+            portInfoList.push_back(serialPortInfo);
+        }
+    }
+}
+
+bool scanDirList(const char *dir, std::vector<const char *> &dirList, std::vector<const char *> filter = std::vector<const char *>())
+{
+    // https://stackoverflow.com/questions/2530096/how-to-find-all-serial-devices-ttys-ttyusb-on-linux-without-opening-them
+    struct dirent **entryList;
+    int n = scandir(dir, &entryList, NULL, versionsort); // alphasort versionsort
+    if (n >= 0)
+    {
+        while (n--)
+        {
+            bool isOK = true;
+            for (size_t i = 0; i < filter.size(); ++i)
+            {
+                if (0 == strcmp(entryList[n]->d_name, filter[i]))
+                {
+                    isOK = false;
+                    break;
+                }
+            }
+
+            if (isOK)
+            {
+                char *deviceDir = new char[256]; // delete[]
+                itas109::IUtils::strFormat(deviceDir, 256, "%s%s", dir, entryList[n]->d_name);
+                dirList.push_back(deviceDir);
+            }
+
+            free(entryList[n]);
+        }
+        free(entryList);
+
+        return true;
     }
     else
     {
-        // std::cout << "lstat error " << devicedir << std::endl;
+        return false;
     }
-    return "";
 }
 
-void register_comport(std::vector<std::string> &comList, std::vector<std::string> &comList8250, const std::string &dir)
+std::vector<itas109::SerialPortInfo> getPortInfoListLinux()
 {
-    // Get the driver the device is using
-    std::string driver = get_driver(dir);
+    itas109::SerialPortInfo serialPortInfo;
+    std::vector<itas109::SerialPortInfo> portInfoList;
 
-    // Skip devices without a driver
-    if (driver.size() > 0)
+    // 1. scan /sys/class/tty - all tty-devices
+    const char *ttyDir = "/sys/class/tty/";
+    std::vector<const char *> ttyComList;
+    std::vector<const char *> ttyFilter = {".", ".."};
+    scanDirList(ttyDir, ttyComList, ttyFilter);
+    getTtyPortInfoListLinux(ttyComList, portInfoList);
+    for (size_t i = 0; i < ttyComList.size(); i++)
     {
-        std::string devfile = std::string("/dev/") + basename(dir.c_str());
-
-        // std::cout << "driver : " << driver << ", devfile : " << devfile << std::endl;
-
-        // Put serial8250-devices in a seperate list
-        if (driver == "serial8250")
-        {
-            comList8250.push_back(devfile);
-        }
-        else
-        {
-            comList.push_back(devfile);
-        }
+        delete[] ttyComList[i];
     }
-}
 
-void probe_serial8250_comports(std::vector<std::string> &comList, std::vector<std::string> comList8250)
-{
-    struct serial_struct serinfo;
-    std::vector<std::string>::iterator it = comList8250.begin();
-
-    // Iterate over all serial8250-devices
-    while (it != comList8250.end())
-    {
-
-        // Try to open the device
-        int fd = open((*it).c_str(), O_RDWR | O_NONBLOCK | O_NOCTTY);
-
-        if (fd >= 0)
-        {
-            // Get serial_info
-            if (ioctl(fd, TIOCGSERIAL, &serinfo) == 0)
-            {
-                // If device type is no PORT_UNKNOWN we accept the port
-                if (serinfo.type != PORT_UNKNOWN)
-                {
-                    comList.push_back(*it);
-                    // std::cout << "+++  " << *it << std::endl;
-                }
-                else
-                {
-                    // std::cout << "PORT_UNKNOWN " << *it << std::endl;
-                }
-            }
-            close(fd);
-        }
-        ++it;
-    }
-}
-
-std::vector<std::string> getPortInfoListLinux()
-{
-    // https://stackoverflow.com/questions/2530096/how-to-find-all-serial-devices-ttys-ttyusb-on-linux-without-opening-them
-    int n = -1;
-    struct dirent **namelist;
-    std::vector<std::string> comList;
-    std::vector<std::string> comList8250;
-    const char *sysDir = "/sys/class/tty/";
+    // 2. scan /dev/pts/- all pseudo terminal(such as telnet, ssh etc.)
     const char *ptsDir = "/dev/pts/";
-
-    // 1.Scan through /sys/class/tty - it contains all tty-devices in the system
-    n = scandir(sysDir, &namelist, NULL, NULL);
-    if (n >= 0)
+    std::vector<const char *> ptsComList;
+    std::vector<const char *> ptsFilter = {".", "..", "ptmx"};
+    scanDirList(ptsDir, ptsComList, ptsFilter);
+    for (size_t i = 0; i < ptsComList.size(); i++)
     {
-        while (n--)
-        {
-            if (strcmp(namelist[n]->d_name, "..") && strcmp(namelist[n]->d_name, "."))
-            {
-                // Construct full absolute file path
-                std::string devicedir = sysDir;
-                devicedir += namelist[n]->d_name;
-
-                // Register the device
-                register_comport(comList, comList8250, devicedir);
-            }
-            free(namelist[n]);
-        }
-        free(namelist);
+        itas109::IUtils::strncpy(serialPortInfo.portName, ptsComList[i], 256);
+        itas109::IUtils::strncpy(serialPortInfo.description, basename(ptsComList[i]), 256);
+        itas109::IUtils::strncpy(serialPortInfo.hardwareId, "", 1);
+        portInfoList.push_back(serialPortInfo);
+        delete[] ptsComList[i];
     }
 
-    // Only non-serial8250 has been added to comList without any further testing
-    // serial8250-devices must be probe to check for validity
-    probe_serial8250_comports(comList, comList8250);
-
-    // 2.Scan through /dev/pts/- it contains all pseudo terminal(such as telnet, ssh etc.) in the system
-    n = scandir(ptsDir, &namelist, NULL, NULL);
-    if (n >= 0)
-    {
-        while (n--)
-        {
-            if (strcmp(namelist[n]->d_name, "..") && strcmp(namelist[n]->d_name, ".") && strcmp(namelist[n]->d_name, "ptmx"))
-            {
-                // Construct full absolute file path
-                std::string ptsName = ptsDir;
-                ptsName += namelist[n]->d_name;
-
-                comList.push_back(ptsName);
-            }
-            free(namelist[n]);
-        }
-        free(namelist);
-    }
-
-    // Return the lsit of detected comports
-    return comList;
+    return portInfoList;
 }
 
 #endif
@@ -210,7 +246,7 @@ char *getHardwareId(char *hardwareId, io_registry_entry_t &device)
         CFRelease(vidNumber);
         CFRelease(pidNumber);
 
-        snprintf(hardwareId, MAXPATHLEN, "VID_%04X&PID_%04X", vid, pid);
+        snprintf(hardwareId, MAXPATHLEN, "%04X:%04X", vid, pid);
         return hardwareId;
     }
 
@@ -292,19 +328,7 @@ std::vector<itas109::SerialPortInfo> getPortInfoList()
 {
     std::vector<itas109::SerialPortInfo> portInfoList;
 #ifdef I_OS_LINUX
-    // TODO: need to optimize
-    itas109::SerialPortInfo m_serialPortInfo;
-    std::vector<std::string> portList = getPortInfoListLinux();
-
-    int count = portList.size();
-
-    for (int i = 0; i < count; i++)
-    {
-        itas109::IUtils::strncpy(m_serialPortInfo.portName, portList[i].c_str(), 256);
-        itas109::IUtils::strncpy(m_serialPortInfo.description, "", 1);
-        itas109::IUtils::strncpy(m_serialPortInfo.hardwareId, "", 1);
-        portInfoList.push_back(m_serialPortInfo);
-    }
+    portInfoList = getPortInfoListLinux();
 #elif defined I_OS_MAC
     // ls /dev/{tty,cu}.*
     portInfoList = getPortInfoListMac();
