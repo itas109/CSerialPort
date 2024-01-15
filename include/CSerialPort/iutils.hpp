@@ -127,7 +127,7 @@ public:
 
         va_start(ap, format);
 #ifdef _MSC_VER
-        ret = vsnprintf_s(str, len, _TRUNCATE, format, aptr);
+        ret = vsnprintf_s(str, len, _TRUNCATE, format, ap);
 #else
         ret = vsnprintf(str, len, format, ap);
 #endif
