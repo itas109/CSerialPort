@@ -23,6 +23,132 @@
 #include <IOKit/serial/IOSerialKeys.h>
 #endif
 
+#include <map>
+
+class lessConstString
+{
+public:
+    bool operator()(const char *lhs, const char *rhs) const
+    {
+        return strcmp(lhs, rhs) < 0;
+    }
+};
+
+typedef std::map<const char *, const char *, lessConstString> HardwareIdDespMap;
+
+#define HW_MAP_INSERT(hwId, str) m_hwIdMap.insert(std::make_pair(hwId, str))
+
+class HardwareIdDespSingleton
+{
+public:
+    static HardwareIdDespSingleton *getInstance()
+    {
+        return &g_instance;
+    }
+
+    void getHardwareIdDescription(const char *hardwareId, char *hardwareDesp)
+    {
+        // 1a86:7523
+        if (9 == strlen(hardwareId))
+        {
+            HardwareIdDespMap::iterator it = m_hwIdMap.find(hardwareId);
+            if (it == m_hwIdMap.end())
+            {
+                int vid = -1;
+                if (1 == sscanf(hardwareId, "%04x:", &vid))
+                {
+                    char vidStr[5] = {0};
+                    itas109::IUtils::strFormat(vidStr, 5, "%04x", vid);
+
+                    it = m_hwIdMap.find(vidStr);
+                    if (it != m_hwIdMap.end())
+                    {
+                        itas109::IUtils::strFormat(hardwareDesp, 256, "%s serial", it->second);
+                    }
+                }
+            }
+            else
+            {
+                itas109::IUtils::strncpy(hardwareDesp, it->second, 256);
+            }
+        }
+    }
+
+private:
+    HardwareIdDespSingleton()
+    {
+        // 1a86  QinHeng Electronics
+        HW_MAP_INSERT("1a86", "QinHeng");
+        HW_MAP_INSERT("1a86:5512", "QinHeng CH341 EPP/I2C adapter");
+        HW_MAP_INSERT("1a86:5523", "QinHeng CH341 serial converter");
+        HW_MAP_INSERT("1a86:7522", "QinHeng CH340 serial converter");
+        HW_MAP_INSERT("1a86:7523", "QinHeng CH340 serial converter");
+
+        // 067b  Prolific Technology, Inc.
+        HW_MAP_INSERT("067b", "Prolific");
+        HW_MAP_INSERT("067b:0000", "Prolific PL2301 USB-USB Bridge");
+        HW_MAP_INSERT("067b:0001", "Prolific PL2302 USB-USB Bridge");
+        HW_MAP_INSERT("067b:0307", "Prolific Motorola Serial Adapter");
+        HW_MAP_INSERT("067b:04bb", "Prolific PL2303 Serial (IODATA USB-RSAQ2)");
+        HW_MAP_INSERT("067b:2303", "Prolific PL2303 Serial Port");
+        HW_MAP_INSERT("067b:23a3", "Prolific ATEN Serial Bridge");
+        HW_MAP_INSERT("067b:aaa2", "Prolific PL2303 Serial Adapter (IODATA USB-RSAQ3)");
+        HW_MAP_INSERT("067b:aaa3", "Prolific PL2303x Serial Adapter");
+
+        // 03eb Atmel Corp.
+        HW_MAP_INSERT("03eb", "Atmel");
+        HW_MAP_INSERT("03eb:204b", "Atmel LUFA USB to Serial Adapter Project");
+        HW_MAP_INSERT("03eb:2068", "Atmel LUFA Virtual Serial/Mass Storage Demo");
+
+        // 0403  Future Technology Devices International, Ltd
+        HW_MAP_INSERT("0403", "FTDI");
+        HW_MAP_INSERT("0403:0232", "FTDI Serial Converter");
+        HW_MAP_INSERT("0403:6001", "FTDI FT232 Serial (UART) IC");
+        HW_MAP_INSERT("0403:6007", "FTDI Serial Converter");
+        HW_MAP_INSERT("0403:6008", "FTDI Serial Converter");
+        HW_MAP_INSERT("0403:6009", "FTDI Serial Converter");
+        HW_MAP_INSERT("0403:8372", "FTDI FT8U100AX Serial Port");
+        HW_MAP_INSERT("0403:ed71", "FTDI HAMEG HO870 Serial Port");
+        HW_MAP_INSERT("0403:ed72", "FTDI HAMEG HO720 Serial Port");
+        HW_MAP_INSERT("0403:ed73", "FTDI HAMEG HO730 Serial Port");
+        HW_MAP_INSERT("0403:ed74", "FTDI HAMEG HO820 Serial Port");
+        HW_MAP_INSERT("0403:f070", "FTDI Serial Converter 422/485 [Vardaan VEUSB422R3]");
+        HW_MAP_INSERT("0403:f3c0", "FTDI 4N-GALAXY Serial Converter");
+        HW_MAP_INSERT("0403:8372", "FTDI FT8U100AX Serial Port");
+        HW_MAP_INSERT("0403:8372", "FTDI FT8U100AX Serial Port");
+
+        // 0483  STMicroelectronics
+        HW_MAP_INSERT("0483", "STMicroelectronics");
+        HW_MAP_INSERT("0483:0adb", "STMicroelectronics Android Debug Bridge (ADB) device");
+        HW_MAP_INSERT("0483:0afb", "STMicroelectronics Android Fastboot device");
+        HW_MAP_INSERT("0483:5740", "STMicroelectronics Virtual COM Port");
+        HW_MAP_INSERT("0483:7270", "STMicroelectronics ST Micro Serial Bridge");
+
+        // 04b3  IBM
+        HW_MAP_INSERT("04b3", "IBM");
+        HW_MAP_INSERT("04b3:4482", "IBM Serial Converter");
+
+        // 0557  ATEN International Co., Ltd
+        HW_MAP_INSERT("0557", "ATEN");
+        HW_MAP_INSERT("0557:2008", "ATEN UC-232A Serial Port [pl2303]");
+        HW_MAP_INSERT("0557:2011", "ATEN UC-2324 4xSerial Ports [mos7840]");
+        HW_MAP_INSERT("0557:7820", "ATEN UC-2322 2xSerial Ports [mos7820]");
+
+        // 058f  Alcor Micro Corp.
+        HW_MAP_INSERT("058f", "Alcor");
+        HW_MAP_INSERT("058f:9720", "Alcor USB-Serial Adapter");
+    };
+    ~HardwareIdDespSingleton(){};
+    HardwareIdDespSingleton(const HardwareIdDespSingleton &instance);
+    HardwareIdDespSingleton &operator=(const HardwareIdDespSingleton &instance);
+
+private:
+    static HardwareIdDespSingleton g_instance;
+    HardwareIdDespMap m_hwIdMap;
+};
+
+HardwareIdDespSingleton HardwareIdDespSingleton::g_instance;
+
 #ifdef I_OS_LINUX
 void getDriver(const char *tty, char *driverName)
 {
@@ -51,9 +177,9 @@ void getDriver(const char *tty, char *driverName)
     }
 }
 
-void getVidAndPPid(const char *tty, char *vidAndPid)
+void getHardwareId(const char *tty, char *hardwareId)
 {
-    if (NULL == tty || NULL == vidAndPid)
+    if (NULL == tty || NULL == hardwareId)
     {
         return;
     }
@@ -69,22 +195,14 @@ void getVidAndPPid(const char *tty, char *vidAndPid)
         char buffer[100];
         fread(buffer, 100, 1, fp);
         // usb:v1A86p7523d0264dcFFdsc00dp00icFFisc01ip02in00
-        int pos = itas109::IUtils::strFind(buffer, "usb:v");
-        if (-1 != pos)
+        int vid = -1;
+        int pid = -1;
+        if (2 == sscanf(buffer, "usb:v%04xp%04x", &vid, &pid))
         {
-            char *vid = new char[5];
-            char *pid = new char[5];
-            itas109::IUtils::strncpy(vid, buffer + 5, 5);
-            vid = itas109::IUtils::strLower(vid);
-            itas109::IUtils::strncpy(pid, buffer + 10, 5);
-            pid = itas109::IUtils::strLower(pid);
-            itas109::IUtils::strFormat(vidAndPid, 10, "%s:%s", vid, pid);
-            delete[] vid;
-            delete[] pid;
+            itas109::IUtils::strFormat(hardwareId, 10, "%04x:%04x", vid, pid);
         }
+        fclose(fp);
     }
-
-    fclose(fp);
 }
 
 bool isSerial8250Valid(const char *com8250)
@@ -129,15 +247,22 @@ void getTtyPortInfoListLinux(std::vector<const char *> &ttyComList, std::vector<
                 continue;
             }
 
-            // TODO: get vid and pid
-            // /sys/class/tty/ttyUSB0/device/uevent
-            char vidAndPid[256] = {0};
-            getVidAndPPid(ttyDir, vidAndPid);
+            // get vid and pid
+            char hardwareId[256] = {0};
+            getHardwareId(ttyDir, hardwareId);
+
+            // get description
+            char description[256] = {0};
+            HardwareIdDespSingleton::getInstance()->getHardwareIdDescription(hardwareId, description);
+            if ('\0' == description[0])
+            {
+                itas109::IUtils::strncpy(description, driverName, 256);
+            }
 
             itas109::SerialPortInfo serialPortInfo;
             itas109::IUtils::strncpy(serialPortInfo.portName, devName, 256);
-            itas109::IUtils::strncpy(serialPortInfo.description, basename(devName), 256);
-            itas109::IUtils::strncpy(serialPortInfo.hardwareId, vidAndPid, 256);
+            itas109::IUtils::strncpy(serialPortInfo.description, description, 256);
+            itas109::IUtils::strncpy(serialPortInfo.hardwareId, hardwareId, 256);
             portInfoList.push_back(serialPortInfo);
         }
     }
@@ -206,7 +331,7 @@ std::vector<itas109::SerialPortInfo> getPortInfoListLinux()
     {
         itas109::IUtils::strncpy(serialPortInfo.portName, ptsComList[i], 256);
         itas109::IUtils::strncpy(serialPortInfo.description, basename(ptsComList[i]), 256);
-        itas109::IUtils::strncpy(serialPortInfo.hardwareId, "", 1);
+        itas109::IUtils::strncpy(serialPortInfo.hardwareId, "pty terminal", 256);
         portInfoList.push_back(serialPortInfo);
         delete[] ptsComList[i];
     }
@@ -246,7 +371,7 @@ char *getHardwareId(char *hardwareId, io_registry_entry_t &device)
         CFRelease(vidNumber);
         CFRelease(pidNumber);
 
-        snprintf(hardwareId, MAXPATHLEN, "%04X:%04X", vid, pid);
+        snprintf(hardwareId, MAXPATHLEN, "%04x:%04x", vid, pid);
         return hardwareId;
     }
 
@@ -313,8 +438,12 @@ std::vector<itas109::SerialPortInfo> getPortInfoListMac()
             continue;
         }
 
+        // get description
+        char description[MAXPATHLEN] = {0};
+        HardwareIdDespSingleton::getInstance()->getHardwareIdDescription(device_hardware_id, description);
+
         itas109::IUtils::strncpy(m_serialPortInfo.portName, device_path, MAXPATHLEN);
-        itas109::IUtils::strncpy(m_serialPortInfo.description, "", 1);
+        itas109::IUtils::strncpy(m_serialPortInfo.description, description, MAXPATHLEN);
         itas109::IUtils::strncpy(m_serialPortInfo.hardwareId, device_hardware_id, MAXPATHLEN);
         portInfoList.push_back(m_serialPortInfo);
     }

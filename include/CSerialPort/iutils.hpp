@@ -87,7 +87,7 @@ public:
             }
             if (!*s2)
             {
-                return (cp - src);
+                return (int)(cp - src);
             }
             cp++;
         }

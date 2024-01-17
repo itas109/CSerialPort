@@ -1,6 +1,6 @@
-﻿#include <Windows.h>
+﻿#include <windows.h>
 #include <initguid.h> // GUID
-#include <Setupapi.h> // SetupDiGetClassDevs Setup*
+#include <setupapi.h> // SetupDiGetClassDevs Setup*
 #include <tchar.h>    // _T
 
 #include "CSerialPort/iutils.hpp"
@@ -76,10 +76,28 @@ bool enumDetailsSerialPorts(std::vector<itas109::SerialPortInfo> &portInfoList)
             // get friendly name
             TCHAR friendlyName[256] = {0};
             SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, NULL, (PBYTE)friendlyName, sizeof(friendlyName), NULL);
-
+            // remove (COMxx)
+            int index = itas109::IUtils::strFind(friendlyName, " (COM");
+            if (-1 != index)
+            {
+                // ELTIMA Virtual Serial Port (COM3->COM2)
+                friendlyName[index] = '\0';
+            }
+            
             // get hardware id
             TCHAR hardwareId[256] = {0};
             SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_HARDWAREID, NULL, (PBYTE)hardwareId, sizeof(hardwareId), NULL);
+            // get usb device's vid and pid
+            if (0 == itas109::IUtils::strFind(hardwareId, "USB\\"))
+            {
+                // USB\\VID_1A86&PID_7523&REV_0264
+                int vid = -1;
+                int pid = -1;
+                if (2 == sscanf(hardwareId, "USB\\VID_%04x&PID_%04x", &vid, &pid))
+                {
+                    itas109::IUtils::strFormat(hardwareId, 10, "%04x:%04x", vid, pid);
+                }
+            }
 
             itas109::SerialPortInfo m_serialPortInfo;
 #ifdef UNICODE
@@ -92,19 +110,6 @@ bool enumDetailsSerialPorts(std::vector<itas109::SerialPortInfo> &portInfoList)
             itas109::IUtils::strncpy(m_serialPortInfo.description, friendlyName, 256);
             itas109::IUtils::strncpy(m_serialPortInfo.hardwareId, hardwareId, 256);
 #endif
-            // remove (COMxx)
-            int index = 0;
-            while (m_serialPortInfo.description[index])
-            {
-                if (m_serialPortInfo.description[index] == '(' && m_serialPortInfo.description[index + 1] == 'C' && m_serialPortInfo.description[index + 2] == 'O' &&
-                    m_serialPortInfo.description[index + 3] == 'M')
-                {
-                    m_serialPortInfo.description[index] = '\0';
-                    break;
-                }
-
-                ++index;
-            }
 
             portInfoList.push_back(m_serialPortInfo);
         }
