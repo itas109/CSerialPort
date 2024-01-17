@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifdef _WIN32
-#include <Windows.h>
+#include <windows.h>
 #define imsleep(microsecond) Sleep(microsecond) // ms
 #else
 #include <unistd.h>
@@ -51,8 +51,7 @@ public:
                 if (recLen > 0)
                 {
                     data[recLen] = '\0';
-                    std::cout << portName << " - Count: " << ++countRead << ", Length: " << recLen << ", Str: " << data << ", Hex: " << char2hexstr(data, recLen).c_str()
-                              << std::endl;
+                    printf("%s - Count: %d, Length: %d, Str: %s, Hex: %s\n", portName, ++countRead, recLen, data, char2hexstr(data, recLen).c_str());
 
                     // return receive data
                     p_sp->writeData(data, recLen);
@@ -71,23 +70,23 @@ private:
 int main()
 {
     CSerialPort sp;
-    std::cout << "Version: " << sp.getVersion() << std::endl << std::endl;
+    printf("Version: %s\n\n", sp.getVersion());
 
     MyListener listener(&sp);
 
     std::vector<SerialPortInfo> m_availablePortsList = CSerialPortInfo::availablePortInfos();
 
-    std::cout << "availableFriendlyPorts: " << std::endl;
+    printf("AvailableFriendlyPorts:\n");
 
     for (size_t i = 1; i <= m_availablePortsList.size(); ++i)
     {
         SerialPortInfo serialPortInfo = m_availablePortsList[i - 1];
-        std::cout << i << " - " << serialPortInfo.portName << " " << serialPortInfo.description << " " << serialPortInfo.hardwareId << std::endl;
+        printf("%lu - %s %s %s\n", i, serialPortInfo.portName, serialPortInfo.description, serialPortInfo.hardwareId);
     }
 
     if (m_availablePortsList.size() == 0)
     {
-        std::cout << "No valid port" << std::endl;
+        printf("No valid port\n");
     }
     else
     {
@@ -96,7 +95,7 @@ int main()
         int input = -1;
         do
         {
-            std::cout << "Please Input The Index Of Port(1 - " << m_availablePortsList.size() << ")" << std::endl;
+            printf("Please Input The Index Of Port(1 - %lu)\n", m_availablePortsList.size());
 
             std::cin >> input;
 
@@ -107,7 +106,7 @@ int main()
         } while (true);
 
         const char *portName = m_availablePortsList[input - 1].portName;
-        std::cout << "Port Name: " << portName << std::endl;
+        printf("Port Name: %s\n", portName);
 
         sp.init(portName,              // windows:COM1 Linux:/dev/ttyS0
                 itas109::BaudRate9600, // baudrate
@@ -120,8 +119,8 @@ int main()
         sp.setReadIntervalTimeout(0); // read interval timeout 0ms
 
         sp.open();
-        std::cout << "Open " << portName << (sp.isOpen() ? " Success. " : " Failed. ");
-        std::cout << "Code: " << sp.getLastError() << ", Message: " << sp.getLastErrorMsg() << std::endl;
+        printf("Open %s %s\n", portName, sp.isOpen() ? "Success" : "Failed");
+        printf("Code: %d, Message: %s\n", sp.getLastError(), sp.getLastErrorMsg());
 
         // connect for read
         sp.connectReadEvent(&listener);
