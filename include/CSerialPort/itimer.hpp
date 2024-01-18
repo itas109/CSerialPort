@@ -10,10 +10,10 @@
 #ifndef __I_TIMER_HPP__
 #define __I_TIMER_HPP__
 
-// #if (__cplusplus >= 201103L) || (defined(_MSC_VER) && _MSC_VER >= 1800)
-// // C++11 support: msvc2013 gcc4.8.5 clang3.0 etc.
-// #define CPP11_TIMER
-// #endif
+#if __cplusplus >= 201103L
+// C++11 support: msvc2013 gcc4.8.5 clang3.0 etc.
+#define CPP11_TIMER
+#endif
 
 #ifdef CPP11_TIMER
 #include <chrono>
@@ -61,7 +61,7 @@ public:
         if (!p_base->m_cv.wait_for(lock, std::chrono::milliseconds(p_base->m_timeoutMs), [&] { return p_base->m_tryStop; }))
         {
             // timeout
-            ((p_base->p_class)->*(p_base->p_memfun))();
+            ((p_base->p_class)->*(p_base->p_memfun))(p_base->m_portName, p_base->m_readBufferLen);
         }
 #else
         itas109::IMutex mutex;
