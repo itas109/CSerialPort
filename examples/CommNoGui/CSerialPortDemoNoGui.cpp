@@ -78,10 +78,12 @@ int main()
 
     printf("AvailableFriendlyPorts:\n");
 
-    for (size_t i = 1; i <= m_availablePortsList.size(); ++i)
+    int availablePortCount = (int)m_availablePortsList.size();
+
+    for (int i = 1; i <= availablePortCount; ++i)
     {
         SerialPortInfo serialPortInfo = m_availablePortsList[i - 1];
-        printf("%lu - %s %s %s\n", i, serialPortInfo.portName, serialPortInfo.description, serialPortInfo.hardwareId);
+        printf("%d - %s %s %s\n", i, serialPortInfo.portName, serialPortInfo.description, serialPortInfo.hardwareId);
     }
 
     if (m_availablePortsList.size() == 0)
@@ -95,7 +97,7 @@ int main()
         int input = -1;
         do
         {
-            printf("Please Input The Index Of Port(1 - %lu)\n", m_availablePortsList.size());
+            printf("Please Input The Index Of Port(1 - %d)\n", availablePortCount);
 
             std::cin >> input;
 
