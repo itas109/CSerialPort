@@ -14,6 +14,7 @@
 #define __CSERIALPORTINFOBASE_H__
 
 #include <vector>
+#include <map>
 
 namespace itas109
 {
@@ -43,5 +44,30 @@ public:
      * @return return available port infolist 返回可用串口名称列表
      */
     static std::vector<itas109::SerialPortInfo> availablePortInfos(void);
+};
+
+class lessConstString
+{
+public:
+    bool operator()(const char *lhs, const char *rhs) const;
+};
+
+typedef std::map<const char *, const char *, lessConstString> HardwareIdDespMap;
+
+class HardwareIdDespSingleton
+{
+public:
+    static HardwareIdDespSingleton *getInstance();
+    void getHardwareIdDescription(const char *hardwareId, char *hardwareDesp);
+
+private:
+    HardwareIdDespSingleton();
+    ~HardwareIdDespSingleton();
+    HardwareIdDespSingleton(const HardwareIdDespSingleton &instance);
+    HardwareIdDespSingleton &operator=(const HardwareIdDespSingleton &instance);
+
+private:
+    static HardwareIdDespSingleton g_instance;
+    HardwareIdDespMap m_hwIdMap;
 };
 #endif //__CSERIALPORTINFOBASE_H__
