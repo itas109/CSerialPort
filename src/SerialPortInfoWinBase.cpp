@@ -73,17 +73,6 @@ bool enumDetailsSerialPorts(std::vector<itas109::SerialPortInfo> &portInfoList)
                 RegCloseKey(hDevKey);
             }
 
-            // get friendly name
-            TCHAR friendlyName[256] = {0};
-            SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, NULL, (PBYTE)friendlyName, sizeof(friendlyName), NULL);
-            // remove (COMxx)
-            int index = itas109::IUtils::strFind(friendlyName, " (COM");
-            if (-1 != index)
-            {
-                // ELTIMA Virtual Serial Port (COM3->COM2)
-                friendlyName[index] = '\0';
-            }
-            
             // get hardware id
             TCHAR hardwareId[256] = {0};
             SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_HARDWAREID, NULL, (PBYTE)hardwareId, sizeof(hardwareId), NULL);
@@ -96,6 +85,21 @@ bool enumDetailsSerialPorts(std::vector<itas109::SerialPortInfo> &portInfoList)
                 if (2 == sscanf(hardwareId, "USB\\VID_%04x&PID_%04x", &vid, &pid))
                 {
                     itas109::IUtils::strFormat(hardwareId, 10, "%04x:%04x", vid, pid);
+                }
+            }
+
+            // get friendly name
+            TCHAR friendlyName[256] = {0};
+            HardwareIdDespSingleton::getInstance()->getHardwareIdDescription(hardwareId, friendlyName);
+            if ('\0' == friendlyName[0])
+            {
+                SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, NULL, (PBYTE)friendlyName, sizeof(friendlyName), NULL);
+                // remove (COMxx)
+                int index = itas109::IUtils::strFind(friendlyName, " (COM");
+                if (-1 != index)
+                {
+                    // ELTIMA Virtual Serial Port (COM3->COM2)
+                    friendlyName[index] = '\0';
                 }
             }
 
