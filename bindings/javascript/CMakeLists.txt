@@ -33,6 +33,16 @@ endif ()
 # use cmake-js (npm i -g cmake-js)
 include_directories(${CMAKE_JS_INC}) # node.h
 
+if (WIN32)
+    link_libraries(setupapi)
+elseif (APPLE)
+    find_library(IOKIT_LIBRARY IOKit)
+    find_library(FOUNDATION_LIBRARY Foundation)
+    link_libraries(${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
+elseif (UNIX)
+    link_libraries(pthread)
+endif ()
+
 # find swig
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})

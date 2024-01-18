@@ -35,6 +35,16 @@ find_package (Python3 COMPONENTS Interpreter Development)
 include_directories(${Python3_INCLUDE_DIRS})
 link_libraries(${Python3_LIBRARIES})
 
+if (WIN32)
+    link_libraries(setupapi)
+elseif (APPLE)
+    find_library(IOKIT_LIBRARY IOKit)
+    find_library(FOUNDATION_LIBRARY Foundation)
+    link_libraries(${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
+elseif (UNIX)
+    link_libraries(pthread)
+endif ()
+
 # find swig
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})

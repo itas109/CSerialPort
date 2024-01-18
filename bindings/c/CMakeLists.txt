@@ -34,5 +34,15 @@ endif ()
 
 add_library(${PROJECT_NAME} SHARED cserialport.cpp ${CSerialPortSourceFiles})
 
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} setupapi)
+elseif (APPLE)
+    find_library(IOKIT_LIBRARY IOKit)
+    find_library(FOUNDATION_LIBRARY Foundation)
+    target_link_libraries(${PROJECT_NAME} ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
+elseif (UNIX)
+    target_link_libraries(${PROJECT_NAME} pthread)
+endif ()
+
 # example
 add_subdirectory(example)
