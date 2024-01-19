@@ -213,7 +213,9 @@ std::vector<itas109::SerialPortInfo> getPortInfoListLinux()
     // 1. scan /sys/class/tty - all tty-devices
     const char *ttyDir = "/sys/class/tty/";
     std::vector<const char *> ttyComList;
-    std::vector<const char *> ttyFilter = {".", ".."};
+    std::vector<const char *> ttyFilter;
+    ttyFilter.push_back(".");
+    ttyFilter.push_back("..");
     scanDirList(ttyDir, ttyComList, ttyFilter);
     getTtyPortInfoListLinux(ttyComList, portInfoList);
     for (size_t i = 0; i < ttyComList.size(); i++)
@@ -224,7 +226,10 @@ std::vector<itas109::SerialPortInfo> getPortInfoListLinux()
     // 2. scan /dev/pts/- all pseudo terminal(such as telnet, ssh etc.)
     const char *ptsDir = "/dev/pts/";
     std::vector<const char *> ptsComList;
-    std::vector<const char *> ptsFilter = {".", "..", "ptmx"};
+    std::vector<const char *> ptsFilter;
+    ptsFilter.push_back(".");
+    ptsFilter.push_back("..");
+    ptsFilter.push_back("ptmx");
     scanDirList(ptsDir, ptsComList, ptsFilter);
     for (size_t i = 0; i < ptsComList.size(); i++)
     {
