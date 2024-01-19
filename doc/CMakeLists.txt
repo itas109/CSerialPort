@@ -33,8 +33,8 @@ if (DOXYGEN_FOUND)
     set(CHM_INDEX_ENCODING "GB2312")
     configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT_CN} @ONLY)
     add_custom_target( doc_cn ALL
-    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT_CN}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT_CN}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 
     set(OUTPUT_LANGUAGE "English")
@@ -45,7 +45,7 @@ if (DOXYGEN_FOUND)
     add_custom_target(doc_en ALL
         COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT_EN}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        )
+    )
 
     # doc_cn first
     add_dependencies(doc_en doc_cn)
