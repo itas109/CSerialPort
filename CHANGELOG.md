@@ -1,5 +1,21 @@
 # CSerialPort Changelog
 
+## v4.3.1 (2024-02-04)
+
+Feature:
+
+* support linux and macos get hardwareId info 支持linux和macos获取硬件信息vid和pid
+* support DTR RTS set 支持DTR和RTS设置
+* support flush RX TX buffers 支持刷新读写缓冲区
+* support add CSeiralPort as subdirectory 支持CSeiralPort 作为cmake子目录
+* use c++11 timer if compiler support 编译器支持的情况下使用C++定时器
+
+Fixed:
+
+* #75 fix getPortInfoList crash on macos 修复macos下getPortInfoList 崩溃问题
+* #76 linux custom baudrate not work 修复linux下自定义波特率无效问题
+* #80 unix read undefinite wait when sync mode 修复unix同步模式下读取无限等待问题
+
 ---
 
 ## v4.3.0 (2023-02-15)

@@ -59,8 +59,8 @@ CSerialPort已经在以下平台做过测试
 
 # Latest version 最新版本
 
-## Version: 4.3.0.230215
-by itas109 on 2023-02-15
+## Version: 4.3.1.240204
+by itas109 on 2024-02-04
 
 # Quick Start 快速开始
 
@@ -75,17 +75,26 @@ $ cmake --build .
 运行示例程序(如linux下串口环回测试)
 
 ```
-CSerialPort/bin $ ./bin/CSerialPortDemoNoGui
-Version: https://github.com/itas109/CSerialPort - V4.3.0.230215
+CSerialPort/bin $ ./CSerialPortDemoNoGui 
+Version: https://github.com/itas109/CSerialPort - V4.3.1.240204
 
-availableFriendlyPorts:
-1 - /dev/ttyS0
+AvailableFriendlyPorts:
+1 - /dev/ttyUSB0 QinHeng CH340 serial converter 1a86:7523
+2 - /dev/pts/0 0 pty terminal
 
 Please Input The Index Of Port(1 - 2)
 1
-Port Name: /dev/ttyS0
-Open /dev/ttyS0 Success
-Count: 1, Length: 29, Str: https://blog.csdn.net/itas109, Hex: 0x68 0x74 0x74 0x70 0x73 0x3A 0x2F 0x2F 0x62 0x6C 0x6F 0x67 0x2E 0x63 0x73 0x64 0x6E 0x2E 0x6E 0x65 0x74 0x2F 0x69 0x74 0x61 0x73 0x31 0x30 0x39
+Port Name: /dev/ttyUSB0
+[CSERIALPORT_DEBUG] openPort - portName: /dev/ttyUSB0, baudRate: 9600, dataBit: 8, parity: 0, stopBit: 0, flowControl: 0, mode: async, readBufferSize:4096(4096), readIntervalTimeoutMS: 0, minByteReadNotify: 1
+[CSERIALPORT_DEBUG] openPort - open /dev/ttyUSB0. code: 0, message: success
+Open /dev/ttyUSB0 Success
+Code: 0, Message: success
+[CSERIALPORT_DEBUG] writeData - write. len: 5, hex(top100): 3132333435
+[CSERIALPORT_DEBUG] writeData - write. len: 7, hex(top100): 69746173313039
+[CSERIALPORT_DEBUG] commThreadMonitor - write buffer(usedLen 12). len: 12, hex(top100): 313233343569746173313039
+[CSERIALPORT_DEBUG] commThreadMonitor - onReadEvent. portName: /dev/ttyUSB0, readLen: 12
+[CSERIALPORT_DEBUG] readData - read. len: 12, hex(top100): 313233343569746173313039
+/dev/ttyUSB0 - Count: 1, Length: 12, Str: 12345itas109, Hex: 0x31 0x32 0x33 0x34 0x35 0x69 0x74 0x61 0x73 0x31 0x30 0x39 
 ```
 
 # Install CSerialPort Using Vcpkg 使用vcpkg安装CSerialPort
