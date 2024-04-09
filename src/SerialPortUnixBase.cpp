@@ -4,6 +4,7 @@
 #include "CSerialPort/SerialPortListener.h"
 #include "CSerialPort/ithread.hpp"
 #include "CSerialPort/itimer.hpp"
+#include "CSerialPort/ilog.hpp"
 
 #ifdef I_OS_LINUX
 // termios2 for custom baud rate at least linux kernel 2.6.32 (RHEL 6.0)

@@ -98,7 +98,7 @@ bool enumDetailsSerialPorts(std::vector<itas109::SerialPortInfo> &portInfoList)
                 // USB\\VID_1A86&PID_7523&REV_0264
                 int vid = -1;
                 int pid = -1;
-                if (2 == sscanf(m_serialPortInfo.hardwareId, "USB\\VID_%04x&PID_%04x", &vid, &pid))
+                if (2 == itas109::IUtils::strScan(m_serialPortInfo.hardwareId, "USB\\VID_%04x&PID_%04x", &vid, &pid))
                 {
                     itas109::IUtils::strFormat(m_serialPortInfo.hardwareId, 10, "%04x:%04x", vid, pid);
                 }

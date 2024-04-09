@@ -3,6 +3,7 @@
 #include "CSerialPort/iutils.hpp"
 #include "CSerialPort/ithread.hpp"
 #include "CSerialPort/itimer.hpp"
+#include "CSerialPort/ilog.hpp"
 
 #ifdef UNICODE
 static wchar_t *CharToWChar(wchar_t *dest, const char *str)

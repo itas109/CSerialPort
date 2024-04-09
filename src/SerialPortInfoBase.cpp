@@ -94,7 +94,7 @@ void HardwareIdDespSingleton::getHardwareIdDescription(const char *hardwareId, c
         if (it == m_hwIdMap.end())
         {
             int vid = -1;
-            if (1 == sscanf(hardwareId, "%04x:", &vid))
+            if (1 == itas109::IUtils::strScan(hardwareId, "%04x:", &vid))
             {
                 char vidStr[5] = {0};
                 itas109::IUtils::strFormat(vidStr, 5, "%04x", vid);

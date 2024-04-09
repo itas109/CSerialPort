@@ -94,7 +94,7 @@ void getHardwareId(const char *tty, char *hardwareId)
             // usb:v1A86p7523d0264dcFFdsc00dp00icFFisc01ip02in00
             int vid = -1;
             int pid = -1;
-            if (2 == sscanf(buffer, "usb:v%04xp%04x", &vid, &pid))
+            if (2 == itas109::IUtils::strScan(buffer, "usb:v%04xp%04x", &vid, &pid))
             {
                 itas109::IUtils::strFormat(hardwareId, 10, "%04x:%04x", vid, pid);
             }
