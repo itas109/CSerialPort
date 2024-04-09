@@ -44,7 +44,7 @@ CSerialPort was tested on the following platforms
 - [x] 5.support other language - C#, Java, Python, Node.js etc. - more information [bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
 - [x] 6.sync serial port communication
 - [x] 7.new cross-platform gui serial port tool - [CommMaster](https://gitee.com/itas109/CommMaster)
-- [x] 8.add introduction and tutorial of CSerialPort - [CSerialPort Tutorial ](https://blog.csdn.net/itas109/category_11520540.html)
+- [x] 8.add introduction and tutorial of CSerialPort - [CSerialPort Tutorial ](https://blog.csdn.net/itas109/category_12416341.html)
 - [ ] 9.serial port monitor hook
 
 ## Short-term Goal

@@ -44,7 +44,7 @@ CSerialPort已经在以下平台做过测试
 - [x] 5.支持其他语言 - C#, Python, Java, Node.js - 详见[bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
 - [x] 6.同步串口通信
 - [x] 7.全新的跨平台串口调试助手 - [CommMaster通信大师](https://gitee.com/itas109/CommMaster)
-- [x] 8.增加CSerialPort的介绍和使用教程 - [CSerialPort教程](https://blog.csdn.net/itas109/category_11520540.html)
+- [x] 8.增加CSerialPort的介绍和使用教程 - [CSerialPort教程](https://blog.csdn.net/itas109/category_12416341.html)
 - [ ] 9.串口侦听hook
 
 ## Short-term Goal 短期目标
