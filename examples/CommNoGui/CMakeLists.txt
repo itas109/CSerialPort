@@ -37,6 +37,7 @@ else()
     ${CSerialPortRootPath}/include/CSerialPort/SerialPortInfoBase.h
     ${CSerialPortRootPath}/include/CSerialPort/SerialPortListener.h
     ${CSerialPortRootPath}/include/CSerialPort/ibuffer.hpp
+    ${CSerialPortRootPath}/include/CSerialPort/ilog.hpp
     ${CSerialPortRootPath}/include/CSerialPort/ithread.hpp
     ${CSerialPortRootPath}/include/CSerialPort/itimer.hpp
     ${CSerialPortRootPath}/include/CSerialPort/iutils.hpp
