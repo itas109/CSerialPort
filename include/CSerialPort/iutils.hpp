@@ -26,6 +26,19 @@ public:
     IUtils(){};
     ~IUtils(){};
 
+    static size_t strlen(const char *str)
+    {
+        // assert(str != NULL);
+
+        const char *cp = str;
+
+        while (*cp++)
+        {
+        }
+
+        return (cp - str - 1);
+    }
+
     static char *strncpy(char *dest, const char *src, unsigned int count)
     {
         // assert(dest != NULL && src != NULL && count != 0);
@@ -120,16 +133,39 @@ public:
         return cp;
     }
 
+    static int strFormat(char *str, size_t len, const char *format, va_list args)
+    {
+        int ret;
+#ifdef _MSC_VER
+        ret = vsnprintf_s(str, len, _TRUNCATE, format, args);
+#else
+        ret = vsnprintf(str, len, format, args);
+#endif
+        return ret;
+    }
+
     static int strFormat(char *str, size_t len, const char *format, ...)
     {
         va_list ap;
         int ret;
 
         va_start(ap, format);
-#ifdef _MSC_VER
-        ret = vsnprintf_s(str, len, _TRUNCATE, format, ap);
+        ret = itas109::IUtils::strFormat(str, len, format, ap);
+        va_end(ap);
+
+        return ret;
+    }
+
+    static int strScan(const char *str, const char *format, ...)
+    {
+        va_list ap;
+        int ret;
+
+        va_start(ap, format);
+#if defined(_WIN32)
+        ret = sscanf_s(str, format, ap);
 #else
-        ret = vsnprintf(str, len, format, ap);
+        ret = sscanf(str, format, ap);
 #endif
         va_end(ap);
 
@@ -150,6 +186,110 @@ public:
         dest[count * 2] = '\0';
 
         return (dest);
+    }
+
+    static const char *getCompilerInfo(char *info, size_t len)
+    {
+        char osName[10];
+        osName[0] = '\0';
+        char archName[10];
+        archName[0] = '\0';
+        char compilerName[10];
+        compilerName[0] = '\0';
+        char compilerVersion[10];
+        compilerVersion[0] = '\0';
+        int bit = (8 == sizeof(char *)) ? 64 : 32;
+
+        // https://sourceforge.net/p/predef/wiki/Home/
+#if defined(__x86_64__) /*GNU C*/ || defined(_M_AMD64) /*Visual Studio*/
+        strFormat(archName, 10, "x86_64");
+#elif defined(__i386__) /*GNU C*/ || defined(_M_IX86)     /*Visual Studio*/
+        strFormat(archName, 10, "x86");
+#elif defined(__arm__) /*GNU C*/ || defined(_M_ARM)       /*Visual Studio*/
+        strFormat(archName, 10, "arm32");
+#elif defined(__aarch64__) /*GNU C*/ || defined(_M_ARM64) /*Visual Studio*/
+        strFormat(archName, 10, "aarch64");
+#elif defined(__mips__)                                   /*GNU C*/
+        strFormat(archName, 10, "mips");
+#elif defined(__riscv)                                    /*GNU C*/
+        strFormat(archName, 10, "riscv");
+#elif defined(__powerpc__)                                /*GNU C*/
+        strFormat(archName, 10, "powerpc");
+#else
+        strFormat(archName, 10, "unknown");
+#endif
+
+#if defined(_WIN32)
+        strncpy(osName, "Windows", 10);
+#elif defined(__linux__)
+        strncpy(osName, "Linux", 10);
+#elif defined(__APPLE__)
+        strncpy(osName, "MacOS", 10);
+#elif defined(__ANDROID__)
+        strncpy(osName, "Android", 10);
+#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
+        strncpy(osName, "BSD", 10);
+#elif defined(__unix__)
+        strncpy(osName, "Unix", 10);
+#else
+        strncpy(osName, "Unknown", 10);
+#endif
+
+#ifdef _MSC_VER
+        strFormat(compilerVersion, 10, "%d", _MSC_VER);
+        switch (_MSC_VER / 10)
+        {
+            case 120:
+                strncpy(compilerName, "vs6.0", 10);
+                break;
+            case 130:
+                strncpy(compilerName, "vs2002", 10);
+                break;
+            case 131:
+                strncpy(compilerName, "vs2003", 10);
+                break;
+            case 140:
+                strncpy(compilerName, "vs2005", 10);
+                break;
+            case 150:
+                strncpy(compilerName, "vs2008", 10);
+                break;
+            case 160:
+                strncpy(compilerName, "vs2010", 10);
+                break;
+            case 170:
+                strncpy(compilerName, "vs2012", 10);
+                break;
+            case 180:
+                strncpy(compilerName, "vs2013", 10);
+                break;
+            case 190:
+                strncpy(compilerName, "vs2015", 10);
+                break;
+            case 191:
+                strncpy(compilerName, "vs2017", 10);
+                break;
+            case 192:
+                strncpy(compilerName, "vs2019", 10);
+                break;
+            case 193:
+                strncpy(compilerName, "vs2022", 10);
+                break;
+        }
+#elif defined(__GNUC__)
+        strncpy(compilerName, "gcc", 10);
+        strFormat(compilerVersion, 10, "%d.%d.%d", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+#elif defined(__clang__)
+        strncpy(compilerName, "clang", 10);
+        strFormat(compilerVersion, 10, "%d.%d.%d", __clang_major__, __clang_minor__, __clang_patchlevel__);
+#else
+        strncpy(compilerName, "unknown", 10);
+        strFormat(compilerVersion, 10, "%d.%d.%d", 0, 0, 0);
+#endif
+
+        strFormat(info, len, "OS: %s, Arch: %s, Compiler: %s(%s), Bit: %d, C++: %ld", osName, archName, compilerName, compilerVersion, bit, __cplusplus);
+
+        return info;
     }
 };
 } // namespace itas109
