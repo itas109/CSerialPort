@@ -276,12 +276,12 @@ public:
                 strncpy(compilerName, "vs2022", 10);
                 break;
         }
-#elif defined(__GNUC__)
-        strncpy(compilerName, "gcc", 10);
-        strFormat(compilerVersion, 10, "%d.%d.%d", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
 #elif defined(__clang__)
         strncpy(compilerName, "clang", 10);
         strFormat(compilerVersion, 10, "%d.%d.%d", __clang_major__, __clang_minor__, __clang_patchlevel__);
+#elif defined(__GNUC__)
+        strncpy(compilerName, "gcc", 10);
+        strFormat(compilerVersion, 10, "%d.%d.%d", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
 #else
         strncpy(compilerName, "unknown", 10);
         strFormat(compilerVersion, 10, "%d.%d.%d", 0, 0, 0);

@@ -15,7 +15,7 @@
 #pragma comment(lib, "setupapi.lib")
 #endif
 
-//#include <ntddser.h>  //GUID_DEVINTERFACE_COMPORT
+// #include <ntddser.h>  //GUID_DEVINTERFACE_COMPORT
 #ifndef GUID_DEVINTERFACE_COMPORT
 DEFINE_GUID(GUID_DEVINTERFACE_COMPORT, 0x86E0D1E0L, 0x8089, 0x11D0, 0x9C, 0xE4, 0x08, 0x00, 0x3E, 0x30, 0x1F, 0x73);
 #endif

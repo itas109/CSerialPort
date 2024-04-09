@@ -94,7 +94,7 @@ public:
             itas109::IUtils::strFormat(logMessage, 2048, "%s [%s] %s - %s\n", currentTime, levelStr, function, formatMessage);
             m_logFile << logMessage;
             m_logFile.flush();
-            printf(logMessage);
+            printf("%s", logMessage);
         }
     }
 
@@ -103,7 +103,7 @@ private:
         : m_minLevel(LOG_INFO)
     {
         char fileName[40];
-        itas109::IUtils::strncpy(fileName, prefix,40);
+        itas109::IUtils::strncpy(fileName, prefix, 40);
         getCurrentDate(fileName + itas109::IUtils::strlen(prefix));
         itas109::IUtils::strncat(fileName, ".log", 45);
         m_logFile.open(fileName, std::ios::out | std::ios::app);
@@ -128,8 +128,8 @@ private:
     void getCurrentDate(char *dateStr)
     {
         struct tm ltm;
-#if defined(_WIN32)
         time_t now = time(0);
+#if defined(_WIN32)
         localtime_s(&ltm, &now);
 #else
         ltm = *localtime(&now);
