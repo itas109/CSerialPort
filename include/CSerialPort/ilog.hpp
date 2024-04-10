@@ -26,6 +26,7 @@
 #endif
 #endif
 
+#ifdef CSERIALPORT_DEBUG
 #define LOG_TRACE(format, ...) itas109::ILog::getInstance().log(itas109::ILog::LOG_TRACE, __func__, format, ##__VA_ARGS__)
 #define LOG_DEBUG(format, ...) itas109::ILog::getInstance().log(itas109::ILog::LOG_DEBUG, __func__, format, ##__VA_ARGS__)
 #define LOG_INFO(format, ...) itas109::ILog::getInstance().log(itas109::ILog::LOG_INFO, __func__, format, ##__VA_ARGS__)
@@ -33,6 +34,15 @@
 #define LOG_ERROR(format, ...) itas109::ILog::getInstance().log(itas109::ILog::LOG_ERROR, __func__, format, ##__VA_ARGS__)
 #define LOG_FATAL(format, ...) itas109::ILog::getInstance().log(itas109::ILog::LOG_FATAL, __func__, format, ##__VA_ARGS__)
 #define LOG_SET_LEVEL(level) itas109::ILog::getInstance().setLogLevel(level)
+#else
+#define LOG_TRACE(format, ...)
+#define LOG_DEBUG(format, ...)
+#define LOG_INFO(format, ...)
+#define LOG_WARN(format, ...)
+#define LOG_ERROR(format, ...)
+#define LOG_FATAL(format, ...)
+#define LOG_SET_LEVEL(level)
+#endif
 
 namespace itas109
 {

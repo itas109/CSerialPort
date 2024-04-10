@@ -28,7 +28,8 @@ CSerialPort::CSerialPort()
     p_serialPortBase->setMinByteReadNotify(1);
 
     char compilerInfo[256];
-    LOG_INFO("%s, Version: %s", itas109::IUtils::getCompilerInfo(compilerInfo, 256), getVersion());
+    itas109::IUtils::getCompilerInfo(compilerInfo, 256);
+    LOG_INFO("%s, Version: %s", compilerInfo, getVersion());
 }
 
 itas109::CSerialPort::CSerialPort(const char *portName)
@@ -40,7 +41,8 @@ itas109::CSerialPort::CSerialPort(const char *portName)
     p_serialPortBase->setMinByteReadNotify(1);
 
     char compilerInfo[256];
-    LOG_INFO("%s, Version: %s", itas109::IUtils::getCompilerInfo(compilerInfo, 256), getVersion());
+    itas109::IUtils::getCompilerInfo(compilerInfo, 256);
+    LOG_INFO("%s, Version: %s", compilerInfo, getVersion());
 }
 
 CSerialPort::~CSerialPort()
