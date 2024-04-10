@@ -140,17 +140,26 @@ private:
     void getCurrentDateTime(char *dateTimeStr)
     {
         struct tm ltm;
-        long msec = 0;
+        int msec = 0;
 #if defined(_WIN32)
-        time_t now = time(0);
-        localtime_s(&ltm, &now);
+        FILETIME fileTime;
+        GetSystemTimeAsFileTime(&fileTime);
+
+        ULARGE_INTEGER uli;
+        uli.LowPart = fileTime.dwLowDateTime;
+        uli.HighPart = fileTime.dwHighDateTime;
+
+        time_t time = (uli.QuadPart - 116444736000000000) / 10000000;
+        localtime_s(&ltm, &time);
+
+        msec = (uli.QuadPart % 10000000) / 10000;
 #else
         struct timeval now;
         gettimeofday(&now, NULL);
         ltm = *localtime(&now.tv_sec);
         msec = now.tv_usec / 1000;
 #endif
-        itas109::IUtils::strFormat(dateTimeStr, 25, "%04d-%02d-%02d %02d:%02d:%02d.%03ld", 1900 + ltm.tm_year, 1 + ltm.tm_mon, ltm.tm_mday, ltm.tm_hour, ltm.tm_min, ltm.tm_sec,
+        itas109::IUtils::strFormat(dateTimeStr, 25, "%04d-%02d-%02d %02d:%02d:%02d.%03d", 1900 + ltm.tm_year, 1 + ltm.tm_mon, ltm.tm_mday, ltm.tm_hour, ltm.tm_min, ltm.tm_sec,
                                    msec);
     }
 
