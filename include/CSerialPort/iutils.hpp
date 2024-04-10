@@ -162,7 +162,7 @@ public:
         int ret;
 
         va_start(ap, format);
-#if defined(_WIN32)
+#ifdef _MSC_VER
         ret = sscanf_s(str, format, ap);
 #else
         ret = sscanf(str, format, ap);
@@ -235,7 +235,13 @@ public:
         strncpy(osName, "Unknown", 10);
 #endif
 
-#ifdef _MSC_VER
+#if defined(__clang__)
+        strncpy(compilerName, "clang", 10);
+        strFormat(compilerVersion, 10, "%d.%d.%d", __clang_major__, __clang_minor__, __clang_patchlevel__);
+#elif defined(__GNUC__)
+        strncpy(compilerName, "gcc", 10);
+        strFormat(compilerVersion, 10, "%d.%d.%d", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+#elif defined(_MSC_VER)
         strFormat(compilerVersion, 10, "%d", _MSC_VER);
         switch (_MSC_VER / 10)
         {
@@ -276,12 +282,6 @@ public:
                 strncpy(compilerName, "vs2022", 10);
                 break;
         }
-#elif defined(__clang__)
-        strncpy(compilerName, "clang", 10);
-        strFormat(compilerVersion, 10, "%d.%d.%d", __clang_major__, __clang_minor__, __clang_patchlevel__);
-#elif defined(__GNUC__)
-        strncpy(compilerName, "gcc", 10);
-        strFormat(compilerVersion, 10, "%d.%d.%d", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
 #else
         strncpy(compilerName, "unknown", 10);
         strFormat(compilerVersion, 10, "%d.%d.%d", 0, 0, 0);
