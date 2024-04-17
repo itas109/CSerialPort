@@ -199,6 +199,7 @@ public:
         char compilerVersion[10];
         compilerVersion[0] = '\0';
         int bit = (8 == sizeof(char *)) ? 64 : 32;
+        long cppStdVersion = 0;
 
         // https://sourceforge.net/p/predef/wiki/Home/
 #if defined(__x86_64__) /*GNU C*/ || defined(_M_AMD64) /*Visual Studio*/
@@ -287,7 +288,13 @@ public:
         strFormat(compilerVersion, 10, "%d.%d.%d", 0, 0, 0);
 #endif
 
-        strFormat(info, len, "OS: %s, Arch: %s, Compiler: %s(%s), Bit: %d, C++: %ld", osName, archName, compilerName, compilerVersion, bit, __cplusplus);
+#if defined(_MSVC_LANG)
+        cppStdVersion = _MSVC_LANG;
+#else
+        cppStdVersion = __cplusplus;
+#endif
+
+        strFormat(info, len, "OS: %s, Arch: %s, Compiler: %s(%s), Bit: %d, C++: %ldL", osName, archName, compilerName, compilerVersion, bit, cppStdVersion);
 
         return info;
     }

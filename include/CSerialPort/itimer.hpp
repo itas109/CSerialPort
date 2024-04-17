@@ -10,7 +10,7 @@
 #ifndef __I_TIMER_HPP__
 #define __I_TIMER_HPP__
 
-#if __cplusplus >= 201103L
+#if __cplusplus >= 201103L || _MSVC_LANG >= 201103L
 // C++11 support: msvc2013 gcc4.8.5 clang3.0 etc.
 #define CPP11_TIMER
 #endif
