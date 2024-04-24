@@ -156,17 +156,35 @@ public:
         return ret;
     }
 
+    static int strScan(const char *str, const char *format, va_list args)
+    {
+        int ret;
+
+#if defined(_MSC_VER)
+#if _MSC_VER < 1800 // vs2013
+        void *a[8];
+        for (int i = 0; i < sizeof(a) / sizeof(a[0]); ++i)
+        {
+            a[i] = va_arg(args, void *);
+        }
+        ret = sscanf_s(str, format, a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8]);
+#else
+        ret = vsscanf_s(str, format, args);
+#endif
+#else
+        ret = vsscanf(str, format, args);
+#endif
+
+        return ret;
+    }
+
     static int strScan(const char *str, const char *format, ...)
     {
         va_list ap;
         int ret;
 
         va_start(ap, format);
-#ifdef _MSC_VER
-        ret = sscanf_s(str, format, ap);
-#else
-        ret = sscanf(str, format, ap);
-#endif
+        ret = itas109::IUtils::strScan(str, format, ap);
         va_end(ap);
 
         return ret;
