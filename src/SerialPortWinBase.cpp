@@ -946,8 +946,8 @@ bool CSerialPortWinBase::stopThreadMonitor()
 {
     // Finished
 
-    SetCommMask(m_monitorThread, 0);
     m_isThreadRunning = false;
+    itas109::i_thread_join(m_monitorThread);
     //_endthreadex(0);//not recommend
 
     return true;
