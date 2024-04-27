@@ -133,7 +133,7 @@ inline int i_thread_create(i_thread_t *thread, void const *, unsigned(__stdcall 
 
 inline void i_thread_join(i_thread_t thread)
 {
-    ::WaitForSingleObject(thread, INFINITE);
+    //::WaitForSingleObject(thread, INFINITE);
     ::CloseHandle(thread);
 }
 #else
