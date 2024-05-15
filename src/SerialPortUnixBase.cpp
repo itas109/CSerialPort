@@ -37,6 +37,10 @@ struct termios2
 
 #endif
 
+#ifdef I_OS_MAC
+#include <IOKit/serial/ioss.h> // IOSSIOSPEED
+#endif
+
 CSerialPortUnixBase::CSerialPortUnixBase()
     : fd(-1)
     , m_baudRate(itas109::BaudRate9600)
@@ -271,6 +275,14 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
         else
         {
             fprintf(stderr, "termios2 ioctl error\n");
+            return -1;
+        }
+#elif defined I_OS_MAC
+        // Mac OS X Tiger(10.4.11) support non-standard baud rate through IOSSIOSPEED
+        speed_t customBaudRate = (speed_t)baudRate;
+        if (-1 == ioctl(fd, IOSSIOSPEED, &customBaudRate))
+        {
+            fprintf(stderr, "ioctl IOSSIOSPEED custom baud rate error\n");
             return -1;
         }
 #else
