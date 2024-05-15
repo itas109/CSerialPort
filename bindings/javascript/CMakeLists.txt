@@ -14,6 +14,8 @@ cmake_minimum_required(VERSION 3.8.2)
 
 project(cserialport)
 
+# add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+
 # set output directory
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

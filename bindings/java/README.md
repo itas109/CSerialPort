@@ -49,7 +49,7 @@ cmake version 3.26.4
 ## Build
 
 ```
-cd java
+cd bindings/java
 mkdir bin
 cd bin
 cmake .. -DSWIG_EXECUTABLE=D:/swigwin-4.1.1/swig.exe

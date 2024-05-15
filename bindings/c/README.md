@@ -28,7 +28,7 @@ cmake version 3.26.4
 ## Build
 
 ```
-cd c
+cd bindings/c
 mkdir bin
 cd bin
 cmake ..

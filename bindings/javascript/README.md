@@ -9,6 +9,7 @@ nodejs: 12.22.12
 ## Build
 
 ```
+cd bindings/javascript
 swig -javascript -c++ -node -outdir generate -I../../include cserialport.i
 node-gyp configure build --debug
 ```

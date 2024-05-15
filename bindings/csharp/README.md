@@ -48,7 +48,7 @@ cmake version 3.26.4
 ## Build
 
 ```
-cd csharp
+cd bindings/csharp
 mkdir bin
 cd bin
 cmake .. -DSWIG_EXECUTABLE=D:/swigwin-4.1.1/swig.exe
