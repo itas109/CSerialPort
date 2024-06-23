@@ -1,0 +1,53 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "node launch",
+            "program": "${workspaceFolder}/index.js",
+            "env": {},
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "name": "windows cpp launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "C:/Program Files/nodejs/node.exe",
+            "args": [
+                "${workspaceFolder}/index.js"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "console": "externalTerminal"
+        },
+        {
+            "name": "linux cpp launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/usr/local/bin/node",
+            "args": [
+                "${workspaceFolder}/index.js"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "enable pretty printing",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],            
+            "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ]
+}
