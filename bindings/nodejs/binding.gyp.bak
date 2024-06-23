@@ -1,0 +1,44 @@
+{
+    'targets': [
+        {
+            'target_name': 'cserialport',
+            'cflags!': [ '-fno-exceptions' ],
+            'cflags_cc!': [ '-fno-exceptions' ],
+            'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ],
+            'include_dirs': [
+                '.',
+                '../../include',
+                'node-addon-api'
+                ],
+            'sources': [
+                '../../src/SerialPort.cpp',
+                '../../src/SerialPortBase.cpp',
+                '../../src/SerialPortInfo.cpp',
+                '../../src/SerialPortInfoBase.cpp',
+                'CSerialPortWrapper.cpp'
+                ],
+            'conditions': [
+                ['OS=="win"', {
+                    'sources': [
+                        '../../src/SerialPortWinBase.cpp',
+                        '../../src/SerialPortInfoWinBase.cpp',
+                        ]
+                }],
+                ['OS=="linux"', {
+                    'cflags': ['-fexceptions'],
+                    'cflags_cc': ['-fexceptions'],
+                    'sources': [
+                        '../../src/SerialPortUnixBase.cpp',
+                        '../../src/SerialPortInfoUnixBase.cpp'
+                        ]
+                }],
+                ['OS=="mac"', {
+                    'sources': [
+                        '../../src/SerialPortUnixBase.cpp',
+                        '../../src/SerialPortInfoUnixBase.cpp'
+                        ]
+                }]
+            ]
+        }
+    ]
+}

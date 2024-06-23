@@ -1,0 +1,13 @@
+{
+  "name": "cserialport",
+  "version": "1.0.0",
+  "description": "CSerialPort Node.js Example",
+  "main": "index.js",
+  "scripts": {
+    "build": "cmake-js rebuild",
+    "start": "node index.js"
+  },
+  "devDependencies": {
+    "cmake-js": "^7.3.0"
+  }
+}
