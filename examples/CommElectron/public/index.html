@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>CSerialPort Electron Example</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline';">
+
+    <style>
+        #header {
+            text-align: center;
+            padding: 1px;
+        }
+
+        #left {
+            position: absolute;
+            width: 55%;
+            height: 100%;
+        }
+
+        #right {
+            margin-left: 55%;
+            height: 100%;
+        }
+
+        #receive {
+            width: 50vw;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        #log {
+            width: 40vw;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header"> CSerialPort Electron Example </div>
+
+    <hr />
+
+    <div>
+        <label>PortName</label>
+        <select id="listPortSelect"></select>
+        <label>BaudRate</label>
+        <select id="baudRateSelect"></select>
+        <button id='onOpen' onclick="onOpen()">open</button>
+        <button id='onClose' onclick="onClose()">close</button>
+        <input type="checkbox" id="setDtr" onclick="setDtr(this)" />
+        <label>setDtr</label>
+        <input type="checkbox" id="setRts" onclick="setRts(this)" />
+        <label>setRts</label>
+    </div>
+
+    <hr />
+
+    <div>
+        <input type="checkbox" id="isSendHex" />
+        <label>isSendHex</label>
+        <label>Send</label>
+        <input id='send' type="text" style="width:230px;" value='https://github.com/itas109/CSerialPort'>
+        <button id='onSend' onclick="onSend($('#send').val())">send</button>
+    </div>
+
+    <hr />
+
+    <div id="left">
+        <h2>Receive</h2>
+        <input type="checkbox" id="isReceiveHex" />
+        <label>isReceiveHex</label>
+        <button id='clearReceive' onclick="onClear('#receive')">clear</button>
+        <pre id="receive"></pre>
+    </div>
+
+    <div id="right">
+        <h2>Log</h2>
+        <button id='clearLog' onclick="onClear()">clear</button>
+        <pre id="log"></pre>
+    </div>
+
+    <script>
+        // tile
+        document.title += " - " + gCSerialPort.getVersion();
+
+        // require jquery
+        window.$ = window.jQuery = require('jquery');
+
+        // listPortSelect
+        const listPortSelect = document.getElementById('listPortSelect');
+        const portInfoArray = gCSerialPort.availablePortInfos();
+        const portInfoSize = portInfoArray.length;
+        let result = [];
+        for (let i = 1; i <= portInfoSize; i++) {
+            const portName = portInfoArray[i - 1].portName;
+            const option = document.createElement('option');
+            option.value = portName;
+            option.textContent = portName;
+            listPortSelect.appendChild(option);
+        }
+
+        // baudRateSelect
+        const baudRateSelect = document.getElementById('baudRateSelect');
+        const baudRateArray = [110, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200, 921600];
+        baudRateArray.forEach(baudRate => {
+            const option = document.createElement('option');
+            option.value = baudRate;
+            option.text = baudRate;
+            if (baudRate === 9600) {
+                option.selected = true; // default selected
+            }
+            baudRateSelect.appendChild(option);
+        });
+
+        // onReadEvent
+        gCSerialPort.onReadEvent((arrayBufferReadData) => {
+            let result;
+            if ($("#isReceiveHex").is(':checked')) {
+                result = arrayBufferReadData.toString('hex');
+            } else {
+                result = arrayBufferReadData.toString();
+            }
+            outputReceive(result);
+        });
+    </script>
+    <script>
+        function output(str, id = '#log') {
+            $(id).append(str + "\n");
+        }
+
+        function outputReceive(str, id = '#receive') {
+            $(id).append(str);
+        }
+
+        function onClear(id = '#log') {
+            $(id).text("");
+        }
+
+        function onOpen() {
+            const portName = $("#listPortSelect option:selected").val();
+            const baudRate = $("#baudRateSelect option:selected").val();
+            gCSerialPort.init2(portName, baudRate);
+            gCSerialPort.open();
+            output("Open " + portName + " " + gCSerialPort.isOpen());
+            output("Code: " + gCSerialPort.getLastError() + ", Message: " + gCSerialPort.getLastErrorMsg());
+        }
+
+        function onClose() {
+            gCSerialPort.close();
+            output('Close Success');
+        }
+
+        function onSend(str) {
+            let buffer;
+            if ($("#isSendHex").is(':checked')) {
+                buffer = Buffer.from(str, 'hex');
+            } else {
+                buffer = Buffer.from(str);
+            }
+            if (buffer.length > 0) {
+                let result = gCSerialPort.writeData(buffer, buffer.length);
+                output('WriteData Success.' + result);
+            } else {
+                output('WriteData empty.');
+            }
+        }
+
+        function setDtr(checkbox) {
+            gCSerialPort.setDtr(checkbox.checked);
+        }
+
+        function setRts(checkbox) {
+            gCSerialPort.setRts(checkbox.checked);
+        }
+    </script>
+
+</body>
+
+</html>

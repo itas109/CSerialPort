@@ -1,0 +1,15 @@
+{
+  "name": "cserialport",
+  "version": "1.0.0",
+  "description": "CSerialPort Electron Example",
+  "main": "index.js",
+  "dependencies": {
+    "electron": "^31.0.2",
+    "express": "^4.19.2",
+    "jquery": "^3.7.1"
+  },
+  "scripts": {
+    "build": "cmake-js rebuild",
+    "start": "electron ."
+  }
+}
