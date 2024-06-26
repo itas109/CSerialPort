@@ -399,23 +399,31 @@ bool CSerialPortWinBase::isOpen()
     return m_handle != INVALID_HANDLE_VALUE;
 }
 
-unsigned int CSerialPortWinBase::getReadBufferUsedLen() const
+unsigned int CSerialPortWinBase::getReadBufferUsedLen()
 {
     unsigned int usedLen = 0;
 
-    if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
+    if (isOpen())
     {
-        usedLen = p_buffer->getUsedLen();
-    }
-    else
-    {
-        DWORD dwError = 0;
-        COMSTAT comstat;
-        ClearCommError(m_handle, &dwError, &comstat);
-        usedLen = comstat.cbInQue;
-    }
+        if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
+        {
+            usedLen = p_buffer->getUsedLen();
+        }
+        else
+        {
+            DWORD dwError = 0;
+            COMSTAT comstat;
+            ClearCommError(m_handle, &dwError, &comstat);
+            usedLen = comstat.cbInQue;
+        }
 
-    LOG_INFO("getReadBufferUsedLen: %u", usedLen);
+#ifdef CSERIALPORT_DEBUG
+        if (usedLen > 0)
+        {
+            LOG_INFO("getReadBufferUsedLen: %u", usedLen);
+        }
+#endif
+    }
 
     return usedLen;
 }

@@ -119,7 +119,7 @@ public:
      *
      * @return return used length of buffer 返回读取缓冲区已使用大小
      */
-    virtual unsigned int getReadBufferUsedLen() const = 0;
+    virtual unsigned int getReadBufferUsedLen() = 0;
 
     /**
      * @brief read specified length data 读取指定长度数据

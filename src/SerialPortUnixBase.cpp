@@ -493,21 +493,29 @@ bool CSerialPortUnixBase::isOpen()
     return fd != -1;
 }
 
-unsigned int CSerialPortUnixBase::getReadBufferUsedLen() const
+unsigned int CSerialPortUnixBase::getReadBufferUsedLen()
 {
     unsigned int usedLen = 0;
 
-    if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
+    if (isOpen())
     {
-        usedLen = p_buffer->getUsedLen();
-    }
-    else
-    {
-        // read前获取可读的字节数,不区分阻塞和非阻塞
-        ioctl(fd, FIONREAD, &usedLen);
-    }
+        if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
+        {
+            usedLen = p_buffer->getUsedLen();
+        }
+        else
+        {
+            // read前获取可读的字节数,不区分阻塞和非阻塞
+            ioctl(fd, FIONREAD, &usedLen);
+        }
 
-    LOG_INFO("getReadBufferUsedLen: %u", usedLen);
+#ifdef CSERIALPORT_DEBUG
+        if (usedLen > 0)
+        {
+            LOG_INFO("getReadBufferUsedLen: %u", usedLen);
+        }
+#endif
+    }
 
     return usedLen;
 }
