@@ -25,11 +25,16 @@ private:
 
     Napi::Value availablePortInfos(const Napi::CallbackInfo &info);
     void init(const Napi::CallbackInfo &info);
+    void init2(const Napi::CallbackInfo &info);
     Napi::Value open(const Napi::CallbackInfo &info);
     void close(const Napi::CallbackInfo &info);
     Napi::Value isOpen(const Napi::CallbackInfo &info);
     Napi::Value writeData(const Napi::CallbackInfo &info);
     Napi::Value readData(const Napi::CallbackInfo &info);
     Napi::Value readAllData(const Napi::CallbackInfo &info);
+    void setDtr(const Napi::CallbackInfo &info);
+    void setRts(const Napi::CallbackInfo &info);
     Napi::Value getVersion(const Napi::CallbackInfo &info);
+    Napi::Value getLastError(const Napi::CallbackInfo &info);
+    Napi::Value getLastErrorMsg(const Napi::CallbackInfo &info);
 };
