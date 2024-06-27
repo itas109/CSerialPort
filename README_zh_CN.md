@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-CSerialPort是一个基于C/C++的轻量级开源跨平台串口类库，可以轻松实现跨平台多操作系统的串口读写，同时还支持C#, Java, Python, Node.js等。
+CSerialPort是一个基于C++的轻量级开源跨平台串口类库，可以轻松实现跨平台多操作系统的串口读写，同时还支持C, C#, Java, Python, Node.js, Electron等。
 
 <p>
 <a href="https://github.com/itas109/CSerialPort/releases"><img alt="Version" src="https://img.shields.io/github/release/itas109/CSerialPort"/></a>
@@ -41,7 +41,7 @@ CSerialPort已经在以下平台做过测试
 - [ ] 2.增加通用串口通信协议
 - [x] 3.支持热插拔 - [CSerialPortExtend](https://github.com/itas109/CSerialPortExtend)
 - [x] 4.更高效的通知模块 - CSerialPortListener
-- [x] 5.支持其他语言 - C#, Python, Java, Node.js - 详见[bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
+- [x] 5.支持其他语言 - C, C#, Java, Python, Node.js, Electron - 详见[bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
 - [x] 6.同步串口通信
 - [x] 7.全新的跨平台串口调试助手 - [CommMaster通信大师](https://gitee.com/itas109/CommMaster)
 - [x] 8.增加CSerialPort的介绍和使用教程 - [CSerialPort教程](https://blog.csdn.net/itas109/category_12416341.html)
