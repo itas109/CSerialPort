@@ -8,28 +8,28 @@
     <style>
         #header {
             text-align: center;
-            padding: 5px;
+            padding: 1px;
         }
 
         #left {
             position: absolute;
-            width: 50%;
+            width: 55%;
             height: 100%;
         }
 
         #right {
-            margin-left: 50%;
+            margin-left: 55%;
             height: 100%;
         }
 
-        #log1 {
+        #receive {
             width: 50vw;
             white-space: pre-wrap;
             word-wrap: break-word;
         }
 
-        #log2 {
-            width: 50vw;
+        #log {
+            width: 40vw;
             white-space: pre-wrap;
             word-wrap: break-word;
         }
@@ -37,82 +37,78 @@
 </head>
 
 <body>
-    <div id="header">
-        <h2>CSerialPort Node.js Web Example</h2>
-    </div>
-
-    <div id="time" align="right"></div>
-
-    <hr />
-
-    <div>
-        <label class="pid"></label>
-        <div />
-        <button id='onSaveConfig' onclick="onSaveConfig()">saveConfig</button>
-        <button id='onClearConfig' onclick="onClearConfig()">clearConfig</button>
-        <button id='gc' onclick="onGC()">garbageCollection</button>
-        <button id='exit' onclick="onExit()">exit</button>
-    </div>
+    <div id="header">CSerialPort Node.js Web Example</div>
 
     <hr />
 
     <div>
         <label>PortName</label>
-        <select id="listPortsSelect"></select>
+        <select id="listPortSelect"></select>
+        <label>BaudRate</label>
+        <select id="baudRateSelect"></select>
         <button id='onOpen' onclick="onOpen()">open</button>
         <button id='onClose' onclick="onClose()">close</button>
+        <input type="checkbox" id="setDtr" onclick="setDtr(this)" />
+        <label>setDtr</label>
+        <input type="checkbox" id="setRts" onclick="setRts(this)" />
+        <label>setRts</label>
     </div>
 
     <hr />
 
     <div>
+        <input type="checkbox" id="isSendHex" />
+        <label>isSendHex</label>
         <label>Send</label>
-        <input id='send' type="text" value='https://github.com/itas109/CSerialPort'>
+        <input id='send' type="text" style="width:230px;" value='https://github.com/itas109/CSerialPort'>
         <button id='onSend' onclick="onSend($('#send').val())">send</button>
     </div>
 
     <hr />
 
-    <div>
-        <label>output log1</label>
-        <input id='input1' value='test1' type=" text">
-        <button id='outputLog1' onclick="output($('#input1').val())">outputLog1</button>
-
-        <label>output log2</label>
-        <input id='input2' value='test2' type="text">
-        <button id='outputLog2' onclick="output($('#input2').val(),'#log2')">outputLog2</button>
-    </div>
-
-    <hr />
-
     <div id="left">
-        <div class="page-header">
-            <h2>Log</h2>
-        </div>
-        <button id='clear1' onclick="onClear()">clear</button>
-        <pre id="log1"></pre>
+        <h2>Receive</h2>
+        <input type="checkbox" id="isReceiveHex" onclick="onSetReceiveMode()" />
+        <label>isReceiveHex</label>
+        <button id='clearReceive' onclick="onClear('#receive')">clear</button>
+        <pre id="receive"></pre>
     </div>
 
     <div id="right">
-        <div class="page-header">
-            <h2>Receive</h2>
-        </div>
-        <button id='clear2' onclick="onClear('#log2')">clear</button>
-        <pre id="log2"></pre>
+        <h2>Log</h2>
+        <button id='clearLog' onclick="onClear()">clear</button>
+        <pre id="log"></pre>
     </div>
 
-    <script src='js/jquery-3.6.4.min.js'></script>
-    <script src='js/dayjs.min.js'></script>
+    <script src='js/jquery-3.7.1.min.js'></script>
     <script>
-        // append listPorts
-        const listPortsSelect = document.getElementById('listPortsSelect');
+        // tile
+        $.get("cserialport/getVersion", function (version) {
+            document.title += " - " + version;
+        });
+
+        // listPortSelect
+        const listPortSelect = document.getElementById('listPortSelect');
         $.get("cserialport/listPorts", function (listPorts) {
             listPorts.forEach(listPort => {
                 const optionElement = document.createElement('option');
                 optionElement.value = listPort;
                 optionElement.textContent = listPort;
-                listPortsSelect.appendChild(optionElement);
+                listPortSelect.appendChild(optionElement);
             });
+        });
+
+        // baudRateSelect
+        const baudRateSelect = document.getElementById('baudRateSelect');
+        const baudRateArray = [110, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200, 921600];
+        baudRateArray.forEach(baudRate => {
+            const option = document.createElement('option');
+            option.value = baudRate;
+            option.text = baudRate;
+            if (baudRate === 9600) {
+                option.selected = true; // default selected
+            }
+            baudRateSelect.appendChild(option);
         });
     </script>
     <script>
@@ -124,57 +120,34 @@
             };
 
             source.onmessage = function (event) {
-                console.log(event.data);
-                output2(event.data, '#log2');
+                outputReceive(event.data);
             };
 
             source.onerror = function (error) {
-                console.error('EventSource failed. ', error);
+                output('EventSource failed. ' + JSON.stringify(error));
                 source.close();
             };
         }
     </script>
     <script>
-        setInterval(() => {
-            $('#time').text(dayjs().format("YYYY-MM-DD HH:mm:ss.SSS"));
-        }, 1000);
-
-        $.get("pid", function (pid) {
-            $(".pid").html("pid: " + pid);
-        });
-
-        if (localStorage.getItem("send")) {
-            $('#send').val(localStorage.getItem("send"));
+        function output(str, id = '#log') {
+            $(id).append(str + "\n");
         }
 
-        function onSaveConfig() {
-            localStorage.setItem("send", $('#send').val());
-            output("save config");
-        }
-
-        function onClearConfig() {
-            localStorage.clear();
-            output("clear config");
-        }
-
-        function output(str, id = '#log1') {
-            let result = dayjs().format("YYYY-MM-DD HH:mm:ss.SSS");
-            $(id).append(result + " - " + str + "\n");
-        }
-
-        function output2(str, id = '#log1') {
+        function outputReceive(str, id = '#receive') {
             $(id).append(str);
         }
 
-        function onClear(id = '#log1') {
+        function onClear(id = '#log') {
             $(id).text("");
         }
 
         function onOpen() {
             const params = {
-                portName: $("#listPortsSelect option:selected").val()
+                portName: $("#listPortSelect option:selected").val(),
+                baudRate: $("#baudRateSelect option:selected").val()
             };
-            $.get("cserialport/init", params, function (result) {
+            $.get("cserialport/init2", params, function (result) {
                 output(result);
 
                 $.get("cserialport/open", function (result) {
@@ -191,6 +164,7 @@
 
         function onSend(str) {
             const params = {
+                isHex: $("#isSendHex").is(':checked'),
                 data: encodeURI(str)
             };
             $.get("cserialport/writeData", params, function (result) {
@@ -198,14 +172,27 @@
             });
         }
 
-        function onGC() {
-            $.get("gc", function (result) {
+        function onSetReceiveMode() {
+            const params = {
+                isReceiveHex: $("#isReceiveHex").is(':checked')
+            };
+            $.get("cserialport/isReceiveHex", params, function (result) {
                 output(result);
             });
         }
 
-        function onExit() {
-            $.get("exit", function (result) {
+        function setDtr(checkbox) {
+            $.get("cserialport/setDtr", {
+                isSet: checkbox.checked
+            }, function (result) {
+                output(result);
+            });
+        }
+
+        function setRts(checkbox) {
+            $.get("cserialport/setRts", {
+                isSet: checkbox.checked
+            }, function (result) {
                 output(result);
             });
         }

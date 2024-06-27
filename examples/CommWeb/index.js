@@ -13,7 +13,6 @@ try {
     CSerialPort = require("./build/Release/cserialport.node").CSerialPort;
 }
 const sp = new CSerialPort();
-let isHex = false;
 
 // // morgan logger dev
 // const logger = require('morgan');
@@ -61,6 +60,13 @@ app.get('/cserialport/init', function (req, res, next) {
     res.send(portName + ' init ok');
 })
 
+app.get('/cserialport/init2', function (req, res, next) {
+    let portName = req.query.portName;
+    let baudRate = req.query.baudRate;
+    sp.init2(portName, baudRate);
+    res.send(portName + ' init ok');
+})
+
 app.get('/cserialport/open', function (req, res, next) {
     if (sp.isOpen()) {
         res.send('alread open');
@@ -81,24 +87,44 @@ app.get('/cserialport/isOpen', function (req, res, next) {
 })
 
 app.get('/cserialport/writeData', function (req, res, next) {
-    let data = req.query.data;
+    let isHex = JSON.parse(req.query.isHex);
+    let data = decodeURI(req.query.data);
     let buffer;
     if (isHex) {
-        buffer = Buffer.from(data); // TODO
+        data = data.replace(/\s*/g, "");
+        buffer = Buffer.from(data, 'hex');
     } else {
         buffer = Buffer.from(data);
     }
     let result = sp.writeData(buffer, buffer.length);
-    res.send("writeData ok. " + result);
+    res.send("writeData " + result);
+})
+
+app.get('/cserialport/readData', function (req, res, next) {
+    let isHex = JSON.parse(req.query.isHex);
+    let readBufferLen = req.query.readBufferLen;
+    readBufferLen = readBufferLen > 0 ? readBufferLen : 1;
+    let buffer = Buffer.alloc(readBufferLen);
+    sp.readData(buffer, buffer.length);
+    if (isHex) {
+        res.send(buffer.toString('hex'));
+    } else {
+        res.send(buffer.toString());
+    }
+})
+
+let isReceiveHex = false;
+app.get('/cserialport/isReceiveHex', function (req, res, next) {
+    isReceiveHex = JSON.parse(req.query.isReceiveHex);
+    res.send('isReceiveHex ' + isReceiveHex);
 })
 
 app.get('/cserialport/onReadEvent', function (req, res, next) {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-
     sp.onReadEvent((arrayBufferReadData) => {
-        if (isHex) {
+        if (isReceiveHex) {
             res.write("data: " + arrayBufferReadData.toString('hex') + "\n\n");
         } else {
             res.write("data: " + arrayBufferReadData.toString() + "\n\n");
@@ -110,16 +136,20 @@ app.get('/cserialport/onReadEvent', function (req, res, next) {
     });
 })
 
-app.get('/cserialport/readData/:readBufferLen', function (req, res, next) {
-    let readBufferLen = req.params.readBufferLen;
-    readBufferLen = readBufferLen > 0 ? readBufferLen : 1;
-    let buffer = Buffer.alloc(readBufferLen);
-    sp.readData(buffer, buffer.length);
-    if (isHex) {
-        res.send(buffer.toString());
-    } else {
-        res.send(buffer.toString('hex'));
-    }
+app.get('/cserialport/setDtr', function (req, res, next) {
+    let isSet = JSON.parse(req.query.isSet);
+    sp.setDtr(isSet);
+    res.send('setDtr ' + isSet + ' ok');
+})
+
+app.get('/cserialport/setRts', function (req, res, next) {
+    let isSet = JSON.parse(req.query.isSet);
+    sp.setRts(isSet);
+    res.send('setRts ' + isSet + ' ok');
+})
+
+app.get('/cserialport/getVersion', function (req, res, next) {
+    res.send(sp.getVersion());
 })
 
 httpServer.listen(port);
