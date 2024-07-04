@@ -46,6 +46,21 @@ $ cmake --version
 cmake version 3.26.4
 ```
 
+### macos
+
+- swig
+
+```
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+$ brew install swig
+```
+
+- cmake
+
+```
+$ brew install cmake
+```
+
 ## Build
 
 ```

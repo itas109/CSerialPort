@@ -12,7 +12,7 @@
 ############################################################################
 cmake_minimum_required(VERSION 3.8.2)
 
-project(cserialport)
+project(libcserialport)
 
 # add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
 
@@ -32,6 +32,16 @@ elseif (UNIX)
     list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortInfoUnixBase.cpp ${CSerialPortRootPath}/src/SerialPortUnixBase.cpp)
 endif ()
 
+if (WIN32)
+    link_libraries(setupapi)
+elseif (APPLE)
+    find_library(IOKIT_LIBRARY IOKit)
+    find_library(FOUNDATION_LIBRARY Foundation)
+    link_libraries(${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
+elseif (UNIX)
+    link_libraries(pthread)
+endif ()
+
 # find swig
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
@@ -47,4 +57,6 @@ set(CMAKE_SWIG_FLAGS -namespace itas109)
 swig_add_library(${PROJECT_NAME} LANGUAGE csharp SOURCES cserialport.i ${CSerialPortSourceFiles})
 
 # example
+if (WIN32)
 add_subdirectory(example)
+endif ()

@@ -45,7 +45,24 @@ $ cmake --version
 cmake version 3.26.4
 ```
 
+### macos
+
+- swig
+
+```
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+$ brew install swig
+```
+
+- cmake
+
+```
+$ brew install cmake
+```
+
 ## Build
+
+- windows
 
 ```
 cd bindings/csharp
@@ -68,11 +85,43 @@ set path=D:/swigwin-4.1.1;%path%
 cmake ..
 ```
 
+- linux (ubuntu  22.04)
+
+```
+sudo apt update
+sudo apt install mono-complete
+
+cd bindings/csharp
+mkdir bin
+cd bin
+cmake .. -DSWIG_EXECUTABLE=/usr/bin/swig
+cmake --build .
+```
+
+comple example with mono
+
+```
+cd example
+cmake -E copy ../bin/bin/libcserialport.so .
+cmake -E copy ../generate/*.cs .
+
+mcs Program.cs cserialportCSharp.cs cserialportCSharpPINVOKE.cs CSerialPort.cs CSerialPortInfo.cs CSerialPortListener.cs BaudRate.cs DataBits.cs FlowControl.cs OperateMode.cs Parity.cs StopBits.cs SerialPortError.cs SerialPortInfo.cs SerialPortInfoVector.cs
+```
+
 ## Run
+
+- windows
 
 ```
 cd bin
 CommCSharp
+```
+
+- linux
+
+```
+cd example
+LD_LIBRARY_PATH=. mono Program.exe
 ```
 
 ### Tree
@@ -84,7 +133,7 @@ bindings/csharp $tree
 |   +--- bin
 |   |   +--- Debug
 |   |   |   +--- CommCSharp.exe
-|   |   |   +--- cserialport.dll
+|   |   |   +--- libcserialport.dll
 +--- CMakeLists.txt
 +--- cserialport.i
 +--- example

@@ -1,7 +1,7 @@
 # CSerialPort for C
 
 ```
-cmake: 3.8.2
+cmake: 3.26.4
 ```
 
 ## Install cmake
@@ -23,6 +23,15 @@ $ wget https://github.com/Kitware/CMake/releases/download/v3.26.4/cmake-3.26.4-l
 $ sudo ./cmake-3.26.4-linux-x86_64.sh --prefix=/usr/local --skip-license
 $ cmake --version
 cmake version 3.26.4
+```
+
+### macos
+
+- cmake
+
+```
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+$ brew install cmake
 ```
 
 ## Build
