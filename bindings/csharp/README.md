@@ -2,7 +2,7 @@
 
 ```
 swig: 4.1.1 (2022-11-30)
-cmake: 3.8.2
+cmake: 3.26.4
 ```
 
 ## Install swig && cmake
@@ -50,6 +50,17 @@ cmake version 3.26.4
 - swig
 
 ```
+$ wget https://sourceforge.net/projects/swig/files/swig/swig-4.1.1/swig-4.1.1.tar.gz
+$ tar zxvf swig-4.1.1.tar.gz
+$ cd swig-4.1.1
+$ ./configure --without-pcre
+$ make
+$ sudo make install
+$ swig -version
+SWIG Version 4.1.1
+```
+or
+```
 $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 $ brew install swig
 ```
@@ -94,7 +105,7 @@ sudo apt install mono-complete
 cd bindings/csharp
 mkdir bin
 cd bin
-cmake .. -DSWIG_EXECUTABLE=/usr/bin/swig
+cmake .. -DSWIG_EXECUTABLE=/usr/local/bin/swig
 cmake --build .
 ```
 
@@ -103,6 +114,28 @@ comple example with mono
 ```
 cd example
 cmake -E copy ../bin/bin/libcserialport.so .
+cmake -E copy ../generate/*.cs .
+
+mcs Program.cs cserialportCSharp.cs cserialportCSharpPINVOKE.cs CSerialPort.cs CSerialPortInfo.cs CSerialPortListener.cs BaudRate.cs DataBits.cs FlowControl.cs OperateMode.cs Parity.cs StopBits.cs SerialPortError.cs SerialPortInfo.cs SerialPortInfoVector.cs
+```
+
+- macos (10.15)
+
+```
+wget https://download.mono-project.com/archive/6.12.0/macos-10-universal/MonoFramework-MDK-6.12.0.206.macos10.xamarin.universal.pkg
+
+cd bindings/csharp
+mkdir bin
+cd bin
+cmake .. -DSWIG_EXECUTABLE=/usr/local/bin/swig
+cmake --build .
+```
+
+comple example with mono
+
+```
+cd example
+cmake -E copy ../bin/bin/libcserialport.dylib .
 cmake -E copy ../generate/*.cs .
 
 mcs Program.cs cserialportCSharp.cs cserialportCSharpPINVOKE.cs CSerialPort.cs CSerialPortInfo.cs CSerialPortListener.cs BaudRate.cs DataBits.cs FlowControl.cs OperateMode.cs Parity.cs StopBits.cs SerialPortError.cs SerialPortInfo.cs SerialPortInfoVector.cs
@@ -118,6 +151,13 @@ CommCSharp
 ```
 
 - linux
+
+```
+cd example
+LD_LIBRARY_PATH=. mono Program.exe
+```
+
+- macos
 
 ```
 cd example
