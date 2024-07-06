@@ -191,6 +191,12 @@ public:
             size = m_maxBufferSize;
         }
 
+        unsigned int usedLen = getUsedLen();
+        if (size > usedLen)
+        {
+            size = usedLen;
+        }
+
         for (unsigned int i = 0; i < size; i++)
         {
             *data = m_buffer[m_head & (m_maxBufferSize - 1)];
