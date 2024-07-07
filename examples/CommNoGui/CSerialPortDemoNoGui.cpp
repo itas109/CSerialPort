@@ -118,7 +118,8 @@ int main()
                 itas109::FlowNone,     // flow
                 4096                   // read buffer size
         );
-        sp.setReadIntervalTimeout(0); // read interval timeout 0ms
+        sp.setReadIntervalTimeout(0);               // read interval timeout 0ms
+        sp.setByteReadBufferFullNotify(4096 * 0.8); // buffer full notify
 
         sp.open();
         printf("Open %s %s\n", portName, sp.isOpen() ? "Success" : "Failed");
