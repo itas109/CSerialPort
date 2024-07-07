@@ -66,7 +66,7 @@ BreakBeforeBraces: Allman
 # 在三元运算符前换行
 BreakBeforeTernaryOperators: true
 # 每行字符的限制，0表示没有限制
-ColumnLimit: 180
+ColumnLimit: 0
 # 描述具有特殊意义的注释的正则表达式，它不应该被分割为多行或以其它方式改变
 CommentPragmas: "^ IWYU pragma:"
 # 在构造函数的初始化列表的逗号前换行
