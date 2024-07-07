@@ -42,11 +42,12 @@ namespace itas109
  *
  * @tparam T
  */
-template <typename T> class Buffer
+template <typename T>
+class Buffer
 {
 public:
-    Buffer(){};
-    virtual ~Buffer(){};
+    Buffer() {};
+    virtual ~Buffer() {};
 
     /**
      * @brief write data to buffer 向缓冲区写数据
@@ -105,7 +106,8 @@ public:
  *
  * @tparam T
  */
-template <typename T> class RingBuffer : public Buffer<T>
+template <typename T>
+class RingBuffer : public Buffer<T>
 {
 public:
     /**

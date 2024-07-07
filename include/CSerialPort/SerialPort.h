@@ -19,7 +19,8 @@
 
 namespace itas109
 {
-template <class T> class ITimer;
+template <class T>
+class ITimer;
 }
 
 class CSerialPortBase;
@@ -195,6 +196,12 @@ public:
      * @param minByteReadNotify minimum byte of read notify 读取通知触发最小字节数
      */
     void setMinByteReadNotify(unsigned int minByteReadNotify = 2);
+
+    /**
+     * @brief setByteReadBufferFullNotify set byte of read buffer full notify 设置读取通知触发缓冲区字节数
+     * @param byteReadBufferFullNotify byte of read buffer full notify 读取通知触发缓冲区字节数
+     */
+    virtual void setByteReadBufferFullNotify(unsigned int byteReadBufferFullNotify);
 
     /**
      * @brief flush buffers after write 等待发送完成后刷新缓冲区

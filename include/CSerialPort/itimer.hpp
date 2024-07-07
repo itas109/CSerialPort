@@ -23,11 +23,16 @@
 #include "iutils.hpp"
 #include "ithread.hpp"
 
+#ifdef CSERIALPORT_DEBUG
+#include "ilog.hpp"
+#endif
+
 #define PORT_NAME_MAX_LEN 256
 
 namespace itas109
 {
-template <class T> class ITimer
+template <class T>
+class ITimer
 {
 public:
     ITimer()
@@ -58,9 +63,13 @@ public:
 #ifdef CPP11_TIMER
         std::mutex mutex;
         std::unique_lock<std::mutex> lock(mutex);
-        if (!p_base->m_cv.wait_for(lock, std::chrono::milliseconds(p_base->m_timeoutMs), [&] { return p_base->m_tryStop; }))
+        if (!p_base->m_cv.wait_for(lock, std::chrono::milliseconds(p_base->m_timeoutMs), [&]
+                                   { return p_base->m_tryStop; }))
         {
             // timeout
+#ifdef CSERIALPORT_DEBUG
+            LOG_INFO("onReadEvent timeout. portName: %s, readLen: %u", p_base->m_portName, p_base->m_readBufferLen);
+#endif
             ((p_base->p_class)->*(p_base->p_memfun))(p_base->m_portName, p_base->m_readBufferLen);
         }
 #else
@@ -124,7 +133,8 @@ public:
 
 #ifdef CPP11_TIMER
         std::unique_lock<std::mutex> lock(m_stopMutex);
-        m_cvStop.wait(lock, [this] { return m_isRunning == false; });
+        m_cvStop.wait(lock, [this]
+                      { return m_isRunning == false; });
 #else
         IAutoLock lock(&m_stopMutex);
         // TODO: fix this error

@@ -14,6 +14,7 @@
 #include <ctime>   // time localtime
 
 #if defined(_WIN32)
+#include <windows.h> // FILETIME
 #else
 #include <sys/time.h> // gettimeofday
 #endif

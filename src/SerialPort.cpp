@@ -263,6 +263,14 @@ void CSerialPort::setMinByteReadNotify(unsigned int minByteReadNotify)
     }
 }
 
+void CSerialPort::setByteReadBufferFullNotify(unsigned int byteReadBufferFullNotify)
+{
+    if (p_serialPortBase)
+    {
+        p_serialPortBase->setByteReadBufferFullNotify(byteReadBufferFullNotify);
+    }
+}
+
 int itas109::CSerialPort::getLastError() const
 {
     if (p_serialPortBase)

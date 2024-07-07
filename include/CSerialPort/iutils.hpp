@@ -23,8 +23,8 @@ namespace itas109
 class IUtils
 {
 public:
-    IUtils(){};
-    ~IUtils(){};
+    IUtils() {};
+    ~IUtils() {};
 
     static size_t strlen(const char *str)
     {

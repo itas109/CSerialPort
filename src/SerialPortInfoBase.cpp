@@ -78,7 +78,7 @@ HardwareIdDespSingleton::HardwareIdDespSingleton()
     HW_MAP_INSERT("058f:9720", "Alcor USB-Serial Adapter");
 };
 
-HardwareIdDespSingleton::~HardwareIdDespSingleton(){};
+HardwareIdDespSingleton::~HardwareIdDespSingleton() {};
 
 HardwareIdDespSingleton *HardwareIdDespSingleton::getInstance()
 {

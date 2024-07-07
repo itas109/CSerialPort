@@ -7,6 +7,7 @@ CSerialPortBase::CSerialPortBase()
     , m_operateMode(itas109::AsynchronousOperate)
     , m_readIntervalTimeoutMS(50)
     , m_minByteReadNotify(1)
+    , m_byteReadBufferFullNotify(3276) // 4096*0.8
     , p_mutex(NULL)
     , p_readEvent(NULL)
     , p_timer(NULL)
@@ -20,6 +21,7 @@ CSerialPortBase::CSerialPortBase(const char *portName)
     , m_operateMode(itas109::AsynchronousOperate)
     , m_readIntervalTimeoutMS(50)
     , m_minByteReadNotify(1)
+    , m_byteReadBufferFullNotify(3276) // 4096*0.8
     , p_mutex(NULL)
     , p_readEvent(NULL)
     , p_timer(NULL)
@@ -57,6 +59,16 @@ unsigned int CSerialPortBase::getReadIntervalTimeout()
 unsigned int CSerialPortBase::getMinByteReadNotify()
 {
     return m_minByteReadNotify;
+}
+
+void CSerialPortBase::setByteReadBufferFullNotify(unsigned int byteReadBufferFullNotify)
+{
+    m_byteReadBufferFullNotify = byteReadBufferFullNotify;
+}
+
+unsigned int CSerialPortBase::getByteReadBufferFullNotify()
+{
+    return m_byteReadBufferFullNotify;
 }
 
 int CSerialPortBase::getLastError() const

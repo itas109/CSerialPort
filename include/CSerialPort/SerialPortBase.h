@@ -19,7 +19,8 @@ namespace itas109
 {
 class IMutex;
 class CSerialPortListener;
-template <class T> class ITimer;
+template <class T>
+class ITimer;
 } // namespace itas109
 
 /**
@@ -196,6 +197,18 @@ public:
     virtual unsigned int getMinByteReadNotify();
 
     /**
+     * @brief setByteReadBufferFullNotify set byte of read buffer full notify 设置读取通知触发缓冲区字节数
+     * @param byteReadBufferFullNotify byte of read buffer full notify 读取通知触发缓冲区字节数
+     */
+    virtual void setByteReadBufferFullNotify(unsigned int byteReadBufferFullNotify);
+
+    /**
+     * @brief getByteReadBufferFullNotify get byte of read buffer full notify 获取读取通知触发缓冲区字节数
+     * @return byte of read buffer full notify 读取通知触发缓冲区字节数
+     */
+    virtual unsigned int getByteReadBufferFullNotify();
+
+    /**
      * @brief flush buffers after write 等待发送完成后刷新缓冲区
      *
      * @return
@@ -349,6 +362,7 @@ protected:
     itas109::OperateMode m_operateMode;                     ///< operate mode 串口操作类型
     unsigned int m_readIntervalTimeoutMS;                   ///< read time timeout millisecond 读取间隔时间，单位：毫秒
     unsigned int m_minByteReadNotify;                       ///< minimum byte of read notify 读取通知触发最小字节数
+    unsigned int m_byteReadBufferFullNotify;                ///< byte of read buffer full notify 读取通知触发缓冲区字节数
     itas109::IMutex *p_mutex;                               ///< mutex 互斥锁
     itas109::CSerialPortListener *p_readEvent;              ///< read event 读取事件
     itas109::ITimer<itas109::CSerialPortListener> *p_timer; ///< read timer 读取定时器
