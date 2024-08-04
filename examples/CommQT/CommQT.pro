@@ -24,11 +24,9 @@ DEFINES += _UNICODE
 
 include($$PWD/commqt.pri)
 
-#qmake -query => QMAKE_SPEC(msvc):win32-msvc2013 QMAKE_SPEC(mingw):win32-g++
-#about windows reg
-win32-msvc*:LIBS += advapi32.lib
-#about windows setupapi
-win32-msvc*:LIBS += setupapi.lib
-
-win32-g++:LIBS += libsetupapi
-
+win32:LIBS += -lsetupapi
+unix:!macx:LIBS += -lpthread
+macx {
+    LIBS += -framework IOKit
+    LIBS += -framework Foundation
+}
