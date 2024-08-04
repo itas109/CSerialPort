@@ -49,56 +49,13 @@ public:
     Buffer() {};
     virtual ~Buffer() {};
 
-    /**
-     * @brief write data to buffer 向缓冲区写数据
-     *
-     * @param data [in] write data 待写入数据
-     * @param size [in] write data size 待写入大小
-     * @return return write data size 返回写入数据大小
-     */
     virtual int write(const T *data, unsigned int size) = 0;
-    /**
-     * @brief read data from buffer 从缓冲区读数据
-     *
-     * @param data [out] read data to save 待读取数据存储
-     * @param size [in] read data size 待读取数据大小
-     * @return return read data size 返回读取数据大小
-     */
     virtual int read(T *data, unsigned int size) = 0;
-
-    /**
-     * @brief is buffer full 缓冲区是否满
-     *
-     * @return true
-     * @return false
-     */
-    virtual bool isFull() = 0;
-    /**
-     * @brief is buffer empty 缓冲区是否空
-     *
-     * @return true
-     * @return false
-     */
-    virtual bool isEmpty() = 0;
-
-    /**
-     * @brief get used length of buffer 获取缓冲区已使用大小
-     *
-     * @return return used length of buffer 返回缓冲区已使用大小
-     */
-    virtual unsigned int getUsedLen() = 0;
-    /**
-     * @brief get unused length of buffer 获取缓冲区未使用大小
-     *
-     * @return return unused length of buffer 返回缓冲区未使用大小
-     */
-    virtual unsigned int getUnusedLen() = 0;
-    /**
-     * @brief get total size of buffer 获取缓冲区总大小
-     *
-     * @return return total size of buffer 返回缓冲区总大小
-     */
-    virtual unsigned int getBufferSize() = 0;
+    virtual bool isFull() const = 0;
+    virtual bool isEmpty() const = 0;
+    virtual unsigned int getUsedLen() const = 0;
+    virtual unsigned int getUnusedLen() const = 0;
+    virtual unsigned int getBufferSize() const = 0;
 };
 
 /**
@@ -115,11 +72,7 @@ public:
      *
      */
     RingBuffer()
-        : m_head(0)
-        , m_tail(0)
-        , m_maxBufferSize(4096) ///< must power of two
-        , m_maxMirrorBufferIndex(2 * m_maxBufferSize - 1)
-        , m_buffer(new T[m_maxBufferSize])
+        : RingBuffer(4096)
     {
     }
 
@@ -157,9 +110,9 @@ public:
      * @param size [in] write data size 待写入大小
      * @return return write data size 返回写入数据大小
      */
-    virtual int write(const T *data, unsigned int size)
+    int write(const T *data, unsigned int size)
     {
-        for (unsigned int i = 0; i < size; i++)
+        for (unsigned int i = 0; i < size; ++i)
         {
             m_buffer[m_tail & (m_maxBufferSize - 1)] = data[i];
             if (isFull())
@@ -181,7 +134,7 @@ public:
      * @retval 0 buffer empty 缓冲区空
      * @retval [other] return read data size 返回读取数据大小
      */
-    virtual int read(T *data, unsigned int size)
+    int read(T *data, unsigned int size)
     {
         if (isEmpty())
         {
@@ -199,10 +152,9 @@ public:
             size = usedLen;
         }
 
-        for (unsigned int i = 0; i < size; i++)
+        for (unsigned int i = 0; i < size; ++i)
         {
-            *data = m_buffer[m_head & (m_maxBufferSize - 1)];
-            data++;
+            data[i] = m_buffer[m_head & (m_maxBufferSize - 1)];
             m_head = (m_head + 1) & m_maxMirrorBufferIndex;
         }
 
@@ -215,7 +167,7 @@ public:
      * @return true
      * @return false
      */
-    bool isFull()
+    bool isFull() const
     {
         return m_tail == (m_head ^ m_maxBufferSize);
     }
@@ -226,7 +178,7 @@ public:
      * @return true
      * @return false
      */
-    virtual bool isEmpty()
+    bool isEmpty() const
     {
         return m_tail == m_head;
     }
@@ -236,7 +188,7 @@ public:
      *
      * @return return used length of buffer 返回缓冲区已使用大小
      */
-    virtual unsigned int getUsedLen()
+    unsigned int getUsedLen() const
     {
         return (m_tail >= m_head) ? (m_tail - m_head) : (m_tail + 2 * m_maxBufferSize - m_head);
     }
@@ -246,7 +198,7 @@ public:
      *
      * @return return unused length of buffer 返回缓冲区未使用大小
      */
-    virtual unsigned int getUnusedLen()
+    unsigned int getUnusedLen() const
     {
         return m_maxBufferSize - getUsedLen();
     }
@@ -256,7 +208,7 @@ public:
      *
      * @return return total size of buffer 返回缓冲区总大小
      */
-    virtual unsigned int getBufferSize()
+    unsigned int getBufferSize() const
     {
         return m_maxBufferSize;
     }
