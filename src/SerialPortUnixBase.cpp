@@ -53,7 +53,7 @@ CSerialPortUnixBase::CSerialPortUnixBase()
     , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
     itas109::IUtils::strncpy(m_portName, "", 1);
-    m_byteReadBufferFullNotify = m_readBufferSize * 0.8;
+    m_byteReadBufferFullNotify = (unsigned int)(m_readBufferSize * 0.8);
 }
 
 CSerialPortUnixBase::CSerialPortUnixBase(const char *portName)
@@ -68,7 +68,7 @@ CSerialPortUnixBase::CSerialPortUnixBase(const char *portName)
     , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
     itas109::IUtils::strncpy(m_portName, portName, 256);
-    m_byteReadBufferFullNotify = m_readBufferSize * 0.8;
+    m_byteReadBufferFullNotify = (unsigned int)(m_readBufferSize * 0.8);
 }
 
 CSerialPortUnixBase::~CSerialPortUnixBase()
@@ -95,7 +95,7 @@ void CSerialPortUnixBase::init(const char *portName,
     m_stopbits = stopbits;
     m_flowControl = flowControl;
     m_readBufferSize = readBufferSize;
-    m_byteReadBufferFullNotify = m_readBufferSize * 0.8;
+    m_byteReadBufferFullNotify = (unsigned int)(m_readBufferSize * 0.8);
 
     if (p_buffer)
     {

@@ -201,7 +201,7 @@ public:
      * @brief setByteReadBufferFullNotify set byte of read buffer full notify 设置读取通知触发缓冲区字节数
      * @param byteReadBufferFullNotify byte of read buffer full notify 读取通知触发缓冲区字节数
      */
-    virtual void setByteReadBufferFullNotify(unsigned int byteReadBufferFullNotify);
+    void setByteReadBufferFullNotify(unsigned int byteReadBufferFullNotify);
 
     /**
      * @brief flush buffers after write 等待发送完成后刷新缓冲区

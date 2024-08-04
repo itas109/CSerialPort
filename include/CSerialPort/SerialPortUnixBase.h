@@ -51,7 +51,7 @@ public:
      * @brief Destroy the CSerialPortUnixBase object 析构函数
      *
      */
-    virtual ~CSerialPortUnixBase();
+    ~CSerialPortUnixBase();
 
     /**
      * @brief init 初始化函数
@@ -64,7 +64,7 @@ public:
      * @param flowControl [in] flowControl type 流控制
      * @param readBufferSize [in] the read buffer size 读取缓冲区大小
      */
-    virtual void init(const char *portName,
+    void init(const char *portName,
                       int baudRate = itas109::BaudRate9600,
                       itas109::Parity parity = itas109::ParityNone,
                       itas109::DataBits dataBits = itas109::DataBits8,
@@ -79,12 +79,12 @@ public:
      * @retval true open success 打开成功
      * @retval false open failed 打开失败
      */
-    virtual bool openPort();
+    bool openPort();
     /**
      * @brief close 关闭串口
      *
      */
-    virtual void closePort();
+    void closePort();
 
     /**
      * @brief if serial port is open success 串口是否打开成功
@@ -93,14 +93,14 @@ public:
      * @retval true serial port open success 串口打开成功
      * @retval false serial port open failed 串口打开失败
      */
-    virtual bool isOpen();
+    bool isOpen();
 
     /**
      * @brief get used length of buffer 获取读取缓冲区已使用大小
      *
      * @return return used length of buffer 返回读取缓冲区已使用大小
      */
-    virtual unsigned int getReadBufferUsedLen();
+    unsigned int getReadBufferUsedLen();
 
     /**
      * @brief read specified length data 读取指定长度数据
@@ -111,7 +111,7 @@ public:
      * @retval -1 read error 读取错误
      * @retval [other] return number Of bytes read 返回读取字节数
      */
-    virtual int readData(void *data, int size);
+    int readData(void *data, int size);
     /**
      * @brief read all data 读取所有数据
      *
@@ -120,7 +120,7 @@ public:
      * @retval -1 read error 读取错误
      * @retval [other] return number Of bytes read 返回读取字节数
      */
-    virtual int readAllData(void *data);
+    int readAllData(void *data);
     /**
      * @brief read line data 读取一行字符串
      * @todo Not implemented 未实现
@@ -129,7 +129,7 @@ public:
      * @param size
      * @return int
      */
-    virtual int readLineData(void *data, int size);
+    int readLineData(void *data, int size);
     /**
      * @brief write specified lenfth data 写入指定长度数据
      *
@@ -139,7 +139,7 @@ public:
      * @retval -1 read error 写入错误
      * @retval [other] return number Of bytes write 返回写入字节数
      */
-    virtual int writeData(const void *data, int size);
+    int writeData(const void *data, int size);
 
     /**
      * @brief Set Debug Model 设置调试模式
@@ -148,7 +148,7 @@ public:
      *
      * @param isDebug true if enable true为启用
      */
-    virtual void setDebugModel(bool isDebug);
+    void setDebugModel(bool isDebug);
 
     /**
      * @brief Set Read Interval Timeout millisecond
@@ -156,13 +156,13 @@ public:
      *
      * @param msecs read time timeout millisecond 读取间隔时间，单位：毫秒
      */
-    virtual void setReadIntervalTimeout(unsigned int msecs);
+    void setReadIntervalTimeout(unsigned int msecs);
 
     /**
      * @brief setMinByteReadNotify set minimum byte of read notify 设置读取通知触发最小字节数
      * @param minByteReadNotify minimum byte of read notify 读取通知触发最小字节数
      */
-    virtual void setMinByteReadNotify(unsigned int minByteReadNotify = 2);
+    void setMinByteReadNotify(unsigned int minByteReadNotify = 2);
 
     /**
      * @brief flush buffers after write 等待发送完成后刷新缓冲区
@@ -171,7 +171,7 @@ public:
      * @retval true flush success 刷新缓冲区成功
      * @retval false flush failed 刷新缓冲区失败
      */
-    virtual bool flushBuffers();
+    bool flushBuffers();
 
     /**
      * @brief flush read buffers 刷新接收缓冲区
@@ -180,7 +180,7 @@ public:
      * @retval true flush success 刷新缓冲区成功
      * @retval false flush failed 刷新缓冲区失败
      */
-    virtual bool flushReadBuffers();
+    bool flushReadBuffers();
 
     /**
      * @brief flush write buffers 刷新发送缓冲区
@@ -189,71 +189,71 @@ public:
      * @retval true flush success 刷新缓冲区成功
      * @retval false flush failed 刷新缓冲区失败
      */
-    virtual bool flushWriteBuffers();
+    bool flushWriteBuffers();
 
     /**
      * @brief Set the Port Name object 设置串口名称
      *
      * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
      */
-    virtual void setPortName(const char *portName);
+    void setPortName(const char *portName);
     /**
      * @brief Get the Port Name object 获取串口名称
      *
      * @return return port name 返回串口名称
      */
-    virtual const char *getPortName() const;
+    const char *getPortName() const;
 
     /**
      * @brief Set the Baud Rate object 设置波特率
      *
      * @param baudRate [in] the baudRate 波特率
      */
-    virtual void setBaudRate(int baudRate);
+    void setBaudRate(int baudRate);
     /**
      * @brief Get the Baud Rate object 获取波特率
      *
      * @return return baudRate 返回波特率
      */
-    virtual int getBaudRate() const;
+    int getBaudRate() const;
 
     /**
      * @brief Set the Parity object 设置校验位
      *
      * @param parity [in] the parity 校验位 {@link itas109::Parity}
      */
-    virtual void setParity(itas109::Parity parity);
+    void setParity(itas109::Parity parity);
     /**
      * @brief Get the Parity object 获取校验位
      *
      * @return return parity 返回校验位 {@link itas109::Parity}
      */
-    virtual itas109::Parity getParity() const;
+    itas109::Parity getParity() const;
     /**
      * @brief Set the Data Bits object 设置数据位
      *
      * @param dataBits [in] the dataBits 数据位 {@link itas109::DataBits}
      */
-    virtual void setDataBits(itas109::DataBits dataBits);
+    void setDataBits(itas109::DataBits dataBits);
     /**
      * @brief Get the Data Bits object 获取数据位
      *
      * @return return dataBits 返回数据位 {@link itas109::DataBits}
      */
-    virtual itas109::DataBits getDataBits() const;
+    itas109::DataBits getDataBits() const;
 
     /**
      * @brief Set the Stop Bits object 设置停止位
      *
      * @param stopbits [in] the stopbits 停止位 {@link itas109::StopBits}
      */
-    virtual void setStopBits(itas109::StopBits stopbits);
+    void setStopBits(itas109::StopBits stopbits);
     /**
      * @brief Get the Stop Bits object 获取停止位
      *
      * @return return stopbits 返回停止位 {@link itas109::StopBits}
      */
-    virtual itas109::StopBits getStopBits() const;
+    itas109::StopBits getStopBits() const;
 
     /**
      * @brief Set the Flow Control object 设置流控制
@@ -261,40 +261,40 @@ public:
      *
      * @param flowControl [in]
      */
-    virtual void setFlowControl(itas109::FlowControl flowControl);
+    void setFlowControl(itas109::FlowControl flowControl);
     /**
      * @brief Get the Flow Control object 获取流控制
      * @todo Not implemented 未实现
      *
      * @return itas109::FlowControl
      */
-    virtual itas109::FlowControl getFlowControl() const;
+    itas109::FlowControl getFlowControl() const;
 
     /**
      * @brief Set the Read Buffer Size object 设置读取缓冲区大小
      *
      * @param size [in] read buffer size 读取缓冲区大小
      */
-    virtual void setReadBufferSize(unsigned int size);
+    void setReadBufferSize(unsigned int size);
     /**
      * @brief Get the Read Buffer Size object 获取读取缓冲区大小
      *
      * @return return read buffer size 返回读取缓冲区大小
      */
-    virtual unsigned int getReadBufferSize() const;
+    unsigned int getReadBufferSize() const;
 
     /**
      * @brief Set the Dtr object 设置DTR
      *
      * @param set [in]
      */
-    virtual void setDtr(bool set = true);
+    void setDtr(bool set = true);
     /**
      * @brief Set the Rts object 设置RTS
      *
      * @param set [in]
      */
-    virtual void setRts(bool set = true);
+    void setRts(bool set = true);
 
 public:
     /**
@@ -362,7 +362,7 @@ private:
      * @retval -1 read error 读取错误
      * @retval [other] return number Of bytes read 返回读取字节数
      */
-    virtual int readDataUnix(void *data, int size);
+    int readDataUnix(void *data, int size);
 
 private:
     char m_portName[256];

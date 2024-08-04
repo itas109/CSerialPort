@@ -32,22 +32,22 @@ public:
         InitializeCriticalSection(&m_mutex);
     }
 
-    virtual ~IMutex()
+    ~IMutex()
     {
         DeleteCriticalSection(&m_mutex);
     }
 
-    virtual void lock()
+    void lock()
     {
         EnterCriticalSection(&m_mutex);
     }
 
-    virtual void unlock()
+    void unlock()
     {
         LeaveCriticalSection(&m_mutex);
     }
 
-    virtual i_mutex_t getLock()
+    i_mutex_t getLock()
     {
         return m_mutex;
     }
@@ -66,22 +66,22 @@ public:
         pthread_mutex_init(&m_mutex, NULL);
     }
 
-    virtual ~IMutex()
+    ~IMutex()
     {
         pthread_mutex_destroy(&m_mutex);
     }
 
-    virtual void lock()
+    void lock()
     {
         pthread_mutex_lock(&m_mutex);
     }
 
-    virtual void unlock()
+    void unlock()
     {
         pthread_mutex_unlock(&m_mutex);
     }
 
-    virtual i_mutex_t getLock()
+    i_mutex_t getLock()
     {
         return m_mutex;
     }
@@ -174,14 +174,14 @@ public:
         ::CloseHandle(cond);
     }
 
-    virtual void wait(IMutex &mutex)
+    void wait(IMutex &mutex)
     {
         mutex.unlock();
         WaitForSingleObject(cond, INFINITE);
         mutex.lock();
     }
 
-    virtual bool timeWait(IMutex &mutex, unsigned int timeoutMS)
+    bool timeWait(IMutex &mutex, unsigned int timeoutMS)
     {
         mutex.unlock();
         DWORD ret = WaitForSingleObject(cond, timeoutMS);
@@ -197,7 +197,7 @@ public:
         }
     }
 
-    virtual void wait(IMutex &mutex, volatile bool predicate)
+    void wait(IMutex &mutex, volatile bool predicate)
     {
         while (!predicate)
         {
@@ -205,7 +205,7 @@ public:
         }
     }
 
-    virtual bool timeWait(IMutex &mutex, unsigned int timeoutMS, volatile bool predicate)
+    bool timeWait(IMutex &mutex, unsigned int timeoutMS, volatile bool predicate)
     {
         while (!predicate)
         {
@@ -218,12 +218,12 @@ public:
         return !predicate;
     }
 
-    virtual void notifyOne()
+    void notifyOne()
     {
         ::SetEvent(cond);
     }
 
-    virtual void notifyAll()
+    void notifyAll()
     {
         ::SetEvent(cond);
     }
@@ -260,7 +260,7 @@ public:
         ::pthread_cond_destroy(&cond);
     }
 
-    virtual void wait(IMutex &mutex)
+    void wait(IMutex &mutex)
     {
         i_mutex_t imutex = internal_mutex.getLock();
         mutex.unlock();
@@ -268,7 +268,7 @@ public:
         mutex.lock();
     }
 
-    virtual bool timeWait(IMutex &mutex, unsigned int timeoutMS)
+    bool timeWait(IMutex &mutex, unsigned int timeoutMS)
     {
         timespec abstime;
 #ifdef USE_MONOTONIC_CLOCK
@@ -298,7 +298,7 @@ public:
         }
     }
 
-    virtual void wait(IMutex &mutex, volatile bool predicate)
+    void wait(IMutex &mutex, volatile bool predicate)
     {
         while (!predicate)
         {
@@ -306,7 +306,7 @@ public:
         }
     }
 
-    virtual bool timeWait(IMutex &mutex, unsigned int timeoutMS, volatile bool predicate)
+    bool timeWait(IMutex &mutex, unsigned int timeoutMS, volatile bool predicate)
     {
         while (!predicate)
         {
@@ -319,13 +319,13 @@ public:
         return !predicate;
     }
 
-    virtual void notifyOne()
+    void notifyOne()
     {
         IAutoLock lock(&internal_mutex);
         ::pthread_cond_signal(&cond);
     }
 
-    virtual void notifyAll()
+    void notifyAll()
     {
         IAutoLock lock(&internal_mutex);
         ::pthread_cond_broadcast(&cond);
