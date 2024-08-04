@@ -72,7 +72,11 @@ public:
      *
      */
     RingBuffer()
-        : RingBuffer(4096)
+        : m_head(0)
+        , m_tail(0)
+        , m_maxBufferSize(4096) ///< must power of two
+        , m_maxMirrorBufferIndex(2 * m_maxBufferSize - 1)
+        , m_buffer(new T[m_maxBufferSize])
     {
     }
 
