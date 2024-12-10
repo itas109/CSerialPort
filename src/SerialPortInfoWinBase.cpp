@@ -12,7 +12,8 @@
 #define PHYSICAL_ADDRESS LARGE_INTEGER
 
 #if defined(_MSC_VER)
-#pragma comment(lib, "setupapi.lib")
+#pragma comment(lib, "setupapi.lib") // SetupDiGetClassDevs Setup*
+#pragma comment(lib, "advapi32.lib") // RegQueryValueEx RegCloseKey
 #endif
 
 // #include <ntddser.h>  //GUID_DEVINTERFACE_COMPORT
