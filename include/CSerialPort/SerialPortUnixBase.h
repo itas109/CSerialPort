@@ -65,12 +65,12 @@ public:
      * @param readBufferSize [in] the read buffer size 读取缓冲区大小
      */
     void init(const char *portName,
-                      int baudRate = itas109::BaudRate9600,
-                      itas109::Parity parity = itas109::ParityNone,
-                      itas109::DataBits dataBits = itas109::DataBits8,
-                      itas109::StopBits stopbits = itas109::StopOne,
-                      itas109::FlowControl flowControl = itas109::FlowNone,
-                      unsigned int readBufferSize = 4096);
+              int baudRate = itas109::BaudRate9600,
+              itas109::Parity parity = itas109::ParityNone,
+              itas109::DataBits dataBits = itas109::DataBits8,
+              itas109::StopBits stopbits = itas109::StopOne,
+              itas109::FlowControl flowControl = itas109::FlowNone,
+              unsigned int readBufferSize = 4096);
 
     /**
      * @brief open serial port 打开串口
