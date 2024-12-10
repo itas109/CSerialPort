@@ -13,6 +13,22 @@
 #include <stdarg.h> // va_start
 #include <stdio.h>  // vsprintf
 
+// get cpu cores headers
+#if defined(_WIN32)
+#include <windows.h> // GetSystemInfo
+#elif defined(__linux__)
+#include <unistd.h> // sysconf
+#elif defined(__APPLE__)
+#include <sys/sysctl.h> // sysctlbyname
+#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
+#include <sys/sysctl.h> // sysctlbyname
+#elif defined(__ANDROID__)
+#include <unistd.h> // sysconf
+#elif defined(__unix__)
+#include <unistd.h> // sysconf
+#else
+#endif
+
 namespace itas109
 {
 /**
@@ -218,6 +234,7 @@ public:
         compilerVersion[0] = '\0';
         int bit = (8 == sizeof(char *)) ? 64 : 32;
         long cppStdVersion = 0;
+        int numCPU = 0;
 
         // https://sourceforge.net/p/predef/wiki/Home/
 #if defined(__x86_64__) /*GNU C*/ || defined(_M_AMD64) /*Visual Studio*/
@@ -240,16 +257,32 @@ public:
 
 #if defined(_WIN32)
         strncpy(osName, "Windows", 10);
+
+        SYSTEM_INFO sysInfo;
+        GetSystemInfo(&sysInfo);
+        numCPU = sysInfo.dwNumberOfProcessors;
 #elif defined(__linux__)
         strncpy(osName, "Linux", 10);
+
+        numCPU = sysconf(_SC_NPROCESSORS_ONLN);
 #elif defined(__APPLE__)
         strncpy(osName, "MacOS", 10);
+
+        size_t size = sizeof(numCPU);
+        sysctlbyname("hw.ncpu", &numCPU, &size, NULL, 0);
 #elif defined(__ANDROID__)
         strncpy(osName, "Android", 10);
+
+        numCPU = sysconf(_SC_NPROCESSORS_ONLN);
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
         strncpy(osName, "BSD", 10);
+
+        size_t size = sizeof(numCPU);
+        sysctlbyname("hw.ncpu", &numCPU, &size, NULL, 0);
 #elif defined(__unix__)
         strncpy(osName, "Unix", 10);
+
+        numCPU = sysconf(_SC_NPROCESSORS_ONLN);
 #else
         strncpy(osName, "Unknown", 10);
 #endif
@@ -312,7 +345,7 @@ public:
         cppStdVersion = __cplusplus;
 #endif
 
-        strFormat(info, len, "OS: %s, Arch: %s, Compiler: %s(%s), Bit: %d, C++: %ldL", osName, archName, compilerName, compilerVersion, bit, cppStdVersion);
+        strFormat(info, len, "OS: %s, Arch: %s, NumCPU: %d, Compiler: %s(%s), Bit: %d, C++: %ldL", osName, archName, numCPU, compilerName, compilerVersion, bit, cppStdVersion);
 
         return info;
     }
