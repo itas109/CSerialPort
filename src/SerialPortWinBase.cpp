@@ -153,6 +153,9 @@ bool CSerialPortWinBase::openPort()
 
         if (m_handle != INVALID_HANDLE_VALUE)
         {
+            // set system internal input output buffer size
+            SetupComm(m_handle, m_readBufferSize <= 4096 ? 4096 : m_readBufferSize, m_readBufferSize <= 4096 ? 4096 : m_readBufferSize); // windows default 4096
+
             // get default parameter
             GetCommConfig(m_handle, &m_comConfigure, &configSize);
             GetCommState(m_handle, &(m_comConfigure.dcb));
