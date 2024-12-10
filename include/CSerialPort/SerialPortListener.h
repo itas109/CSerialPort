@@ -35,5 +35,26 @@ public:
      */
     virtual void onReadEvent(const char *portName, unsigned int readBufferLen) = 0;
 };
+
+/**
+ * @brief the CSerialPortHotPlugListener class 串口热插拔事件监听类
+ *
+ */
+class CSerialPortHotPlugListener
+{
+public:
+    /**
+     * @brief Destroy the CSerialPortHotPlugListener object 析构函数
+     *
+     */
+    virtual ~CSerialPortHotPlugListener() {}
+
+    /**
+     * @brief on hot plug event 串口热插拔事件
+     * @param portName [out] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
+     * @param isAdd [out] serial port add or remove 串口插入或移除
+     */
+    virtual void onHotPlugEvent(const char *portName, int isAdd) = 0;
+};
 } // namespace itas109
 #endif //__CSERIALPORT_LISTENER_H__
