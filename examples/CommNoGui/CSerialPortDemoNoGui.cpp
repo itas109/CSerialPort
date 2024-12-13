@@ -31,7 +31,7 @@ std::string char2hexstr(const char *str, int len)
 
 int countRead = 0;
 
-class MyListener : public CSerialPortListener
+class MyListener : public CSerialPortListener, public CSerialPortHotPlugListener
 {
 public:
     MyListener(CSerialPort *sp)
@@ -62,6 +62,11 @@ public:
             }
         }
     };
+
+    void onHotPlugEvent(const char *portName, int isAdd)
+    {
+        printf("portName: %s, isAdded: %d\n", portName, isAdd);
+    }
 
 private:
     CSerialPort *p_sp;
@@ -127,6 +132,8 @@ int main()
 
         // connect for read
         sp.connectReadEvent(&listener);
+        // connect for hot plug
+        sp.connectHotPlugEvent(&listener);
 
         // write hex data
         char hex[5];
