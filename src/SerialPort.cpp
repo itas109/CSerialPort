@@ -132,6 +132,30 @@ int itas109::CSerialPort::disconnectReadEvent()
     }
 }
 
+int itas109::CSerialPort::connectHotPlugEvent(itas109::CSerialPortHotPlugListener *event)
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->connectHotPlugEvent(event);
+    }
+    else
+    {
+        return itas109::ErrorNullPointer;
+    }
+}
+
+int itas109::CSerialPort::disconnectHotPlugReadEvent()
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->disconnectReadEvent();
+    }
+    else
+    {
+        return itas109::ErrorNullPointer;
+    }
+}
+
 unsigned int itas109::CSerialPort::getReadBufferUsedLen()
 {
     if (p_serialPortBase)

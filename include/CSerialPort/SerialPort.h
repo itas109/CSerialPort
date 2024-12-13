@@ -102,7 +102,6 @@ public:
 
     /**
      * @brief connect read event 连接读取事件
-     * @todo Not implemented 未实现
      *
      * @param event [in] serial port listener 串口监听事件类
      * @return return connect status 返回连接状态
@@ -113,13 +112,31 @@ public:
 
     /**
      * @brief disconnect read event 断开连接读取事件
-     * @todo Not implemented 未实现
      *
      * @return return disconnect status 返回断开连接状态
      * @retval 0 success 成功
      * @retval [other] failed 失败
      */
     int disconnectReadEvent();
+
+    /**
+     * @brief connect hot plug event 连接串口热插拔事件
+     *
+     * @param event [in] serial port hot plug listener 串口热插拔事件类
+     * @return return connect status 返回连接状态
+     * @retval 0 success 成功
+     * @retval 14 invalid parameter error 无效的参数
+     */
+    int connectHotPlugEvent(itas109::CSerialPortHotPlugListener *event);
+
+    /**
+     * @brief disconnect hot plug event 断开串口热插拔事件
+     *
+     * @return return disconnect status 返回断开串口热插拔状态
+     * @retval 0 success 成功
+     * @retval [other] failed 失败
+     */
+    int disconnectHotPlugReadEvent();
 
     /**
      * @brief get used length of buffer 获取读取缓冲区已使用大小

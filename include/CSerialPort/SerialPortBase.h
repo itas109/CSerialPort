@@ -19,6 +19,8 @@ namespace itas109
 {
 class IMutex;
 class CSerialPortListener;
+class CSerialPortHotPlugListener;
+class CSerialPortHotPlug;
 template <class T>
 class ITimer;
 } // namespace itas109
@@ -114,6 +116,25 @@ public:
      * @retval [other] failed 失败
      */
     int disconnectReadEvent();
+
+    /**
+     * @brief connect hot plug event 连接串口热插拔事件
+     *
+     * @param event [in] serial port hot plug listener 串口热插拔事件类
+     * @return return connect status 返回连接状态
+     * @retval 0 success 成功
+     * @retval 14 invalid parameter error 无效的参数
+     */
+    int connectHotPlugEvent(itas109::CSerialPortHotPlugListener *event);
+
+    /**
+     * @brief disconnect hot plug event 断开串口热插拔事件
+     *
+     * @return return disconnect status 返回断开串口热插拔状态
+     * @retval 0 success 成功
+     * @retval [other] failed 失败
+     */
+    int disconnectHotPlugReadEvent();
 
     /**
      * @brief get used length of buffer 获取读取缓冲区已使用大小
@@ -366,6 +387,7 @@ protected:
     itas109::IMutex *p_mutex;                               ///< mutex 互斥锁
     itas109::CSerialPortListener *p_readEvent;              ///< read event 读取事件
     itas109::ITimer<itas109::CSerialPortListener> *p_timer; ///< read timer 读取定时器
+    itas109::CSerialPortHotPlug *p_serialPortHotPlug;       ///< serial port hot plug class 串口热插拔类
 private:
 };
 #endif //__CSERIALPORTBASE_H__

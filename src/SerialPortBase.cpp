@@ -1,6 +1,7 @@
 ﻿#include "CSerialPort/SerialPortBase.h"
 #include "CSerialPort/ithread.hpp"
 #include "CSerialPort/itimer.hpp"
+#include "CSerialPort/SerialPortHotPlug.hpp"
 
 CSerialPortBase::CSerialPortBase()
     : m_lastError(0)
@@ -11,6 +12,7 @@ CSerialPortBase::CSerialPortBase()
     , p_mutex(NULL)
     , p_readEvent(NULL)
     , p_timer(NULL)
+    , p_serialPortHotPlug(NULL)
 {
     p_mutex = new itas109::IMutex();
     p_timer = new itas109::ITimer<itas109::CSerialPortListener>();
@@ -25,7 +27,7 @@ CSerialPortBase::CSerialPortBase(const char *portName)
     , p_mutex(NULL)
     , p_readEvent(NULL)
     , p_timer(NULL)
-
+    , p_serialPortHotPlug(NULL)
 {
     p_mutex = new itas109::IMutex();
     p_timer = new itas109::ITimer<itas109::CSerialPortListener>();
@@ -148,4 +150,39 @@ int CSerialPortBase::disconnectReadEvent()
 {
     p_readEvent = NULL;
     return itas109::ErrorOK;
+}
+
+int CSerialPortBase::connectHotPlugEvent(itas109::CSerialPortHotPlugListener *event)
+{
+    if (event)
+    {
+        if (NULL == p_serialPortHotPlug)
+        {
+            p_serialPortHotPlug = new itas109::CSerialPortHotPlug();
+        }
+        p_serialPortHotPlug->connectHotPlugEvent(event);
+
+        return itas109::ErrorOK;
+    }
+    else
+    {
+        return itas109::ErrorInvalidParam;
+    }
+}
+
+int CSerialPortBase::disconnectHotPlugReadEvent()
+{
+    if (p_serialPortHotPlug)
+    {
+        p_serialPortHotPlug->disconnectHotPlugEvent();
+
+        delete p_serialPortHotPlug;
+        p_serialPortHotPlug = NULL;
+
+        return itas109::ErrorOK;
+    }
+    else
+    {
+        return itas109::ErrorInvalidParam;
+    }
 }
