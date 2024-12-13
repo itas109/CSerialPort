@@ -26,6 +26,7 @@ public class CommJava {
         System.out.printf("Version: %s\n", sp.getVersion());
 
         MyListener listener = new MyListener(sp);
+        MyHotPlugListener hotPlugListener = new MyHotPlugListener();
 
         SerialPortInfoVector spInfoVec = new SerialPortInfoVector();
         spInfoVec = CSerialPortInfo.availablePortInfos();
@@ -72,6 +73,8 @@ public class CommJava {
 
             // connect for read
             sp.connectReadEvent(listener);
+            // connect for hot plug
+            sp.connectHotPlugEvent(hotPlugListener);
 
             // write hex data
             byte[] hex = new byte[] { 0x31, 0x32, 0x33, 0x34, 0x35 };
@@ -123,4 +126,15 @@ class MyListener extends CSerialPortListener {
 
     private CSerialPort m_sp;
     private int countRead;
+}
+
+class MyHotPlugListener extends CSerialPortHotPlugListener {
+    public MyHotPlugListener() {
+        super();
+    }
+
+    public void onHotPlugEvent(String portName, int isAdd) {
+        System.out.printf("portName: %s, isAdded: %d\n", portName, isAdd);
+
+    }
 }

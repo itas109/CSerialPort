@@ -18,6 +18,7 @@ public class Program
         Console.WriteLine("Version: {0}\n", sp.getVersion());
 
         CSerialPortListener listener = new MyListener(sp);
+        MyHotPlugListener hotPlugListener = new MyHotPlugListener();
 
         SerialPortInfoVector spInfoVec = new SerialPortInfoVector();
         spInfoVec = CSerialPortInfo.availablePortInfos();
@@ -70,6 +71,8 @@ public class Program
 
             // connect for read
             sp.connectReadEvent(listener);
+            // connect for hot plug
+            sp.connectHotPlugEvent(hotPlugListener);
 
             // write hex data
             sp.writeData(new byte[] { 0x31, 0x32, 0x33, 0x34, 0x35 }, 5);
@@ -108,4 +111,17 @@ public class MyListener : CSerialPortListener
 
     CSerialPort m_sp;
     int countRead = 0;
+}
+
+public class MyHotPlugListener : CSerialPortHotPlugListener
+{
+    public MyHotPlugListener()
+      : base()
+    {
+    }
+
+    public override void onHotPlugEvent(string portName, int isAdd)
+    {
+        Console.WriteLine("portName: {0}, isAdded: {1} ", portName, isAdd);
+    }
 }

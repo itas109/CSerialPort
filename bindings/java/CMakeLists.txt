@@ -71,6 +71,7 @@ add_jar(
     ${CMAKE_SWIG_OUTDIR}/cserialportJavaJNI.java
     ${CMAKE_SWIG_OUTDIR}/CSerialPort.java
     ${CMAKE_SWIG_OUTDIR}/CSerialPortListener.java
+    ${CMAKE_SWIG_OUTDIR}/CSerialPortHotPlugListener.java
     ${CMAKE_SWIG_OUTDIR}/CSerialPortInfo.java
     ${CMAKE_SWIG_OUTDIR}/BaudRate.java
     ${CMAKE_SWIG_OUTDIR}/DataBits.java

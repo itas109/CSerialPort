@@ -20,6 +20,7 @@ set(ALL_SRCS
     ${CMAKE_SWIG_OUTDIR}/CSerialPort.cs
     ${CMAKE_SWIG_OUTDIR}/CSerialPortInfo.cs
     ${CMAKE_SWIG_OUTDIR}/CSerialPortListener.cs
+    ${CMAKE_SWIG_OUTDIR}/CSerialPortHotPlugListener.cs
     ${CMAKE_SWIG_OUTDIR}/BaudRate.cs
     ${CMAKE_SWIG_OUTDIR}/DataBits.cs
     ${CMAKE_SWIG_OUTDIR}/FlowControl.cs

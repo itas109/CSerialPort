@@ -27,8 +27,10 @@
 
 %template(SerialPortInfoVector) std::vector<itas109::SerialPortInfo>;
 
-// enable inherit CSerialPortListener interface to receive data
+// enable inherit CSerialPortListener interface for receive data
 %feature("director") itas109::CSerialPortListener;
+// enable inherit CSerialPortHotPlugListener interface for hot plug
+%feature("director") itas109::CSerialPortHotPlugListener;
 
 %include "CSerialPort/SerialPort_global.h"
 %include "CSerialPort/SerialPort.h"

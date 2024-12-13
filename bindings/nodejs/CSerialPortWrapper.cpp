@@ -105,7 +105,6 @@ void CSerialPortWrapper::onReadEvent(const Napi::CallbackInfo &info)
                     int realLen = m_serialPort.readData(readData, len);
                     if (realLen > 0)
                     {
-
                         ReadDataType *dataType = new ReadDataType();
                         dataType->data = readData;
                         dataType->readBufferLen = realLen;

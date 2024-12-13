@@ -19,7 +19,7 @@ let addon;
 try {
     addon = require("../build/Debug/cserialport.node");
 } catch (error) {
-    addon = require("../build/bin/Release/cserialport.node");
+    addon = require("../build/Release/cserialport.node");
 }
 
 let sp = new addon.CSerialPort();

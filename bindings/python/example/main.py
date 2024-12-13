@@ -14,6 +14,7 @@ def main():
     print("Version: %s\n" %(sp.getVersion()))
 
     listener = MyListener(sp).__disown__()
+    hotPlugListener = MyHotPlugListener().__disown__()
 
     spInfoVec = cserialport.CSerialPortInfo.availablePortInfos()
     print("Available Friendly Ports:")
@@ -45,6 +46,8 @@ def main():
 
         # connect for read
         sp.connectReadEvent(listener)
+        # connect for hot plug
+        sp.connectHotPlugEvent(hotPlugListener)
 
         # write hex data
         hex = cserialport.malloc_void(5)
@@ -79,6 +82,13 @@ class MyListener(cserialport.CSerialPortListener):
         print("%s - Count: %d, Length: %d, Str: %s, Hex: %s" %(portName, MyListener.countRead, recLen, str, byte2hexStr(str)))
         MyListener.sp.writeData(data, readBufferLen)
         cserialport.free_void(data)
+
+class MyHotPlugListener(cserialport.CSerialPortHotPlugListener):
+    def __init__(self):
+        cserialport.CSerialPortHotPlugListener.__init__(self)
+
+    def onHotPlugEvent(self, portName, isAdd):
+        print("portName: %s, isAdded: %d" %(portName, isAdd))
 
 if __name__ == '__main__':
 	main()
