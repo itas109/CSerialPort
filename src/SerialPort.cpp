@@ -27,8 +27,8 @@ CSerialPort::CSerialPort()
     p_serialPortBase->setReadIntervalTimeout(0);
     p_serialPortBase->setMinByteReadNotify(1);
 
-    char compilerInfo[256];
-    itas109::IUtils::getCompilerInfo(compilerInfo, 256);
+    char compilerInfo[1024];
+    itas109::IUtils::getCompilerInfo(compilerInfo, 1024);
     LOG_INFO("%s, Version: %s", compilerInfo, getVersion());
 }
 

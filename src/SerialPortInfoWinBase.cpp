@@ -21,21 +21,6 @@
 DEFINE_GUID(GUID_DEVINTERFACE_COMPORT, 0x86E0D1E0L, 0x8089, 0x11D0, 0x9C, 0xE4, 0x08, 0x00, 0x3E, 0x30, 0x1F, 0x73);
 #endif
 
-#ifdef UNICODE
-static char *WCharToChar(char *dest, const wchar_t *wstr)
-{
-    if (NULL == wstr)
-    {
-        return NULL;
-    }
-
-    int len = WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL); // get wchar length
-    WideCharToMultiByte(CP_ACP, 0, wstr, -1, dest, len, NULL, NULL);         // CP_UTF8
-
-    return dest;
-}
-#endif
-
 /**
  * @brief enumDetailsSerialPorts 通过setapi.lib枚举串口详细信息
  * @param portInfoList [out] port info list 串口信息列表
@@ -85,9 +70,9 @@ bool enumDetailsSerialPorts(std::vector<itas109::SerialPortInfo> &portInfoList)
             itas109::SerialPortInfo m_serialPortInfo;
 #ifdef UNICODE
             char portNameChar[256], friendlyNameChar[256], hardwareIdChar[256];
-            itas109::IUtils::strncpy(m_serialPortInfo.portName, WCharToChar(portNameChar, portName), 256);
-            itas109::IUtils::strncpy(m_serialPortInfo.description, WCharToChar(friendlyNameChar, friendlyName), 256);
-            itas109::IUtils::strncpy(m_serialPortInfo.hardwareId, WCharToChar(hardwareIdChar, hardwareId), 256);
+            itas109::IUtils::strncpy(m_serialPortInfo.portName, itas109::IUtils::WCharToANSI(portNameChar, portName), 256);
+            itas109::IUtils::strncpy(m_serialPortInfo.description, itas109::IUtils::WCharToANSI(friendlyNameChar, friendlyName), 256);
+            itas109::IUtils::strncpy(m_serialPortInfo.hardwareId, itas109::IUtils::WCharToANSI(hardwareIdChar, hardwareId), 256);
 #else
             itas109::IUtils::strncpy(m_serialPortInfo.portName, portName, 256);
             itas109::IUtils::strncpy(m_serialPortInfo.description, friendlyName, 256);

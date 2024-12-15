@@ -15,7 +15,10 @@
 
 // get cpu cores headers
 #if defined(_WIN32)
-#include <windows.h> // GetSystemInfo
+#include <windows.h>        // GetSystemInfo
+#include <tchar.h>          // _T
+
+#pragma comment(lib, "advapi32.lib") // RegQueryValueEx RegCloseKey
 #elif defined(__linux__)
 #include <unistd.h> // sysconf
 #elif defined(__APPLE__)
@@ -206,6 +209,34 @@ public:
         return ret;
     }
 
+#if defined(_WIN32)
+    static char *WCharToANSI(char *dest, const wchar_t *wstr)
+    {
+        if (NULL == wstr)
+        {
+            return NULL;
+        }
+
+        int len = WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL); // get wchar length
+        WideCharToMultiByte(CP_ACP, 0, wstr, -1, dest, len, NULL, NULL);         // CP_UTF8
+
+        return dest;
+    }
+
+    static char *WCharToUTF8(char *dest, const wchar_t *wstr)
+    {
+        if (NULL == wstr)
+        {
+            return NULL;
+        }
+
+        int len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL); // get wchar length
+        WideCharToMultiByte(CP_UTF8, 0, wstr, -1, dest, len, NULL, NULL);         // CP_UTF8
+
+        return dest;
+    }
+#endif
+
     static char *charToHexStr(char *dest, const char *src, unsigned int count)
     {
         // assert(dest != NULL && src != NULL);
@@ -222,130 +253,267 @@ public:
         return (dest);
     }
 
-    static const char *getCompilerInfo(char *info, size_t len)
+    static char *getOperatingSystemName(char *osName, unsigned int len)
     {
-        char osName[10];
-        osName[0] = '\0';
-        char archName[10];
-        archName[0] = '\0';
-        char compilerName[10];
-        compilerName[0] = '\0';
-        char compilerVersion[10];
-        compilerVersion[0] = '\0';
-        int bit = (8 == sizeof(char *)) ? 64 : 32;
-        long cppStdVersion = 0;
-        int numCPU = 0;
+        if (NULL == osName)
+        {
+            return NULL;
+        }
+
+#if defined(_WIN32)
+        strncpy(osName, "Windows", len);
+#elif defined(__linux__)
+        strncpy(osName, "Linux", len);
+#elif defined(__APPLE__)
+        strncpy(osName, "MacOS", len);
+#elif defined(__ANDROID__)
+        strncpy(osName, "Android", len);
+#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
+        strncpy(osName, "BSD", len);
+#elif defined(__unix__)
+        strncpy(osName, "Unix", len);
+#else
+        strncpy(osName, "Unknown", len);
+#endif
+        return osName;
+    }
+
+    static char *getProductName(char *productName, unsigned int len)
+    {
+        if (NULL == productName)
+        {
+            return NULL;
+        }
+
+#if defined(_WIN32)
+        int majorVersion = 0;
+        int minorVersion = 0;
+        HKEY hKey;
+        if (0 == RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"), 0, KEY_READ, &hKey))
+        {
+            DWORD size = 10;
+            TCHAR currentVersion[10];
+            currentVersion[0] = '\0';
+
+            RegQueryValueEx(hKey, _T("CurrentVersion"), NULL, NULL, (BYTE *)currentVersion, &size);
+
+#ifdef UNICODE
+            char currentVersionChar[10];
+            WCharToANSI(currentVersionChar, currentVersion);
+            strScan(currentVersionChar, "%d.%d", &majorVersion, &minorVersion);
+#else
+            strScan(currentVersion, "%d.%d", &majorVersion, &minorVersion);
+#endif
+
+            RegCloseKey(hKey);
+            hKey = NULL;
+        }
+
+        // IsWindowsServer()
+        OSVERSIONINFOEX osvi = {sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0, 0, VER_NT_WORKSTATION};
+        DWORDLONG const dwlConditionMask = VerSetConditionMask(0, VER_PRODUCT_TYPE, VER_EQUAL);
+        bool isWindowsClient = VerifyVersionInfo(&osvi, VER_PRODUCT_TYPE, dwlConditionMask);
+
+        // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-osversioninfoexa
+        if (10 == majorVersion && 0 == minorVersion)
+        {
+            strncpy(productName, isWindowsClient ? "win10Preview(10.0)" : "winServer2016(10.0)", len);
+        }
+        else if (6 == majorVersion && 3 == minorVersion)
+        {
+            strncpy(productName, isWindowsClient ? "win8.1/10/11(6.3)" : "winServer2012R2(6.3)", len);
+        }
+        else if (6 == majorVersion && 2 == minorVersion)
+        {
+            strncpy(productName, isWindowsClient ? "win8(6.2)" : "winServer2012(6.2)", len);
+        }
+        else if (6 == majorVersion && 1 == minorVersion)
+        {
+            strncpy(productName, isWindowsClient ? "win7(6.1)" : "winServer2008R2(6.1)", len);
+        }
+        else if (6 == majorVersion && 0 == minorVersion)
+        {
+            strncpy(productName, isWindowsClient ? "winVista(6.0)" : "winServer2008(6.0)", len);
+        }
+        else if (5 == majorVersion && 2 == minorVersion)
+        {
+            strncpy(productName, isWindowsClient ? "winXP64Bit(5.2)" : "winServer2003(5.2)", len);
+        }
+        else if (5 == majorVersion && 1 == minorVersion)
+        {
+            strncpy(productName, "winXP(5.1)", len);
+        }
+        else
+        {
+            strFormat(productName, len, "winUnknown(%d.%d)", majorVersion, minorVersion);
+        }
+
+#elif defined(__linux__)
+        strncpy(productName, "Linux", len);
+#elif defined(__APPLE__)
+        strncpy(productName, "MacOS", len);
+#elif defined(__ANDROID__)
+        strncpy(productName, "Android", len);
+#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
+        strncpy(productName, "BSD", len);
+#elif defined(__unix__)
+        strncpy(productName, "Unix", len);
+#else
+        strncpy(productName, "Unknown", len);
+#endif
+        return productName;
+    }
+
+    static int getNumberOfProcessors()
+    {
+        int numOfProcessors = 0;
+
+#if defined(_WIN32)
+        SYSTEM_INFO sysInfo;
+        GetSystemInfo(&sysInfo);
+        numOfProcessors = sysInfo.dwNumberOfProcessors;
+#elif defined(__linux__)
+        numOfProcessors = sysconf(_SC_NPROCESSORS_ONLN);
+#elif defined(__APPLE__)
+        size_t size = sizeof(numOfProcessors);
+        sysctlbyname("hw.ncpu", &numOfProcessors, &size, NULL, 0);
+#elif defined(__ANDROID__)
+        numOfProcessors = sysconf(_SC_NPROCESSORS_ONLN);
+#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
+        size_t size = sizeof(numOfProcessors);
+        sysctlbyname("hw.ncpu", &numOfProcessors, &size, NULL, 0);
+#elif defined(__unix__)
+        numOfProcessors = sysconf(_SC_NPROCESSORS_ONLN);
+#else
+        // numOfProcessors = 0;
+#endif
+        return numOfProcessors;
+    }
+
+    static char *getArchitectureName(char *archName, unsigned int len)
+    {
+        if (NULL == archName)
+        {
+            return NULL;
+        }
 
         // https://sourceforge.net/p/predef/wiki/Home/
 #if defined(__x86_64__) /*GNU C*/ || defined(_M_AMD64) /*Visual Studio*/
-        strFormat(archName, 10, "x86_64");
+        strFormat(archName, len, "x86_64");
 #elif defined(__i386__) /*GNU C*/ || defined(_M_IX86)     /*Visual Studio*/
-        strFormat(archName, 10, "x86");
+        strFormat(archName, len, "x86");
 #elif defined(__arm__) /*GNU C*/ || defined(_M_ARM)       /*Visual Studio*/
-        strFormat(archName, 10, "arm32");
+        strFormat(archName, len, "arm32");
 #elif defined(__aarch64__) /*GNU C*/ || defined(_M_ARM64) /*Visual Studio*/
-        strFormat(archName, 10, "aarch64");
+        strFormat(archName, len, "aarch64");
 #elif defined(__mips__)                                   /*GNU C*/
-        strFormat(archName, 10, "mips");
+        strFormat(archName, len, "mips");
 #elif defined(__riscv)                                    /*GNU C*/
-        strFormat(archName, 10, "riscv");
+        strFormat(archName, len, "riscv");
 #elif defined(__powerpc__)                                /*GNU C*/
-        strFormat(archName, 10, "powerpc");
+        strFormat(archName, len, "powerpc");
 #else
-        strFormat(archName, 10, "unknown");
+        strFormat(archName, len, "unknown");
 #endif
+        return archName;
+    }
 
-#if defined(_WIN32)
-        strncpy(osName, "Windows", 10);
-
-        SYSTEM_INFO sysInfo;
-        GetSystemInfo(&sysInfo);
-        numCPU = sysInfo.dwNumberOfProcessors;
-#elif defined(__linux__)
-        strncpy(osName, "Linux", 10);
-
-        numCPU = sysconf(_SC_NPROCESSORS_ONLN);
-#elif defined(__APPLE__)
-        strncpy(osName, "MacOS", 10);
-
-        size_t size = sizeof(numCPU);
-        sysctlbyname("hw.ncpu", &numCPU, &size, NULL, 0);
-#elif defined(__ANDROID__)
-        strncpy(osName, "Android", 10);
-
-        numCPU = sysconf(_SC_NPROCESSORS_ONLN);
-#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
-        strncpy(osName, "BSD", 10);
-
-        size_t size = sizeof(numCPU);
-        sysctlbyname("hw.ncpu", &numCPU, &size, NULL, 0);
-#elif defined(__unix__)
-        strncpy(osName, "Unix", 10);
-
-        numCPU = sysconf(_SC_NPROCESSORS_ONLN);
-#else
-        strncpy(osName, "Unknown", 10);
-#endif
-
+    static char *getCompilerName(char *compilerName, unsigned int len)
+    {
+        if (NULL == compilerName)
+        {
+            return NULL;
+        }
 #if defined(__clang__)
-        strncpy(compilerName, "clang", 10);
-        strFormat(compilerVersion, 10, "%d.%d.%d", __clang_major__, __clang_minor__, __clang_patchlevel__);
+        strFormat(compilerName, len, "clang(%d.%d.%d)", __clang_major__, __clang_minor__, __clang_patchlevel__);
 #elif defined(__GNUC__)
-        strncpy(compilerName, "gcc", 10);
-        strFormat(compilerVersion, 10, "%d.%d.%d", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+        strFormat(compilerName, len, "gcc(%d.%d.%d)", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
 #elif defined(_MSC_VER)
-        strFormat(compilerVersion, 10, "%d", _MSC_VER);
         switch (_MSC_VER / 10)
         {
             case 120:
-                strncpy(compilerName, "vs6.0", 10);
+                strFormat(compilerName, len, "vs6.0(%d)", _MSC_VER);
                 break;
             case 130:
-                strncpy(compilerName, "vs2002", 10);
+                strFormat(compilerName, len, "vs2002(%d)", _MSC_VER);
                 break;
             case 131:
-                strncpy(compilerName, "vs2003", 10);
+                strFormat(compilerName, len, "vs2003(%d)", _MSC_VER);
                 break;
             case 140:
-                strncpy(compilerName, "vs2005", 10);
+                strFormat(compilerName, len, "vs2005(%d)", _MSC_VER);
                 break;
             case 150:
-                strncpy(compilerName, "vs2008", 10);
+                strFormat(compilerName, len, "vs2008(%d)", _MSC_VER);
                 break;
             case 160:
-                strncpy(compilerName, "vs2010", 10);
+                strFormat(compilerName, len, "vs2010(%d)", _MSC_VER);
                 break;
             case 170:
-                strncpy(compilerName, "vs2012", 10);
+                strFormat(compilerName, len, "vs2012(%d)", _MSC_VER);
                 break;
             case 180:
-                strncpy(compilerName, "vs2013", 10);
+                strFormat(compilerName, len, "vs2013(%d)", _MSC_VER);
                 break;
             case 190:
-                strncpy(compilerName, "vs2015", 10);
+                strFormat(compilerName, len, "vs2015(%d)", _MSC_VER);
                 break;
             case 191:
-                strncpy(compilerName, "vs2017", 10);
+                strFormat(compilerName, len, "vs2017(%d)", _MSC_VER);
                 break;
             case 192:
-                strncpy(compilerName, "vs2019", 10);
+                strFormat(compilerName, len, "vs2019(%d)", _MSC_VER);
                 break;
             case 193:
-                strncpy(compilerName, "vs2022", 10);
+                strFormat(compilerName, len, "vs2022(%d)", _MSC_VER);
+                break;
+            default:
+                strFormat(compilerName, len, "msvc(unknown)(%d)", _MSC_VER);
                 break;
         }
 #else
-        strncpy(compilerName, "unknown", 10);
-        strFormat(compilerVersion, 10, "%d.%d.%d", 0, 0, 0);
+        strFormat(compilerName, len, "unknown(%d.%d.%d)", 0, 0, 0);
 #endif
+        return compilerName;
+    }
 
+    static int getApplicationBit()
+    {
+		static int bit = (8 == sizeof(char *)) ? 64 : 32;
+        return bit;
+    }
+
+    static long getCppStdVersion()
+    {
 #if defined(_MSVC_LANG)
-        cppStdVersion = _MSVC_LANG;
+        return _MSVC_LANG;
 #else
-        cppStdVersion = __cplusplus;
+        return __cplusplus;
 #endif
+    }
 
-        strFormat(info, len, "OS: %s, Arch: %s, NumCPU: %d, Compiler: %s(%s), Bit: %d, C++: %ldL", osName, archName, numCPU, compilerName, compilerVersion, bit, cppStdVersion);
+    static const char *getCompilerInfo(char *info, unsigned int len)
+    {
+        char osName[10];
+        osName[0] = '\0';
+        char productName[50];
+        productName[0] = '\0';
+        char archName[10];
+        archName[0] = '\0';
+        char compilerName[20];
+        compilerName[0] = '\0';
+        char compilerVersion[10];
+        compilerVersion[0] = '\0';
+
+        strFormat(info, len, "OS: %s, ProductName: %s, Arch: %s, ProcessorNum: %d, Compiler: %s, Bit: %d, C++: %ldL",
+                  getOperatingSystemName(osName, sizeof(osName)),      // OperatingSystemName
+                  getProductName(productName, sizeof(productName)),    // ProductName
+                  getArchitectureName(archName, sizeof(archName)),     // ArchitectureName
+                  getNumberOfProcessors(),                             // NumberOfProcessors
+                  getCompilerName(compilerName, sizeof(compilerName)), // CompilerName
+                  getApplicationBit(),                                 // application bit 32 or 64
+                  getCppStdVersion()                                   // c++ std version
+        );
 
         return info;
     }
