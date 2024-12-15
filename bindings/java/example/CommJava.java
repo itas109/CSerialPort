@@ -27,6 +27,11 @@ public class CommJava {
 
         MyListener listener = new MyListener(sp);
         MyHotPlugListener hotPlugListener = new MyHotPlugListener();
+        
+        // connect for read
+        sp.connectReadEvent(listener);
+        // connect for hot plug
+        sp.connectHotPlugEvent(hotPlugListener);
 
         SerialPortInfoVector spInfoVec = new SerialPortInfoVector();
         spInfoVec = CSerialPortInfo.availablePortInfos();
@@ -70,11 +75,6 @@ public class CommJava {
             sp.open();
 
             System.out.printf("Open %s %s\n", portName, sp.isOpen() ? "Success" : "Failed");
-
-            // connect for read
-            sp.connectReadEvent(listener);
-            // connect for hot plug
-            sp.connectHotPlugEvent(hotPlugListener);
 
             // write hex data
             byte[] hex = new byte[] { 0x31, 0x32, 0x33, 0x34, 0x35 };

@@ -15,7 +15,13 @@ def main():
 
     listener = MyListener(sp).__disown__()
     hotPlugListener = MyHotPlugListener().__disown__()
-
+    
+    # connect for read
+    sp.connectReadEvent(listener)
+    # connect for hot plug 
+    # TODO: crash
+    # sp.connectHotPlugEvent(hotPlugListener)
+    
     spInfoVec = cserialport.CSerialPortInfo.availablePortInfos()
     print("Available Friendly Ports:")
     for index, spInfo in enumerate(spInfoVec, start=1):
@@ -43,11 +49,6 @@ def main():
         sp.setReadIntervalTimeout(0); # read interval timeout
         sp.open()
         print("Open %s %s" %(portName, "Success" if sp.isOpen() else "Failed"))
-
-        # connect for read
-        sp.connectReadEvent(listener)
-        # connect for hot plug
-        sp.connectHotPlugEvent(hotPlugListener)
 
         # write hex data
         hex = cserialport.malloc_void(5)

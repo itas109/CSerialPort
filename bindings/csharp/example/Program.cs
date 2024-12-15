@@ -23,6 +23,11 @@ public class Program
         SerialPortInfoVector spInfoVec = new SerialPortInfoVector();
         spInfoVec = CSerialPortInfo.availablePortInfos();
 
+        // connect for read
+        sp.connectReadEvent(listener);
+        // connect for hot plug
+        sp.connectHotPlugEvent(hotPlugListener);
+
         Console.WriteLine("Available Friendly Ports:");
 
         for (int i = 1; i <= spInfoVec.Count; ++i)
@@ -68,11 +73,6 @@ public class Program
             sp.open();
 
             Console.WriteLine("Open {0} {1}", portName, sp.isOpen() ? "Success" : "Failed");
-
-            // connect for read
-            sp.connectReadEvent(listener);
-            // connect for hot plug
-            sp.connectHotPlugEvent(hotPlugListener);
 
             // write hex data
             sp.writeData(new byte[] { 0x31, 0x32, 0x33, 0x34, 0x35 }, 5);
