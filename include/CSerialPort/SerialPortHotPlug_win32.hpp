@@ -129,11 +129,22 @@ private:
 
                         if (DBT_DEVICEARRIVAL == wParam)
                         {
+#ifdef UNICODE
+                            char portName[256];
+                            p_base->p_listener->onHotPlugEvent(itas109::IUtils::WCharToANSI(portName, pDevInf->dbcp_name), 1);
+#else
                             p_base->p_listener->onHotPlugEvent(pDevInf->dbcp_name, 1);
+#endif
                         }
                         else if (DBT_DEVICEREMOVECOMPLETE == wParam)
                         {
+#ifdef UNICODE
+                            char portName[256];
+                            p_base->p_listener->onHotPlugEvent(itas109::IUtils::WCharToANSI(portName, pDevInf->dbcp_name), 0);
+
+#else
                             p_base->p_listener->onHotPlugEvent(pDevInf->dbcp_name, 0);
+#endif
                         }
                         else
                         {
