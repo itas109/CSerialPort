@@ -78,6 +78,10 @@ int main()
     printf("Version: %s\n\n", sp.getVersion());
 
     MyListener listener(&sp);
+    // connect for read
+    sp.connectReadEvent(&listener);
+    // connect for hot plug
+    sp.connectHotPlugEvent(&listener);
 
     std::vector<SerialPortInfo> m_availablePortsList = CSerialPortInfo::availablePortInfos();
 
@@ -123,17 +127,12 @@ int main()
                 itas109::FlowNone,     // flow
                 4096                   // read buffer size
         );
-        sp.setReadIntervalTimeout(0);               // read interval timeout 0ms
-        sp.setByteReadBufferFullNotify(4096 * 0.8); // buffer full notify
+        sp.setReadIntervalTimeout(0);         // read interval timeout 0ms
+        sp.setByteReadBufferFullNotify(3276); // 4096*0.8 // buffer full notify
 
         sp.open();
         printf("Open %s %s\n", portName, sp.isOpen() ? "Success" : "Failed");
         printf("Code: %d, Message: %s\n", sp.getLastError(), sp.getLastErrorMsg());
-
-        // connect for read
-        sp.connectReadEvent(&listener);
-        // connect for hot plug
-        sp.connectHotPlugEvent(&listener);
 
         // write hex data
         char hex[5];
