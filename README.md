@@ -39,7 +39,7 @@ CSerialPort was tested on the following platforms
 
 - [x] 1.support windows and linux first
 - [ ] 2.add communicating protocol
-- [x] 3.support hot swap notify - CSerialPortHotPlugListener
+- [x] 3.support hot plug notify - CSerialPortHotPlugListener
 - [x] 4.higher efficiency notify module - replace with CSerialPortListener
 - [x] 5.support other language - C, C#, Java, Python, Node.js, Electron etc. - more information [bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
 - [x] 6.sync serial port communication
