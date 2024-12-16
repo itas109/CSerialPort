@@ -24,7 +24,7 @@ DEFINES += _UNICODE
 
 include($$PWD/commqt.pri)
 
-win32:LIBS += -lsetupapi
+win32:LIBS += -luser32 -ladvapi32 -lsetupapi
 unix:!macx:LIBS += -lpthread
 macx {
     LIBS += -framework IOKit

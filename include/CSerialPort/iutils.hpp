@@ -18,7 +18,10 @@
 #include <windows.h>        // GetSystemInfo
 #include <tchar.h>          // _T
 
+#if defined(_MSC_VER)
 #pragma comment(lib, "advapi32.lib") // RegQueryValueEx RegCloseKey
+#endif
+
 #elif defined(__linux__)
 #include <unistd.h> // sysconf
 #elif defined(__APPLE__)

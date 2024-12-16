@@ -19,6 +19,10 @@
 #include <tchar.h> // _T
 #define CLASS_NAME _T("itas109SerialPortChangeWnd")
 
+#if defined(_MSC_VER)
+#pragma comment(lib, "user32.lib") // CreateWindowEx GetMessage DispatchMessage RegisterClassEx UnregisterClass DefWindowProc SetWindowLong GetWindowLong
+#endif
+
 namespace itas109
 {
 class CSerialPortHotPlug

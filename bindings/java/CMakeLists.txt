@@ -39,7 +39,7 @@ include(UseJava) # add_jar
 include_directories(${JNI_INCLUDE_DIRS}) # jni.h
 
 if (WIN32)
-    link_libraries(setupapi)
+    link_libraries(user32 advapi32 setupapi)
 elseif (APPLE)
     find_library(IOKIT_LIBRARY IOKit)
     find_library(FOUNDATION_LIBRARY Foundation)

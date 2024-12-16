@@ -38,7 +38,7 @@ include_directories(${Python3_INCLUDE_DIRS})
 link_libraries(${Python3_LIBRARIES})
 
 if (WIN32)
-    link_libraries(setupapi)
+    link_libraries(user32 advapi32 setupapi)
 elseif (APPLE)
     find_library(IOKIT_LIBRARY IOKit)
     find_library(FOUNDATION_LIBRARY Foundation)

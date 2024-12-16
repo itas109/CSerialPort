@@ -33,7 +33,7 @@ elseif (UNIX)
 endif ()
 
 if (WIN32)
-    link_libraries(setupapi)
+    link_libraries(user32 advapi32 setupapi)
 elseif (APPLE)
     find_library(IOKIT_LIBRARY IOKit)
     find_library(FOUNDATION_LIBRARY Foundation)

@@ -1,9 +1,11 @@
 @ECHO OFF
 
-set path=D:\Qt\Qt5.12.9\Tools\mingw730_64\bin;%path%
+REM gcc version 8.1.0 (x86_64-posix-seh-rev0, Built by MinGW-W64 project)
+
+set path=D:\mingw64\bin;%path%
 
 echo "MinGW compile"
 
-g++ CSerialPortDemoNoGui.cpp ../../src/SerialPortInfo.cpp ../../src/SerialPortInfoBase.cpp ../../src/SerialPortInfoWinBase.cpp ../../src/SerialPort.cpp ../../src/SerialPortBase.cpp ../../src/SerialPortWinBase.cpp -lpthread -lsetupapi -I../../include -o CSerialPortDemoNoGui-MinGW
+g++ -DCSERIALPORT_DEBUG CSerialPortDemoNoGui.cpp ../../src/SerialPortInfo.cpp ../../src/SerialPortInfoBase.cpp ../../src/SerialPortInfoWinBase.cpp ../../src/SerialPort.cpp ../../src/SerialPortBase.cpp ../../src/SerialPortWinBase.cpp -lpthread -luser32 -ladvapi32 -lsetupapi -I../../include -o CSerialPortDemoNoGui-MinGW
 
 pause

@@ -49,7 +49,7 @@ target_link_libraries(CommQT Qt5::Widgets)
 
 if (WIN32)
         # for function availableFriendlyPorts
-        target_link_libraries( ${PROJECT_NAME} setupapi)
+        target_link_libraries( ${PROJECT_NAME} user32 advapi32 setupapi)
 elseif(APPLE)
     find_library(IOKIT_LIBRARY IOKit)
     find_library(FOUNDATION_LIBRARY Foundation)
