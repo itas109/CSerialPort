@@ -13,9 +13,11 @@
 #include "SerialPort_global.h"
 
 #if defined(I_OS_WIN)
-#include "SerialPortHotPlug_win32.hpp"
+#include "SerialPortHotPlug_win.hpp"
 #elif defined(I_OS_LINUX)
 #include "SerialPortHotPlug_linux.hpp"
+#elif defined(I_OS_MAC)
+#include "SerialPortHotPlug_mac.hpp"
 #else
 // #error "CSerialPort HotPlug unavailable on this platform"
 namespace itas109

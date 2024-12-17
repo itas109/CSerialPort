@@ -15,6 +15,7 @@
 #include "SerialPortListener.h"
 
 // linux
+// #include <iostream> // std::cout
 #include <string>
 #include <cstring>
 #include <unistd.h>
@@ -84,6 +85,9 @@ private:
             // parse
             std::string message(buffer, len);
 
+            // printf can not output all string
+            // std::cout << message << std::endl;
+
             // add@/devices/pci0000:00/0000:00:11.0/0000:02:00.0/usb2/2-2/2-2.1/2-2.1:1.0/ttyUSB0/tty/ttyUSB0ACTION=addDEVPATH=/devices/pci0000:00/0000:00:11.0/0000:02:00.0/usb2/2-2/2-2.1/2-2.1:1.0/ttyUSB0/tty/ttyUSB0SUBSYSTEM=ttyMAJOR=188MINOR=0DEVNAME=ttyUSB0SEQNUM=8128
             // libudev((ACTION=addDEVPATH=/devices/pci0000:00/0000:00:11.0/0000:02:00.0/usb2/2-2/2-2.1/2-2.1:1.0/ttyUSB0/tty/ttyUSB0SUBSYSTEM=ttyDEVNAME=/dev/ttyUSB0SEQNUM=8128USEC_INITIALIZED=5092130519MAJOR=188MINOR=0ID_BUS=usbID_VENDOR_ID=1a86ID_MODEL_ID=7523ID_PCI_CLASS_FROM_DATABASE=Serial
             // bus controllerID_PCI_SUBCLASS_FROM_DATABASE=USB controllerID_PCI_INTERFACE_FROM_DATABASE=UHCIID_VENDOR_FROM_DATABASE=QinHeng ElectronicsID_MODEL_FROM_DATABASE=CH340
@@ -97,7 +101,8 @@ private:
                 continue;
             }
 
-            // printf("message: %s\n", message.c_str());
+            // printf can not output all string 
+            // std::cout << message << std::endl;
 
             // Find necessary substrings
             size_t add_action_pos = message.find("ACTION=add");

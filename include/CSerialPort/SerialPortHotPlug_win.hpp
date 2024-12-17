@@ -1,5 +1,5 @@
 ﻿/**
- * @file SerialPortHotPlug_win32.hpp
+ * @file SerialPortHotPlug_win.hpp
  * @author itas109 (itas109@qq.com) \n\n
  * Blog : https://blog.csdn.net/itas109 \n
  * Github : https://github.com/itas109 \n
@@ -72,7 +72,7 @@ private:
         // create hidden window to receive device change messages
         if (NULL == CreateWindowEx(0, CLASS_NAME, 0, 0, 0, 0, 0, 0, 0 /*HWND_MESSAGE*/, 0, GetModuleHandle(NULL), p_main))
         {
-            return false;
+            return -1;
         }
 
         // message loop
