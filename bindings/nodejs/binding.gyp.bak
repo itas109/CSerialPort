@@ -2,6 +2,7 @@
     'targets': [
         {
             'target_name': 'cserialport',
+            'defines': ['CSERIALPORT_USE_UTF8'],
             'cflags!': [ '-fno-exceptions' ],
             'cflags_cc!': [ '-fno-exceptions' ],
             'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ],

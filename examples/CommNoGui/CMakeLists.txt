@@ -16,6 +16,7 @@ cmake_minimum_required(VERSION 2.8.12)
 project(CSerialPortDemoNoGui)
 
 add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+# add_definitions(-DCSERIALPORT_USE_UTF8) # CSerialPort UTF8 Character Encoding
 
 find_package(CSerialPort QUIET)
 if (CSerialPort_FOUND)

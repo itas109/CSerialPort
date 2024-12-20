@@ -2,6 +2,7 @@
     'targets': [
         {
             'target_name': 'cserialport',
+            'defines': ['CSERIALPORT_USE_UTF8'],
             'include_dirs': ['../../include'],
             'sources': [
                 '../../src/SerialPort.cpp',

@@ -15,6 +15,7 @@ cmake_minimum_required(VERSION 2.8.12)
 project(cserialport)
 
 # add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+add_definitions(-DCSERIALPORT_USE_UTF8) # CSerialPort UTF8 Character Encoding
 
 set(CMAKE_CXX_STANDARD 11)
 #add_compile_options(-g)
