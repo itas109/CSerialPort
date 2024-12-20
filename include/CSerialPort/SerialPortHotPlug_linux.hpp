@@ -101,7 +101,7 @@ private:
                 continue;
             }
 
-            // printf can not output all string 
+            // printf can not output all string
             // std::cout << message << std::endl;
 
             // Find necessary substrings
