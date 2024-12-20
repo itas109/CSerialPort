@@ -15,8 +15,8 @@
 
 // get cpu cores headers
 #if defined(_WIN32)
-#include <windows.h>        // GetSystemInfo
-#include <tchar.h>          // _T
+#include <windows.h> // GetSystemInfo
+#include <tchar.h>   // _T
 
 #if defined(_MSC_VER)
 #pragma comment(lib, "advapi32.lib") // RegQueryValueEx RegCloseKey
@@ -213,28 +213,98 @@ public:
     }
 
 #if defined(_WIN32)
-    static char *WCharToANSI(char *dest, const wchar_t *wstr)
+    static char *WCharToNativeMB(char *dest, unsigned int len, const wchar_t *wstr)
     {
-        if (NULL == wstr)
+        // wide char to native multi byte(ANSI)
+        if (NULL == wstr || NULL == dest || 0 == len)
         {
             return NULL;
         }
 
-        int len = WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL); // get wchar length
-        WideCharToMultiByte(CP_ACP, 0, wstr, -1, dest, len, NULL, NULL);         // CP_UTF8
+        int clen = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
+        if (clen <= 0 || (unsigned int)clen > len)
+        {
+            return NULL;
+        }
+        // char dest = new char[clen]; // length conatin '\0'
+        // ::memset((void *)dest, '\0', clen); // sizeof(char)=1
+        if (0 == ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, dest, clen, NULL, NULL))
+        {
+            return NULL;
+        }
+        // dest[clen-1] = '\0'; // redundant but safe
 
         return dest;
     }
 
-    static char *WCharToUTF8(char *dest, const wchar_t *wstr)
+    static char *WCharToUTF8(char *dest, unsigned int len, const wchar_t *wstr)
     {
-        if (NULL == wstr)
+        // wide char to UTF8
+        if (NULL == wstr || NULL == dest || 0 == len)
         {
             return NULL;
         }
 
-        int len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL); // get wchar length
-        WideCharToMultiByte(CP_UTF8, 0, wstr, -1, dest, len, NULL, NULL);         // CP_UTF8
+        int clen = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
+        if (clen <= 0 || (unsigned int)clen > len)
+        {
+            return NULL;
+        }
+        // char dest = new char[clen]; // length conatin '\0'
+        // ::memset((void *)dest, '\0', clen); // sizeof(char)=1
+        if (0 == ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, dest, clen, NULL, NULL))
+        {
+            return NULL;
+        }
+        // dest[clen-1] = '\0'; // redundant but safe
+
+        return dest;
+    }
+
+    static wchar_t *NativeMBToWChar(wchar_t *dest, unsigned int len, const char *str)
+    {
+        // native multi byte(ANSI) to wide char
+        if (NULL == str || NULL == dest || 0 == len)
+        {
+            return NULL;
+        }
+
+        int wlen = ::MultiByteToWideChar(CP_ACP, 0, str, -1, NULL, 0);
+        if (wlen <= 0 || (unsigned int)wlen > len)
+        {
+            return NULL;
+        }
+        // wchar_t*  dest = new wchar_t[wlen]; // length conatin '\0'
+        // ::memset((void *)dest, '\0', wlen * sizeof(wchar_t)); // sizeof(wchar_t)=2
+        if (0 == ::MultiByteToWideChar(CP_ACP, 0, str, -1, dest, wlen))
+        {
+            return NULL;
+        }
+        // dest[wlen-1] = '\0'; // redundant but safe
+
+        return dest;
+    }
+
+    static wchar_t *UTF8ToWChar(wchar_t *dest, unsigned int len, const char *str)
+    {
+        // UTF8 to wide char
+        if (NULL == str || NULL == dest || 0 == len)
+        {
+            return NULL;
+        }
+
+        int wlen = ::MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
+        if (wlen <= 0 || (unsigned int)wlen > len)
+        {
+            return NULL;
+        }
+        // wchar_t*  dest = new wchar_t[wlen]; // length conatin '\0'
+        // ::memset((void *)dest, '\0', wlen * sizeof(wchar_t)); // sizeof(wchar_t)=2
+        if (0 == ::MultiByteToWideChar(CP_UTF8, 0, str, -1, dest, wlen))
+        {
+            return NULL;
+        }
+        // dest[wlen-1] = '\0'; // redundant but safe
 
         return dest;
     }
@@ -302,7 +372,7 @@ public:
 
 #ifdef UNICODE
             char currentVersionChar[10];
-            WCharToANSI(currentVersionChar, currentVersion);
+            WCharToNativeMB(currentVersionChar, 10, currentVersion);
             strScan(currentVersionChar, "%d.%d", &majorVersion, &minorVersion);
 #else
             strScan(currentVersion, "%d.%d", &majorVersion, &minorVersion);
@@ -482,7 +552,7 @@ public:
 
     static int getApplicationBit()
     {
-		static int bit = (8 == sizeof(char *)) ? 64 : 32;
+        static int bit = (8 == sizeof(char *)) ? 64 : 32;
         return bit;
     }
 

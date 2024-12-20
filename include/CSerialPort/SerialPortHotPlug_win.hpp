@@ -135,19 +135,44 @@ private:
                         {
 #ifdef UNICODE
                             char portName[256];
-                            p_base->p_listener->onHotPlugEvent(itas109::IUtils::WCharToANSI(portName, pDevInf->dbcp_name), 1);
+#ifdef CSERIALPORT_USE_UTF8
+                            p_base->p_listener->onHotPlugEvent(itas109::IUtils::WCharToUTF8(portName, 256, pDevInf->dbcp_name), 1);
+#else
+                            p_base->p_listener->onHotPlugEvent(itas109::IUtils::WCharToNativeMB(portName, 256, pDevInf->dbcp_name), 1);
+#endif
+#else
+#ifdef CSERIALPORT_USE_UTF8
+                            char portNameUTF8[256];
+                            wchar_t portNameWChar[256];
+                            // ANSI to WChar
+                            itas109::IUtils::NativeMBToWChar(portNameWChar, 256, pDevInf->dbcp_name);
+                            // WChar to UTF8
+                            p_base->p_listener->onHotPlugEvent(itas109::IUtils::WCharToUTF8(portNameUTF8, 256, portNameWChar), 1);
 #else
                             p_base->p_listener->onHotPlugEvent(pDevInf->dbcp_name, 1);
+#endif
 #endif
                         }
                         else if (DBT_DEVICEREMOVECOMPLETE == wParam)
                         {
 #ifdef UNICODE
                             char portName[256];
-                            p_base->p_listener->onHotPlugEvent(itas109::IUtils::WCharToANSI(portName, pDevInf->dbcp_name), 0);
-
+#ifdef CSERIALPORT_USE_UTF8
+                            p_base->p_listener->onHotPlugEvent(itas109::IUtils::WCharToUTF8(portName, 256, pDevInf->dbcp_name), 0);
+#else
+                            p_base->p_listener->onHotPlugEvent(itas109::IUtils::WCharToNativeMB(portName, 256, pDevInf->dbcp_name), 0);
+#endif
+#else
+#ifdef CSERIALPORT_USE_UTF8
+                            char portNameUTF8[256];
+                            wchar_t portNameWChar[256];
+                            // ANSI to WChar
+                            itas109::IUtils::NativeMBToWChar(portNameWChar, 256, pDevInf->dbcp_name);
+                            // WChar to UTF8
+                            p_base->p_listener->onHotPlugEvent(itas109::IUtils::WCharToUTF8(portNameUTF8, 256, portNameWChar), 0);
 #else
                             p_base->p_listener->onHotPlugEvent(pDevInf->dbcp_name, 0);
+#endif
 #endif
                         }
                         else

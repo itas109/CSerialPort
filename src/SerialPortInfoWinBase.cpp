@@ -69,15 +69,33 @@ bool enumDetailsSerialPorts(std::vector<itas109::SerialPortInfo> &portInfoList)
 
             itas109::SerialPortInfo m_serialPortInfo;
 #ifdef UNICODE
-            char portNameChar[256], friendlyNameChar[256], hardwareIdChar[256];
-            itas109::IUtils::strncpy(m_serialPortInfo.portName, itas109::IUtils::WCharToANSI(portNameChar, portName), 256);
-            itas109::IUtils::strncpy(m_serialPortInfo.description, itas109::IUtils::WCharToANSI(friendlyNameChar, friendlyName), 256);
-            itas109::IUtils::strncpy(m_serialPortInfo.hardwareId, itas109::IUtils::WCharToANSI(hardwareIdChar, hardwareId), 256);
+#ifdef CSERIALPORT_USE_UTF8
+            itas109::IUtils::WCharToUTF8(m_serialPortInfo.portName, 256, portName);
+            itas109::IUtils::WCharToUTF8(m_serialPortInfo.description, 256, friendlyName);
+            itas109::IUtils::WCharToUTF8(m_serialPortInfo.hardwareId, 256, hardwareId);
+#else
+            itas109::IUtils::WCharToNativeMB(m_serialPortInfo.portName, 256, portName);
+            itas109::IUtils::WCharToNativeMB(m_serialPortInfo.description, 256, friendlyName);
+            itas109::IUtils::WCharToNativeMB(m_serialPortInfo.hardwareId, 256, hardwareId);
+#endif
+#else
+#ifdef CSERIALPORT_USE_UTF8
+            wchar_t portNameWChar[256], friendlyNameWChar[256], hardwareIdWChar[256];
+            // ANSI to WChar
+            itas109::IUtils::NativeMBToWChar(portNameWChar, 256, portName);
+            itas109::IUtils::NativeMBToWChar(friendlyNameWChar, 256, friendlyName);
+            itas109::IUtils::NativeMBToWChar(hardwareIdWChar, 256, hardwareId);
+            // WChar to UTF8
+            itas109::IUtils::WCharToUTF8(m_serialPortInfo.portName, 256, portNameWChar);
+            itas109::IUtils::WCharToUTF8(m_serialPortInfo.description, 256, friendlyNameWChar);
+            itas109::IUtils::WCharToUTF8(m_serialPortInfo.hardwareId, 256, hardwareIdWChar);
 #else
             itas109::IUtils::strncpy(m_serialPortInfo.portName, portName, 256);
             itas109::IUtils::strncpy(m_serialPortInfo.description, friendlyName, 256);
             itas109::IUtils::strncpy(m_serialPortInfo.hardwareId, hardwareId, 256);
 #endif
+#endif
+
             // get usb device's vid and pid
             if (0 == itas109::IUtils::strFind(m_serialPortInfo.hardwareId, "USB\\"))
             {
