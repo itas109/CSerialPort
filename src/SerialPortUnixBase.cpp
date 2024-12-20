@@ -305,6 +305,8 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
 
     if (p_base)
     {
+        int isNew = 0;
+        char dataArray[4096];
         for (; p_base->isThreadRunning();)
         {
             int readbytes = 0;
@@ -314,7 +316,16 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
             if (readbytes >= p_base->getMinByteReadNotify()) // 设定字符数，默认为1
             {
                 char *data = NULL;
-                data = new char[readbytes];
+                if (readbytes <= 4096)
+                {
+                    data = dataArray;
+                    isNew = 0;
+                }
+                else
+                {
+                    data = new char[readbytes];
+                    isNew = 1;
+                }
                 if (data)
                 {
                     if (p_base->p_buffer)
@@ -357,8 +368,11 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
                         }
                     }
 
-                    delete[] data;
-                    data = NULL;
+                    if (isNew)
+                    {
+                        delete[] data;
+                        data = NULL;
+                    }
                 }
             }
             else

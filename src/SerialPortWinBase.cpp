@@ -320,6 +320,8 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
         HANDLE m_mainHandle = p_base->getMainHandle();
         OVERLAPPED m_overlapMonitor = p_base->getOverlapMonitor();
 
+        int isNew = 0;
+        char dataArray[4096];
         for (; p_base->isThreadRunning();)
         {
             eventMask = 0;
@@ -344,7 +346,17 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
                 if (comstat.cbInQue >= p_base->getMinByteReadNotify()) // 设定字符数,默认为1
                 {
                     char *data = NULL;
-                    data = new char[comstat.cbInQue];
+                    if (comstat.cbInQue <= 4096)
+                    {
+                        data = dataArray;
+                        isNew = 0;
+                    }
+                    else
+                    {
+                        data = new char[comstat.cbInQue];
+                        isNew = 1;
+                    }
+
                     if (data)
                     {
                         if (p_base->p_buffer)
@@ -387,8 +399,11 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
                             }
                         }
 
-                        delete[] data;
-                        data = NULL;
+                        if (isNew)
+                        {
+                            delete[] data;
+                            data = NULL;
+                        }
                     }
                 }
             }
