@@ -6,24 +6,53 @@
 
 #include <vector>
 
-class CSPListener : public itas109::CSerialPortListener
+class CSPReadEventListener : public itas109::CSerialPortListener
 {
 public:
-    CSPListener(void *pSerialPort, pFunReadEvent pFun)
+    CSPReadEventListener(void *pSerialPort, pFunReadEvent pFun)
         : m_pSerialPort(pSerialPort)
-        , m_pFun(pFun){};
+        , m_pFun(pFun)
+    {
+    }
+
+    ~CSPReadEventListener()
+    {
+    }
 
     void onReadEvent(const char *portName, unsigned int readBufferLen)
     {
         m_pFun(m_pSerialPort, portName, readBufferLen);
-    };
+    }
 
 private:
     void *m_pSerialPort;
     pFunReadEvent m_pFun;
 };
 
-void CSerialPortAvailablePortInfos(SerialPortInfoArray *portInfoArray)
+class CSPHotPlugEventListener : public itas109::CSerialPortHotPlugListener
+{
+public:
+    CSPHotPlugEventListener(void *pSerialPort, pFunHotPlugEvent pFun)
+        : m_pSerialPort(pSerialPort)
+        , m_pFun(pFun)
+    {
+    }
+
+    ~CSPHotPlugEventListener()
+    {
+    }
+
+    void onHotPlugEvent(const char *portName, int isAdd)
+    {
+        m_pFun(m_pSerialPort, portName, isAdd);
+    }
+
+private:
+    void *m_pSerialPort;
+    pFunHotPlugEvent m_pFun;
+};
+
+void CSerialPortAvailablePortInfosMalloc(SerialPortInfoArray *portInfoArray)
 {
     std::vector<itas109::SerialPortInfo> portInfos = itas109::CSerialPortInfo::availablePortInfos();
     portInfoArray->size = static_cast<unsigned int>(portInfos.size());
@@ -39,7 +68,7 @@ void CSerialPortAvailablePortInfos(SerialPortInfoArray *portInfoArray)
     }
     else
     {
-        portInfoArray->portInfo = nullptr;
+        portInfoArray->portInfo = NULL;
     }
 }
 
@@ -48,7 +77,7 @@ void CSerialPortAvailablePortInfosFree(struct SerialPortInfoArray *portInfoArray
     if (portInfoArray)
     {
         delete[] portInfoArray->portInfo;
-        portInfoArray->portInfo = nullptr;
+        portInfoArray->portInfo = NULL;
         portInfoArray->size = 0;
     }
 }
@@ -64,7 +93,7 @@ void CSerialPortFree(void *pSerialPort)
     if (pCSP)
     {
         delete pCSP;
-        pCSP = nullptr;
+        pCSP = NULL;
     }
 }
 
@@ -130,8 +159,8 @@ int CSerialPortConnectReadEvent(void *pSerialPort, pFunReadEvent pFun)
     itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(pSerialPort);
     if (pCSP)
     {
-        // TODO: delete new CSPListener
-        CSPListener *listen = new CSPListener(pSerialPort, pFun);
+        // TODO: delete new CSPReadEventListener
+        CSPReadEventListener *listen = new CSPReadEventListener(pSerialPort, pFun);
         return pCSP->connectReadEvent(listen);
     }
 
@@ -139,6 +168,30 @@ int CSerialPortConnectReadEvent(void *pSerialPort, pFunReadEvent pFun)
 }
 
 int CSerialPortDisconnectReadEvent(void *pSerialPort)
+{
+    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(pSerialPort);
+    if (pCSP)
+    {
+        return pCSP->disconnectReadEvent();
+    }
+
+    return -1;
+}
+
+int CSerialPortConnectHotPlugEvent(void *pSerialPort, pFunHotPlugEvent pFun)
+{
+    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(pSerialPort);
+    if (pCSP)
+    {
+        // TODO: delete new CSPHotPlugEventListener
+        CSPHotPlugEventListener *listen = new CSPHotPlugEventListener(pSerialPort, pFun);
+        return pCSP->connectHotPlugEvent(listen);
+    }
+
+    return -1;
+}
+
+int CSerialPortDisconnectHotPlugEvent(void *pSerialPort)
 {
     itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(pSerialPort);
     if (pCSP)

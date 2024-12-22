@@ -68,6 +68,11 @@ void onReadEvent(void *pSerialPort, const char *portName, unsigned int readBuffe
     }
 }
 
+void onHotPlugEvent(void *pSerialPort, const char *portName, int isAdd)
+{
+    printf("portName: %s, isAdded: %d\n", portName, isAdd);
+}
+
 int main()
 {
     void *pSerialPort = NULL;
@@ -77,7 +82,12 @@ int main()
     printf("Available Friendly Ports:\n");
 
     struct SerialPortInfoArray portInfoArray = {0};
-    CSerialPortAvailablePortInfos(&portInfoArray);
+    CSerialPortAvailablePortInfosMalloc(&portInfoArray);
+
+    // connect for read
+    CSerialPortConnectReadEvent(pSerialPort, onReadEvent);
+    // connect for hot plug
+    CSerialPortConnectHotPlugEvent(pSerialPort, onHotPlugEvent);
 
     for (unsigned int i = 0; i < portInfoArray.size; ++i)
     {
@@ -126,9 +136,6 @@ int main()
 
         printf("Open %s %s\n", portName, 1 == CSerialPortIsOpen(pSerialPort) ? "Success" : "Failed");
         printf("Code: %d, Message: %s\n", CSerialPortGetLastError(pSerialPort), CSerialPortGetLastErrorMsg(pSerialPort));
-
-        // connect for read
-        CSerialPortConnectReadEvent(pSerialPort, onReadEvent);
 
         // write hex data
         char hex[5];

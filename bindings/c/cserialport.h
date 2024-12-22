@@ -106,7 +106,9 @@ extern "C"
 #endif
     typedef void (*pFunReadEvent)(void * /*pSerialPort*/, const char * /*portName*/, unsigned int /*readBufferLen*/);
 
-    C_DLL_EXPORT void CSerialPortAvailablePortInfos(struct SerialPortInfoArray *portInfoArray);
+    typedef void (*pFunHotPlugEvent)(void * /*pSerialPort*/, const char * /*portName*/, int /*isAdd*/);
+
+    C_DLL_EXPORT void CSerialPortAvailablePortInfosMalloc(struct SerialPortInfoArray *portInfoArray);
 
     C_DLL_EXPORT void CSerialPortAvailablePortInfosFree(struct SerialPortInfoArray *portInfoArray);
 
@@ -134,6 +136,10 @@ extern "C"
     C_DLL_EXPORT int CSerialPortConnectReadEvent(void *pSerialPort, pFunReadEvent pFun);
 
     C_DLL_EXPORT int CSerialPortDisconnectReadEvent(void *pSerialPort);
+
+    C_DLL_EXPORT int CSerialPortConnectHotPlugEvent(void *pSerialPort, pFunHotPlugEvent pFun);
+
+    C_DLL_EXPORT int CSerialPortDisconnectHotPlugEvent(void *pSerialPort);
 
     C_DLL_EXPORT unsigned int CSerialPortGetReadBufferUsedLen(void *pSerialPort);
 
