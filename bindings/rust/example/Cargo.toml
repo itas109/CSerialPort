@@ -1,0 +1,11 @@
+[package]
+name = "CommRust"
+version = "1.0.0"
+edition = "2021"
+authors = ["itas109"]
+description = "CSerialPort Rust Example"
+license = "LGPL-3.0-or-later"
+repository = "https://github.com/itas109/CSerialPort"
+homepage = "https://yourwebsite.com/CommRust"
+keywords = ["cserialport","serial","serialport","serialportassistant","uart","rs232","rustserial"]
+categories = ["networking", "utilities"]
