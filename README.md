@@ -2,7 +2,7 @@
 
 [中文](README_zh_CN.md)
 
-CSerialPort is a lightweight cross-platform serial port library based on C++, which can easy to read and write serial port on multiple operating system. Also support C, C#, Java, Python, Node.js, Electron etc.
+CSerialPort is a lightweight cross-platform serial port library based on C++, which can easy to read and write serial port on multiple operating system. Also support C, C#, Java, Python, Node.js, Electron, Rust etc.
 
 <p>
 <a href="https://github.com/itas109/CSerialPort/releases"><img alt="Version" src="https://img.shields.io/github/release/itas109/CSerialPort"/></a>
@@ -41,7 +41,7 @@ CSerialPort was tested on the following platforms
 - [ ] 2.add communicating protocol
 - [x] 3.support hot plug notify - CSerialPortHotPlugListener
 - [x] 4.higher efficiency notify module - replace with CSerialPortListener
-- [x] 5.support other language - C, C#, Java, Python, Node.js, Electron etc. - more information [bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
+- [x] 5.support other language - C, C#, Java, Python, Node.js, Electron, Rust etc. - more information [bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
 - [x] 6.sync serial port communication
 - [x] 7.new cross-platform gui serial port tool - [CommMaster](https://gitee.com/itas109/CommMaster)
 - [x] 8.add introduction and tutorial of CSerialPort - [CSerialPort Tutorial ](https://blog.csdn.net/itas109/category_12416341.html)
