@@ -1,3 +1,8 @@
 build
-node_modules
 bin
+
+# nodejs
+node_modules
+
+# rust
+target
