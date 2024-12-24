@@ -56,7 +56,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS BUILDING_L
 
 if (WIN32)
 	# for function availableFriendlyPorts
-	target_link_libraries( ${PROJECT_NAME} setupapi)
+	target_link_libraries( ${PROJECT_NAME} user32 advapi32 setupapi)
 	#target_link_libraries( ${PROJECT_NAME} libgcc.a)
 	#target_link_libraries( ${PROJECT_NAME} libstdc++.a)
 	#target_link_libraries( ${PROJECT_NAME} libpthread.a)
