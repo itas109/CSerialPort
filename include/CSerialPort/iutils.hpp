@@ -590,7 +590,7 @@ public:
         compilerName[0] = '\0';
         char compilerVersion[10];
         compilerVersion[0] = '\0';
-        char bindingLang[10];
+        char bindingLang[20];
         bindingLang[0] = '\0';
 
         strFormat(info, len, "OS: %s, ProductName: %s, Arch: %s, ProcessorNum: %d, Compiler: %s, Bit: %d, C++: %ldL, Bindings: %s",
