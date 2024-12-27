@@ -2,7 +2,7 @@
     'targets': [
         {
             'target_name': 'cserialport',
-            'defines': ['CSERIALPORT_USE_UTF8'],
+            'defines': ['CSERIALPORT_DEBUG','CSERIALPORT_USE_UTF8','CSERIALPORT_BINDING_LANGUAGE=Node.js'],
             'cflags!': [ '-fno-exceptions' ],
             'cflags_cc!': [ '-fno-exceptions' ],
             'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ],

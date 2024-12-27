@@ -14,7 +14,7 @@ extern "C" {}
 static mut COUNT_READ: u32 = 0;
 
 unsafe extern "C" fn on_read_event(
-    serial_port: *mut ::std::os::raw::c_void,
+    handle: i_handle_t,
     port_name: *const ::std::os::raw::c_char,
     read_buffer_len: ::std::os::raw::c_uint,
 ) {
@@ -23,7 +23,7 @@ unsafe extern "C" fn on_read_event(
         let data_ptr = data.as_ptr() as *mut c_void;
 
         // read
-        let rec_len = CSerialPortReadData(serial_port, data_ptr, read_buffer_len as c_int);
+        let rec_len = CSerialPortReadData(handle, data_ptr, read_buffer_len as c_int);
 
         if rec_len > 0 {
             let data_str = String::from_utf8_lossy(&data[..rec_len as usize]);
@@ -42,17 +42,13 @@ unsafe extern "C" fn on_read_event(
             );
 
             // return receive data
-            CSerialPortWriteData(
-                serial_port,
-                data.as_ptr() as *const c_void,
-                rec_len as c_int,
-            );
+            CSerialPortWriteData(handle, data.as_ptr() as *const c_void, rec_len as c_int);
         }
     }
 }
 
 unsafe extern "C" fn hot_plug_event(
-    serial_port: *mut ::std::os::raw::c_void,
+    handle: i_handle_t,
     port_name: *const ::std::os::raw::c_char,
     is_add: ::std::os::raw::c_int,
 ) {
@@ -63,9 +59,9 @@ unsafe extern "C" fn hot_plug_event(
 
 fn main() {
     unsafe {
-        let serial_port = CSerialPortMalloc();
+        let handle = CSerialPortMalloc();
 
-        let version = CStr::from_ptr(CSerialPortGetVersion(serial_port));
+        let version = CStr::from_ptr(CSerialPortGetVersion(handle));
         println!("Version: {}", version.to_str().unwrap());
 
         let mut port_info_array = SerialPortInfoArray {
@@ -75,9 +71,9 @@ fn main() {
         CSerialPortAvailablePortInfosMalloc(&mut port_info_array);
 
         // connect for read
-        CSerialPortConnectReadEvent(serial_port, Some(on_read_event));
+        CSerialPortConnectReadEvent(handle, Some(on_read_event));
         // connect for hot plug
-        CSerialPortConnectHotPlugEvent(serial_port, Some(hot_plug_event));
+        CSerialPortConnectHotPlugEvent(handle, Some(hot_plug_event));
 
         if 0 == port_info_array.size {
             println!("No Valid Port");
@@ -117,7 +113,7 @@ fn main() {
             println!("Port Name: {}", port_name_str);
 
             CSerialPortInit(
-                serial_port,
+                handle,
                 port_name.as_ptr(),   // windows:COM1 Linux:/dev/ttyS0
                 9600,                 // baudrate
                 Parity_ParityNone,    // parity
@@ -126,32 +122,32 @@ fn main() {
                 FlowControl_FlowNone, // flow
                 4096,                 // read buffer size
             );
-            CSerialPortSetReadIntervalTimeout(serial_port, 0); // read interval timeout
+            CSerialPortSetReadIntervalTimeout(handle, 0); // read interval timeout
 
-            CSerialPortOpen(serial_port);
+            CSerialPortOpen(handle);
 
-            if 1 == CSerialPortIsOpen(serial_port) {
+            if 1 == CSerialPortIsOpen(handle) {
                 println!("Open {} Success", port_name_str);
             } else {
                 println!("Open {} Failed", port_name_str);
             }
-            let code = CSerialPortGetLastError(serial_port);
-            let message = CStr::from_ptr(CSerialPortGetLastErrorMsg(serial_port));
+            let code = CSerialPortGetLastError(handle);
+            let message = CStr::from_ptr(CSerialPortGetLastErrorMsg(handle));
             let message_str = message.to_str().unwrap();
             println!("Code: {}, Message: {}", code, message_str);
 
             // write hex data
             let hex: [u8; 5] = [0x31, 0x32, 0x33, 0x34, 0x35];
-            CSerialPortWriteData(serial_port, hex.as_ptr() as *const c_void, 5);
+            CSerialPortWriteData(handle, hex.as_ptr() as *const c_void, 5);
 
             // write str data
             let data = CString::new("itas109").unwrap();
-            CSerialPortWriteData(serial_port, data.as_ptr() as *const c_void, 7);
+            CSerialPortWriteData(handle, data.as_ptr() as *const c_void, 7);
         }
 
         loop {}
 
         // CSerialPortAvailablePortInfosFree(&mut port_info_array);
-        // CSerialPortFree(serial_port);
+        // CSerialPortFree(handle);
     }
 }

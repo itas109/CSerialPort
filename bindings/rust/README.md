@@ -4,6 +4,7 @@
 rust: 1.83.0 (90b35a623 2024-11-26)
 bindgen: 0.71.1
 cmake: 3.26.4
+llvm(libclang): 18.1.8
 ```
 
 ## Install cmake
