@@ -1,6 +1,18 @@
 #ifndef __C_CSERIALPORT_H__
 #define __C_CSERIALPORT_H__
 
+#if defined(_MSC_VER) // msvc
+#ifdef _WIN64
+typedef unsigned __int64 i_handle_t; // windows 64bit
+#else
+typedef unsigned int i_handle_t; // windows 32bit
+#endif
+#elif defined(__LP64__) || defined(_LP64)
+typedef unsigned long i_handle_t; // LP64(long pointer 64) // 64bit OS(unix/linux/macos)
+#else
+typedef unsigned int i_handle_t; // ILP32(int long pointer 32) // 32bit OS(windows/unix/linux/macos)
+#endif
+
 #ifdef _WIN32
 #define C_DLL_EXPORT __declspec(dllexport)
 #else
@@ -24,24 +36,6 @@ enum OperateMode
 {
     AsynchronousOperate,
     SynchronousOperate
-};
-
-enum BaudRate
-{
-    BaudRate110 = 110,
-    BaudRate300 = 300,
-    BaudRate600 = 600,
-    BaudRate1200 = 1200,
-    BaudRate2400 = 2400,
-    BaudRate4800 = 4800,
-    BaudRate9600 = 9600,
-    BaudRate14400 = 14400,
-    BaudRate19200 = 19200,
-    BaudRate38400 = 38400,
-    BaudRate56000 = 56000,
-    BaudRate57600 = 57600,
-    BaudRate115200 = 115200,
-    BaudRate921600 = 921600
 };
 
 enum DataBits
@@ -75,135 +69,110 @@ enum FlowControl
     FlowSoftware = 2
 };
 
-enum SerialPortError
-{
-    ErrorUnknown = -1,
-    ErrorOK = 0,
-    ErrorFail = 1,
-    ErrorNotImplemented,
-    ErrorInner,
-    ErrorNullPointer,
-    ErrorInvalidParam,
-    ErrorAccessDenied,
-    ErrorOutOfMemory,
-    ErrorTimeout,
-
-    ErrorNotInit,
-    ErrorInitFailed,
-    ErrorAlreadyExist,
-    ErrorNotExist,
-    ErrorAlreadyOpen,
-    ErrorNotOpen,
-    ErrorOpenFailed,
-    ErrorCloseFailed,
-    ErrorWriteFailed,
-    ErrorReadFailed
-};
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-    typedef void (*pFunReadEvent)(void * /*pSerialPort*/, const char * /*portName*/, unsigned int /*readBufferLen*/);
+    typedef void (*pFunReadEvent)(i_handle_t /*handle*/, const char * /*portName*/, unsigned int /*readBufferLen*/);
 
-    typedef void (*pFunHotPlugEvent)(void * /*pSerialPort*/, const char * /*portName*/, int /*isAdd*/);
+    typedef void (*pFunHotPlugEvent)(i_handle_t /*handle*/, const char * /*portName*/, int /*isAdd*/);
 
     C_DLL_EXPORT void CSerialPortAvailablePortInfosMalloc(struct SerialPortInfoArray *portInfoArray);
 
     C_DLL_EXPORT void CSerialPortAvailablePortInfosFree(struct SerialPortInfoArray *portInfoArray);
 
-    C_DLL_EXPORT void *CSerialPortMalloc();
+    C_DLL_EXPORT i_handle_t CSerialPortMalloc();
 
-    C_DLL_EXPORT void CSerialPortFree(void *pSerialPort);
+    C_DLL_EXPORT void CSerialPortFree(i_handle_t handle);
 
-    C_DLL_EXPORT void CSerialPortInit(void *pSerialPort,
-                           const char *portName,
-                           int baudRate,
-                           enum Parity parity,
-                           enum DataBits dataBits,
-                           enum StopBits stopbits,
-                           enum FlowControl flowControl,
-                           unsigned int readBufferSize);
+    C_DLL_EXPORT void CSerialPortInit(i_handle_t handle,
+                                      const char *portName,
+                                      int baudRate,
+                                      enum Parity parity,
+                                      enum DataBits dataBits,
+                                      enum StopBits stopbits,
+                                      enum FlowControl flowControl,
+                                      unsigned int readBufferSize);
 
-    C_DLL_EXPORT void CSerialPortSetOperateMode(void *pSerialPort, enum OperateMode operateMode);
+    C_DLL_EXPORT void CSerialPortSetOperateMode(i_handle_t handle, enum OperateMode operateMode);
 
-    C_DLL_EXPORT int CSerialPortOpen(void *pSerialPort);
+    C_DLL_EXPORT int CSerialPortOpen(i_handle_t handle);
 
-    C_DLL_EXPORT void CSerialPortClose(void *pSerialPort);
+    C_DLL_EXPORT void CSerialPortClose(i_handle_t handle);
 
-    C_DLL_EXPORT int CSerialPortIsOpen(void *pSerialPort);
+    C_DLL_EXPORT int CSerialPortIsOpen(i_handle_t handle);
 
-    C_DLL_EXPORT int CSerialPortConnectReadEvent(void *pSerialPort, pFunReadEvent pFun);
+    C_DLL_EXPORT int CSerialPortConnectReadEvent(i_handle_t handle, pFunReadEvent pFun);
 
-    C_DLL_EXPORT int CSerialPortDisconnectReadEvent(void *pSerialPort);
+    C_DLL_EXPORT int CSerialPortDisconnectReadEvent(i_handle_t handle);
 
-    C_DLL_EXPORT int CSerialPortConnectHotPlugEvent(void *pSerialPort, pFunHotPlugEvent pFun);
+    C_DLL_EXPORT int CSerialPortConnectHotPlugEvent(i_handle_t handle, pFunHotPlugEvent pFun);
 
-    C_DLL_EXPORT int CSerialPortDisconnectHotPlugEvent(void *pSerialPort);
+    C_DLL_EXPORT int CSerialPortDisconnectHotPlugEvent(i_handle_t handle);
 
-    C_DLL_EXPORT unsigned int CSerialPortGetReadBufferUsedLen(void *pSerialPort);
+    C_DLL_EXPORT unsigned int CSerialPortGetReadBufferUsedLen(i_handle_t handle);
 
-    C_DLL_EXPORT int CSerialPortReadData(void *pSerialPort, void *data, int size);
+    C_DLL_EXPORT int CSerialPortReadData(i_handle_t handle, void *data, int size);
 
-    C_DLL_EXPORT int CSerialPortReadAllData(void *pSerialPort, void *data);
+    C_DLL_EXPORT int CSerialPortReadAllData(i_handle_t handle, void *data);
 
-    C_DLL_EXPORT int CSerialPortReadLineData(void *pSerialPort, void *data, int size);
+    C_DLL_EXPORT int CSerialPortReadLineData(i_handle_t handle, void *data, int size);
 
-    C_DLL_EXPORT int CSerialPortWriteData(void *pSerialPort, const void *data, int size);
+    C_DLL_EXPORT int CSerialPortWriteData(i_handle_t handle, const void *data, int size);
 
-    C_DLL_EXPORT void CSerialPortSetDebugModel(void *pSerialPort, int isDebug);
+    C_DLL_EXPORT void CSerialPortSetDebugModel(i_handle_t handle, int isDebug);
 
-    C_DLL_EXPORT void CSerialPortSetReadIntervalTimeout(void *pSerialPort, unsigned int msecs);
+    C_DLL_EXPORT void CSerialPortSetReadIntervalTimeout(i_handle_t handle, unsigned int msecs);
 
-    C_DLL_EXPORT unsigned int CSerialPortGetReadIntervalTimeout(void *pSerialPort);
+    C_DLL_EXPORT unsigned int CSerialPortGetReadIntervalTimeout(i_handle_t handle);
 
-    C_DLL_EXPORT void CSerialPortSetMinByteReadNotify(void *pSerialPort, unsigned int minByteReadNotify);
+    C_DLL_EXPORT void CSerialPortSetMinByteReadNotify(i_handle_t handle, unsigned int minByteReadNotify);
 
-    C_DLL_EXPORT int CSerialPortFlushBuffers(void *pSerialPort);
+    C_DLL_EXPORT int CSerialPortFlushBuffers(i_handle_t handle);
 
-    C_DLL_EXPORT int CSerialPortFlushReadBuffers(void *pSerialPort);
+    C_DLL_EXPORT int CSerialPortFlushReadBuffers(i_handle_t handle);
 
-    C_DLL_EXPORT int CSerialPortFlushWriteBuffers(void *pSerialPort);
+    C_DLL_EXPORT int CSerialPortFlushWriteBuffers(i_handle_t handle);
 
-    C_DLL_EXPORT int CSerialPortGetLastError(void *pSerialPort);
+    C_DLL_EXPORT int CSerialPortGetLastError(i_handle_t handle);
 
-    C_DLL_EXPORT const char *CSerialPortGetLastErrorMsg(void *pSerialPort);
+    C_DLL_EXPORT const char *CSerialPortGetLastErrorMsg(i_handle_t handle);
 
-    C_DLL_EXPORT void CSerialPortClearError(void *pSerialPort);
+    C_DLL_EXPORT void CSerialPortClearError(i_handle_t handle);
 
-    C_DLL_EXPORT void CSerialPortSetPortName(void *pSerialPort, const char *portName);
+    C_DLL_EXPORT void CSerialPortSetPortName(i_handle_t handle, const char *portName);
 
-    C_DLL_EXPORT const char *CSerialPortGetPortName(void *pSerialPort);
+    C_DLL_EXPORT const char *CSerialPortGetPortName(i_handle_t handle);
 
-    C_DLL_EXPORT void CSerialPortSetBaudRate(void *pSerialPort, int baudRate);
+    C_DLL_EXPORT void CSerialPortSetBaudRate(i_handle_t handle, int baudRate);
 
-    C_DLL_EXPORT int CSerialPortGetBaudRate(void *pSerialPort);
+    C_DLL_EXPORT int CSerialPortGetBaudRate(i_handle_t handle);
 
-    C_DLL_EXPORT void CSerialPortSetParity(void *pSerialPort, enum Parity parity);
+    C_DLL_EXPORT void CSerialPortSetParity(i_handle_t handle, enum Parity parity);
 
-    C_DLL_EXPORT enum Parity CSerialPortGetParity(void *pSerialPort);
+    C_DLL_EXPORT enum Parity CSerialPortGetParity(i_handle_t handle);
 
-    C_DLL_EXPORT void CSerialPortSetDataBits(void *pSerialPort, enum DataBits dataBits);
+    C_DLL_EXPORT void CSerialPortSetDataBits(i_handle_t handle, enum DataBits dataBits);
 
-    C_DLL_EXPORT enum DataBits CSerialPortGetDataBits(void *pSerialPort);
+    C_DLL_EXPORT enum DataBits CSerialPortGetDataBits(i_handle_t handle);
 
-    C_DLL_EXPORT void CSerialPortSetStopBits(void *pSerialPort, enum StopBits stopbits);
+    C_DLL_EXPORT void CSerialPortSetStopBits(i_handle_t handle, enum StopBits stopbits);
 
-    C_DLL_EXPORT enum StopBits CSerialPortGetStopBits(void *pSerialPort);
+    C_DLL_EXPORT enum StopBits CSerialPortGetStopBits(i_handle_t handle);
 
-    C_DLL_EXPORT void CSerialPortSetFlowControl(void *pSerialPort, enum FlowControl flowControl);
+    C_DLL_EXPORT void CSerialPortSetFlowControl(i_handle_t handle, enum FlowControl flowControl);
 
-    C_DLL_EXPORT enum FlowControl CSerialPortGetFlowControl(void *pSerialPort);
+    C_DLL_EXPORT enum FlowControl CSerialPortGetFlowControl(i_handle_t handle);
 
-    C_DLL_EXPORT void CSerialPortSetReadBufferSize(void *pSerialPort, unsigned int size);
+    C_DLL_EXPORT void CSerialPortSetReadBufferSize(i_handle_t handle, unsigned int size);
 
-    C_DLL_EXPORT unsigned int CSerialPortGetReadBufferSize(void *pSerialPort);
+    C_DLL_EXPORT unsigned int CSerialPortGetReadBufferSize(i_handle_t handle);
 
-    C_DLL_EXPORT void CSerialPortSetDtr(void *pSerialPort, int set);
+    C_DLL_EXPORT void CSerialPortSetDtr(i_handle_t handle, int set);
 
-    C_DLL_EXPORT void CSerialPortSetRts(void *pSerialPort, int set);
+    C_DLL_EXPORT void CSerialPortSetRts(i_handle_t handle, int set);
 
-    C_DLL_EXPORT const char *CSerialPortGetVersion(void *pSerialPort);
+    C_DLL_EXPORT const char *CSerialPortGetVersion(i_handle_t handle);
 
 #ifdef __cplusplus
 }

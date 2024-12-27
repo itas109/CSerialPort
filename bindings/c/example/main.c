@@ -32,7 +32,7 @@ void char2hexstr(char *dest, const char *src, int len)
     dest[5 * len] = '\0';
 }
 
-void onReadEvent(void *pSerialPort, const char *portName, unsigned int readBufferLen)
+void onReadEvent(i_handle_t handle, const char *portName, unsigned int readBufferLen)
 {
     if (readBufferLen > 0)
     {
@@ -41,7 +41,7 @@ void onReadEvent(void *pSerialPort, const char *portName, unsigned int readBuffe
         if (data)
         {
             // read
-            int recLen = CSerialPortReadData(pSerialPort, data, readBufferLen);
+            int recLen = CSerialPortReadData(handle, data, readBufferLen);
 
             if (recLen > 0)
             {
@@ -59,7 +59,7 @@ void onReadEvent(void *pSerialPort, const char *portName, unsigned int readBuffe
                 }
 
                 // return receive data
-                CSerialPortWriteData(pSerialPort, data, recLen);
+                CSerialPortWriteData(handle, data, recLen);
             }
 
             free(data);
@@ -68,16 +68,16 @@ void onReadEvent(void *pSerialPort, const char *portName, unsigned int readBuffe
     }
 }
 
-void onHotPlugEvent(void *pSerialPort, const char *portName, int isAdd)
+void onHotPlugEvent(i_handle_t handle, const char *portName, int isAdd)
 {
     printf("portName: %s, isAdded: %d\n", portName, isAdd);
 }
 
 int main()
 {
-    void *pSerialPort = NULL;
-    pSerialPort = CSerialPortMalloc();
-    printf("Version: %s\n\n", CSerialPortGetVersion(pSerialPort));
+    i_handle_t handle = 0;
+    handle = CSerialPortMalloc();
+    printf("Version: %s\n\n", CSerialPortGetVersion(handle));
 
     printf("Available Friendly Ports:\n");
 
@@ -85,9 +85,9 @@ int main()
     CSerialPortAvailablePortInfosMalloc(&portInfoArray);
 
     // connect for read
-    CSerialPortConnectReadEvent(pSerialPort, onReadEvent);
+    CSerialPortConnectReadEvent(handle, onReadEvent);
     // connect for hot plug
-    CSerialPortConnectHotPlugEvent(pSerialPort, onHotPlugEvent);
+    CSerialPortConnectHotPlugEvent(handle, onHotPlugEvent);
 
     for (unsigned int i = 0; i < portInfoArray.size; ++i)
     {
@@ -121,7 +121,7 @@ int main()
 
         CSerialPortAvailablePortInfosFree(&portInfoArray);
 
-        CSerialPortInit(pSerialPort,
+        CSerialPortInit(handle,
                         portName,   // windows:COM1 Linux:/dev/ttyS0
                         9600,       // baudrate
                         ParityNone, // parity
@@ -130,12 +130,12 @@ int main()
                         FlowNone,   // flow
                         4096        // read buffer size
         );
-        CSerialPortSetReadIntervalTimeout(pSerialPort, 0); // read interval timeout
+        CSerialPortSetReadIntervalTimeout(handle, 0); // read interval timeout
 
-        CSerialPortOpen(pSerialPort);
+        CSerialPortOpen(handle);
 
-        printf("Open %s %s\n", portName, 1 == CSerialPortIsOpen(pSerialPort) ? "Success" : "Failed");
-        printf("Code: %d, Message: %s\n", CSerialPortGetLastError(pSerialPort), CSerialPortGetLastErrorMsg(pSerialPort));
+        printf("Open %s %s\n", portName, 1 == CSerialPortIsOpen(handle) ? "Success" : "Failed");
+        printf("Code: %d, Message: %s\n", CSerialPortGetLastError(handle), CSerialPortGetLastErrorMsg(handle));
 
         // write hex data
         char hex[5];
@@ -144,19 +144,19 @@ int main()
         hex[2] = 0x33;
         hex[3] = 0x34;
         hex[4] = 0x35;
-        CSerialPortWriteData(pSerialPort, hex, sizeof(hex));
+        CSerialPortWriteData(handle, hex, sizeof(hex));
 
         // write str data
-        CSerialPortWriteData(pSerialPort, "itas109", 7);
+        CSerialPortWriteData(handle, "itas109", 7);
     }
 
     for (;;)
     {
     }
 
-    CSerialPortDisconnectReadEvent(pSerialPort);
+    CSerialPortDisconnectReadEvent(handle);
 
-    CSerialPortFree(pSerialPort);
+    CSerialPortFree(handle);
 
     return 0;
 }
