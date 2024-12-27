@@ -13,6 +13,10 @@
 #include <stdarg.h> // va_start
 #include <stdio.h>  // vsprintf
 
+// macro to string
+#define STRINGIFY(x) #x
+#define MACRO_TO_STRING(x) STRINGIFY(x)
+
 // get cpu cores headers
 #if defined(_WIN32)
 #include <windows.h> // GetSystemInfo
@@ -566,6 +570,14 @@ public:
 #endif
     }
 
+    static char *getBindingLanguage(char *bindingLanguage, unsigned int len)
+    {
+#ifdef CSERIALPORT_BINDING_LANGUAGE
+        strncpy(bindingLanguage, MACRO_TO_STRING(CSERIALPORT_BINDING_LANGUAGE), len);
+#endif
+        return bindingLanguage;
+    }
+
     static const char *getCompilerInfo(char *info, unsigned int len)
     {
         char osName[10];
@@ -578,15 +590,18 @@ public:
         compilerName[0] = '\0';
         char compilerVersion[10];
         compilerVersion[0] = '\0';
+        char bindingLang[10];
+        bindingLang[0] = '\0';
 
-        strFormat(info, len, "OS: %s, ProductName: %s, Arch: %s, ProcessorNum: %d, Compiler: %s, Bit: %d, C++: %ldL",
+        strFormat(info, len, "OS: %s, ProductName: %s, Arch: %s, ProcessorNum: %d, Compiler: %s, Bit: %d, C++: %ldL, Bindings: %s",
                   getOperatingSystemName(osName, sizeof(osName)),      // OperatingSystemName
                   getProductName(productName, sizeof(productName)),    // ProductName
                   getArchitectureName(archName, sizeof(archName)),     // ArchitectureName
                   getNumberOfProcessors(),                             // NumberOfProcessors
                   getCompilerName(compilerName, sizeof(compilerName)), // CompilerName
                   getApplicationBit(),                                 // application bit 32 or 64
-                  getCppStdVersion()                                   // c++ std version
+                  getCppStdVersion(),                                  // c++ std version
+                  getBindingLanguage(bindingLang, sizeof(bindingLang)) // binding language
         );
 
         return info;
