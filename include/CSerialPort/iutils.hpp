@@ -538,6 +538,7 @@ public:
                 strFormat(compilerName, len, "vs2019(%d)", _MSC_VER);
                 break;
             case 193:
+            case 194:
                 strFormat(compilerName, len, "vs2022(%d)", _MSC_VER);
                 break;
             default:
