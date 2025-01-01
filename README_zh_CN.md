@@ -228,4 +228,5 @@ https://github.com/itas109/CommLite
 
 # License 开源协议
 
-自 V3.0.0.171216 版本后采用[GNU Lesser General Public License v3.0](LICENSE)
+CSerialPort v3.0.0.171216 - v4.3.1.240204 授权许可为 LGPLv3
+CSerialPort V4.3.2 - 最新版授权许可为 [LGPLv3 with LGPL-3.0-linking-exception](LICENSE)

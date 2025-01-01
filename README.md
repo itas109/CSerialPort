@@ -227,4 +227,5 @@ Thanks for [Remon Spekreijse's serial library](http://www.codeguru.com/cpp/i-n/n
 
 # License
 
-since V3.0.0.171216 use [GNU Lesser General Public License v3.0](LICENSE)
+CSerialPort v3.0.0.171216 - v4.3.1.240204 is licensed under the LGPLv3
+CSerialPort v4.3.2 - latest is licensed under the [LGPLv3 with LGPL-3.0-linking-exception](LICENSE)

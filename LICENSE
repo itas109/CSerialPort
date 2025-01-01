@@ -1,3 +1,7 @@
+All files in this repository are licensed as follows. If you contribute
+to this repository, it is assumed that you license your contribution
+under the same license unless you state otherwise.
+
 Copyright (C) 2014 itas109 <itas109@qq.com>.
 
 All Rights Reserved.
@@ -14,10 +18,24 @@ Except as contained in this notice, the name of a copyright holder shall not
 be used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization of the copyright holder.
 
-You may use, copy, modify, and distribute the CSerialPort under the terms of
-GNU Lesser General Public License version 3, which is displayed below.
+This software is licensed under the LGPLv3, included below.
 
--------------------------------------------------------------------------
+As a special exception to the GNU Lesser General Public License version 3
+("LGPL3"), the copyright holders of this Library give you permission to
+convey to a third party a Combined Work that links statically or dynamically
+to this Library without providing any Minimal Corresponding Source or
+Minimal Application Code as set out in 4d or providing the installation
+information set out in section 4e, provided that you comply with the other
+provisions of LGPL3 and provided that you meet, for the Application the
+terms and conditions of the license(s) which apply to the Application.
+
+Except as stated in this special exception, the provisions of LGPL3 will
+continue to comply in full to this Library. If you modify this Library, you
+may apply this exception to your version of this Library, but you are not
+obliged to do so. If you do not wish to do so, delete this exception
+statement from your version. This exception does not (and cannot) modify any
+license terms which apply to the Application, with which you must still
+comply.
 
                    GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
