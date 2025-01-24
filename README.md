@@ -1,4 +1,5 @@
 # [CSerialPort](https://github.com/itas109/CSerialPort)
+[<img src="https://api.gitsponsors.com/api/badge/img?id=58247015" height="20">](https://api.gitsponsors.com/api/badge/link?p=nHYln+gta+JEeicvjCGX4KX2vDIlnp1lmbeYatCDP4TB9RjTB3u72ErofmFq7HMIPmQ4P97huG4wQgwTeyO9W4Jn+NET4WFZq0dtVs+Y6uB2BKFQ8576OJr4KAZsu4RMfO9ANvXNJebpIZyuV+Ex8w==)
 
 [中文](README_zh_CN.md)
 
@@ -28,8 +29,7 @@ CSerialPort was tested on the following platforms
 
 - Windows ( x86, x86_64, arm64 )
 - Linux ( x86, x86_64, arm, arm64/aarch64, mips64el, riscv, s390x, ppc64le )
-- macOS ( x86_64 )
-- Raspberry Pi ( armv7l )
+- macOS ( x86_64, apple silicon )
 - FreeBSD ( x86_64 )
 - ...
 
@@ -58,8 +58,8 @@ CSerialPort was tested on the following platforms
 
 # Latest version
 
-## Version: 4.3.1.240204
-by itas109 on 2024-02-04
+## Version: 4.3.2.250203
+by itas109 on 2025-02-03
 
 # Quick Start
 
@@ -75,7 +75,7 @@ run demo ( for example serial port lookback test on linux)
 
 ```
 CSerialPort/bin $ ./CSerialPortDemoNoGui 
-Version: https://github.com/itas109/CSerialPort - V4.3.1.240204
+Version: https://github.com/itas109/CSerialPort - v4.3.2.250203
 
 AvailableFriendlyPorts:
 1 - /dev/ttyUSB0 QinHeng CH340 serial converter 1a86:7523
@@ -228,4 +228,5 @@ Thanks for [Remon Spekreijse's serial library](http://www.codeguru.com/cpp/i-n/n
 # License
 
 CSerialPort v3.0.0.171216 - v4.3.1.240204 is licensed under the LGPLv3
-CSerialPort v4.3.2 - latest is licensed under the [LGPLv3 with LGPL-3.0-linking-exception](LICENSE)
+
+CSerialPort v4.3.2.250203 - latest is licensed under the [LGPLv3 with LGPL-3.0-linking-exception](LICENSE)

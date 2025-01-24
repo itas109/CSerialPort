@@ -1,4 +1,5 @@
 # [CSerialPort](https://github.com/itas109/CSerialPort)
+[<img src="https://api.gitsponsors.com/api/badge/img?id=58247015" height="20">](https://api.gitsponsors.com/api/badge/link?p=nHYln+gta+JEeicvjCGX4KX2vDIlnp1lmbeYatCDP4TB9RjTB3u72ErofmFq7HMIPmQ4P97huG4wQgwTeyO9W4Jn+NET4WFZq0dtVs+Y6uB2BKFQ8576OJr4KAZsu4RMfO9ANvXNJebpIZyuV+Ex8w==)
 
 [English](README.md)
 
@@ -28,8 +29,7 @@ CSerialPort已经在以下平台做过测试
 
 - Windows ( x86, x86_64, arm64 )
 - Linux ( x86, x86_64, arm, arm64/aarch64, mips64el, riscv, s390x, ppc64le )
-- macOS ( x86_64 )
-- Raspberry Pi ( armv7l )
+- macOS ( x86_64, apple silicon )
 - FreeBSD ( x86_64 )
 - ...
 
@@ -59,8 +59,8 @@ CSerialPort已经在以下平台做过测试
 
 # Latest version 最新版本
 
-## Version: 4.3.1.240204
-by itas109 on 2024-02-04
+## Version: 4.3.2.250203
+by itas109 on 2025-02-03
 
 # Quick Start 快速开始
 
@@ -76,7 +76,7 @@ $ cmake --build .
 
 ```
 CSerialPort/bin $ ./CSerialPortDemoNoGui 
-Version: https://github.com/itas109/CSerialPort - V4.3.1.240204
+Version: https://github.com/itas109/CSerialPort - v4.3.2.250203
 
 AvailableFriendlyPorts:
 1 - /dev/ttyUSB0 QinHeng CH340 serial converter 1a86:7523
@@ -229,4 +229,5 @@ https://github.com/itas109/CommLite
 # License 开源协议
 
 CSerialPort v3.0.0.171216 - v4.3.1.240204 授权许可为 LGPLv3
-CSerialPort V4.3.2 - 最新版授权许可为 [LGPLv3 with LGPL-3.0-linking-exception](LICENSE)
+
+CSerialPort v4.3.2.250203 - 最新版授权许可为 [LGPLv3 with LGPL-3.0-linking-exception](LICENSE)
