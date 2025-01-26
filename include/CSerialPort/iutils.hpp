@@ -426,7 +426,26 @@ public:
         }
 
 #elif defined(__linux__)
-        strncpy(productName, "Linux", len);
+        char prettyName[256] = "Linux";
+        FILE *fp = fopen("/etc/os-release", "r");
+        if (NULL != fp)
+        {
+            char line[256];
+
+            while (fgets(line, sizeof(line), fp))
+            {
+                if (0 == strFind(line, "PRETTY_NAME="))
+                {
+                    // PRETTY_NAME="Ubuntu 22.04.2 LTS" PRETTY_NAME="CentOS Linux 7 (Core)"
+                    strScan(line, "PRETTY_NAME=\"%[^\"]\"", &prettyName);
+                    break;
+                }
+            }
+
+            fclose(fp);
+        }
+
+        strncpy(productName, prettyName, len);
 #elif defined(__APPLE__)
         strncpy(productName, "MacOS", len);
 #elif defined(__ANDROID__)
