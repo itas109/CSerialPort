@@ -29,7 +29,7 @@ class CSerialPortHotPlug
 {
 public:
     CSerialPortHotPlug()
-        : m_thread(NULL)
+        : m_thread(I_THREAD_INITIALIZER)
         , p_listener(NULL)
     {
         init();
@@ -37,10 +37,10 @@ public:
 
     ~CSerialPortHotPlug()
     {
-        if (m_thread != NULL)
+        if (m_thread != I_THREAD_INITIALIZER)
         {
             i_thread_join(m_thread);
-            m_thread = NULL;
+            m_thread = I_THREAD_INITIALIZER;
         }
         UnregisterClass(CLASS_NAME, GetModuleHandle(NULL));
     }

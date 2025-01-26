@@ -28,7 +28,7 @@ public:
         : m_notificationPort(NULL)
         , m_serialPortAddIterator(0)
         , m_serialPortRemoveIterator(0)
-        , m_thread(NULL)
+        , m_thread(I_THREAD_INITIALIZER)
         , p_listener(NULL)
 
     {
@@ -36,10 +36,10 @@ public:
     }
     ~CSerialPortHotPlug()
     {
-        if (m_thread != NULL)
+        if (m_thread != I_THREAD_INITIALIZER)
         {
             i_thread_join(m_thread);
-            m_thread = NULL;
+            m_thread = I_THREAD_INITIALIZER;
         }
 
         if (m_notificationPort != NULL)
