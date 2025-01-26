@@ -9,7 +9,7 @@ CSerialPort is a lightweight cross-platform serial port library based on C++, wh
 <a href="https://github.com/itas109/CSerialPort/releases"><img alt="Version" src="https://img.shields.io/github/release/itas109/CSerialPort"/></a>
 <a href="https://github.com/itas109/CSerialPort/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/itas109/CSerialPort"/></a>
 <a href="https://gitee.com/itas109/CSerialPort"><img alt="Stars" src="https://gitee.com/itas109/CSerialPort/badge/star.svg?theme=dark"/></a>
-<a href="https://github.com/itas109/CSerialPort/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-LGPL%203.0-orange"/></a>
+<a href="https://github.com/itas109/CSerialPort/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-LGPLv3%20with%20linking%20exception-orange"/></a>
 <img alt="language" src="https://img.shields.io/badge/language-c++-red"/>
 <img alt="appveyor-ci" src="https://ci.appveyor.com/api/projects/status/a4t6ddubhns561kh?svg=true"/>
 <!-- <img alt="travis-ci" src="https://www.travis-ci.org/itas109/CSerialPort.svg?branch=master"/> -->
@@ -75,25 +75,26 @@ run demo ( for example serial port lookback test on linux)
 
 ```
 CSerialPort/bin $ ./CSerialPortDemoNoGui 
+[INFO] CSerialPort - OS: Linux, ProductName: Ubuntu 22.04.2 LTS, Arch: x86_64, ProcessorNum: 4, Compiler: gcc(11.4.0), Bit: 64, C++: 201703L, Bindings: , Version: https://github.com/itas109/CSerialPort - v4.3.2.250203
 Version: https://github.com/itas109/CSerialPort - v4.3.2.250203
 
 AvailableFriendlyPorts:
-1 - /dev/ttyUSB0 QinHeng CH340 serial converter 1a86:7523
+1 - /dev/ttyCH341USB0 QinHeng CH340 serial converter 1a86:7523
 2 - /dev/pts/0 0 pty terminal
 
 Please Input The Index Of Port(1 - 2)
 1
-Port Name: /dev/ttyUSB0
-[CSERIALPORT_DEBUG] openPort - portName: /dev/ttyUSB0, baudRate: 9600, dataBit: 8, parity: 0, stopBit: 0, flowControl: 0, mode: async, readBufferSize:4096(4096), readIntervalTimeoutMS: 0, minByteReadNotify: 1
-[CSERIALPORT_DEBUG] openPort - open /dev/ttyUSB0. code: 0, message: success
-Open /dev/ttyUSB0 Success
+Port Name: /dev/ttyCH341USB0
+[INFO] openPort - portName: /dev/ttyCH341USB0, baudRate: 9600, dataBit: 8, parity: 0, stopBit: 0, flowControl: 0, mode: async, readBufferSize:4096(4096), readIntervalTimeoutMS: 0, minByteReadNotify: 1, byteReadBufferFullNotify: 3276
+[INFO] openPort - open /dev/ttyCH341USB0. code: 0, message: success
+Open /dev/ttyCH341USB0 Success
 Code: 0, Message: success
-[CSERIALPORT_DEBUG] writeData - write. len: 5, hex(top100): 3132333435
-[CSERIALPORT_DEBUG] writeData - write. len: 7, hex(top100): 69746173313039
-[CSERIALPORT_DEBUG] commThreadMonitor - write buffer(usedLen 12). len: 12, hex(top100): 313233343569746173313039
-[CSERIALPORT_DEBUG] commThreadMonitor - onReadEvent. portName: /dev/ttyUSB0, readLen: 12
-[CSERIALPORT_DEBUG] readData - read. len: 12, hex(top100): 313233343569746173313039
-/dev/ttyUSB0 - Count: 1, Length: 12, Str: 12345itas109, Hex: 0x31 0x32 0x33 0x34 0x35 0x69 0x74 0x61 0x73 0x31 0x30 0x39 
+[INFO] writeData - write. len: 5, hex(top100): 3132333435
+[INFO] writeData - write. len: 7, hex(top100): 69746173313039
+[INFO] commThreadMonitor - write buffer(usedLen 12). len: 12, hex(top100): 313233343569746173313039
+[INFO] commThreadMonitor - onReadEvent min read byte. portName: /dev/ttyCH341USB0, readLen: 12
+[INFO] readData - read. len: 12, hex(top100): 313233343569746173313039
+/dev/ttyCH341USB0 - Count: 1, Length: 12, Str: 12345itas109, Hex: 0x31 0x32 0x33 0x34 0x35 0x69 0x74 0x61 0x73 0x31 0x30 0x39
 ```
 
 # Install CSerialPort Using Vcpkg
