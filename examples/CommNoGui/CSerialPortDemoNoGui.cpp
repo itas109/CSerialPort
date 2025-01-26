@@ -8,6 +8,8 @@
 #define imsleep(microsecond) usleep(1000 * microsecond) // ms
 #endif
 
+#include <stdio.h> // printf
+
 #include <vector>
 
 #include "CSerialPort/SerialPort.h"
