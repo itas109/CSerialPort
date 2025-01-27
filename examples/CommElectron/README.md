@@ -17,7 +17,7 @@ npm install
 ## Build
 
 ```
-cd bindings/nodejs
+cd examples/CommElectron
 npm i -g cmake-js
 npm run build
 ```

@@ -10,7 +10,7 @@ node-addon-api: 8.0.0 (2024-05-05)
 ## Build
 
 ```
-cd bindings/nodejs
+cd examples/CommWeb
 npm i -g cmake-js
 npm run build
 ```
