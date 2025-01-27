@@ -156,13 +156,17 @@ $ cmake --build .
 
 Demo Path: CSerialPort/examples/CommQT
 
-![image](pic/linux.jpg)
+![image](pic/linux_qt.jpg)
 
-## Tui
+Demo Path: CSerialPort/examples/CommElectron
 
-Demo Path: CSerialPort/examples/CommTui
+![image](pic/linux_electron.jpg)
 
-![image](pic/linux_tui.jpg)
+## Web
+
+Demo Path: CSerialPort/examples/CommWeb
+
+![image](pic/linux_web.jpg)
 
 ## No Gui
 
@@ -200,17 +204,6 @@ Demo Path: CSerialPort/examples/CommNoGui
 https://gitee.com/itas109/CommMaster
 
 ![image](pic/CommMaster.png)
-
-## 2. [CommLite](https://github.com/itas109/CommLite)
-
-CommLite is tui's serial port tool based CSerialPort
-
-- support x86, arm, mips cpu architecture
-- support windows dos, linux, macos,raspberrypi, freebsd operating system
-
-https://github.com/itas109/CommLite
-
-![image](pic/commlite.gif)
 
 # Donate
 

@@ -157,13 +157,17 @@ $ cmake --build .
 
 示例路径: CSerialPort/examples/CommQT
 
-![image](pic/linux.jpg)
+![image](pic/linux_qt.jpg)
 
-## Tui 终端用户界面 
+示例路径: CSerialPort/examples/CommElectron
 
-示例路径: CSerialPort/examples/CommTui
+![image](pic/linux_electron.jpg)
 
-![image](pic/linux_tui.jpg)
+## Web用户界面 
+
+示例路径: CSerialPort/examples/CommWeb
+
+![image](pic/linux_web.jpg)
 
 ## No Gui 无界面
 
@@ -201,17 +205,6 @@ $ cmake --build .
 https://gitee.com/itas109/CommMaster
 
 ![image](pic/CommMaster.png)
-
-## 2. [CommLite](https://github.com/itas109/CommLite)
-
-CommLite是一款基于CSerialPort的文本UI串口调试助手
-
-- 支持x86, arm, mips等cpu架构
-- 支持windows dos, linux, macos, raspberrypi, freebsd等操作系统
-
-https://github.com/itas109/CommLite
-
-![image](pic/commlite.gif)
 
 # Donate 捐助
 
