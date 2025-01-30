@@ -235,8 +235,8 @@ private:
 #define I_COND_INITIALIZER PTHREAD_COND_INITIALIZER
 typedef pthread_cond_t i_condition_variable_t;
 
-#ifndef __APPLE__
-#define USE_MONOTONIC_CLOCK
+#if defined(__APPLE__) || (defined(__ANDROID__) && (__ANDROID_API__ < 21)) // for android, pthread_condattr_setclock function is only available when __ANDROID_API__ >= 21
+#define USE_REALTIME_CLOCK
 #endif
 
 class IConditionVariable
@@ -244,14 +244,14 @@ class IConditionVariable
 public:
     IConditionVariable()
     {
-#ifdef USE_MONOTONIC_CLOCK
+#ifdef USE_REALTIME_CLOCK
+        ::pthread_cond_init(&cond, NULL);
+#else
         pthread_condattr_t attr;
         ::pthread_condattr_init(&attr);
         ::pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
         ::pthread_cond_init(&cond, &attr);
         ::pthread_condattr_destroy(&attr);
-#else
-        ::pthread_cond_init(&cond, NULL);
 #endif
     }
 
@@ -271,11 +271,11 @@ public:
     bool timeWait(IMutex &mutex, unsigned int timeoutMS)
     {
         timespec abstime;
-#ifdef USE_MONOTONIC_CLOCK
+#ifdef USE_REALTIME_CLOCK
+        clock_gettime(CLOCK_REALTIME, &abstime);
+#else
         // monotonic time is better
         clock_gettime(CLOCK_MONOTONIC, &abstime);
-#else
-        clock_gettime(CLOCK_REALTIME, &abstime);
 #endif
         abstime.tv_sec += (time_t)(timeoutMS / 1000);
         abstime.tv_nsec += (timeoutMS % 1000) * 1000000;
