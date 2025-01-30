@@ -8,7 +8,10 @@
 #include <sys/stat.h> //S_ISLNK
 #include <unistd.h>   // readlink close
 
-#include <string.h> //basename memset strcmp
+#ifdef I_OS_ANDROID
+#include <libgen.h> //basename(POSIX)
+#endif
+#include <string.h> //basename(GNU) memset strcmp
 
 #include <fcntl.h>
 #include <linux/serial.h> //struct serial_struct
@@ -167,11 +170,21 @@ void getTtyPortInfoListLinux(std::vector<const char *> &ttyComList, std::vector<
     }
 }
 
+#ifdef I_OS_ANDROID
+static int _versionsort(const struct dirent **a, const struct dirent **b) {
+    return strcmp((*a)->d_name, (*b)->d_name);
+}
+#endif
+
 bool scanDirList(const char *dir, std::vector<const char *> &dirList, std::vector<const char *> filter = std::vector<const char *>())
 {
     // https://stackoverflow.com/questions/2530096/how-to-find-all-serial-devices-ttys-ttyusb-on-linux-without-opening-them
     struct dirent **entryList;
+#ifdef I_OS_ANDROID
+    int n = scandir(dir, &entryList, NULL, _versionsort);
+#else
     int n = scandir(dir, &entryList, NULL, versionsort); // alphasort versionsort
+#endif
     if (n >= 0)
     {
         while (n--)

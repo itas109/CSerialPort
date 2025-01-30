@@ -9,6 +9,7 @@
 #ifdef I_OS_LINUX
 // termios2 for custom baud rate at least linux kernel 2.6.32 (RHEL 6.0)
 
+#ifndef I_OS_ANDROID
 // linux/include/uapi/asm-generic/termbits.h
 struct termios2
 {
@@ -21,6 +22,7 @@ struct termios2
     speed_t c_ispeed; /* input speed */
     speed_t c_ospeed; /* output speed */
 };
+#endif
 
 #ifndef BOTHER
 #define BOTHER 0010000
