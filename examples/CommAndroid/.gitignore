@@ -1,0 +1,11 @@
+*.iml
+.gradle
+.idea
+/app/src/main/java/com/itas109/cserialport/jni
+/local.properties
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
