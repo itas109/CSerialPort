@@ -13,14 +13,14 @@
 #ifndef __CSERIALPORT_GLOBAL_H__
 #define __CSERIALPORT_GLOBAL_H__
 
-#if defined(_WIN32) // Windows
-#define I_OS_WIN
-#elif defined(__linux__) || defined(__linux) // LINUX
-#define I_OS_LINUX
-#elif defined(__APPLE__) // MAC
+#if defined(__APPLE__) // MAC
 #define I_OS_MAC
 #elif defined(__ANDROID__) || defined(ANDROID) // ANDROID
 #define I_OS_ANDROID
+#define I_OS_LINUX
+#elif defined(_WIN32) // Windows
+#define I_OS_WIN
+#elif defined(__linux__) || defined(__linux) // LINUX
 #define I_OS_LINUX
 #else
 // #error "not support this OS"
