@@ -30,6 +30,7 @@ CSerialPort was tested on the following platforms
 - Windows ( x86, x86_64, arm64 )
 - Linux ( x86, x86_64, arm, arm64/aarch64, mips64el, riscv, s390x, ppc64le )
 - macOS ( x86_64, apple silicon )
+- Android ( armeabi-v7a, arm64-v8a, x86, x86_64 )
 - FreeBSD ( x86_64 )
 - ...
 
