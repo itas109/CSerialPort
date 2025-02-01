@@ -1,5 +1,27 @@
 # CSerialPort Changelog
 
+## v4.3.2 (2025-02-03)
+
+Feature:
+
+* reducing receive memory fragmentation 减少串口接收时的内存碎片
+* update license to LGPLv3 with LGPL-3.0-linking-exception 更新开源协议为LGPLv3 with LGPL-3.0-linking-exception
+* support non-standard baud rate on macos 在macos系统支持非标准波特率
+* support hot plug on windows, linux and macos 在windows linux和macos系统支持串口热插拔事件
+* support buffer full event by setByteReadBufferFullNotify function 通过setByteReadBufferFullNotify 函数支持缓冲区满通知事件
+* support set system internal input output buffer size on windows 在windows下支持自定义设置读写缓冲区大小(系统默认为4096)
+* support UTF8 Character Encoding by define CSERIALPORT_USE_UTF8 通过CSERIALPORT_USE_UTF8宏定义支持UTF8字符编码
+* support log output  by define CSERIALPORT_DEBUG 通过CSERIALPORT_DEBUG宏定义支持输出串口日志文件
+* support nodejs bindings 支持nodejs绑定
+* support rust bindings 支持rust绑定
+* support android 支持android系统
+
+Fixed:
+
+* fixed open COM100 above not exist error on windows 修复windows下打开COM100以上端口不存在问题
+* #79 fixed RingBuffer read error when read size > ringbuffer used len 修复环形缓冲区读取大小大于已使用大小时读取失败问题
+* #84 fixed stop thread error on windows 修复windows下停止线程错误问题
+
 ## v4.3.1 (2024-02-04)
 
 Feature:
