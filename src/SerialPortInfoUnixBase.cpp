@@ -9,7 +9,12 @@
 #include <unistd.h>   // readlink close
 
 #ifdef I_OS_ANDROID
-#include <libgen.h> //basename(POSIX)
+// #include <libgen.h> //basename(POSIX)
+const char *basename(const char *path) // basename(GNU)
+{
+    const char *p = strrchr(path, '/');
+    return p ? p + 1 : path;
+}
 #endif
 #include <string.h> //basename(GNU) memset strcmp
 
@@ -43,7 +48,7 @@ void getDriver(const char *tty, char *driverName)
     {
         // /sys/class/tty/ttyUSB0/device/driver
         char driverDir[256] = {0};
-        itas109::IUtils::strFormat(driverDir, 256, "%s/driver", deviceDir);
+        itas109::IUtils::strFormat(driverDir, 256, "%s/driver", (const char *)deviceDir); // android need const char*
 
         char buffer[256] = {0};
         // VCs, ptys, etc don't have /sys/class/tty/<tty>/device/driver
@@ -171,7 +176,8 @@ void getTtyPortInfoListLinux(std::vector<const char *> &ttyComList, std::vector<
 }
 
 #ifdef I_OS_ANDROID
-static int _versionsort(const struct dirent **a, const struct dirent **b) {
+static int _versionsort(const struct dirent **a, const struct dirent **b)
+{
     return strcmp((*a)->d_name, (*b)->d_name);
 }
 #endif

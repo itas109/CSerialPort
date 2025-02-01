@@ -51,5 +51,5 @@ set(CMAKE_SWIG_FLAGS -package ${JAVA_GEN_PACKAGE})
 # swig -java -c++ -outdir generate -I../../include -package com.itas109.cserialport.jni cserialport.i
 swig_add_library(${PROJECT_NAME} LANGUAGE java SOURCES cserialport.i ${CSerialPortSourceFiles})
 
-# find_library( log-lib log )
-# target_link_libraries( ${PROJECT_NAME} ${log-lib} )
+find_library( log-lib log )
+target_link_libraries( ${PROJECT_NAME} ${log-lib} )

@@ -21,6 +21,11 @@
 
 #include "iutils.hpp"
 
+#if defined(__ANDROID__)
+#include <android/log.h>
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "CSerialPort", __VA_ARGS__)
+#endif
+
 #ifdef _WIN32
 #ifndef __func__
 #define __func__ __FUNCTION__
@@ -104,6 +109,9 @@ public:
             char logMessage[2048];
             itas109::IUtils::strFormat(logMessage, 2048, "%s [%s] %s - %s\n", currentTime, levelStr, function, formatMessage);
             m_logFile << logMessage;
+#if defined(__ANDROID__)
+            LOGI("%s", logMessage);
+#endif
             m_logFile.flush();
             printf("%s", logMessage);
         }
@@ -117,10 +125,20 @@ private:
         itas109::IUtils::strncpy(fileName, prefix, 40);
         getCurrentDate(fileName + itas109::IUtils::strlen(prefix));
         itas109::IUtils::strncat(fileName, ".log", 45);
-        m_logFile.open(fileName, std::ios::out | std::ios::app);
+        char filePath[256];
+#if defined(__ANDROID__)
+        std::ifstream cmdlineFile("/proc/self/cmdline");
+        std::string packageName;
+        std::getline(cmdlineFile, packageName);
+        itas109::IUtils::strFormat(filePath, 256, "/data/data/%s/%s", packageName.c_str(), fileName);
+        LOGI("log file path: %s", filePath);
+#else
+        itas109::IUtils::strFormat(filePath, 256, "%s", fileName);
+#endif
+        m_logFile.open(filePath, std::ios::out | std::ios::app);
         if (!m_logFile.is_open())
         {
-            fprintf(stderr, "could not open file %s\n", fileName);
+            fprintf(stderr, "could not open file %s\n", filePath);
         }
     }
 

@@ -18,7 +18,12 @@
 #define MACRO_TO_STRING(x) STRINGIFY(x)
 
 // get cpu cores headers
-#if defined(_WIN32)
+#if defined(__APPLE__)
+#include <sys/sysctl.h> // sysctlbyname
+#elif defined(__ANDROID__)
+#include <unistd.h>                // sysconf
+#include <sys/system_properties.h> // __system_property_get
+#elif defined(_WIN32)
 #include <windows.h> // GetSystemInfo
 #include <tchar.h>   // _T
 
@@ -28,12 +33,9 @@
 
 #elif defined(__linux__)
 #include <unistd.h> // sysconf
-#elif defined(__APPLE__)
-#include <sys/sysctl.h> // sysctlbyname
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
 #include <sys/sysctl.h> // sysctlbyname
-#elif defined(__ANDROID__)
-#include <unistd.h> // sysconf
+
 #elif defined(__unix__)
 #include <unistd.h> // sysconf
 #else
@@ -337,14 +339,14 @@ public:
             return NULL;
         }
 
-#if defined(_WIN32)
+#if defined(__APPLE__)
+        strncpy(osName, "macOS", len);
+#elif defined(__ANDROID__)
+        strncpy(osName, "Android", len);
+#elif defined(_WIN32)
         strncpy(osName, "Windows", len);
 #elif defined(__linux__)
         strncpy(osName, "Linux", len);
-#elif defined(__APPLE__)
-        strncpy(osName, "MacOS", len);
-#elif defined(__ANDROID__)
-        strncpy(osName, "Android", len);
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
         strncpy(osName, "BSD", len);
 #elif defined(__unix__)
@@ -362,7 +364,14 @@ public:
             return NULL;
         }
 
-#if defined(_WIN32)
+#if defined(__APPLE__)
+        strncpy(productName, "macOS", len);
+#elif defined(__ANDROID__)
+        char version[15];
+        __system_property_get("ro.build.version.release", version);
+        strncpy(productName, "Android ", len);
+        strncat(productName, version, 15);
+#elif defined(_WIN32)
         int majorVersion = 0;
         int minorVersion = 0;
         HKEY hKey;
@@ -446,10 +455,6 @@ public:
         }
 
         strncpy(productName, prettyName, len);
-#elif defined(__APPLE__)
-        strncpy(productName, "MacOS", len);
-#elif defined(__ANDROID__)
-        strncpy(productName, "Android", len);
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
         strncpy(productName, "BSD", len);
 #elif defined(__unix__)
@@ -464,16 +469,16 @@ public:
     {
         int numOfProcessors = 0;
 
-#if defined(_WIN32)
+#if defined(__APPLE__)
+        size_t size = sizeof(numOfProcessors);
+        sysctlbyname("hw.ncpu", &numOfProcessors, &size, NULL, 0);
+#elif defined(__ANDROID__)
+        numOfProcessors = sysconf(_SC_NPROCESSORS_ONLN);
+#elif defined(_WIN32)
         SYSTEM_INFO sysInfo;
         GetSystemInfo(&sysInfo);
         numOfProcessors = sysInfo.dwNumberOfProcessors;
 #elif defined(__linux__)
-        numOfProcessors = sysconf(_SC_NPROCESSORS_ONLN);
-#elif defined(__APPLE__)
-        size_t size = sizeof(numOfProcessors);
-        sysctlbyname("hw.ncpu", &numOfProcessors, &size, NULL, 0);
-#elif defined(__ANDROID__)
         numOfProcessors = sysconf(_SC_NPROCESSORS_ONLN);
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
         size_t size = sizeof(numOfProcessors);
