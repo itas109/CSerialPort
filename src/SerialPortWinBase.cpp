@@ -205,7 +205,11 @@ bool CSerialPortWinBase::openPort()
                         m_isThreadRunning = true;
                         bRet = startThreadMonitor();
 
-                        if (!bRet)
+                        if (bRet)
+                        {
+                            m_lastError = itas109::/*SerialPortError::*/ ErrorOK;
+                        }
+                        else
                         {
                             m_isThreadRunning = false;
                             m_lastError = itas109::/*SerialPortError::*/ ErrorInner;
@@ -228,6 +232,7 @@ bool CSerialPortWinBase::openPort()
                     SetCommTimeouts(m_handle, &m_comTimeout);
 
                     bRet = true;
+                    m_lastError = itas109::/*SerialPortError::*/ ErrorOK;
                 }
             }
             else
