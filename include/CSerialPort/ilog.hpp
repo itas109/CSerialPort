@@ -133,7 +133,7 @@ private:
         itas109::IUtils::strFormat(filePath, 256, "/data/data/%s/%s", packageName.c_str(), fileName);
         LOGI("log file path: %s", filePath);
 #else
-        itas109::IUtils::strFormat(filePath, 256, "%s", fileName);
+        itas109::IUtils::strncpy(filePath, fileName, 256);
 #endif
         m_logFile.open(filePath, std::ios::out | std::ios::app);
         if (!m_logFile.is_open())
