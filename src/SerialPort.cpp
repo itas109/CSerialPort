@@ -148,7 +148,7 @@ int itas109::CSerialPort::disconnectHotPlugReadEvent()
 {
     if (p_serialPortBase)
     {
-        return p_serialPortBase->disconnectReadEvent();
+        return p_serialPortBase->disconnectHotPlugReadEvent();
     }
     else
     {
