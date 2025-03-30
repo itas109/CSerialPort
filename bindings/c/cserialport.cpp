@@ -68,7 +68,7 @@ void CSerialPortAvailablePortInfosMalloc(SerialPortInfoArray *portInfoArray)
     }
     else
     {
-        portInfoArray->portInfo = NULL;
+        portInfoArray->portInfo = nullptr;
     }
 }
 
@@ -77,12 +77,12 @@ void CSerialPortAvailablePortInfosFree(struct SerialPortInfoArray *portInfoArray
     if (portInfoArray)
     {
         delete[] portInfoArray->portInfo;
-        portInfoArray->portInfo = NULL;
+        portInfoArray->portInfo = nullptr;
         portInfoArray->size = 0;
     }
 }
 
-i_handle_t CSerialPortMalloc()
+i_handle_t CSerialPortMalloc(void)
 {
     return reinterpret_cast<i_handle_t>(new itas109::CSerialPort());
 }
@@ -93,7 +93,7 @@ void CSerialPortFree(i_handle_t handle)
     if (pCSP)
     {
         delete pCSP;
-        pCSP = NULL;
+        pCSP = nullptr;
     }
 }
 
