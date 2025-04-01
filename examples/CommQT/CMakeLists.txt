@@ -11,9 +11,13 @@
 # of the LICENSE file.
 ############################################################################
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10.0)
 
 project(CommQT LANGUAGES CXX)
+
+if (CSERIALPORT_ENABLE_DEBUG)
+    add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+endif ()
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)

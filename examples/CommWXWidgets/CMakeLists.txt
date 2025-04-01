@@ -11,9 +11,13 @@
 # of the LICENSE file.
 ############################################################################
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10.0)
 
 project(CommWXWidgets)
+
+if (CSERIALPORT_ENABLE_DEBUG)
+    add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+endif ()
 
 # set(wxWidgets_ROOT_DIR "D:/wxWidgets") # wxWidgets 3.1.7
 find_package(wxWidgets COMPONENTS richtext core base REQUIRED)

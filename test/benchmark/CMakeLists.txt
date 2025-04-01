@@ -11,13 +11,15 @@
 # of the LICENSE file.
 ############################################################################
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10.0)
 
 project(CSerialPortBenchmark)
 
 set(CMAKE_CXX_STANDARD 11) # C++11
 
-#add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+if (CSERIALPORT_ENABLE_DEBUG)
+    add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+endif ()
 
 set(CSerialPortRootPath "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 include_directories(${CSerialPortRootPath}/include)

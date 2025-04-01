@@ -10,11 +10,13 @@
 # You may use, copy, modify, and distribute the CSerialPort, under the terms
 # of the LICENSE file.
 ############################################################################
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.10.0)
 
 project(libcserialport)
 
-add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+if (CSERIALPORT_ENABLE_DEBUG)
+    add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+endif ()
 # add_definitions(-DCSERIALPORT_USE_UTF8) # CSerialPort UTF8 Character Encoding
 add_definitions(-DCSERIALPORT_BINDING_LANGUAGE=CSharp) # CSerialPort Binding Language
 

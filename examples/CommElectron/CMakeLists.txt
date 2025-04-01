@@ -10,11 +10,13 @@
 # You may use, copy, modify, and distribute the CSerialPort, under the terms
 # of the LICENSE file.
 ############################################################################
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10.0)
 
 project(cserialport)
 
-add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+if (CSERIALPORT_ENABLE_DEBUG)
+    add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+endif ()
 
 set(CMAKE_CXX_STANDARD 11)
 #add_compile_options(-g)

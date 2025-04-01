@@ -11,11 +11,13 @@
 # of the LICENSE file.
 ############################################################################
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10.0)
 
 project(CSerialPortDemoNoGui)
 
-add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+if (CSERIALPORT_ENABLE_DEBUG)
+    add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+endif ()
 # add_definitions(-DCSERIALPORT_USE_UTF8) # CSerialPort UTF8 Character Encoding
 
 find_package(CSerialPort QUIET)

@@ -11,9 +11,13 @@
 # of the LICENSE file.
 ############################################################################
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10.0)
 
 project(CommMFC)
+
+if (CSERIALPORT_ENABLE_DEBUG)
+    add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+endif ()
 
 find_package(MFC)
 if (NOT MFC_FOUND)

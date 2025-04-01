@@ -10,8 +10,7 @@
 # You may use, copy, modify, and distribute the CSerialPort, under the terms
 # of the LICENSE file.
 ############################################################################
-
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10.0)
 
 project(CSerialPort LANGUAGES CXX)
 
@@ -30,6 +29,7 @@ endif()
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(CSERIALPORT_BUILD_EXAMPLES "Build CSerialPort examples" ON)
+option(CSERIALPORT_ENABLE_DEBUG "Enable CSerialPort Debug" OFF)
 option(CSERIALPORT_BUILD_DOC "Build CSerialPort Doc" OFF)
 option(CSERIALPORT_BUILD_TEST "Build CSerialPort Test" OFF)
 
@@ -42,13 +42,14 @@ endif()
 
 message(STATUS "CSerialPort CMake Info")
 message(STATUS "=======================================================")
-message(STATUS "    Operation System :  ${CMAKE_SYSTEM}")
+message(STATUS "    Operation System : ${CMAKE_SYSTEM}")
 message(STATUS "    CPU Architecture : ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "    Build Type : ${CMAKE_BUILD_TYPE}")
-message(STATUS "    Shared Library  : ${BUILD_SHARED_LIBS}")
-message(STATUS "    Build Examples  : ${CSERIALPORT_BUILD_EXAMPLES}")
-message(STATUS "    Build Doc  : ${CSERIALPORT_BUILD_DOC}")
-message(STATUS "    Build Test  : ${CSERIALPORT_BUILD_TEST}")
+message(STATUS "    Shared Library : ${BUILD_SHARED_LIBS}")
+message(STATUS "    Build Examples : ${CSERIALPORT_BUILD_EXAMPLES}")
+message(STATUS "    Enable Debug : ${CSERIALPORT_ENABLE_DEBUG}")
+message(STATUS "    Build Doc : ${CSERIALPORT_BUILD_DOC}")
+message(STATUS "    Build Test : ${CSERIALPORT_BUILD_TEST}")
 message(STATUS "=======================================================")
 
 # libcserialport
@@ -56,15 +57,15 @@ add_subdirectory(lib)
 
 # examples
 if (CSERIALPORT_BUILD_EXAMPLES)
-	add_subdirectory(examples)
+    add_subdirectory(examples)
 endif ()
 
 # test
 if (CSERIALPORT_BUILD_TEST)
-	add_subdirectory(test)
+    add_subdirectory(test)
 endif ()
 
 # doc
 if (CSERIALPORT_BUILD_DOC)
-	add_subdirectory(doc)
+    add_subdirectory(doc)
 endif ()
