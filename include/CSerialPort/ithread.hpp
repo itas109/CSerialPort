@@ -133,8 +133,12 @@ inline int i_thread_create(i_thread_t *thread, void const *, unsigned(__stdcall 
 
 inline void i_thread_join(i_thread_t thread)
 {
-    //::WaitForSingleObject(thread, INFINITE);
-    ::CloseHandle(thread);
+    if (I_THREAD_INITIALIZER != thread)
+    {
+        //::WaitForSingleObject(thread, INFINITE);
+        ::CloseHandle(thread);
+        thread = I_THREAD_INITIALIZER;
+    }
 }
 #else
 #define I_THREAD_INITIALIZER 0
@@ -147,8 +151,11 @@ inline int i_thread_create(i_thread_t *thread, const pthread_attr_t *attr, void 
 
 inline void i_thread_join(i_thread_t thread)
 {
-    ::pthread_join(thread, 0);
-    thread = I_THREAD_INITIALIZER;
+    if (I_THREAD_INITIALIZER != thread)
+    {
+        ::pthread_join(thread, 0);
+        thread = I_THREAD_INITIALIZER;
+    }
 }
 #endif
 
