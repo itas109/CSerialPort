@@ -1,5 +1,4 @@
 # [CSerialPort](https://github.com/itas109/CSerialPort)
-[<img src="https://api.gitsponsors.com/api/badge/img?id=58247015" height="20">](https://api.gitsponsors.com/api/badge/link?p=nHYln+gta+JEeicvjCGX4KX2vDIlnp1lmbeYatCDP4TB9RjTB3u72ErofmFq7HMIPmQ4P97huG4wQgwTeyO9W4Jn+NET4WFZq0dtVs+Y6uB2BKFQ8576OJr4KAZsu4RMfO9ANvXNJebpIZyuV+Ex8w==)
 
 [中文](README_zh_CN.md)
 
