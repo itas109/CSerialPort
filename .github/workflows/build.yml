@@ -23,6 +23,7 @@ on:
     paths:
       - 'include/**'
       - 'src/**'
+  workflow_dispatch: # manual
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
