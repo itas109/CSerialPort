@@ -15,8 +15,14 @@ name: build
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'include/**'
+      - 'src/**'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'include/**'
+      - 'src/**'
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -41,25 +47,29 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      BUILD_TEST: OFF
+      BUILD_TEST: ON
 
     steps:
     - uses: actions/checkout@v3
 
     - name: Build
       run: |
+          sudo apt install -y libgtest-dev
           cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=install -DCSERIALPORT_BUILD_TEST=$BUILD_TEST
           cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+          ${{github.workspace}}/build/bin/CSerialPortTest
   osx:
     runs-on: macos-latest
     
     env:
-      BUILD_TEST: OFF
+      BUILD_TEST: ON
 
     steps:
     - uses: actions/checkout@v3
 
     - name: Build
       run: |
+          brew install googletest
           cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=install -DCSERIALPORT_BUILD_TEST=$BUILD_TEST
           cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+          ${{github.workspace}}/build/bin/CSerialPortTest
