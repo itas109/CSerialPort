@@ -17,14 +17,19 @@ project(CSerialPortTest)
 
 MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 
-add_custom_target(get_gtest
-		COMMAND git submodule update --init --recursive
-		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-	)
-
-include(gtest.cmake)
-
-add_dependencies(gtest get_gtest)
+find_package(GTest QUIET)
+if(GTest_FOUND)
+    include(GoogleTest)
+    message(STATUS "Found System GTest: ${GTest_VERSION}")
+else()
+    message(STATUS "Not Found System GTest, compile with source code")
+    add_custom_target(get_gtest
+            COMMAND git submodule update --init --recursive
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        )
+    include(gtest.cmake)
+    add_dependencies(gtest get_gtest)
+endif()
 
 include_directories(.)
 
