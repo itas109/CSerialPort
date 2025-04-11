@@ -5,8 +5,12 @@
 #include <Windows.h>
 #include <tchar.h> //_T
 #else
-#include <errno.h>      // perror
-#include <pty.h>        // openpty
+#include <errno.h> // perror
+#if defined(__APPLE__)
+#include <util.h> // openpty
+#else
+#include <pty.h> // openpty
+#endif
 #include <stdio.h>      // printf
 #include <sys/select.h> // select FD_ISSET FD_SET FD_ZERO
 #include <unistd.h>     // read write

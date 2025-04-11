@@ -15,12 +15,30 @@ cmake_minimum_required(VERSION 3.10.0)
 
 project(CSerialPortTest)
 
+add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+# add_definitions(-DCSERIALPORT_USE_UTF8) # CSerialPort UTF8 Character Encoding
+
 MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
+
+if(APPLE) # gtest 1.16.0 need c++14
+    set(CMAKE_CXX_STANDARD 14)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
 
 find_package(GTest QUIET)
 if(GTest_FOUND)
-    include(GoogleTest)
+    if(APPLE AND NOT GTEST_INCLUDE_DIRS) # fixed macos gtest include empty
+        execute_process(
+            COMMAND brew --prefix googletest
+            OUTPUT_VARIABLE GTEST_ROOT
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        set(GTEST_INCLUDE_DIRS "${GTEST_ROOT}/include")
+    endif()
+    include_directories(${GTEST_INCLUDE_DIRS})
     message(STATUS "Found System GTest: ${GTest_VERSION}")
+    message(STATUS "GTEST_INCLUDE_DIRS: ${GTEST_INCLUDE_DIRS}")
+    message(STATUS "GTEST_LIBRARIES: ${GTEST_LIBRARIES} ")
 else()
     message(STATUS "Not Found System GTest, compile with source code")
     add_custom_target(get_gtest
@@ -56,6 +74,7 @@ elseif(APPLE)
     find_library(IOKIT_LIBRARY IOKit)
     find_library(FOUNDATION_LIBRARY Foundation)
     target_link_libraries( ${PROJECT_NAME} ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
+    target_link_libraries( ${PROJECT_NAME} util) # pty
 elseif(UNIX)
     target_link_libraries( ${PROJECT_NAME} pthread)
     target_link_libraries( ${PROJECT_NAME} util) # pty
