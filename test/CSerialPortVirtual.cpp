@@ -15,8 +15,30 @@
 #include <sys/select.h> // select FD_ISSET FD_SET FD_ZERO
 #include <unistd.h>     // read write
 
-#define PORT_NAME_MAX_LEN 256
+#include <thread> // std::thread
+
 #define READ_DATA_MAX_LEN 4096
+
+inline void handle_io(int src_fd, int dst_fd, char* src_name)
+{
+    char buffer[READ_DATA_MAX_LEN];
+    int len = read(src_fd, buffer, sizeof(buffer));
+    if (len > 0)
+    {
+        printf("%s receive [%d] %s\n", src_name, len, buffer);
+        write(dst_fd, buffer, len);
+    }
+    else if (len == 0)
+    {
+        printf("port %s closed\n", src_name);
+        close(src_fd);
+    }
+    else if (errno != EAGAIN)
+    {
+        perror("read error");
+        close(src_fd);
+    }
+}
 #endif
 
 using namespace itas109;
@@ -53,76 +75,48 @@ bool CSerialPortVirtual::createPair(char *portName1, char *portName2)
 
     return ret;
 #else
-    int error = -1;
-
     int master1 = 0, slave1 = 0;
     int master2 = 0, slave2 = 0;
-    char slaveName1[PORT_NAME_MAX_LEN] = {0};
-    char slaveName2[PORT_NAME_MAX_LEN] = {0};
 
-    error = openpty(&master1, &slave1, slaveName1, NULL, NULL);
-    if (-1 == error)
+    if (openpty(&master1, &slave1, portName1, NULL, NULL) < 0 || openpty(&master2, &slave2, portName2, NULL, NULL) < 0)
     {
         perror("openpty failed\n");
-        return -1;
+        return false;
     }
 
-    error = openpty(&master2, &slave2, slaveName2, NULL, NULL);
-    if (-1 == error)
-    {
-        perror("openpty failed\n");
-        return -1;
-    }
-
-    printf("virtual serial port names: %s %s\n", slaveName1, slaveName2);
-
-    itas109::IUtils::strncpy(portName1, slaveName1, 256);
-    itas109::IUtils::strncpy(portName2, slaveName2, 256);
+    printf("virtual serial port names: %s(%d) %s(%d)\n", portName1, master1, portName2, master2);
 
     fd_set readfds; // only care read fdset
-
-    bool isMaster1 = false;
-    int recLen = 0;
-    char data[READ_DATA_MAX_LEN] = {0};
-
+    int max_fd = master1 > master2 ? master1 : master2;
     while (1)
     {
         // select will reset all params every time
         FD_ZERO(&readfds);         // clear all read fdset
         FD_SET(master1, &readfds); // add to read fdset
         FD_SET(master2, &readfds); // add to read fdset
-        // -1 error, 0 timeout, >0 ok
-        error = select(master1 > master2 ? master1 + 1 : master2 + 1, &readfds, NULL, NULL, NULL);
-        if (error < 0)
-        {
-            perror("select failed");
-            break;
-        }
 
-        isMaster1 = FD_ISSET(master1, &readfds);
-        recLen = read(isMaster1 ? master1 : master2, data, READ_DATA_MAX_LEN);
-        if (recLen > 0)
-        {
-            printf("from %s - [%d] %s\n", isMaster1 ? slaveName1 : slaveName2, recLen, data);
-            // send data to other pty
-            write(isMaster1 ? master2 : master1, data, recLen);
-        }
-        else if (recLen == 0)
-        {
-            printf("%s closed\n", isMaster1 ? slaveName1 : slaveName2);
-            break;
-        }
-        else
+        // -1 error, 0 timeout, >0 ok
+        int ret = select(max_fd + 1, &readfds, NULL, NULL, NULL);
+        if (ret < 0)
         {
             if (errno == EINTR)
             {
                 continue;
             }
-            else
-            {
-                perror("read failed\n");
-                break;
-            }
+            perror("select error");
+            break;
+        }
+
+        if (FD_ISSET(master1, &readfds))
+        {
+            handle_io(master1, master2, portName1);
+        }
+        else if (FD_ISSET(master2, &readfds))
+        {
+            handle_io(master2, master1, portName2);
+        }
+        else
+        {
         }
     }
 
@@ -130,6 +124,8 @@ bool CSerialPortVirtual::createPair(char *portName1, char *portName2)
     close(slave1);
     close(master2);
     close(slave2);
+
+    return true;
 #endif // _WIN32
 }
 

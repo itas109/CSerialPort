@@ -15,7 +15,9 @@ cmake_minimum_required(VERSION 3.10.0)
 
 project(CSerialPortTest)
 
-add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+if (CSERIALPORT_ENABLE_DEBUG)
+    add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
+endif ()
 # add_definitions(-DCSERIALPORT_USE_UTF8) # CSerialPort UTF8 Character Encoding
 
 MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")

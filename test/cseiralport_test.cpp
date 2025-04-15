@@ -182,10 +182,60 @@ TEST_F(CSerialPortTests, open_close_3_4)
     EXPECT_FALSE(m_serialport.isOpen()) << portName1 << " close again error, error code: " << m_serialport.getLastError();
 }
 
+// #4_1 read sync 同步读
+TEST_F(CSerialPortTests, read_sync_4_1)
+{
+    ASSERT_TRUE(m_availablePortsInfoVector.size() > 1) << "port count < 2";
+
+    m_serialport.init(portName1);
+    m_serialport2.init(portName2);
+
+    m_serialport.setOperateMode(itas109::SynchronousOperate);
+    m_serialport2.setOperateMode(itas109::SynchronousOperate);
+
+    m_serialport.open();
+    m_serialport2.open();
+
+    char *writeData = "itas109";
+    m_serialport.writeData(writeData, 7);
+    m_serialport2.writeData(writeData, 7);
+
+    imsleep(100); // TODO: wait async event
+
+    char readData[1024] = {0};
+    m_serialport2.readData(readData, 7);
+
+    EXPECT_STREQ(writeData, readData);
+}
+
+// #5_1 read async 同步读
+TEST_F(CSerialPortTests, read_async_5_1)
+{
+    ASSERT_TRUE(m_availablePortsInfoVector.size() > 1) << "port count < 2";
+
+    m_serialport.init(portName1);
+    m_serialport2.init(portName2);
+
+    m_serialport.open();
+    m_serialport2.open();
+
+    char *writeData = "itas109";
+    int writeLen = strlen(writeData);
+    m_serialport.writeData(writeData, writeLen);
+
+    imsleep(100); // TODO: wait async event
+
+    int readLen = m_serialport2.getReadBufferUsedLen();
+    EXPECT_EQ(writeLen, readLen);
+
+    char readData[1024] = {0};
+    m_serialport2.readData(readData, 7);
+
+    EXPECT_STREQ(writeData, readData);
+}
+
 int main(int argc, char **argv)
 {
-    int iRet = 0;
-
 #ifdef _WIN32
     itas109::IUtils::strncpy(portName1, "COM40", 256);
     itas109::IUtils::strncpy(portName2, "COM50", 256);
@@ -198,21 +248,22 @@ int main(int argc, char **argv)
     t.detach();
 #endif
 
-    try
-    {
-        testing::InitGoogleTest(&argc, argv);
-        iRet = RUN_ALL_TESTS();
-    }
-    catch (std::exception &e)
-    {
-        std::cerr << "Unhandled Exception: " << e.what() << std::endl;
-    }
+    imsleep(100); // TODO: wait std::thread
+
+    testing::GTEST_FLAG(output) = "xml:";
+    testing::GTEST_FLAG(repeat) = 1;
+    testing::FLAGS_gtest_filter = "CSerialPortTests.*";
+
+    testing::InitGoogleTest(&argc, argv);
+    RUN_ALL_TESTS();
 
     CSerialPortVirtual::deletePair(portName1);
     CSerialPortVirtual::deletePair(portName2);
 
-    // printf("Press Enter To Continue...");
-    // getchar();
+#ifdef _DEBUG
+    printf("\nPress Enter To Continue...\n");
+    getchar();
+#endif // _DEBUG
 
     return 0;
 }
