@@ -22,10 +22,8 @@ endif ()
 
 MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 
-if(APPLE) # gtest 1.16.0 need c++14
-    set(CMAKE_CXX_STANDARD 14)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(GTest QUIET)
 if(GTest_FOUND)

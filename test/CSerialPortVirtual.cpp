@@ -11,11 +11,14 @@
 #else
 #include <pty.h> // openpty
 #endif
+
 #include <stdio.h>      // printf
 #include <sys/select.h> // select FD_ISSET FD_SET FD_ZERO
 #include <unistd.h>     // read write
 
 #include <thread> // std::thread
+#include <condition_variable>
+#include <chrono>
 
 #define READ_DATA_MAX_LEN 4096
 
@@ -75,55 +78,75 @@ bool CSerialPortVirtual::createPair(char *portName1, char *portName2)
 
     return ret;
 #else
-    int master1 = 0, slave1 = 0;
-    int master2 = 0, slave2 = 0;
+    std::condition_variable m_cv;
+    std::mutex m_mutex;
 
-    if (openpty(&master1, &slave1, portName1, NULL, NULL) < 0 || openpty(&master2, &slave2, portName2, NULL, NULL) < 0)
+    std::thread t([&]
+        {
+            int master1 = 0, slave1 = 0;
+            int master2 = 0, slave2 = 0;
+            char ptyName1[256] = {0};
+            char ptyName2[256] = {0};
+
+            if (openpty(&master1, &slave1, ptyName1, NULL, NULL) < 0 || openpty(&master2, &slave2, ptyName2, NULL, NULL) < 0)
+            {
+                perror("openpty failed\n");
+                m_cv.notify_one();
+                return;
+            }
+
+            itas109::IUtils::strncpy(portName1, ptyName1, 256);
+            itas109::IUtils::strncpy(portName2, ptyName2, 256);
+            printf("virtual serial port names: %s(%d) %s(%d)\n", portName1, master1, portName2, master2);
+            m_cv.notify_one();
+
+            fd_set readfds; // only care read fdset
+            int max_fd = master1 > master2 ? master1 : master2;
+            while (1)
+            {
+                // select will reset all params every time
+                FD_ZERO(&readfds);         // clear all read fdset
+                FD_SET(master1, &readfds); // add to read fdset
+                FD_SET(master2, &readfds); // add to read fdset
+
+                // -1 error, 0 timeout, >0 ok
+                int ret = select(max_fd + 1, &readfds, NULL, NULL, NULL);
+                if (ret < 0)
+                {
+                    if (errno == EINTR)
+                    {
+                        continue;
+                    }
+                    perror("select error");
+                    break;
+                }
+
+                if (FD_ISSET(master1, &readfds))
+                {
+                    handle_io(master1, master2, ptyName1);
+                }
+                else if (FD_ISSET(master2, &readfds))
+                {
+                    handle_io(master2, master1, ptyName2);
+                }
+                else
+                {
+                }
+            }
+
+            close(master1);
+            close(slave1);
+            close(master2);
+            close(slave2); 
+        });
+    t.detach();
+
+    std::unique_lock<std::mutex> lock(m_mutex);
+    if (!m_cv.wait_for(lock, std::chrono::microseconds(100), [&]{ return '\0' != portName1[0] && '\0' != portName2[0]; }))
     {
-        perror("openpty failed\n");
+        printf("createPair wait timeout\n");
         return false;
     }
-
-    printf("virtual serial port names: %s(%d) %s(%d)\n", portName1, master1, portName2, master2);
-
-    fd_set readfds; // only care read fdset
-    int max_fd = master1 > master2 ? master1 : master2;
-    while (1)
-    {
-        // select will reset all params every time
-        FD_ZERO(&readfds);         // clear all read fdset
-        FD_SET(master1, &readfds); // add to read fdset
-        FD_SET(master2, &readfds); // add to read fdset
-
-        // -1 error, 0 timeout, >0 ok
-        int ret = select(max_fd + 1, &readfds, NULL, NULL, NULL);
-        if (ret < 0)
-        {
-            if (errno == EINTR)
-            {
-                continue;
-            }
-            perror("select error");
-            break;
-        }
-
-        if (FD_ISSET(master1, &readfds))
-        {
-            handle_io(master1, master2, portName1);
-        }
-        else if (FD_ISSET(master2, &readfds))
-        {
-            handle_io(master2, master1, portName2);
-        }
-        else
-        {
-        }
-    }
-
-    close(master1);
-    close(slave1);
-    close(master2);
-    close(slave2);
 
     return true;
 #endif // _WIN32
