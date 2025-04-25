@@ -1,5 +1,6 @@
 // doctest
 #define DOCTEST_CONFIG_IMPLEMENT
+#define DOCTEST_CONFIG_NO_POSIX_SIGNALS // fixed SIGSTKSZ compile error on ubuntu 22
 #include "doctest.h"
 
 #include <iostream>
