@@ -25,30 +25,6 @@ MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(GTest QUIET)
-if(GTest_FOUND)
-    if(APPLE AND NOT GTEST_INCLUDE_DIRS) # fixed macos gtest include empty
-        execute_process(
-            COMMAND brew --prefix googletest
-            OUTPUT_VARIABLE GTEST_ROOT
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-        set(GTEST_INCLUDE_DIRS "${GTEST_ROOT}/include")
-    endif()
-    include_directories(${GTEST_INCLUDE_DIRS})
-    message(STATUS "Found System GTest: ${GTest_VERSION}")
-    message(STATUS "GTEST_INCLUDE_DIRS: ${GTEST_INCLUDE_DIRS}")
-    message(STATUS "GTEST_LIBRARIES: ${GTEST_LIBRARIES} ")
-else()
-    message(STATUS "Not Found System GTest, compile with source code")
-    add_custom_target(get_gtest
-            COMMAND git submodule update --init --recursive
-            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-        )
-    include(gtest.cmake)
-    add_dependencies(gtest get_gtest)
-endif()
-
 include_directories(.)
 
 set(CSerialPortRootPath "${CMAKE_CURRENT_SOURCE_DIR}/../")
@@ -65,7 +41,6 @@ include_directories(.)
 list(APPEND CSerialPortVirtualSourceFiles CSerialPortVirtual.cpp)
 
 add_executable(${PROJECT_NAME} cseiralport_test.cpp ${CSerialPortSourceFiles} ${CSerialPortVirtualSourceFiles})
-target_link_libraries( ${PROJECT_NAME} gtest)
 
 if (WIN32)
     # for function availableFriendlyPorts

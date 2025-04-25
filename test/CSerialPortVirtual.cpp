@@ -142,7 +142,7 @@ bool CSerialPortVirtual::createPair(char *portName1, char *portName2)
     t.detach();
 
     std::unique_lock<std::mutex> lock(m_mutex);
-    if (!m_cv.wait_for(lock, std::chrono::microseconds(100), [&]{ return '\0' != portName1[0] && '\0' != portName2[0]; }))
+    if (!m_cv.wait_for(lock, std::chrono::microseconds(500), [&]{ return '\0' != portName1[0] && '\0' != portName2[0]; }))
     {
         printf("createPair wait timeout\n");
         return false;
