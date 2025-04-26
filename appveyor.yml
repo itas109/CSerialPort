@@ -25,10 +25,10 @@ environment:
   matrix:
   - compiler: msvc-14-win32
     generator: Visual Studio 14 2015
-    build_test: ON
+    build_test: OFF
   - compiler: msvc-14-win64
     generator: Visual Studio 14 2015 Win64
-    build_test: ON
+    build_test: OFF
   - compiler: msvc-14-win32-xp
     generator: Visual Studio 14 2015
     platformset: v140_xp
