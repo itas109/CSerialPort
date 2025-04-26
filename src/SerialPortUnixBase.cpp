@@ -6,6 +6,9 @@
 #include "CSerialPort/itimer.hpp"
 #include "CSerialPort/ilog.hpp"
 
+#include <sys/select.h> // select
+#include <sys/time.h>   // timeval
+
 #ifdef I_OS_LINUX
 // termios2 for custom baud rate at least linux kernel 2.6.32 (RHEL 6.0)
 
@@ -310,13 +313,42 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
     if (p_base)
     {
         int isNew = 0;
+        int fd = p_base->fd;
+
+        fd_set readfd; // read fdset
+        struct timeval timeout;
+        timeout.tv_sec = 0;
+        timeout.tv_usec = 50000; // 50ms for stop
+
         char dataArray[4096];
         for (; p_base->isThreadRunning();)
         {
             int readbytes = 0;
 
+            FD_ZERO(&readfd);    // clear all read fdset
+            FD_SET(fd, &readfd); // add read fdset
+            int ret = select(fd + 1, &readfd, NULL, NULL, &timeout);
+            if (ret < 0) // -1 error, 0 timeout, >0 ok
+            {
+                if (errno == EINTR) // ignore system interupt
+                {
+                    continue;
+                }
+                perror("select error");
+                break;
+            }
+            else if (0 == ret) // timeout
+            {
+                // printf("timeout\n");
+                continue;
+            }
+            if (0 == FD_ISSET(fd, &readfd))
+            {
+                continue;
+            }
+
             // read前获取可读的字节数,不区分阻塞和非阻塞
-            ioctl(p_base->fd, FIONREAD, &readbytes);
+            ioctl(fd, FIONREAD, &readbytes);
             if (readbytes >= p_base->getMinByteReadNotify()) // 设定字符数，默认为1
             {
                 char *data = NULL;
@@ -379,10 +411,10 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
                     }
                 }
             }
-            else
-            {
-                usleep(1); // fix high cpu usage on unix
-            }
+            // else
+            // {
+            //     usleep(1); // fix high cpu usage on unix
+            // }
         }
     }
     else
@@ -426,51 +458,39 @@ bool CSerialPortUnixBase::openPort()
 
     bool bRet = false;
 
-    // fd = open(m_portName,O_RDWR | O_NOCTTY);//阻塞
-
-    fd = open(m_portName, O_RDWR | O_NOCTTY | O_NDELAY); // 非阻塞
-
-    if (fd != -1)
+    fd = open(m_portName, O_RDWR | O_NOCTTY); // block for select
+    if (-1 != fd)
     {
-        // if(fcntl(fd,F_SETFL,FNDELAY) >= 0)//非阻塞，覆盖前面open的属性
-        if (fcntl(fd, F_SETFL, 0) >= 0) // 阻塞，即使前面在open串口设备时设置的是非阻塞的，这里设为阻塞后，以此为准
+        // set param
+        if (uartSet(fd, m_baudRate, m_parity, m_dataBits, m_stopbits, m_flowControl) == -1)
         {
-            // set param
-            if (uartSet(fd, m_baudRate, m_parity, m_dataBits, m_stopbits, m_flowControl) == -1)
-            {
-                fprintf(stderr, "uart set failed\n");
+            fprintf(stderr, "uart set failed\n");
 
-                bRet = false;
-                m_lastError = itas109::/*SerialPortError::*/ ErrorInvalidParam;
-            }
-            else
-            {
-                if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
-                {
-                    m_isThreadRunning = true;
-                    bRet = startThreadMonitor();
-
-                    if (bRet)
-                    {
-                        m_lastError = itas109::/*SerialPortError::*/ ErrorOK;
-                    }
-                    else
-                    {
-                        m_isThreadRunning = false;
-                        m_lastError = itas109::/*SerialPortError::*/ ErrorInner;
-                    }
-                }
-                else
-                {
-                    bRet = true;
-                    m_lastError = itas109::/*SerialPortError::*/ ErrorOK;
-                }
-            }
+            bRet = false;
+            m_lastError = itas109::/*SerialPortError::*/ ErrorInvalidParam;
         }
         else
         {
-            bRet = false;
-            m_lastError = itas109::/*SerialPortError::*/ ErrorInner;
+            if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
+            {
+                m_isThreadRunning = true;
+                bRet = startThreadMonitor();
+
+                if (bRet)
+                {
+                    m_lastError = itas109::/*SerialPortError::*/ ErrorOK;
+                }
+                else
+                {
+                    m_isThreadRunning = false;
+                    m_lastError = itas109::/*SerialPortError::*/ ErrorInner;
+                }
+            }
+            else
+            {
+                bRet = true;
+                m_lastError = itas109::/*SerialPortError::*/ ErrorOK;
+            }
         }
     }
     else
