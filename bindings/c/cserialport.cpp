@@ -10,7 +10,7 @@ class CSPReadEventListener : public itas109::CSerialPortListener
 {
 public:
     CSPReadEventListener(i_handle_t handle, pFunReadEvent pFun)
-        : m_handle(0)
+        : m_handle(handle)
         , m_pFun(pFun)
     {
     }
@@ -33,7 +33,7 @@ class CSPHotPlugEventListener : public itas109::CSerialPortHotPlugListener
 {
 public:
     CSPHotPlugEventListener(i_handle_t handle, pFunHotPlugEvent pFun)
-        : m_handle(0)
+        : m_handle(handle)
         , m_pFun(pFun)
     {
     }
