@@ -38,7 +38,7 @@ CSerialPort已经在以下平台做过测试
 ## Long-term Goal 长期目标
 
 - [x] 1.首先支持windows和linux平台
-- [ ] 2.增加通用串口通信协议
+- [x] 2.支持通用串口通信协议 - [CommNoGuiProtocol](https://github.com/itas109/CSerialPort/tree/master/examples/CommNoGuiProtocol)
 - [x] 3.支持热插拔通知 - CSerialPortHotPlugListener
 - [x] 4.更高效的通知模块 - CSerialPortListener
 - [x] 5.支持其他语言 - C, C#, Java, Python, Node.js, Electron, Rust - 详见[bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)

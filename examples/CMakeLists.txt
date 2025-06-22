@@ -16,6 +16,9 @@ cmake_minimum_required(VERSION 3.10.0)
 # CommNoGui
 add_subdirectory(CommNoGui)
 
+# CommNoGuiProtocol
+add_subdirectory(CommNoGuiProtocol)
+
 if(WIN32)
 find_package(MFC)
 if (MFC_FOUND)

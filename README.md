@@ -38,7 +38,7 @@ CSerialPort was tested on the following platforms
 ## Long-term Goal
 
 - [x] 1.support windows and linux first
-- [ ] 2.add communicating protocol
+- [x] 2.support common communication protocol - [CommNoGuiProtocol](https://github.com/itas109/CSerialPort/tree/master/examples/CommNoGuiProtocol)
 - [x] 3.support hot plug notify - CSerialPortHotPlugListener
 - [x] 4.higher efficiency notify module - replace with CSerialPortListener
 - [x] 5.support other language - C, C#, Java, Python, Node.js, Electron, Rust etc. - more information [bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
