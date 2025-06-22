@@ -1,6 +1,7 @@
 ﻿#include "CSerialPort/SerialPortBase.h"
 #include "CSerialPort/ithread.hpp"
 #include "CSerialPort/itimer.hpp"
+#include "CSerialPort/IProtocolParser.h"
 #include "CSerialPort/SerialPortHotPlug.hpp"
 
 CSerialPortBase::CSerialPortBase()
@@ -13,6 +14,7 @@ CSerialPortBase::CSerialPortBase()
     , p_readEvent(NULL)
     , p_timer(NULL)
     , p_serialPortHotPlug(NULL)
+    , p_protocolParser(NULL)
 {
     p_mutex = new itas109::IMutex();
     p_timer = new itas109::ITimer<itas109::CSerialPortListener>();
@@ -28,6 +30,7 @@ CSerialPortBase::CSerialPortBase(const char *portName)
     , p_readEvent(NULL)
     , p_timer(NULL)
     , p_serialPortHotPlug(NULL)
+    , p_protocolParser(NULL)
 {
     p_mutex = new itas109::IMutex();
     p_timer = new itas109::ITimer<itas109::CSerialPortListener>();
@@ -179,6 +182,19 @@ int CSerialPortBase::disconnectHotPlugReadEvent()
         delete p_serialPortHotPlug;
         p_serialPortHotPlug = NULL;
 
+        return itas109::ErrorOK;
+    }
+    else
+    {
+        return itas109::ErrorInvalidParam;
+    }
+}
+
+int CSerialPortBase::setProtocolParser(itas109::IProtocolParser *parser)
+{
+    if (parser)
+    {
+        p_protocolParser = parser;
         return itas109::ErrorOK;
     }
     else

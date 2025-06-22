@@ -21,6 +21,7 @@ namespace itas109
 {
 template <class T>
 class ITimer;
+class IProtocolParser;
 }
 
 class CSerialPortBase;
@@ -137,6 +138,16 @@ public:
      * @retval [other] failed 失败
      */
     int disconnectHotPlugReadEvent();
+
+    /**
+     * @brief set protocol parser 设置协议解析器
+     *
+     * @param parser [in] protocol parser 协议解析器
+     * @return return set status 返回设置状态
+     * @retval 0 success 成功
+     * @retval 14 invalid parameter error 无效的参数
+     */
+    int setProtocolParser(itas109::IProtocolParser *parser);
 
     /**
      * @brief get used length of buffer 获取读取缓冲区已使用大小

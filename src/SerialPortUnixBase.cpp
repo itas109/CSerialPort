@@ -2,6 +2,7 @@
 
 #include "CSerialPort/SerialPortUnixBase.h"
 #include "CSerialPort/SerialPortListener.h"
+#include "CSerialPort/IProtocolParser.h"
 #include "CSerialPort/ithread.hpp"
 #include "CSerialPort/itimer.hpp"
 #include "CSerialPort/ilog.hpp"
@@ -321,6 +322,7 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
         timeout.tv_usec = 50000; // 50ms for stop
 
         char dataArray[4096];
+        char bufferArray[4096];
         for (; p_base->isThreadRunning();)
         {
             int readbytes = 0;
@@ -373,33 +375,56 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
                         LOG_INFO("write buffer(usedLen %u). len: %d, hex(top100): %s", p_base->p_buffer->getUsedLen(), len, itas109::IUtils::charToHexStr(hexStr, data, len > 100 ? 100 : len));
 #endif
 
-                        if (p_base->p_readEvent)
+                        // parse protocol first
+                        if (p_base->p_protocolParser)
                         {
-                            unsigned int readIntervalTimeoutMS = p_base->getReadIntervalTimeout();
-                            if (readIntervalTimeoutMS > 0)
-                            {
-                                if (p_base->p_timer)
-                                {
-                                    if (p_base->p_timer->isRunning())
-                                    {
-                                        p_base->p_timer->stop();
-                                    }
+                            // TODO: byteBuffer
+                            // peek all data
+                            int realSize = p_base->p_buffer->peek(bufferArray, 4096);
 
-                                    if (p_base->p_buffer->isFull() || p_base->p_buffer->getUsedLen() > p_base->getByteReadBufferFullNotify())
+                            // parse protocol
+                            unsigned int skipSize = 0;
+                            std::vector<itas109::IProtocolResult> results;
+                            p_base->p_protocolParser->parse(&bufferArray, realSize, skipSize, results);
+
+                            // update ringbuffer read index
+                            p_base->p_buffer->skip(skipSize);
+
+                            if (!results.empty())
+                            {
+                                p_base->p_protocolParser->onProtocolEvent(results);
+                            }
+                        }
+                        else
+                        {
+                            if (p_base->p_readEvent)
+                            {
+                                unsigned int readIntervalTimeoutMS = p_base->getReadIntervalTimeout();
+                                if (readIntervalTimeoutMS > 0)
+                                {
+                                    if (p_base->p_timer)
                                     {
-                                        LOG_INFO("onReadEvent buffer full. portName: %s, readLen: %u", p_base->getPortName(), p_base->p_buffer->getUsedLen());
-                                        p_base->p_readEvent->onReadEvent(p_base->getPortName(), p_base->p_buffer->getUsedLen());
-                                    }
-                                    else
-                                    {
-                                        p_base->p_timer->startOnce(readIntervalTimeoutMS, p_base->p_readEvent, &itas109::CSerialPortListener::onReadEvent, p_base->getPortName(), p_base->p_buffer->getUsedLen());
+                                        if (p_base->p_timer->isRunning())
+                                        {
+                                            p_base->p_timer->stop();
+                                        }
+
+                                        if (p_base->p_buffer->isFull() || p_base->p_buffer->getUsedLen() > p_base->getByteReadBufferFullNotify())
+                                        {
+                                            LOG_INFO("onReadEvent buffer full. portName: %s, readLen: %u", p_base->getPortName(), p_base->p_buffer->getUsedLen());
+                                            p_base->p_readEvent->onReadEvent(p_base->getPortName(), p_base->p_buffer->getUsedLen());
+                                        }
+                                        else
+                                        {
+                                            p_base->p_timer->startOnce(readIntervalTimeoutMS, p_base->p_readEvent, &itas109::CSerialPortListener::onReadEvent, p_base->getPortName(), p_base->p_buffer->getUsedLen());
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                LOG_INFO("onReadEvent min read byte. portName: %s, readLen: %u", p_base->getPortName(), p_base->p_buffer->getUsedLen());
-                                p_base->p_readEvent->onReadEvent(p_base->getPortName(), p_base->p_buffer->getUsedLen());
+                                else
+                                {
+                                    LOG_INFO("onReadEvent min read byte. portName: %s, readLen: %u", p_base->getPortName(), p_base->p_buffer->getUsedLen());
+                                    p_base->p_readEvent->onReadEvent(p_base->getPortName(), p_base->p_buffer->getUsedLen());
+                                }
                             }
                         }
                     }

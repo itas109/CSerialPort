@@ -156,6 +156,18 @@ int itas109::CSerialPort::disconnectHotPlugReadEvent()
     }
 }
 
+int itas109::CSerialPort::setProtocolParser(itas109::IProtocolParser *parser)
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->setProtocolParser(parser);
+    }
+    else
+    {
+        return itas109::ErrorNullPointer;
+    }
+}
+
 unsigned int itas109::CSerialPort::getReadBufferUsedLen()
 {
     if (p_serialPortBase)

@@ -23,6 +23,7 @@ class CSerialPortHotPlugListener;
 class CSerialPortHotPlug;
 template <class T>
 class ITimer;
+class IProtocolParser;
 } // namespace itas109
 
 /**
@@ -135,6 +136,16 @@ public:
      * @retval [other] failed 失败
      */
     int disconnectHotPlugReadEvent();
+
+    /**
+     * @brief set protocol parser 设置协议解析器
+     *
+     * @param parser [in] protocol parser 协议解析器
+     * @return return set status 返回设置状态
+     * @retval 0 success 成功
+     * @retval 14 invalid parameter error 无效的参数
+     */
+    int setProtocolParser(itas109::IProtocolParser *parser);
 
     /**
      * @brief get used length of buffer 获取读取缓冲区已使用大小
@@ -388,6 +399,8 @@ protected:
     itas109::CSerialPortListener *p_readEvent;              ///< read event 读取事件
     itas109::ITimer<itas109::CSerialPortListener> *p_timer; ///< read timer 读取定时器
     itas109::CSerialPortHotPlug *p_serialPortHotPlug;       ///< serial port hot plug class 串口热插拔类
+    itas109::IProtocolParser *p_protocolParser;             ///< protocol parse 通信协议解析
+
 private:
 };
 #endif //__CSERIALPORTBASE_H__
