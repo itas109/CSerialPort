@@ -22,7 +22,7 @@ namespace itas109
 template <class T>
 class ITimer;
 class IProtocolParser;
-}
+} // namespace itas109
 
 class CSerialPortBase;
 

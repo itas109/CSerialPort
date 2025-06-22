@@ -597,7 +597,7 @@ unsigned int CSerialPortUnixBase::getReadBufferUsedLen()
 
 int CSerialPortUnixBase::readDataUnix(void *data, int size)
 {
-    itas109::IAutoLock lock(p_mutex);
+    itas109::IAutoLock lock(p_mutexRead);
 
     int iRet = -1;
 
@@ -616,7 +616,7 @@ int CSerialPortUnixBase::readDataUnix(void *data, int size)
 
 int CSerialPortUnixBase::readData(void *data, int size)
 {
-    itas109::IAutoLock lock(p_mutex);
+    itas109::IAutoLock lock(p_mutexRead);
 
     if (size <= 0)
     {
@@ -657,7 +657,7 @@ int CSerialPortUnixBase::readAllData(void *data)
 
 int CSerialPortUnixBase::readLineData(void *data, int size)
 {
-    itas109::IAutoLock lock(p_mutex);
+    itas109::IAutoLock lock(p_mutexRead);
 
     int iRet = -1;
 
@@ -677,7 +677,7 @@ int CSerialPortUnixBase::readLineData(void *data, int size)
 
 int CSerialPortUnixBase::writeData(const void *data, int size)
 {
-    itas109::IAutoLock lock(p_mutex);
+    itas109::IAutoLock lock(p_mutexWrite);
 
     int iRet = -1;
 

@@ -485,7 +485,7 @@ unsigned int CSerialPortWinBase::getReadBufferUsedLen()
 
 int CSerialPortWinBase::readDataWin(void *data, int size)
 {
-    itas109::IAutoLock lock(p_mutex);
+    itas109::IAutoLock lock(p_mutexRead);
 
     DWORD numBytes = 0;
 
@@ -537,7 +537,7 @@ int CSerialPortWinBase::readDataWin(void *data, int size)
 
 int CSerialPortWinBase::readData(void *data, int size)
 {
-    itas109::IAutoLock lock(p_mutex);
+    itas109::IAutoLock lock(p_mutexRead);
 
     if (size <= 0)
     {
@@ -585,7 +585,7 @@ int CSerialPortWinBase::readAllData(void *data)
 
 int CSerialPortWinBase::readLineData(void *data, int size)
 {
-    itas109::IAutoLock lock(p_mutex);
+    itas109::IAutoLock lock(p_mutexRead);
 
     DWORD numBytes = 0;
 
@@ -605,7 +605,7 @@ int CSerialPortWinBase::readLineData(void *data, int size)
 
 int CSerialPortWinBase::writeData(const void *data, int size)
 {
-    itas109::IAutoLock lock(p_mutex);
+    itas109::IAutoLock lock(p_mutexWrite);
 
     DWORD numBytes = 0;
 

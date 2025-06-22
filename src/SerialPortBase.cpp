@@ -11,12 +11,16 @@ CSerialPortBase::CSerialPortBase()
     , m_minByteReadNotify(1)
     , m_byteReadBufferFullNotify(3276) // 4096*0.8
     , p_mutex(NULL)
+    , p_mutexRead(NULL)
+    , p_mutexWrite(NULL)
     , p_readEvent(NULL)
     , p_timer(NULL)
     , p_serialPortHotPlug(NULL)
     , p_protocolParser(NULL)
 {
     p_mutex = new itas109::IMutex();
+    p_mutexRead = new itas109::IMutex();
+    p_mutexWrite = new itas109::IMutex();
     p_timer = new itas109::ITimer<itas109::CSerialPortListener>();
 }
 
@@ -27,12 +31,16 @@ CSerialPortBase::CSerialPortBase(const char *portName)
     , m_minByteReadNotify(1)
     , m_byteReadBufferFullNotify(3276) // 4096*0.8
     , p_mutex(NULL)
+    , p_mutexRead(NULL)
+    , p_mutexWrite(NULL)
     , p_readEvent(NULL)
     , p_timer(NULL)
     , p_serialPortHotPlug(NULL)
     , p_protocolParser(NULL)
 {
     p_mutex = new itas109::IMutex();
+    p_mutexRead = new itas109::IMutex();
+    p_mutexWrite = new itas109::IMutex();
     p_timer = new itas109::ITimer<itas109::CSerialPortListener>();
 }
 
@@ -42,6 +50,18 @@ CSerialPortBase::~CSerialPortBase()
     {
         delete p_mutex;
         p_mutex = NULL;
+    }
+
+    if (p_mutexRead)
+    {
+        delete p_mutexRead;
+        p_mutexRead = NULL;
+    }
+
+    if (p_mutexWrite)
+    {
+        delete p_mutexWrite;
+        p_mutexWrite = NULL;
     }
 
     if (p_timer)
