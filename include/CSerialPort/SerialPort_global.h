@@ -57,6 +57,15 @@
 #endif
 #endif
 
+// C++11 support
+#if (__cplusplus >= 201103L) // gcc4.8.1 clang3.1
+#define CSERIALPORT_CPP11
+#elif (defined(_MSC_VER) && (_MSC_VER >= 1800)) // msvc 2013(1800) partial support, msvc 2015(1900) full support
+#define CSERIALPORT_CPP11
+#else
+// not support C++11
+#endif
+
 // #ifdef CSERIALPORT_DEBUG
 // #include <stdio.h>
 //// #include <string.h> // strrchr

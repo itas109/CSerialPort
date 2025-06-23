@@ -14,17 +14,20 @@
 #define imsleep(microsecond) usleep(1000 * microsecond) // ms
 #endif
 
-// ReadEventNotify
-//#include "CSerialPort/ithread.hpp"
-#include <mutex>
-#include  <condition_variable>
-
 #include "CSerialPort/iutils.hpp"
 #include "CSerialPort/SerialPort.h"
 #include "CSerialPort/SerialPortInfo.h"
 #include "CSerialPort/IProtocolParser.h" // optional for parser
 #include "CSerialPortVirtual.h"
 using namespace itas109;
+
+// ReadEventNotify
+#ifdef CSERIALPORT_CPP11
+#include <mutex>
+#include <condition_variable>
+#else
+#include "CSerialPort/ithread.hpp"
+#endif
 
 static char portName1[256] = {0};
 static char portName2[256] = {0};
@@ -40,9 +43,13 @@ public:
 
     void wait(char *portName, unsigned int &readBufferLen, unsigned int timeoutMS = 100)
     {
+#ifdef CSERIALPORT_CPP11
         std::unique_lock<std::mutex> lock(m_mutex);
         if (m_cv.wait_for(lock, std::chrono::milliseconds(timeoutMS), [&]
                           { return m_readBufferLen > 0; }))
+#else
+        if (m_cv.timeWait(m_mutex, timeoutMS, m_readBufferLen > 0))
+#endif
         {
             readBufferLen = m_readBufferLen;
             itas109::IUtils::strncpy(portName, m_portName, 256);
@@ -56,24 +63,36 @@ public:
     void notify(const char *portName, unsigned int readBufferLen)
     {
         {
+#ifdef CSERIALPORT_CPP11
             std::unique_lock<std::mutex> lock(m_mutex);
+#else
+            IAutoLock lock(&m_mutex);
+#endif
             m_readBufferLen = readBufferLen;
             itas109::IUtils::strncpy(m_portName, portName, 256);
         }
-
-		m_cv.notify_one();
+#ifdef CSERIALPORT_CPP11
+        m_cv.notify_one();
+#else
+        m_cv.notifyOne();
+#endif
     }
 
 private:
     ReadEventNotify()
-	{
+    {
         memset(m_portName, 0, 256);
         m_readBufferLen = 0;
-	}
+    }
 
 private:
+#ifdef CSERIALPORT_CPP11
     std::condition_variable m_cv;
     std::mutex m_mutex;
+#else
+    IConditionVariable m_cv;
+    IMutex m_mutex;
+#endif
 
     char m_portName[256];
     unsigned int m_readBufferLen;
@@ -106,10 +125,18 @@ public:
 
     void wait(std::vector<IProtocolResult> &results, unsigned int timeoutMS = 100)
     {
+#ifdef CSERIALPORT_CPP11
         std::unique_lock<std::mutex> lock(m_mutex);
         if (m_cv.wait_for(lock, std::chrono::milliseconds(timeoutMS), [&]{ return m_results.size() > 0; }))
+#else
+        if (m_cv.timeWait(m_mutex, timeoutMS, m_results.size() > 0))
+#endif
         {
+#ifdef CSERIALPORT_CPP11
             results = std::move(m_results);
+#else
+            results = m_results;
+#endif
         }
         else
         {
@@ -120,11 +147,20 @@ public:
     void notify(std::vector<IProtocolResult> &results)
     {
         {
+#ifdef CSERIALPORT_CPP11
             std::unique_lock<std::mutex> lock(m_mutex);
-            m_results = std::move(results);
+			m_results = std::move(results);
+#else
+            IAutoLock lock(&m_mutex);
+			m_results = results;
+#endif
         }
 
+#ifdef CSERIALPORT_CPP11
         m_cv.notify_one();
+#else
+        m_cv.notifyOne();
+#endif
     }
 
 private:
@@ -133,8 +169,13 @@ private:
     }
 
 private:
+#ifdef CSERIALPORT_CPP11
     std::condition_variable m_cv;
     std::mutex m_mutex;
+#else
+    IConditionVariable m_cv;
+    IMutex m_mutex;
+#endif
 
     std::vector<IProtocolResult> m_results;
 };
@@ -213,38 +254,38 @@ public:
         unsigned int dataLen = 0;     // 当前帧数据长度
         unsigned int totalLen = 0;    // 当前帧总长度
 
-/*
-```mermaid
-stateDiagram-v2
-    [*] --> STATE_IDLE
+        /*
+        ```mermaid
+        stateDiagram-v2
+            [*] --> STATE_IDLE
 
-    STATE_IDLE --> STATE_FIND_HEADER1: 剩余数据>0
+            STATE_IDLE --> STATE_FIND_HEADER1: 剩余数据>0
 
-    STATE_FIND_HEADER1 --> STATE_FIND_HEADER2: 找到0xEB [start=offset]
-    STATE_FIND_HEADER1 --> STATE_FIND_HEADER1: 未找到0xEB [offset++]
-    STATE_FIND_HEADER1 --> [*]: 数据不足 [skip=size]
+            STATE_FIND_HEADER1 --> STATE_FIND_HEADER2: 找到0xEB [start=offset]
+            STATE_FIND_HEADER1 --> STATE_FIND_HEADER1: 未找到0xEB [offset++]
+            STATE_FIND_HEADER1 --> [*]: 数据不足 [skip=size]
 
-    STATE_FIND_HEADER2 --> STATE_PARSE_LENGTH: 找到0x90 [offset++]
-    STATE_FIND_HEADER2 --> STATE_IDLE: 未找到0x90 [offset=start+1]
-    STATE_FIND_HEADER2 --> [*]: 数据不足 [skip=offset-1]
+            STATE_FIND_HEADER2 --> STATE_PARSE_LENGTH: 找到0x90 [offset++]
+            STATE_FIND_HEADER2 --> STATE_IDLE: 未找到0x90 [offset=start+1]
+            STATE_FIND_HEADER2 --> [*]: 数据不足 [skip=offset-1]
 
-    STATE_PARSE_LENGTH --> STATE_DATA: 长度有效 [offset+=3]
-    STATE_PARSE_LENGTH --> STATE_IDLE: 长度>MAX_SIZE [offset=start+1]
-    STATE_PARSE_LENGTH --> [*]: 数据不足 [skip=start]
+            STATE_PARSE_LENGTH --> STATE_DATA: 长度有效 [offset+=3]
+            STATE_PARSE_LENGTH --> STATE_IDLE: 长度>MAX_SIZE [offset=start+1]
+            STATE_PARSE_LENGTH --> [*]: 数据不足 [skip=start]
 
-    STATE_DATA --> STATE_CHECK_CODE: 解析数据 [offset+=dataLen]
-    STATE_DATA --> [*]: 数据不足 [skip=start]
+            STATE_DATA --> STATE_CHECK_CODE: 解析数据 [offset+=dataLen]
+            STATE_DATA --> [*]: 数据不足 [skip=start]
 
-    STATE_CHECK_CODE --> STATE_IDLE: 校验成功,解析下一帧 [offset=start+totalLen]
-    STATE_CHECK_CODE --> STATE_IDLE: 校验失败 [offset=start+1]
-    STATE_CHECK_CODE --> [*]: 数据不足 [skip=start]
-```
-*/
+            STATE_CHECK_CODE --> STATE_IDLE: 校验成功,解析下一帧 [offset=start+totalLen]
+            STATE_CHECK_CODE --> STATE_IDLE: 校验失败 [offset=start+1]
+            STATE_CHECK_CODE --> [*]: 数据不足 [skip=start]
+        ```
+        */
         while (offset < size)
         {
             switch (state)
             {
-                case STATE_IDLE:// 状态 0: 空闲状态（等待数据）
+                case STATE_IDLE: // 状态 0: 空闲状态（等待数据）
                     if (offset < size)
                     {
                         state = STATE_FIND_HEADER1;
@@ -282,7 +323,7 @@ stateDiagram-v2
                     }
                     break;
 
-                case STATE_PARSE_LENGTH: // 状态3：解析数据长度
+                case STATE_PARSE_LENGTH:   // 状态3：解析数据长度
                     if (offset + 3 > size) // 版本(1) + 数据长度(2) 需 3 字节
                     {
                         skipSize = startOffset;
@@ -321,14 +362,19 @@ stateDiagram-v2
                     if (receivedCrc == getCheckCode(msgStart, totalLen - 2))
                     {
                         // check passed
+#ifdef CSERIALPORT_CPP11
                         results.emplace_back(msgStart, totalLen);
+#else
+                        IProtocolResult result(msgStart, totalLen);
+                        results.push_back(result);
+#endif
                         offset = startOffset + totalLen;
                         skipSize = offset;
                         state = STATE_IDLE; // 返回状态0处理后续数据
                     }
                     else
                     {
-                        offset = startOffset + 1;  // skip first header byte and continue search
+                        offset = startOffset + 1; // skip first header byte and continue search
                         state = STATE_IDLE;
                     }
                     break;
@@ -348,8 +394,9 @@ stateDiagram-v2
     void onProtocolEvent(std::vector<IProtocolResult> &results)
     {
         char hexStr[200];
-        for (const IProtocolResult& result : results)
+        for (size_t i = 0; i < results.size(); ++i)
         {
+			const IProtocolResult result = results.at(i);
             printf("parse protocol result. len: %d, hex(top100): %s\n", result.len, itas109::IUtils::charToHexStr(hexStr, (char *)result.data, result.len > 100 ? 100 : result.len));
         }
         ProtocolEventNotify::getInstance().notify(results);
@@ -359,7 +406,7 @@ stateDiagram-v2
 class CSerialPortTests
 {
 public:
-    CSerialPortTests()  // run before test
+    CSerialPortTests() // run before test
     {
         // std::cout << "CSerialPort Version : " << m_serialport1.getVersion() << std::endl;
 
@@ -526,7 +573,7 @@ TEST_CASE_FIXTURE(CSerialPortTests, "read_sync_4_1")
     m_serialport1.setOperateMode(itas109::SynchronousOperate);
     m_serialport2.setOperateMode(itas109::SynchronousOperate);
 
-    CHECK_EQ(true,m_serialport1.open());
+    CHECK_EQ(true, m_serialport1.open());
     CHECK_EQ(true, m_serialport2.open());
 
     const char *writeData = "itas109";
@@ -551,7 +598,7 @@ TEST_CASE_FIXTURE(CSerialPortTests, "read_async_5_1")
     m_serialport1.init(portName1);
     m_serialport2.init(portName2);
 
-    CHECK_EQ(true,m_serialport1.open());
+    CHECK_EQ(true, m_serialport1.open());
     CHECK_EQ(true, m_serialport2.open());
 
     const char *writeData = "itas109";
@@ -641,7 +688,7 @@ TEST_CASE_FIXTURE(CSerialPortTests, "protocol_parse_6_1")
         unsigned char writeData2[9] = {0x90, 0x00, 0x00, 0x03, 0x30, 0x31, 0x32, 0xF7, 0x0B};
         int writeLen2 = sizeof(writeData2);
         unsigned char writeData[10] = {0xEB, 0x90, 0x00, 0x00, 0x03, 0x30, 0x31, 0x32, 0xF7, 0x0B};
-        int writeLen =sizeof(writeData);
+        int writeLen = sizeof(writeData);
         m_serialport1.writeData(writeData1, writeLen1); // 前半帧
 
         // wait protocol event
@@ -656,7 +703,7 @@ TEST_CASE_FIXTURE(CSerialPortTests, "protocol_parse_6_1")
         CHECK_EQ(writeLen, result[0].len);
     }
 
-     // 半帧拼接 - 长度
+    // 半帧拼接 - 长度
     {
         unsigned char writeData1[5] = {0xEB, 0x90, 0x00, 0x00, 0x03};
         int writeLen1 = sizeof(writeData1);
@@ -678,7 +725,7 @@ TEST_CASE_FIXTURE(CSerialPortTests, "protocol_parse_6_1")
         CHECK_EQ(writeLen, result[0].len);
     }
 
-     // 多余帧头
+    // 多余帧头
     {
         unsigned char writeData[12] = {0xEB, 0xEB, 0x90, 0x00, 0x00, 0x03, 0x30, 0x31, 0x32, 0xF7, 0x0B};
         int writeLen = sizeof(writeData);
@@ -745,7 +792,7 @@ int main(int argc, char **argv)
 
     doctest::Context context;
     context.applyCommandLine(argc, argv);
-    context.setOption("duration", true); 
+    context.setOption("duration", true);
 
     int res = context.run();
 

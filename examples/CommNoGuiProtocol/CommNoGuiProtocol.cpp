@@ -216,7 +216,12 @@ public:
                     if (receivedCrc == getCheckCode(msgStart, totalLen - 2))
                     {
                         // check passed
+#ifdef CSERIALPORT_CPP11
                         results.emplace_back(msgStart, totalLen);
+#else
+                        IProtocolResult result(msgStart, totalLen);
+                        results.push_back(result);
+#endif
                         offset = startOffset + totalLen;
                         skipSize = offset;
                         state = STATE_IDLE; // 返回状态0处理后续数据
@@ -283,7 +288,7 @@ int main()
         {
             printf("Please Input The Index Of Port(1 - %d)\n", availablePortCount);
 
-             std::cin >> input;
+            std::cin >> input;
 
             if (input >= 1 && input <= m_availablePortsList.size())
             {
