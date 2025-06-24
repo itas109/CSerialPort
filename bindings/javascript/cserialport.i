@@ -30,6 +30,9 @@
 // enable inherit CSerialPortListener interface to receive data
 %feature("director") itas109::CSerialPortListener;
 
+// TODO: support protocol parser
+%ignore itas109::CSerialPort::setProtocolParser;
+
 %include "CSerialPort/SerialPort_global.h"
 %include "CSerialPort/SerialPort.h"
 %include "CSerialPort/SerialPortListener.h"

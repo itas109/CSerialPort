@@ -31,6 +31,9 @@
 // enable inherit CSerialPortHotPlugListener interface for hot plug
 %feature("director") itas109::CSerialPortHotPlugListener;
 
+// TODO: support protocol parser
+%ignore itas109::CSerialPort::setProtocolParser;
+
 %include "CSerialPort/SerialPort_global.h"
 %include "CSerialPort/SerialPort.h"
 %include "CSerialPort/SerialPortListener.h"

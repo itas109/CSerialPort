@@ -2,9 +2,12 @@
 
 #include "CSerialPort/SerialPort.h"
 #include "CSerialPort/SerialPortInfo.h"
+#include "CSerialPort/IProtocolParser.h"
 #include "CSerialPort/iutils.hpp"
 
 #include <vector>
+#include <cstdlib>  // malloc free
+#include <string.h> // memcpy memset
 
 class CSPReadEventListener : public itas109::CSerialPortListener
 {
@@ -50,6 +53,64 @@ public:
 private:
     i_handle_t m_handle;
     pFunHotPlugEvent m_pFun;
+};
+
+class CSPProtocolParser : public itas109::IProtocolParser
+{
+public:
+    CSPProtocolParser(i_handle_t handle, pFunProtocolParser pParser, pFunProtocolEvent pFun)
+        : m_handle(handle)
+        , m_pParser(pParser)
+        , m_pFun(pFun)
+    {
+    }
+
+    ~CSPProtocolParser()
+    {
+    }
+
+    unsigned int parse(const void *buffer, unsigned int size, std::vector<itas109::IProtocolResult> &results)
+    {
+        ProtocolResultArray resultArray;
+        resultArray.result = NULL;
+        resultArray.size = 0;
+
+        unsigned int skipSize = 0;
+        skipSize = m_pParser(m_handle, buffer, size, &resultArray);
+
+        for (unsigned int i = 0; i < resultArray.size; ++i)
+        {
+            // TODO: no copy
+            ProtocolResult resultC = resultArray.result[i];
+            itas109::IProtocolResult result(resultC.data, resultC.len);
+            results.push_back(result);
+        }
+
+        // free
+        free(resultArray.result);
+
+        return skipSize;
+    }
+
+    void onProtocolEvent(std::vector<itas109::IProtocolResult> &results)
+    {
+        for (size_t i = 0; i < results.size(); ++i)
+        {
+            struct ProtocolResult* result = (struct ProtocolResult *)malloc(sizeof(struct ProtocolResult));
+            if (NULL != result)
+            {
+                // TODO: no copy
+                memcpy(result->data, results.at(i).data, results.at(i).len);
+                result->len = results.at(i).len;
+                m_pFun(m_handle, result);
+            }
+        }
+    }
+
+private:
+    i_handle_t m_handle;
+    pFunProtocolParser m_pParser;
+    pFunProtocolEvent m_pFun;
 };
 
 void CSerialPortAvailablePortInfosMalloc(SerialPortInfoArray *portInfoArray)
@@ -197,6 +258,19 @@ int CSerialPortDisconnectHotPlugEvent(i_handle_t handle)
     if (pCSP)
     {
         return pCSP->disconnectHotPlugReadEvent();
+    }
+
+    return -1;
+}
+
+int CSerialPortSetProtocolParser(i_handle_t handle, pFunProtocolParser pParser, pFunProtocolEvent pFun)
+{
+    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
+    if (pCSP)
+    {
+        // TODO: delete new CSPCommonProtocolParser
+        CSPProtocolParser *parser = new CSPProtocolParser(handle, pParser, pFun);
+        return pCSP->setProtocolParser(parser);
     }
 
     return -1;

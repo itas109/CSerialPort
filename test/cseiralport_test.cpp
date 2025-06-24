@@ -1,4 +1,4 @@
-// doctest
+﻿// doctest
 #define DOCTEST_CONFIG_IMPLEMENT
 #define DOCTEST_CONFIG_NO_POSIX_SIGNALS // fixed SIGSTKSZ compile error on ubuntu 22
 #include "doctest.h"
@@ -127,7 +127,8 @@ public:
     {
 #ifdef CSERIALPORT_CPP11
         std::unique_lock<std::mutex> lock(m_mutex);
-        if (m_cv.wait_for(lock, std::chrono::milliseconds(timeoutMS), [&]{ return m_results.size() > 0; }))
+        if (m_cv.wait_for(lock, std::chrono::milliseconds(timeoutMS), [&]
+                          { return m_results.size() > 0; }))
 #else
         if (m_cv.timeWait(m_mutex, timeoutMS, m_results.size() > 0))
 #endif
@@ -149,10 +150,10 @@ public:
         {
 #ifdef CSERIALPORT_CPP11
             std::unique_lock<std::mutex> lock(m_mutex);
-			m_results = std::move(results);
+            m_results = std::move(results);
 #else
             IAutoLock lock(&m_mutex);
-			m_results = results;
+            m_results = results;
 #endif
         }
 
@@ -231,12 +232,13 @@ public:
     | 5      | data        | N      |                        |
     | 5 + N  | check code  | 2      | CRC-16/MODBUS(0x18005) |
     */
-    void parse(const void *buffer, unsigned int size, unsigned int &skipSize, std::vector<IProtocolResult> &results)
+    unsigned int parse(const void *buffer, unsigned int size, std::vector<IProtocolResult> &results)
     {
         const unsigned int MIN_SIZE = 7; // header(2) + version(1) + datalen(2) + crc(2)
         const unsigned int MAX_SIZE = 249;
         unsigned int offset = 0;
-        skipSize = 0;
+        unsigned int processedSize = 0;
+        const unsigned char *ptr = static_cast<const unsigned char *>(buffer);
 
         // FSM states
         enum ParserState
@@ -292,12 +294,12 @@ public:
                     }
                     else
                     {
-                        skipSize = offset;
-                        return;
+                        processedSize = offset;
+                        return processedSize;
                     }
                     break;
                 case STATE_FIND_HEADER1: // 状态1：寻找帧头第一个字节0xEB
-                    if (static_cast<const unsigned char *>(buffer)[offset] == 0xEB)
+                    if (ptr[offset] == 0xEB)
                     {
                         startOffset = offset;
                         state = STATE_FIND_HEADER2; // 找到0xEB，进入状态2
@@ -308,10 +310,10 @@ public:
                 case STATE_FIND_HEADER2: // 状态2：验证帧头第二个字节0x90
                     if (offset >= size)
                     {
-                        skipSize = startOffset;
-                        return;
+                        processedSize = startOffset;
+                        return processedSize;
                     }
-                    if (static_cast<const unsigned char *>(buffer)[offset] == 0x90)
+                    if (ptr[offset] == 0x90)
                     {
                         state = STATE_PARSE_LENGTH; // 找到0x90，进入状态3
                         ++offset;
@@ -326,10 +328,10 @@ public:
                 case STATE_PARSE_LENGTH:   // 状态3：解析数据长度
                     if (offset + 3 > size) // 版本(1) + 数据长度(2) 需 3 字节
                     {
-                        skipSize = startOffset;
-                        return;
+                        processedSize = startOffset;
+                        return processedSize;
                     }
-                    dataLen = (static_cast<const unsigned char *>(buffer)[offset + 1] << 8) | static_cast<const unsigned char *>(buffer)[offset + 2];
+                    dataLen = (ptr[offset + 1] << 8) | ptr[offset + 2];
                     totalLen = dataLen + 7; // 总长度 = 数据长度 + 固定头尾长度
 
                     // 验证数据长度有效性
@@ -345,19 +347,19 @@ public:
                 case STATE_DATA: // 状态4：有效数据(预留)
                     if (offset + dataLen > size)
                     {
-                        skipSize = startOffset;
-                        return;
+                        processedSize = startOffset;
+                        return processedSize;
                     }
                     offset += dataLen; // 移动偏移到校验区
                     state = STATE_CHECK_CODE;
                 case STATE_CHECK_CODE: // 状态5：校验
                     if (offset + 2 > size)
                     {
-                        skipSize = startOffset;
-                        return;
+                        processedSize = startOffset;
+                        return processedSize;
                     }
 
-                    const unsigned char *msgStart = static_cast<const unsigned char *>(buffer) + startOffset;
+                    const unsigned char *msgStart = ptr + startOffset;
                     unsigned short receivedCrc = (msgStart[totalLen - 2] << 8) | msgStart[totalLen - 1];
                     if (receivedCrc == getCheckCode(msgStart, totalLen - 2))
                     {
@@ -369,7 +371,7 @@ public:
                         results.push_back(result);
 #endif
                         offset = startOffset + totalLen;
-                        skipSize = offset;
+                        processedSize = offset;
                         state = STATE_IDLE; // 返回状态0处理后续数据
                     }
                     else
@@ -383,12 +385,14 @@ public:
 
         if (state == STATE_FIND_HEADER1)
         {
-            skipSize = size; // not found header, skip all size
+            processedSize = size; // not found header, skip all size
         }
         else if (state == STATE_FIND_HEADER2)
         {
-            skipSize = offset - 1; // only found header1
+            processedSize = offset - 1; // only found header1
         }
+
+        return processedSize;
     }
 
     void onProtocolEvent(std::vector<IProtocolResult> &results)
@@ -396,7 +400,7 @@ public:
         char hexStr[200];
         for (size_t i = 0; i < results.size(); ++i)
         {
-			const IProtocolResult result = results.at(i);
+            const IProtocolResult result = results.at(i);
             printf("parse protocol result. len: %d, hex(top100): %s\n", result.len, itas109::IUtils::charToHexStr(hexStr, (char *)result.data, result.len > 100 ? 100 : result.len));
         }
         ProtocolEventNotify::getInstance().notify(results);

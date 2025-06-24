@@ -36,6 +36,18 @@ struct SerialPortInfoArray
     unsigned int size;
 };
 
+struct ProtocolResult
+{
+    unsigned char data[256];
+    unsigned int len;
+};
+
+struct ProtocolResultArray
+{
+    struct ProtocolResult *result;
+    unsigned int size;
+};
+
 enum OperateMode
 {
     AsynchronousOperate,
@@ -81,6 +93,10 @@ extern "C"
 
     typedef void (*pFunHotPlugEvent)(i_handle_t /*handle*/, const char * /*portName*/, int /*isAdd*/);
 
+    typedef unsigned int (*pFunProtocolParser)(i_handle_t /*handle*/, const void * /*buffer*/, unsigned int /*size*/, struct ProtocolResultArray * /*results*/);
+
+    typedef void (*pFunProtocolEvent)(i_handle_t /*handle*/, struct ProtocolResult * /*result*/);
+
     C_DLL_EXPORT void CSerialPortAvailablePortInfosMalloc(struct SerialPortInfoArray *portInfoArray);
 
     C_DLL_EXPORT void CSerialPortAvailablePortInfosFree(struct SerialPortInfoArray *portInfoArray);
@@ -113,6 +129,8 @@ extern "C"
     C_DLL_EXPORT int CSerialPortConnectHotPlugEvent(i_handle_t handle, pFunHotPlugEvent pFun);
 
     C_DLL_EXPORT int CSerialPortDisconnectHotPlugEvent(i_handle_t handle);
+
+    C_DLL_EXPORT int CSerialPortSetProtocolParser(i_handle_t handle, pFunProtocolParser pParser,pFunProtocolEvent pFun);
 
     C_DLL_EXPORT unsigned int CSerialPortGetReadBufferUsedLen(i_handle_t handle);
 

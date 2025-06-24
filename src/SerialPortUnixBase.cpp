@@ -385,7 +385,7 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
                             // parse protocol
                             unsigned int skipSize = 0;
                             std::vector<itas109::IProtocolResult> results;
-                            p_base->p_protocolParser->parse(&bufferArray, realSize, skipSize, results);
+                            skipSize = p_base->p_protocolParser->parse(&bufferArray, realSize, results);
 
                             // update ringbuffer read index
                             p_base->p_buffer->skip(skipSize);

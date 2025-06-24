@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file IProtocol.h
  * @author itas109 (itas109@qq.com) \n\n
  * Blog : https://blog.csdn.net/itas109 \n
@@ -30,10 +30,10 @@ struct IProtocolResult
         memset(&data, 0, 256);
     }
 
-    IProtocolResult(const unsigned char *_data, unsigned int _len)
+    IProtocolResult(const void *_data, unsigned int _len)
         : len(_len > 256 ? 256 : _len)
     {
-        memcpy(&data, _data, len);
+        memcpy(data, _data, len);
     }
 };
 
@@ -48,13 +48,10 @@ public:
      *
      * @param buffer [in] buffer 缓冲数据
      * @param size [in] data length 数据长度
-     * @param skipSize [out] 需要跳过的数据大小，即已完成解析的数据大小
-     * @param frames [out] 帧数据
-     * @return return number Of bytes read 返回读取字节数
-     * @retval -1 read error 读取错误
-     * @retval [other] return number Of bytes read 返回读取字节数
+     * @param results [out] 帧数据
+     * @return return processedSize 已完成解析的数据大小(ringbuffer需要跳过的数据大小)
      */
-    virtual void parse(const void *buffer, unsigned int size, unsigned int &skipSize, std::vector<IProtocolResult> &results) = 0;
+    virtual unsigned int parse(const void *buffer, unsigned int size, std::vector<IProtocolResult> &results) = 0;
 
     virtual void onProtocolEvent(std::vector<IProtocolResult> &results) = 0;
 };

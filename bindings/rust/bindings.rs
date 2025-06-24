@@ -34,6 +34,36 @@ const _: () = {
     ["Offset of field: SerialPortInfoArray::size"]
         [::std::mem::offset_of!(SerialPortInfoArray, size) - 8usize];
 };
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct ProtocolResult {
+    pub data: [::std::os::raw::c_uchar; 256usize],
+    pub len: ::std::os::raw::c_uint,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ProtocolResult"][::std::mem::size_of::<ProtocolResult>() - 260usize];
+    ["Alignment of ProtocolResult"][::std::mem::align_of::<ProtocolResult>() - 4usize];
+    ["Offset of field: ProtocolResult::data"]
+        [::std::mem::offset_of!(ProtocolResult, data) - 0usize];
+    ["Offset of field: ProtocolResult::len"]
+        [::std::mem::offset_of!(ProtocolResult, len) - 256usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct ProtocolResultArray {
+    pub result: *mut ProtocolResult,
+    pub size: ::std::os::raw::c_uint,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ProtocolResultArray"][::std::mem::size_of::<ProtocolResultArray>() - 16usize];
+    ["Alignment of ProtocolResultArray"][::std::mem::align_of::<ProtocolResultArray>() - 8usize];
+    ["Offset of field: ProtocolResultArray::result"]
+        [::std::mem::offset_of!(ProtocolResultArray, result) - 0usize];
+    ["Offset of field: ProtocolResultArray::size"]
+        [::std::mem::offset_of!(ProtocolResultArray, size) - 8usize];
+};
 pub const OperateMode_AsynchronousOperate: OperateMode = 0;
 pub const OperateMode_SynchronousOperate: OperateMode = 1;
 pub type OperateMode = ::std::os::raw::c_int;
@@ -70,6 +100,16 @@ pub type pFunHotPlugEvent = ::std::option::Option<
         arg3: ::std::os::raw::c_int,
     ),
 >;
+pub type pFunProtocolParser = ::std::option::Option<
+    unsafe extern "C" fn(
+        arg1: i_handle_t,
+        arg2: *const ::std::os::raw::c_void,
+        arg3: ::std::os::raw::c_uint,
+        arg4: *mut ProtocolResultArray,
+    ) -> ::std::os::raw::c_uint,
+>;
+pub type pFunProtocolEvent =
+    ::std::option::Option<unsafe extern "C" fn(arg1: i_handle_t, arg2: *mut ProtocolResult)>;
 unsafe extern "C" {
     pub fn CSerialPortAvailablePortInfosMalloc(portInfoArray: *mut SerialPortInfoArray);
 }
@@ -123,6 +163,13 @@ unsafe extern "C" {
 }
 unsafe extern "C" {
     pub fn CSerialPortDisconnectHotPlugEvent(handle: i_handle_t) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn CSerialPortSetProtocolParser(
+        handle: i_handle_t,
+        pParser: pFunProtocolParser,
+        pFun: pFunProtocolEvent,
+    ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
     pub fn CSerialPortGetReadBufferUsedLen(handle: i_handle_t) -> ::std::os::raw::c_uint;
