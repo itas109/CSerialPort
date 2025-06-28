@@ -70,6 +70,7 @@ inline unsigned short getCheckCode(const unsigned char *data, unsigned int size)
     return result;
 }
 
+// NOTE: CommonProtocolParser could replace with LengthFieldBasedProtocolParser
 class CommonProtocolParser : public IProtocolParser
 {
 public:
@@ -205,6 +206,7 @@ public:
                     }
                     offset += dataLen; // 移动偏移到校验区
                     state = STATE_CHECK_CODE;
+                    break;
                 case STATE_CHECK_CODE: // 状态5：校验
                     if (offset + 2 > size)
                     {
@@ -263,6 +265,10 @@ int main()
     CSerialPort sp;
     printf("Version: %s\n\n", sp.getVersion());
 
+    // NOTE: CommonProtocolParser could replace with LengthFieldBasedProtocolParser
+    // unsigned char header[2] = {0xEB, 0x90};
+    // unsigned char footer[2] = {};
+    // LengthFieldBasedProtocolParser parser(2, header, 3, 2, 2, 249, 2, 0, footer);
     CommonProtocolParser protocolParser;
     sp.setProtocolParser(&protocolParser);
 

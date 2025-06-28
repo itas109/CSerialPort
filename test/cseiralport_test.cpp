@@ -181,218 +181,58 @@ private:
     std::vector<IProtocolResult> m_results;
 };
 
-inline unsigned short getCheckCode(const unsigned char *data, unsigned int size)
-{
-    static const unsigned short CRC16ModbusTable[256] = {
-        0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241, 0xC601, 0x06C0, 0x0780, 0xC741,
-        0x0500, 0xC5C1, 0xC481, 0x0440, 0xCC01, 0x0CC0, 0x0D80, 0xCD41, 0x0F00, 0xCFC1, 0xCE81, 0x0E40,
-        0x0A00, 0xCAC1, 0xCB81, 0x0B40, 0xC901, 0x09C0, 0x0880, 0xC841, 0xD801, 0x18C0, 0x1980, 0xD941,
-        0x1B00, 0xDBC1, 0xDA81, 0x1A40, 0x1E00, 0xDEC1, 0xDF81, 0x1F40, 0xDD01, 0x1DC0, 0x1C80, 0xDC41,
-        0x1400, 0xD4C1, 0xD581, 0x1540, 0xD701, 0x17C0, 0x1680, 0xD641, 0xD201, 0x12C0, 0x1380, 0xD341,
-        0x1100, 0xD1C1, 0xD081, 0x1040, 0xF001, 0x30C0, 0x3180, 0xF141, 0x3300, 0xF3C1, 0xF281, 0x3240,
-        0x3600, 0xF6C1, 0xF781, 0x3740, 0xF501, 0x35C0, 0x3480, 0xF441, 0x3C00, 0xFCC1, 0xFD81, 0x3D40,
-        0xFF01, 0x3FC0, 0x3E80, 0xFE41, 0xFA01, 0x3AC0, 0x3B80, 0xFB41, 0x3900, 0xF9C1, 0xF881, 0x3840,
-        0x2800, 0xE8C1, 0xE981, 0x2940, 0xEB01, 0x2BC0, 0x2A80, 0xEA41, 0xEE01, 0x2EC0, 0x2F80, 0xEF41,
-        0x2D00, 0xEDC1, 0xEC81, 0x2C40, 0xE401, 0x24C0, 0x2580, 0xE541, 0x2700, 0xE7C1, 0xE681, 0x2640,
-        0x2200, 0xE2C1, 0xE381, 0x2340, 0xE101, 0x21C0, 0x2080, 0xE041, 0xA001, 0x60C0, 0x6180, 0xA141,
-        0x6300, 0xA3C1, 0xA281, 0x6240, 0x6600, 0xA6C1, 0xA781, 0x6740, 0xA501, 0x65C0, 0x6480, 0xA441,
-        0x6C00, 0xACC1, 0xAD81, 0x6D40, 0xAF01, 0x6FC0, 0x6E80, 0xAE41, 0xAA01, 0x6AC0, 0x6B80, 0xAB41,
-        0x6900, 0xA9C1, 0xA881, 0x6840, 0x7800, 0xB8C1, 0xB981, 0x7940, 0xBB01, 0x7BC0, 0x7A80, 0xBA41,
-        0xBE01, 0x7EC0, 0x7F80, 0xBF41, 0x7D00, 0xBDC1, 0xBC81, 0x7C40, 0xB401, 0x74C0, 0x7580, 0xB541,
-        0x7700, 0xB7C1, 0xB681, 0x7640, 0x7200, 0xB2C1, 0xB381, 0x7340, 0xB101, 0x71C0, 0x7080, 0xB041,
-        0x5000, 0x90C1, 0x9181, 0x5140, 0x9301, 0x53C0, 0x5280, 0x9241, 0x9601, 0x56C0, 0x5780, 0x9741,
-        0x5500, 0x95C1, 0x9481, 0x5440, 0x9C01, 0x5CC0, 0x5D80, 0x9D41, 0x5F00, 0x9FC1, 0x9E81, 0x5E40,
-        0x5A00, 0x9AC1, 0x9B81, 0x5B40, 0x9901, 0x59C0, 0x5880, 0x9841, 0x8801, 0x48C0, 0x4980, 0x8941,
-        0x4B00, 0x8BC1, 0x8A81, 0x4A40, 0x4E00, 0x8EC1, 0x8F81, 0x4F40, 0x8D01, 0x4DC0, 0x4C80, 0x8C41,
-        0x4400, 0x84C1, 0x8581, 0x4540, 0x8701, 0x47C0, 0x4680, 0x8641, 0x8201, 0x42C0, 0x4380, 0x8341,
-        0x4100, 0x81C1, 0x8081, 0x4040};
-
-    unsigned short result = 0xFFFF;
-
-    while (size--)
-    {
-        result = (result >> 8) ^ CRC16ModbusTable[(result ^ *data++) & 0xFF];
-    }
-
-    return result;
-}
-
-class CommonProtocolParser : public IProtocolParser
+class CommonProtocolParser : public LengthFieldBasedProtocolParser
 {
 public:
-    CommonProtocolParser() {};
-
-    /*
-    big endian
-    | offset | field       | length | comment                |
-    | ------ | ----------- | ------ | ---------------------- |
-    | 0      | header      | 2      | 0xEB90                 |
-    | 2      | version     | 1      | 0x00                   |
-    | 3      | data length | 2      | N                      |
-    | 5      | data        | N      |                        |
-    | 5 + N  | check code  | 2      | CRC-16/MODBUS(0x18005) |
-    */
-    unsigned int parse(const void *buffer, unsigned int size, std::vector<IProtocolResult> &results)
+    CommonProtocolParser(
+        unsigned int headerFieldLength, // 0 1 2
+        unsigned char header[2],
+        unsigned int lengthFieldOffset,
+        unsigned int lengthFieldLength,
+        unsigned int lengthAdjustment,
+        unsigned int lengthFieldMaxValue,
+        unsigned int checkCodeFieldLength, // 0 1 2
+        unsigned int footerFieldLength,    // 0 1 2
+        unsigned char footer[2])
+        : LengthFieldBasedProtocolParser(headerFieldLength, header, lengthFieldOffset, lengthFieldLength, lengthAdjustment, lengthFieldMaxValue, checkCodeFieldLength, footerFieldLength, footer)
     {
-        const unsigned int MIN_SIZE = 7; // header(2) + version(1) + datalen(2) + crc(2)
-        const unsigned int MAX_SIZE = 249;
-        unsigned int offset = 0;
-        unsigned int processedSize = 0;
-        const unsigned char *ptr = static_cast<const unsigned char *>(buffer);
+    }
 
-        // FSM states
-        enum ParserState
+    bool isCheckCodeValid(const unsigned char *data, unsigned int size)
+    {
+        static const unsigned short CRC16ModbusTable[256] = {
+            0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241, 0xC601, 0x06C0, 0x0780, 0xC741,
+            0x0500, 0xC5C1, 0xC481, 0x0440, 0xCC01, 0x0CC0, 0x0D80, 0xCD41, 0x0F00, 0xCFC1, 0xCE81, 0x0E40,
+            0x0A00, 0xCAC1, 0xCB81, 0x0B40, 0xC901, 0x09C0, 0x0880, 0xC841, 0xD801, 0x18C0, 0x1980, 0xD941,
+            0x1B00, 0xDBC1, 0xDA81, 0x1A40, 0x1E00, 0xDEC1, 0xDF81, 0x1F40, 0xDD01, 0x1DC0, 0x1C80, 0xDC41,
+            0x1400, 0xD4C1, 0xD581, 0x1540, 0xD701, 0x17C0, 0x1680, 0xD641, 0xD201, 0x12C0, 0x1380, 0xD341,
+            0x1100, 0xD1C1, 0xD081, 0x1040, 0xF001, 0x30C0, 0x3180, 0xF141, 0x3300, 0xF3C1, 0xF281, 0x3240,
+            0x3600, 0xF6C1, 0xF781, 0x3740, 0xF501, 0x35C0, 0x3480, 0xF441, 0x3C00, 0xFCC1, 0xFD81, 0x3D40,
+            0xFF01, 0x3FC0, 0x3E80, 0xFE41, 0xFA01, 0x3AC0, 0x3B80, 0xFB41, 0x3900, 0xF9C1, 0xF881, 0x3840,
+            0x2800, 0xE8C1, 0xE981, 0x2940, 0xEB01, 0x2BC0, 0x2A80, 0xEA41, 0xEE01, 0x2EC0, 0x2F80, 0xEF41,
+            0x2D00, 0xEDC1, 0xEC81, 0x2C40, 0xE401, 0x24C0, 0x2580, 0xE541, 0x2700, 0xE7C1, 0xE681, 0x2640,
+            0x2200, 0xE2C1, 0xE381, 0x2340, 0xE101, 0x21C0, 0x2080, 0xE041, 0xA001, 0x60C0, 0x6180, 0xA141,
+            0x6300, 0xA3C1, 0xA281, 0x6240, 0x6600, 0xA6C1, 0xA781, 0x6740, 0xA501, 0x65C0, 0x6480, 0xA441,
+            0x6C00, 0xACC1, 0xAD81, 0x6D40, 0xAF01, 0x6FC0, 0x6E80, 0xAE41, 0xAA01, 0x6AC0, 0x6B80, 0xAB41,
+            0x6900, 0xA9C1, 0xA881, 0x6840, 0x7800, 0xB8C1, 0xB981, 0x7940, 0xBB01, 0x7BC0, 0x7A80, 0xBA41,
+            0xBE01, 0x7EC0, 0x7F80, 0xBF41, 0x7D00, 0xBDC1, 0xBC81, 0x7C40, 0xB401, 0x74C0, 0x7580, 0xB541,
+            0x7700, 0xB7C1, 0xB681, 0x7640, 0x7200, 0xB2C1, 0xB381, 0x7340, 0xB101, 0x71C0, 0x7080, 0xB041,
+            0x5000, 0x90C1, 0x9181, 0x5140, 0x9301, 0x53C0, 0x5280, 0x9241, 0x9601, 0x56C0, 0x5780, 0x9741,
+            0x5500, 0x95C1, 0x9481, 0x5440, 0x9C01, 0x5CC0, 0x5D80, 0x9D41, 0x5F00, 0x9FC1, 0x9E81, 0x5E40,
+            0x5A00, 0x9AC1, 0x9B81, 0x5B40, 0x9901, 0x59C0, 0x5880, 0x9841, 0x8801, 0x48C0, 0x4980, 0x8941,
+            0x4B00, 0x8BC1, 0x8A81, 0x4A40, 0x4E00, 0x8EC1, 0x8F81, 0x4F40, 0x8D01, 0x4DC0, 0x4C80, 0x8C41,
+            0x4400, 0x84C1, 0x8581, 0x4540, 0x8701, 0x47C0, 0x4680, 0x8641, 0x8201, 0x42C0, 0x4380, 0x8341,
+            0x4100, 0x81C1, 0x8081, 0x4040};
+
+        unsigned short receivedCheckCode = (data[size - 2] << 8) | data[size - 1];
+        unsigned short calcCheckCode = 0xFFFF;
+        size -= 2;
+        while (size--)
         {
-            STATE_IDLE,         // 空闲状态(初始状态)
-            STATE_FIND_HEADER1, // 寻找帧头第一个字节0xEB
-            STATE_FIND_HEADER2, // 验证帧头第二个字节0x90
-            STATE_PARSE_LENGTH, // 解析数据长度
-            STATE_DATA,         // 有效数据
-            STATE_CHECK_CODE    // 校验
-        };
-
-        ParserState state = STATE_IDLE;
-        unsigned int startOffset = 0; // 帧头起始位置
-        unsigned int dataLen = 0;     // 当前帧数据长度
-        unsigned int totalLen = 0;    // 当前帧总长度
-
-        /*
-        ```mermaid
-        stateDiagram-v2
-            [*] --> STATE_IDLE
-
-            STATE_IDLE --> STATE_FIND_HEADER1: 剩余数据>0
-
-            STATE_FIND_HEADER1 --> STATE_FIND_HEADER2: 找到0xEB [start=offset]
-            STATE_FIND_HEADER1 --> STATE_FIND_HEADER1: 未找到0xEB [offset++]
-            STATE_FIND_HEADER1 --> [*]: 数据不足 [skip=size]
-
-            STATE_FIND_HEADER2 --> STATE_PARSE_LENGTH: 找到0x90 [offset++]
-            STATE_FIND_HEADER2 --> STATE_IDLE: 未找到0x90 [offset=start+1]
-            STATE_FIND_HEADER2 --> [*]: 数据不足 [skip=offset-1]
-
-            STATE_PARSE_LENGTH --> STATE_DATA: 长度有效 [offset+=3]
-            STATE_PARSE_LENGTH --> STATE_IDLE: 长度>MAX_SIZE [offset=start+1]
-            STATE_PARSE_LENGTH --> [*]: 数据不足 [skip=start]
-
-            STATE_DATA --> STATE_CHECK_CODE: 解析数据 [offset+=dataLen]
-            STATE_DATA --> [*]: 数据不足 [skip=start]
-
-            STATE_CHECK_CODE --> STATE_IDLE: 校验成功,解析下一帧 [offset=start+totalLen]
-            STATE_CHECK_CODE --> STATE_IDLE: 校验失败 [offset=start+1]
-            STATE_CHECK_CODE --> [*]: 数据不足 [skip=start]
-        ```
-        */
-        while (offset < size)
-        {
-            switch (state)
-            {
-                case STATE_IDLE: // 状态 0: 空闲状态（等待数据）
-                    if (offset < size)
-                    {
-                        state = STATE_FIND_HEADER1;
-                    }
-                    else
-                    {
-                        processedSize = offset;
-                        return processedSize;
-                    }
-                    break;
-                case STATE_FIND_HEADER1: // 状态1：寻找帧头第一个字节0xEB
-                    if (ptr[offset] == 0xEB)
-                    {
-                        startOffset = offset;
-                        state = STATE_FIND_HEADER2; // 找到0xEB，进入状态2
-                    }
-                    ++offset;
-                    break;
-
-                case STATE_FIND_HEADER2: // 状态2：验证帧头第二个字节0x90
-                    if (offset >= size)
-                    {
-                        processedSize = startOffset;
-                        return processedSize;
-                    }
-                    if (ptr[offset] == 0x90)
-                    {
-                        state = STATE_PARSE_LENGTH; // 找到0x90，进入状态3
-                        ++offset;
-                    }
-                    else
-                    {
-                        offset = startOffset + 1; // 未找到0x90，退回状态0
-                        state = STATE_IDLE;
-                    }
-                    break;
-
-                case STATE_PARSE_LENGTH:   // 状态3：解析数据长度
-                    if (offset + 3 > size) // 版本(1) + 数据长度(2) 需 3 字节
-                    {
-                        processedSize = startOffset;
-                        return processedSize;
-                    }
-                    dataLen = (ptr[offset + 1] << 8) | ptr[offset + 2];
-                    totalLen = dataLen + 7; // 总长度 = 数据长度 + 固定头尾长度
-
-                    // 验证数据长度有效性
-                    if (dataLen > MAX_SIZE)
-                    {
-                        offset = startOffset + 1; // 长度无效，跳过当前帧头
-                        state = STATE_IDLE;
-                        break;
-                    }
-                    offset += 3; // 移动偏移到数据区
-                    state = STATE_DATA;
-                    break;
-                case STATE_DATA: // 状态4：有效数据(预留)
-                    if (offset + dataLen > size)
-                    {
-                        processedSize = startOffset;
-                        return processedSize;
-                    }
-                    offset += dataLen; // 移动偏移到校验区
-                    state = STATE_CHECK_CODE;
-                case STATE_CHECK_CODE: // 状态5：校验
-                    if (offset + 2 > size)
-                    {
-                        processedSize = startOffset;
-                        return processedSize;
-                    }
-
-                    const unsigned char *msgStart = ptr + startOffset;
-                    unsigned short receivedCrc = (msgStart[totalLen - 2] << 8) | msgStart[totalLen - 1];
-                    if (receivedCrc == getCheckCode(msgStart, totalLen - 2))
-                    {
-                        // check passed
-#ifdef CSERIALPORT_CPP11
-                        results.emplace_back(msgStart, totalLen);
-#else
-                        IProtocolResult result(msgStart, totalLen);
-                        results.push_back(result);
-#endif
-                        offset = startOffset + totalLen;
-                        processedSize = offset;
-                        state = STATE_IDLE; // 返回状态0处理后续数据
-                    }
-                    else
-                    {
-                        offset = startOffset + 1; // skip first header byte and continue search
-                        state = STATE_IDLE;
-                    }
-                    break;
-            }
+            calcCheckCode = (calcCheckCode >> 8) ^ CRC16ModbusTable[(calcCheckCode ^ *data++) & 0xFF];
         }
 
-        if (state == STATE_FIND_HEADER1)
-        {
-            processedSize = size; // not found header, skip all size
-        }
-        else if (state == STATE_FIND_HEADER2)
-        {
-            processedSize = offset - 1; // only found header1
-        }
-
-        return processedSize;
+        return calcCheckCode == receivedCheckCode;
     }
 
     void onProtocolEvent(std::vector<IProtocolResult> &results)
@@ -406,6 +246,98 @@ public:
         ProtocolEventNotify::getInstance().notify(results);
     }
 };
+
+class ATCommandProtocolParser : public DelimiterBasedProtocolParser
+{
+public:
+    ATCommandProtocolParser(
+        unsigned int headerFieldLength, // 0 1 2
+        unsigned char header[2],
+        unsigned int footerFieldLength,    // 1 2
+        unsigned char footer[2])
+        : DelimiterBasedProtocolParser(headerFieldLength, header, footerFieldLength, footer)
+    {
+    }
+
+    void onProtocolEvent(std::vector<IProtocolResult> &results)
+    {
+        char hexStr[200];
+        for (size_t i = 0; i < results.size(); ++i)
+        {
+            const IProtocolResult result = results.at(i);
+            printf("parse protocol result. str: %s, len: %d, hex(top100): %s\n", (char*)result.data, result.len, itas109::IUtils::charToHexStr(hexStr, (char *)result.data, result.len > 100 ? 100 : result.len));
+        }
+        ProtocolEventNotify::getInstance().notify(results);
+    }
+};
+
+inline unsigned char hexToByte(char c)
+{
+    if (c >= '0' && c <= '9')
+    {
+        return c - '0';
+    }
+
+    if (c >= 'A' && c <= 'F')
+    {
+        return c - 'A' + 10;
+    }
+    if (c >= 'a' && c <= 'f')
+    {
+        return c - 'a' + 10;
+    }
+    return 0xFF;
+};
+
+class NMEA0183CommandProtocolParser : public DelimiterBasedProtocolParser
+{
+public:
+    NMEA0183CommandProtocolParser(
+        unsigned int headerFieldLength, // 0 1 2
+        unsigned char header[2],
+        unsigned int footerFieldLength, // 1 2
+        unsigned char footer[2])
+        : DelimiterBasedProtocolParser(headerFieldLength, header, footerFieldLength, footer)
+    {
+    }
+
+    bool isCheckCodeValid(const unsigned char *data, unsigned int size)
+    {
+        if (size < 6 || data[0] != '$') // $*00\r\n
+        {
+            return false;
+        }
+
+        // XOR of all bytes between $ and *
+        const unsigned char *ptr = data + 1;
+        unsigned char checksum = 0;
+        while ('*' != *ptr && '\r' != *ptr && '\0' != *ptr)
+        {
+            checksum ^= *ptr++;
+        }
+
+        unsigned char high = hexToByte(*(ptr+1));
+        unsigned char low = hexToByte(*(ptr+2));
+        if (high == 0xFF || low == 0xFF)
+        {
+            return false;
+        }
+        unsigned char receivedCheckCode = (high << 4) | low;
+
+        return checksum == receivedCheckCode;
+    }
+
+    void onProtocolEvent(std::vector<IProtocolResult> &results)
+    {
+        for (size_t i = 0; i < results.size(); ++i)
+        {
+            const IProtocolResult result = results.at(i);
+            printf("parse protocol result. str: %s, len: %d\n", (char *)result.data, result.len);
+        }
+        ProtocolEventNotify::getInstance().notify(results);
+    }
+};
+
 
 class CSerialPortTests
 {
@@ -627,13 +559,15 @@ TEST_CASE_FIXTURE(CSerialPortTests, "read_async_5_1")
     CHECK(0 == strcmp(writeData, readData));
 }
 
-// #6_1 protocol parse 协议帧解析
-TEST_CASE_FIXTURE(CSerialPortTests, "protocol_parse_6_1")
+// #6_1 common protocol parse 通用协议帧解析
+TEST_CASE_FIXTURE(CSerialPortTests, "common_protocol_parse_6_1")
 {
     REQUIRE_MESSAGE(m_availablePortsInfoVector.size() > 1, "port count < 2");
 
-    CommonProtocolParser protocolParser;
-    m_serialport2.setProtocolParser(&protocolParser);
+    unsigned char header[2] = {0xEB, 0x90};
+    unsigned char footer[2] = {};
+    CommonProtocolParser parser(2, header, 3, 2, 2, 249, 2, 0, footer);
+    m_serialport2.setProtocolParser(&parser);
 
     m_serialport1.init(portName1);
     m_serialport2.init(portName2);
@@ -781,6 +715,281 @@ TEST_CASE_FIXTURE(CSerialPortTests, "protocol_parse_6_1")
         REQUIRE(0 == result.size());
     }
 }
+
+// #6_2 at protocol parse AT指令协议帧解析
+TEST_CASE_FIXTURE(CSerialPortTests, "at_protocol_parse_6_2")
+{
+    REQUIRE_MESSAGE(m_availablePortsInfoVector.size() > 1, "port count < 2");
+
+    unsigned char header[2] = {'A', 'T'};   // AT
+    unsigned char footer[2] = {'\r', '\n'}; // \r\n
+    ATCommandProtocolParser parser(2, header, 2, footer);
+    m_serialport2.setProtocolParser(&parser);
+
+    m_serialport1.init(portName1);
+    m_serialport2.init(portName2);
+
+    CHECK_EQ(true, m_serialport1.open());
+    CHECK_EQ(true, m_serialport2.open());
+
+    //  空帧
+    {
+        unsigned char writeData[4] = {0x41, 0x54, 0x0D, 0x0A}; // AT\r\n
+        int writeLen = sizeof(writeData);
+        m_serialport1.writeData(writeData, writeLen);
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(1 == result.size());
+        CHECK(0 == memcmp(writeData, result[0].data, writeLen));
+        CHECK_EQ(writeLen, result[0].len);
+    }
+
+    // 标准帧
+    {
+        unsigned char writeData[10] = {0x41, 0x54, 0x2B, 0x42, 0x41, 0x55, 0x44, 0x34, 0x0D, 0x0A}; // AT+BAUD4\r\n
+        int writeLen = sizeof(writeData);
+        m_serialport1.writeData(writeData, writeLen);
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(1 == result.size());
+        CHECK(0 == memcmp(writeData, result[0].data, writeLen));
+        CHECK_EQ(writeLen, result[0].len);
+    }
+
+    // 多帧
+    {
+        unsigned char writeData[14] = {0x41, 0x54, 0x2B, 0x42, 0x41, 0x55, 0x44, 0x34, 0x0D, 0x0A,0x41, 0x54, 0x0D, 0x0A};
+        int writeLen = sizeof(writeData);
+        m_serialport1.writeData(writeData, writeLen);
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(2 == result.size());
+        CHECK(0 == memcmp(writeData, result[0].data, 10));
+        CHECK_EQ(10, result[0].len);
+        CHECK(0 == memcmp(writeData + 10, result[1].data, 4));
+        CHECK_EQ(4, result[1].len);
+    }
+
+    // 半帧拼接 - 帧头
+    {
+        unsigned char writeData1[8] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x41};
+        int writeLen1 = sizeof(writeData1);
+        unsigned char writeData2[9] = {0x54, 0x2B, 0x42, 0x41, 0x55, 0x44, 0x34, 0x0D, 0x0A};
+        int writeLen2 = sizeof(writeData2);
+        unsigned char writeData[10] = {0x41, 0x54, 0x2B, 0x42, 0x41, 0x55, 0x44, 0x34, 0x0D, 0x0A};
+        int writeLen = sizeof(writeData);
+        m_serialport1.writeData(writeData1, writeLen1); // 前半帧
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(0 == result.size());
+
+        m_serialport1.writeData(writeData2, writeLen2); // 后半帧
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(1 == result.size());
+        CHECK(0 == memcmp(writeData, result[0].data, writeLen));
+        CHECK_EQ(writeLen, result[0].len);
+    }
+
+    // 半帧拼接 - 帧尾
+    {
+        unsigned char writeData1[9] = {0x41, 0x54, 0x2B, 0x42, 0x41, 0x55, 0x44, 0x34, 0x0D};
+        int writeLen1 = sizeof(writeData1);
+        unsigned char writeData2[1] = {0x0A};
+        int writeLen2 = sizeof(writeData2);
+        unsigned char writeData[10] = {0x41, 0x54, 0x2B, 0x42, 0x41, 0x55, 0x44, 0x34, 0x0D, 0x0A};
+        int writeLen = sizeof(writeData);
+        m_serialport1.writeData(writeData1, writeLen1); // 前半帧
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(0 == result.size());
+
+        m_serialport1.writeData(writeData2, writeLen2); // 后半帧
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(1 == result.size());
+        CHECK(0 == memcmp(writeData, result[0].data, writeLen));
+        CHECK_EQ(writeLen, result[0].len);
+    }
+
+    // 多余帧头
+    {
+        unsigned char writeData[11] = {0x41, 0x41, 0x54, 0x2B, 0x42, 0x41, 0x55, 0x44, 0x34, 0x0D, 0x0A};
+        int writeLen = sizeof(writeData);
+        m_serialport1.writeData(writeData, writeLen);
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(1 == result.size());
+        CHECK(0 == memcmp(writeData + 1, result[0].data, 10));
+        CHECK_EQ(10, result[0].len);
+    }
+
+    // 无帧头
+    {
+        unsigned char writeData[7] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
+        int writeLen = sizeof(writeData);
+        m_serialport1.writeData(writeData, writeLen);
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(0 == result.size());
+    }
+}
+
+// #6_3 gps(NMEA0183) protocol parse AT指令协议帧解析
+TEST_CASE_FIXTURE(CSerialPortTests, "nmea0183_protocol_parse_6_3")
+{
+    REQUIRE_MESSAGE(m_availablePortsInfoVector.size() > 1, "port count < 2");
+
+    unsigned char header[2] = {'$', 0x00};  // $
+    unsigned char footer[2] = {'\r', '\n'}; // \r\n
+    NMEA0183CommandProtocolParser parser(1, header, 2, footer);
+    m_serialport2.setProtocolParser(&parser);
+
+    m_serialport1.init(portName1);
+    m_serialport2.init(portName2);
+
+    CHECK_EQ(true, m_serialport1.open());
+    CHECK_EQ(true, m_serialport2.open());
+
+    //  空帧
+    {
+        const char *writeData = "$*00\r\n";
+        int writeLen = strlen(writeData);
+        m_serialport1.writeData(writeData, writeLen);
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(1 == result.size());
+        CHECK(0 == memcmp(writeData, result[0].data, writeLen));
+        CHECK_EQ(writeLen, result[0].len);
+    }
+
+    // 标准帧
+    {
+        const char *writeData = "$GPGGA,092750.00,3723.24,N,12158.34,W,1,10,1.0,9.0,M,,*26\r\n";
+        int writeLen = strlen(writeData);
+        m_serialport1.writeData(writeData, writeLen);
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(1 == result.size());
+        CHECK(0 == memcmp(writeData, result[0].data, writeLen));
+        CHECK_EQ(writeLen, result[0].len);
+    }
+
+    // 多帧
+    {
+        const char *writeData = "$GPVTG,,*52\r\n$GPGGA,092750.00,3723.24,N,12158.34,W,1,10,1.0,9.0,M,,*26\r\n";
+        int writeLen = strlen(writeData);
+        m_serialport1.writeData(writeData, writeLen);
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(2 == result.size());
+        CHECK(0 == memcmp(writeData, result[0].data, 13));
+        CHECK_EQ(13, result[0].len);
+        CHECK(0 == memcmp(writeData + 13, result[1].data, 59));
+        CHECK_EQ(59, result[1].len);
+    }
+
+    // 半帧拼接 - 数据
+    {
+        const char *writeData1 = "$GPGGA,092750.00,3723.24,N";
+        int writeLen1 = strlen(writeData1);
+        const char *writeData2 = ",12158.34,W,1,10,1.0,9.0,M,,*26\r\n";
+        int writeLen2 = strlen(writeData2);
+        const char *writeData = "$GPGGA,092750.00,3723.24,N,12158.34,W,1,10,1.0,9.0,M,,*26\r\n";
+        int writeLen = strlen(writeData);
+        m_serialport1.writeData(writeData1, writeLen1); // 前半帧
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(0 == result.size());
+
+        m_serialport1.writeData(writeData2, writeLen2); // 后半帧
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(1 == result.size());
+        CHECK(0 == memcmp(writeData, result[0].data, writeLen));
+        CHECK_EQ(writeLen, result[0].len);
+    }
+
+    // 半帧拼接 - 帧尾
+    {
+        const char *writeData1 = "$GPGGA,092750.00,3723.24,N,12158.34,W,1,10,1.0,9.0,M,,*26\r";
+        int writeLen1 = strlen(writeData1);
+        const char *writeData2 = "\n";
+        int writeLen2 = strlen(writeData2);
+        const char *writeData = "$GPGGA,092750.00,3723.24,N,12158.34,W,1,10,1.0,9.0,M,,*26\r\n";
+        int writeLen = strlen(writeData);
+        m_serialport1.writeData(writeData1, writeLen1); // 前半帧
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(0 == result.size());
+
+        m_serialport1.writeData(writeData2, writeLen2); // 后半帧
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(1 == result.size());
+        CHECK(0 == memcmp(writeData, result[0].data, writeLen));
+        CHECK_EQ(writeLen, result[0].len);
+    }
+
+    // 多余帧头
+    {
+        const char *writeData = "$$GPGGA,092750.00,3723.24,N,12158.34,W,1,10,1.0,9.0,M,,*26\r\n";
+        int writeLen = strlen(writeData);
+        m_serialport1.writeData(writeData, writeLen);
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(1 == result.size());
+        CHECK(0 == memcmp(writeData + 1, result[0].data, writeLen - 1));
+        CHECK_EQ(writeLen - 1, result[0].len);
+    }
+
+    // 无帧头
+    {
+        unsigned char writeData[7] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
+        int writeLen = sizeof(writeData);
+        m_serialport1.writeData(writeData, writeLen);
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(0 == result.size());
+    }
+
+    // 校验错误
+    {
+        const char *writeData = "$GPGGA,092750.00,3723.24,N,12158.34,W,1,10,1.0,9.0,M,,*00\r\n";
+        int writeLen = strlen(writeData);
+        m_serialport1.writeData(writeData, writeLen);
+
+        // wait protocol event
+        std::vector<IProtocolResult> result;
+        ProtocolEventNotify::getInstance().wait(result, 2000);
+        REQUIRE(0 == result.size());
+    }
+}
+
 
 int main(int argc, char **argv)
 {
