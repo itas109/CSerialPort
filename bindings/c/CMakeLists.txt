@@ -17,7 +17,9 @@ project(cserialport)
 if (CSERIALPORT_ENABLE_DEBUG)
     add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
 endif ()
-# add_definitions(-DCSERIALPORT_USE_UTF8) # CSerialPort UTF8 Character Encoding
+if (CSERIALPORT_ENABLE_UTF8)
+    add_definitions(-DCSERIALPORT_USE_UTF8) # CSerialPort UTF8 Character Encoding
+endif ()
 add_definitions(-DCSERIALPORT_BINDING_LANGUAGE=C) # CSerialPort Binding Language
 
 # set output directory

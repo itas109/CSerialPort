@@ -18,7 +18,9 @@ project(libcserialport)
 if (CSERIALPORT_ENABLE_DEBUG)
     add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
 endif ()
-# add_definitions(-DCSERIALPORT_USE_UTF8) # CSerialPort UTF8 Character Encoding
+if (CSERIALPORT_ENABLE_UTF8)
+    add_definitions(-DCSERIALPORT_USE_UTF8) # CSerialPort UTF8 Character Encoding
+endif ()
 
 # static libarary
 # add_compile_options(-static)
