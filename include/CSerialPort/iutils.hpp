@@ -12,6 +12,7 @@
 
 #include <stdarg.h> // va_start
 #include <stdio.h>  // vsprintf
+#include <string.h> // strchr
 
 // macro to string
 #define STRINGIFY(x) #x
@@ -446,7 +447,15 @@ public:
                 if (0 == strFind(line, "PRETTY_NAME="))
                 {
                     // PRETTY_NAME="Ubuntu 22.04.2 LTS" PRETTY_NAME="CentOS Linux 7 (Core)"
-                    strScan(line, "PRETTY_NAME=\"%[^\"]\"", &prettyName);
+                    // strScan(line, "PRETTY_NAME=\"%[^\"]\"", &prettyName); // orangerv2 Noble g++13 crash
+                    char *start = line + 13;
+                    char *end = NULL;
+                    end = strchr(start, '"');
+                    int count = end - start + 1;
+                    if (end && count < len)
+                    {
+                        strncpy(prettyName, start, count);
+                    }
                     break;
                 }
             }
