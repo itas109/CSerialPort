@@ -469,7 +469,8 @@ bool CSerialPortUnixBase::stopThreadMonitor()
 {
     m_isThreadRunning = false;
 
-    itas109::i_thread_join(m_monitorThread);
+    if (m_operateMode == itas109::AsynchronousOperate)
+    	itas109::i_thread_join(m_monitorThread);
 
     return true;
 }
