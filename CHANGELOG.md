@@ -1,5 +1,22 @@
 # CSerialPort Changelog
 
+## v4.3.3 (2025-09-23)
+
+Feature:
+
+* support custom protocol parser 支持自定义协议解析器
+* add two protocol parser, LengthFieldBasedProtocolParser and DelimiterBasedProtocolParser 增加两个内置协议解析器基于长度字段和基于分隔符的解析器
+* optimize cpu usage 优化cpu占用率
+* optimize char type batch read and write performence 优化char类型环形缓冲区读写性能
+* optimize read and write concurrency performence 优化读写并发性能
+
+Fixed:
+
+* #95 fixed disconnectHotPlugReadEvent error 修复disconnectHotPlugReadEvent断开连接错误
+* #97 fixed c binding mingw compile error 修复c绑定mingw编译错误
+* fixed getProductName crash on orangepirv2 noble 修复orangepirv2 noble系统getProductName崩溃问题
+* fixed i_thread_join crash when thread invaild 修复线程无效时i_thread_join崩溃问题
+
 ## v4.3.2 (2025-02-03)
 
 Feature:

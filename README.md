@@ -2,7 +2,7 @@
 
 [中文](README_zh_CN.md)
 
-CSerialPort is a lightweight cross-platform serial port library based on C++, which can easy to read and write serial port on multiple operating system. Also support C, C#, Java, Python, Node.js, Electron, Rust etc.
+CSerialPort is a lightweight cross-platform serial port library based on C++, which can easy to read/write serial port and communication protocol parsing on multiple operating system. Also support C, C#, Java, Python, Node.js, Electron, Rust etc.
 
 <p>
 <a href="https://github.com/itas109/CSerialPort/releases"><img alt="Version" src="https://img.shields.io/github/release/itas109/CSerialPort"/></a>
@@ -21,31 +21,26 @@ CSerialPort is a lightweight cross-platform serial port library based on C++, wh
 - Cross-platform
 - Easy to use
 - Higher efficiency
+- Custom protocol parsing
 
-# Platform
+# Feature
 
-CSerialPort was tested on the following platforms
-
-- Windows ( x86, x86_64, arm64 )
-- Linux ( x86, x86_64, arm, arm64/aarch64, mips64el, riscv, s390x, ppc64le )
-- macOS ( x86_64, apple silicon )
-- Android ( armeabi-v7a, arm64-v8a, x86, x86_64 )
-- FreeBSD ( x86_64 )
-- ...
+- cross-platform windows linux macOS android freebsd
+- sync and async read/write
+- custom protocol parsing - [IProtocolParser](https://github.com/itas109/CSerialPort/tree/master/include/CSerialPort/IProtocolParser.h) and [CommNoGuiProtocol](https://github.com/itas109/CSerialPort/tree/master/examples/CommNoGuiProtocol)
+- hot plug notify - [CSerialPortHotPlugListener](https://github.com/itas109/CSerialPort/tree/master/include/CSerialPort/SerialPortListener.h)
+- third party language bindings - C, C#, Java, Python, Node.js, Electron, Rust - more information [bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
+- usage tutorial - [CSerialPort Tutorial](https://blog.csdn.net/itas109/category_12416341.html)
+- new cross-platform gui serial port tool - [CommMaster](https://gitee.com/itas109/CommMaster)
 
 # Todo List
 
 ## Long-term Goal
 
-- [x] 1.support windows and linux first
-- [x] 2.support common communication protocol - [CommNoGuiProtocol](https://github.com/itas109/CSerialPort/tree/master/examples/CommNoGuiProtocol)
-- [x] 3.support hot plug notify - CSerialPortHotPlugListener
-- [x] 4.higher efficiency notify module - replace with CSerialPortListener
-- [x] 5.support other language - C, C#, Java, Python, Node.js, Electron, Rust etc. - more information [bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
-- [x] 6.sync serial port communication
-- [x] 7.new cross-platform gui serial port tool - [CommMaster](https://gitee.com/itas109/CommMaster)
-- [x] 8.add introduction and tutorial of CSerialPort - [CSerialPort Tutorial ](https://blog.csdn.net/itas109/category_12416341.html)
-- [ ] 9.serial port monitor hook
+- [ ] 1.support modern c++ standard
+- [ ] 2.support character interval time and custom protocol parsing
+- [ ] 3.support raw sync、raw async and extend async mode
+- [ ] 4.support script engine
 
 ## Short-term Goal
 
@@ -58,8 +53,8 @@ CSerialPort was tested on the following platforms
 
 # Latest version
 
-## Version: 4.3.2.250203
-by itas109 on 2025-02-03
+## Version: 4.3.3.250923
+by itas109 on 2025-09-23
 
 # Quick Start
 
@@ -75,8 +70,8 @@ run demo ( for example serial port lookback test on linux)
 
 ```
 CSerialPort/bin $ ./CSerialPortDemoNoGui 
-[INFO] CSerialPort - OS: Linux, ProductName: Ubuntu 22.04.2 LTS, Arch: x86_64, ProcessorNum: 4, Compiler: gcc(11.4.0), Bit: 64, C++: 201703L, Bindings: , Version: https://github.com/itas109/CSerialPort - v4.3.2.250203
-Version: https://github.com/itas109/CSerialPort - v4.3.2.250203
+[INFO] CSerialPort - OS: Linux, ProductName: Ubuntu 22.04.2 LTS, Arch: x86_64, ProcessorNum: 4, Compiler: gcc(11.4.0), Bit: 64, C++: 201703L, Bindings: , Version: https://github.com/itas109/CSerialPort - v4.3.3.250923
+Version: https://github.com/itas109/CSerialPort - v4.3.3.250923
 
 AvailableFriendlyPorts:
 1 - /dev/ttyCH341USB0 QinHeng CH340 serial converter 1a86:7523
@@ -223,4 +218,4 @@ Thanks for [Remon Spekreijse's serial library](http://www.codeguru.com/cpp/i-n/n
 
 CSerialPort v3.0.0.171216 - v4.3.1.240204 is licensed under the LGPLv3
 
-CSerialPort v4.3.2.250203 - latest is licensed under the [LGPLv3 with LGPL-3.0-linking-exception](LICENSE)
+CSerialPort v4.3.2.250203 - present is licensed under the [LGPLv3 with LGPL-3.0-linking-exception](LICENSE)

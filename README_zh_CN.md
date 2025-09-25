@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-CSerialPort是一个基于C++的轻量级开源跨平台串口类库，可以轻松实现跨平台多操作系统的串口读写，同时还支持C, C#, Java, Python, Node.js, Electron, Rust等。
+CSerialPort是一个基于C++的轻量级开源跨平台串口类库，可以轻松实现跨平台多操作系统的串口读写及自定义协议解析，同时还支持C, C#, Java, Python, Node.js, Electron, Rust等。
 
 <p>
 <a href="https://github.com/itas109/CSerialPort/releases"><img alt="Version" src="https://img.shields.io/github/release/itas109/CSerialPort"/></a>
@@ -21,31 +21,26 @@ CSerialPort是一个基于C++的轻量级开源跨平台串口类库，可以轻
 - 跨平台
 - 简单易用
 - 高效
+- 自定义协议解析
 
-# Platform 平台
+# Feature 特性
 
-CSerialPort已经在以下平台做过测试
-
-- Windows ( x86, x86_64, arm64 )
-- Linux ( x86, x86_64, arm, arm64/aarch64, mips64el, riscv, s390x, ppc64le )
-- macOS ( x86_64, apple silicon )
-- Android ( armeabi-v7a, arm64-v8a, x86, x86_64 )
-- FreeBSD ( x86_64 )
-- ...
+- 跨平台 windows linux macOS android freebsd
+- 同步和异步模式读写
+- 自定义协议解析 - [IProtocolParser](https://github.com/itas109/CSerialPort/tree/master/include/CSerialPort/IProtocolParser.h) 和 [CommNoGuiProtocol](https://github.com/itas109/CSerialPort/tree/master/examples/CommNoGuiProtocol)
+- 串口热插拔通知 - [CSerialPortHotPlugListener](https://github.com/itas109/CSerialPort/tree/master/include/CSerialPort/SerialPortListener.h)
+- 第三方语言绑定 - C, C#, Java, Python, Node.js, Electron, Rust - 详见[bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
+- 使用教程 - [CSerialPort教程](https://blog.csdn.net/itas109/category_12416341.html)
+- 全新的跨平台串口调试助手 - [CommMaster通信大师](https://gitee.com/itas109/CommMaster)
 
 # Todo List 待处理事项
 
 ## Long-term Goal 长期目标
 
-- [x] 1.首先支持windows和linux平台
-- [x] 2.支持通用串口通信协议 - [CommNoGuiProtocol](https://github.com/itas109/CSerialPort/tree/master/examples/CommNoGuiProtocol)
-- [x] 3.支持热插拔通知 - CSerialPortHotPlugListener
-- [x] 4.更高效的通知模块 - CSerialPortListener
-- [x] 5.支持其他语言 - C, C#, Java, Python, Node.js, Electron, Rust - 详见[bindings](https://github.com/itas109/CSerialPort/tree/master/bindings)
-- [x] 6.同步串口通信
-- [x] 7.全新的跨平台串口调试助手 - [CommMaster通信大师](https://gitee.com/itas109/CommMaster)
-- [x] 8.增加CSerialPort的介绍和使用教程 - [CSerialPort教程](https://blog.csdn.net/itas109/category_12416341.html)
-- [ ] 9.串口侦听hook
+- [ ] 1.支持现代C++标准
+- [ ] 2.支持字符间超时和自定义协议解析
+- [ ] 3.支持原生同步、原生异步和可扩展异步模式
+- [ ] 4.支持脚本引擎
 
 ## Short-term Goal 短期目标
 
@@ -56,11 +51,10 @@ CSerialPort已经在以下平台做过测试
 - [ ] 5.跨平台线程池库
 - [ ] 6.性能测试报告(吞吐量、时延、丢包率)
 
-
 # Latest version 最新版本
 
-## Version: 4.3.2.250203
-by itas109 on 2025-02-03
+## Version: 4.3.3.250923
+by itas109 on 2025-09-23
 
 # Quick Start 快速开始
 
@@ -76,8 +70,8 @@ $ cmake --build .
 
 ```
 CSerialPort/bin $ ./CSerialPortDemoNoGui 
-[INFO] CSerialPort - OS: Linux, ProductName: Ubuntu 22.04.2 LTS, Arch: x86_64, ProcessorNum: 4, Compiler: gcc(11.4.0), Bit: 64, C++: 201703L, Bindings: , Version: https://github.com/itas109/CSerialPort - v4.3.2.250203
-Version: https://github.com/itas109/CSerialPort - v4.3.2.250203
+[INFO] CSerialPort - OS: Linux, ProductName: Ubuntu 22.04.2 LTS, Arch: x86_64, ProcessorNum: 4, Compiler: gcc(11.4.0), Bit: 64, C++: 201703L, Bindings: , Version: https://github.com/itas109/CSerialPort - v4.3.3.250923
+Version: https://github.com/itas109/CSerialPort - v4.3.3.250923
 
 AvailableFriendlyPorts:
 1 - /dev/ttyCH341USB0 QinHeng CH340 serial converter 1a86:7523
