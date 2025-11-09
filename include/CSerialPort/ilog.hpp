@@ -12,6 +12,7 @@
 
 #include <fstream> // open close
 #include <ctime>   // time localtime
+#include <cstdarg> // va_list, va_start, va_end
 
 #if defined(_WIN32)
 #include <windows.h> // FILETIME

@@ -59,7 +59,7 @@ public:
 
 /**
  * @brief length field based protocol parser 基于长度字段的协议解析器
- * 
+ *
  * +--------+-----+--------+------+------+--------+
  * | header | ... | length | data |check | footer |
  * +--------+-----+--------+------+------+--------+
@@ -76,7 +76,7 @@ public:
         unsigned int lengthAdjustment,
         unsigned int lengthFieldMaxValue,
         unsigned int checkCodeFieldLength,
-        unsigned int footerFieldLength,    // 0 1 2
+        unsigned int footerFieldLength, // 0 1 2
         unsigned char footer[2],
         bool isBigEndian = true)
         : m_headerFieldLength(headerFieldLength)
@@ -94,7 +94,7 @@ public:
 
     virtual ~LengthFieldBasedProtocolParser() {}
 
-    virtual bool isCheckCodeValid(const unsigned char* data, unsigned int size)
+    virtual bool isCheckCodeValid(const unsigned char *data, unsigned int size)
     {
         return true;
     }
@@ -324,16 +324,16 @@ private:
 
 /**
  * @brief delimiter based protocol parser 基于分隔符的协议解析器
- * 
+ *
  *  +--------+------+-------+--------+
  *  | header | data | check | footer |
- *  +--------+------+-------+--------+ 
+ *  +--------+------+-------+--------+
  *
  * AT command: AT...<CR><LF>
- * unsigned char header[2] = {'A', 'T'} // AT 
+ * unsigned char header[2] = {'A', 'T'} // AT
  * unsigned char footer[2] = {'\r', '\n'}; // \r\n
  * DelimiterBasedProtocolParser parser(2, header, 2, footer);
- * 
+ *
  * NMEA-0183: $aaccc,ddd,ddd,…,ddd*hh<CR><LF>
  * unsigned char header[2] = {'$', 0x00} // $
  * unsigned char footer[2] = {'\r', '\n'}; // \r\n

@@ -10,6 +10,9 @@
 #ifndef __I_BUFFER_HPP__
 #define __I_BUFFER_HPP__
 
+#include <memory>  // 添加std::unique_ptr支持
+#include <cstring> // 添加memcpy支持(C++11)
+
 static unsigned int nextPowerOf2(unsigned int num)
 {
     // 2^30 = 1 << 30 = 1073741824
@@ -46,8 +49,8 @@ template <typename T>
 class Buffer
 {
 public:
-    Buffer() {};
-    virtual ~Buffer() {};
+    Buffer() = default;
+    virtual ~Buffer() = default;
 
     virtual int write(const T *data, unsigned int size) = 0;
     virtual int read(T *data, unsigned int size) = 0;
@@ -74,12 +77,12 @@ public:
      *
      */
     RingBuffer()
-        : m_readMirrorIndex(0)
-        , m_writeMirrotIndex(0)
-        , m_maxBufferSize(4096) ///< must power of two
-        , m_mask(m_maxBufferSize - 1)
-        , m_maxMirrorBufferIndex(2 * m_maxBufferSize - 1)
-        , m_buffer(new T[m_maxBufferSize])
+        : m_readMirrorIndex{0}
+        , m_writeMirrotIndex{0}
+        , m_maxBufferSize{4096} ///< must power of two
+        , m_mask{m_maxBufferSize - 1}
+        , m_maxMirrorBufferIndex{2 * m_maxBufferSize - 1}
+        , m_buffer{new T[m_maxBufferSize]}
     {
     }
 
@@ -89,12 +92,12 @@ public:
      * @param maxBufferSize [in] buffer size 缓冲区大小
      */
     RingBuffer(unsigned int maxBufferSize)
-        : m_readMirrorIndex(0)
-        , m_writeMirrotIndex(0)
-        , m_maxBufferSize((maxBufferSize && (0 == (maxBufferSize & (maxBufferSize - 1)))) ? maxBufferSize : nextPowerOf2(maxBufferSize)) ///< must power of two
-        , m_mask(m_maxBufferSize - 1)
-        , m_maxMirrorBufferIndex(2 * m_maxBufferSize - 1)
-        , m_buffer(new T[m_maxBufferSize])
+        : m_readMirrorIndex{0}
+        , m_writeMirrotIndex{0}
+        , m_maxBufferSize{(maxBufferSize && (0 == (maxBufferSize & (maxBufferSize - 1)))) ? maxBufferSize : nextPowerOf2(maxBufferSize)} ///< must power of two
+        , m_mask{m_maxBufferSize - 1}
+        , m_maxMirrorBufferIndex{2 * m_maxBufferSize - 1}
+        , m_buffer{new T[m_maxBufferSize]}
     {
     }
 
@@ -102,14 +105,10 @@ public:
      * @brief Destroy the Ring Buffer object 析构函数
      *
      */
-    virtual ~RingBuffer()
-    {
-        if (m_buffer)
-        {
-            delete[] m_buffer;
-            m_buffer = NULL;
-        }
-    }
+    ~RingBuffer() override = default;
+
+    RingBuffer(const RingBuffer &) = delete;
+    RingBuffer &operator=(const RingBuffer &) = delete;
 
     /**
      * @brief write data to buffer 向缓冲区写数据
@@ -118,7 +117,7 @@ public:
      * @param size [in] write data size 待写入大小
      * @return return write data size 返回写入数据大小
      */
-    int write(const T *data, unsigned int size)
+    int write(const T *data, unsigned int size) override
     {
         for (unsigned int i = 0; i < size; ++i)
         {
@@ -142,7 +141,7 @@ public:
      * @retval 0 buffer empty 缓冲区空
      * @retval [other] return read data size 返回读取数据大小
      */
-    int read(T *data, unsigned int size)
+    int read(T *data, unsigned int size) override
     {
         if (isEmpty() || 0 == size)
         {
@@ -174,7 +173,7 @@ public:
      * @retval 0 buffer empty 缓冲区空
      * @retval [other] return read data size 返回读取数据大小
      */
-    int peek(T *data, unsigned int size)
+    int peek(T *data, unsigned int size) override
     {
         if (isEmpty() || 0 == size)
         {
@@ -204,7 +203,7 @@ public:
      * @param skipSize [in] skip data size 需要跳过的数据大小
      * @return skipped data size 跳过的数据大小
      */
-    int skip(unsigned int skipSize)
+    int skip(unsigned int skipSize) override
     {
         if (isEmpty() || 0 == skipSize)
         {
@@ -233,7 +232,7 @@ public:
      * @return true
      * @return false
      */
-    bool isFull() const
+    bool isFull() const override
     {
         return m_writeMirrotIndex == (m_readMirrorIndex ^ m_maxBufferSize);
     }
@@ -244,7 +243,7 @@ public:
      * @return true
      * @return false
      */
-    bool isEmpty() const
+    bool isEmpty() const override
     {
         return m_writeMirrotIndex == m_readMirrorIndex;
     }
@@ -254,7 +253,7 @@ public:
      *
      * @return return used length of buffer 返回缓冲区已使用大小
      */
-    unsigned int getUsedLen() const
+    unsigned int getUsedLen() const override
     {
         return (m_writeMirrotIndex >= m_readMirrorIndex) ? (m_writeMirrotIndex - m_readMirrorIndex) : (m_writeMirrotIndex + 2 * m_maxBufferSize - m_readMirrorIndex);
     }
@@ -264,7 +263,7 @@ public:
      *
      * @return return unused length of buffer 返回缓冲区未使用大小
      */
-    unsigned int getUnusedLen() const
+    unsigned int getUnusedLen() const override
     {
         return m_maxBufferSize - getUsedLen();
     }
@@ -274,20 +273,20 @@ public:
      *
      * @return return total size of buffer 返回缓冲区总大小
      */
-    unsigned int getBufferSize() const
+    unsigned int getBufferSize() const override
     {
         return m_maxBufferSize;
     }
 
 private:
-    unsigned int m_readMirrorIndex;  ///< [0, 2n-1]
-    unsigned int m_writeMirrotIndex; ///< [0, 2n-1]
+    unsigned int m_readMirrorIndex{0};  ///< [0, 2n-1]
+    unsigned int m_writeMirrotIndex{0}; ///< [0, 2n-1]
 
     const unsigned int m_maxBufferSize;        ///< n must power of two 必须为2的幂
     const unsigned int m_mask;                 ///< n-1
     const unsigned int m_maxMirrorBufferIndex; ///< 2n-1
 
-    T *m_buffer;
+    std::unique_ptr<T[]> m_buffer;
 };
 
 template <>
@@ -295,35 +294,31 @@ class RingBuffer<char> : public Buffer<char>
 {
 public:
     RingBuffer()
-        : m_readMirrorIndex(0)
-        , m_writeMirrotIndex(0)
-        , m_maxBufferSize(4096) ///< must power of two
-        , m_mask(m_maxBufferSize - 1)
-        , m_maxMirrorBufferIndex(2 * m_maxBufferSize - 1)
-        , m_buffer(new char[m_maxBufferSize])
+        : m_readMirrorIndex{0}
+        , m_writeMirrotIndex{0}
+        , m_maxBufferSize{4096} ///< must power of two
+        , m_mask{m_maxBufferSize - 1}
+        , m_maxMirrorBufferIndex{2 * m_maxBufferSize - 1}
+        , m_buffer{new char[m_maxBufferSize]}
     {
     }
 
     RingBuffer(unsigned int maxBufferSize)
-        : m_readMirrorIndex(0)
-        , m_writeMirrotIndex(0)
-        , m_maxBufferSize((maxBufferSize && (0 == (maxBufferSize & (maxBufferSize - 1)))) ? maxBufferSize : nextPowerOf2(maxBufferSize)) ///< must power of two
-        , m_mask(m_maxBufferSize - 1)
-        , m_maxMirrorBufferIndex(2 * m_maxBufferSize - 1)
-        , m_buffer(new char[m_maxBufferSize])
+        : m_readMirrorIndex{0}
+        , m_writeMirrotIndex{0}
+        , m_maxBufferSize{(maxBufferSize && (0 == (maxBufferSize & (maxBufferSize - 1)))) ? maxBufferSize : nextPowerOf2(maxBufferSize)} ///< must power of two
+        , m_mask{m_maxBufferSize - 1}
+        , m_maxMirrorBufferIndex{2 * m_maxBufferSize - 1}
+        , m_buffer{new char[m_maxBufferSize]}
     {
     }
 
-    virtual ~RingBuffer()
-    {
-        if (m_buffer)
-        {
-            delete[] m_buffer;
-            m_buffer = NULL;
-        }
-    }
+    ~RingBuffer() override = default;
 
-    int write(const char *data, unsigned int size)
+    RingBuffer(const RingBuffer &) = delete;
+    RingBuffer &operator=(const RingBuffer &) = delete;
+
+    int write(const char *data, unsigned int size) override
     {
         const unsigned int needWriteSize = size;
         // write data overflow, need move read index
@@ -349,13 +344,13 @@ public:
         const unsigned int toEndSize = m_maxBufferSize - writePos;
         if (toEndSize >= size)
         {
-            memcpy(m_buffer + writePos, data, size);
+            memcpy(m_buffer.get() + writePos, data, size);
         }
         else
         {
             // write index loop around
-            memcpy(m_buffer + writePos, data, toEndSize);
-            memcpy(m_buffer, data + toEndSize, size - toEndSize);
+            memcpy(m_buffer.get() + writePos, data, toEndSize);
+            memcpy(m_buffer.get(), data + toEndSize, size - toEndSize);
         }
         // update write index
         m_writeMirrotIndex = (m_writeMirrotIndex + size) & m_maxMirrorBufferIndex;
@@ -363,7 +358,7 @@ public:
         return needWriteSize;
     }
 
-    int read(char *data, unsigned int size)
+    int read(char *data, unsigned int size) override
     {
         if (isEmpty() || 0 == size)
         {
@@ -381,13 +376,13 @@ public:
         const unsigned int toEndSize = m_maxBufferSize - readPos;
         if (toEndSize >= size)
         {
-            memcpy(data, m_buffer + readPos, size);
+            memcpy(data, m_buffer.get() + readPos, size);
         }
         else
         {
             // read index loop around
-            memcpy(data, m_buffer + readPos, toEndSize);
-            memcpy(data + toEndSize, m_buffer, size - toEndSize);
+            memcpy(data, m_buffer.get() + readPos, toEndSize);
+            memcpy(data + toEndSize, m_buffer.get(), size - toEndSize);
         }
         // update read index
         m_readMirrorIndex = (m_readMirrorIndex + size) & m_maxMirrorBufferIndex;
@@ -395,7 +390,7 @@ public:
         return size;
     }
 
-    int peek(char *data, unsigned int size)
+    int peek(char *data, unsigned int size) override
     {
         if (isEmpty() || 0 == size)
         {
@@ -413,19 +408,19 @@ public:
         const unsigned int toEndSize = m_maxBufferSize - readPos;
         if (toEndSize >= size)
         {
-            memcpy(data, m_buffer + readPos, size);
+            memcpy(data, m_buffer.get() + readPos, size);
         }
         else
         {
             // read index loop around
-            memcpy(data, m_buffer + readPos, toEndSize);
-            memcpy(data + toEndSize, m_buffer, size - toEndSize);
+            memcpy(data, m_buffer.get() + readPos, toEndSize);
+            memcpy(data + toEndSize, m_buffer.get(), size - toEndSize);
         }
 
         return size;
     }
 
-    int skip(unsigned int skipSize)
+    int skip(unsigned int skipSize) override
     {
         if (isEmpty() || 0 == skipSize)
         {
@@ -448,40 +443,40 @@ public:
         return skipSize;
     }
 
-    bool isFull() const
+    bool isFull() const override
     {
         return m_writeMirrotIndex == (m_readMirrorIndex ^ m_maxBufferSize);
     }
 
-    bool isEmpty() const
+    bool isEmpty() const override
     {
         return m_writeMirrotIndex == m_readMirrorIndex;
     }
 
-    unsigned int getUsedLen() const
+    unsigned int getUsedLen() const override
     {
         return (m_writeMirrotIndex >= m_readMirrorIndex) ? (m_writeMirrotIndex - m_readMirrorIndex) : (m_writeMirrotIndex + 2 * m_maxBufferSize - m_readMirrorIndex);
     }
 
-    unsigned int getUnusedLen() const
+    unsigned int getUnusedLen() const override
     {
         return m_maxBufferSize - getUsedLen();
     }
 
-    unsigned int getBufferSize() const
+    unsigned int getBufferSize() const override
     {
         return m_maxBufferSize;
     }
 
 private:
-    unsigned int m_readMirrorIndex;  ///< [0, 2n-1]
-    unsigned int m_writeMirrotIndex; ///< [0, 2n-1]
+    unsigned int m_readMirrorIndex{0};  ///< [0, 2n-1]
+    unsigned int m_writeMirrotIndex{0}; ///< [0, 2n-1]
 
     const unsigned int m_maxBufferSize;        ///< n must power of two 必须为2的幂
     const unsigned int m_mask;                 ///< n-1
     const unsigned int m_maxMirrorBufferIndex; ///< 2n-1
 
-    char *m_buffer;
+    std::unique_ptr<char[]> m_buffer;
 };
 } // namespace itas109
 #endif // __I_BUFFER_HPP__

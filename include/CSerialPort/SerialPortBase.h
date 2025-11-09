@@ -14,10 +14,11 @@
 #define __CSERIALPORTBASE_H__
 
 #include "SerialPort_global.h"
+#include "ithread.hpp"
 
 namespace itas109
 {
-class IMutex;
+// class IMutex;
 class CSerialPortListener;
 class CSerialPortHotPlugListener;
 class CSerialPortHotPlug;
@@ -395,9 +396,9 @@ protected:
     unsigned int m_readIntervalTimeoutMS;                   ///< read time timeout millisecond 读取间隔时间，单位：毫秒
     unsigned int m_minByteReadNotify;                       ///< minimum byte of read notify 读取通知触发最小字节数
     unsigned int m_byteReadBufferFullNotify;                ///< byte of read buffer full notify 读取通知触发缓冲区字节数
-    itas109::IMutex *p_mutex;                               ///< mutex 互斥锁
-    itas109::IMutex *p_mutexRead;                           ///< read mutex 读互斥锁
-    itas109::IMutex *p_mutexWrite;                          ///< write mutex 写互斥锁
+    itas109::IMutex m_mutex;                                ///< mutex 互斥锁
+    itas109::IMutex m_mutexRead;                            ///< read mutex 读互斥锁
+    itas109::IMutex m_mutexWrite;                           ///< write mutex 写互斥锁
     itas109::CSerialPortListener *p_readEvent;              ///< read event 读取事件
     itas109::ITimer<itas109::CSerialPortListener> *p_timer; ///< read timer 读取定时器
     itas109::CSerialPortHotPlug *p_serialPortHotPlug;       ///< serial port hot plug class 串口热插拔类

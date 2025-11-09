@@ -10,7 +10,7 @@
 #ifndef __CSERIALPORT_HOTPLUG_WIN_HPP__
 #define __CSERIALPORT_HOTPLUG_WIN_HPP__
 
-#include "ithread.hpp"
+#include <thread>
 
 #include "SerialPortListener.h"
 
@@ -29,18 +29,16 @@ class CSerialPortHotPlug
 {
 public:
     CSerialPortHotPlug()
-        : m_thread(I_THREAD_INITIALIZER)
-        , p_listener(NULL)
+        : p_listener(NULL)
     {
         init();
     }
 
     ~CSerialPortHotPlug()
     {
-        if (m_thread != I_THREAD_INITIALIZER)
+        if (m_thread.joinable())
         {
-            i_thread_join(m_thread);
-            m_thread = I_THREAD_INITIALIZER;
+            m_thread.join();
         }
         UnregisterClass(CLASS_NAME, GetModuleHandle(NULL));
     }
@@ -65,14 +63,12 @@ public:
     }
 
 private:
-    static unsigned int __stdcall threadFun(void *param)
+    static void threadFun(CSerialPortHotPlug *p_main)
     {
-        CSerialPortHotPlug *p_main = (CSerialPortHotPlug *)param;
-
         // create hidden window to receive device change messages
         if (NULL == CreateWindowEx(0, CLASS_NAME, 0, 0, 0, 0, 0, 0, 0 /*HWND_MESSAGE*/, 0, GetModuleHandle(NULL), p_main))
         {
-            return -1;
+            return;
         }
 
         // message loop
@@ -82,7 +78,7 @@ private:
             DispatchMessage(&msg);
         }
 
-        return 0;
+        return;
     }
 
 private:
@@ -108,7 +104,7 @@ private:
             return false;
         }
 
-        itas109::i_thread_create(&m_thread, NULL, threadFun, (LPVOID)this);
+        m_thread = std::thread(threadFun, this);
         return true;
     }
 
@@ -191,7 +187,7 @@ private:
     }
 
 private:
-    itas109::i_thread_t m_thread;
+    std::thread m_thread;
     itas109::CSerialPortHotPlugListener *p_listener;
 };
 

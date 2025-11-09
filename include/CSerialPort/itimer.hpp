@@ -10,15 +10,15 @@
 #ifndef __I_TIMER_HPP__
 #define __I_TIMER_HPP__
 
-#if __cplusplus >= 201103L || _MSVC_LANG >= 201103L
-// C++11 support: msvc2013 gcc4.8.5 clang3.0 etc.
-#define CPP11_TIMER
-#endif
+// #if __cplusplus >= 201103L || _MSVC_LANG >= 201103L
+// // C++11 support: msvc2013 gcc4.8.5 clang3.0 etc.
+// #define CPP11_TIMER
+// #endif
 
-#ifdef CPP11_TIMER
 #include <chrono>
 #include <condition_variable>
-#endif
+#include <thread>
+#include <atomic>
 
 #include "iutils.hpp"
 #include "ithread.hpp"
@@ -35,12 +35,7 @@ template <class T>
 class ITimer
 {
 public:
-    ITimer()
-        : m_isRunning(false)
-        , m_tryStop(false)
-        , handle(I_THREAD_INITIALIZER)
-    {
-    }
+    ITimer() {};
 
     ~ITimer()
     {
@@ -52,19 +47,13 @@ public:
         return m_isRunning;
     }
 
-#if defined(_WIN32)
-    static unsigned int __stdcall threadFun(void *pParam)
-#else
-    static void *threadFun(void *pParam)
-#endif
+    static void threadFun(ITimer *p_base)
     {
-        ITimer *p_base = (ITimer *)pParam;
 
-#ifdef CPP11_TIMER
         std::mutex mutex;
         std::unique_lock<std::mutex> lock(mutex);
         if (!p_base->m_cv.wait_for(lock, std::chrono::milliseconds(p_base->m_timeoutMs), [&]
-                                   { return p_base->m_tryStop; }))
+                                   { return p_base->m_tryStop.load(std::memory_order_acquire); }))
         {
             // timeout
 #ifdef CSERIALPORT_DEBUG
@@ -72,27 +61,11 @@ public:
 #endif
             ((p_base->p_class)->*(p_base->p_memfun))(p_base->m_portName, p_base->m_readBufferLen);
         }
-#else
-        itas109::IMutex mutex;
-        if (p_base->m_cv.timeWait(mutex, p_base->m_timeoutMs, p_base->m_tryStop))
-        {
-            // timeout
-            ((p_base->p_class)->*(p_base->p_memfun))(p_base->m_portName, p_base->m_readBufferLen);
-        }
-#endif
 
         // timer stoped or timeout => stop condition variable wake up
-#ifdef CPP11_TIMER
         std::unique_lock<std::mutex> lockStop(p_base->m_stopMutex);
-        p_base->m_isRunning = false;
+        p_base->m_isRunning.store(false, std::memory_order_release);
         p_base->m_cvStop.notify_one();
-#else
-        IAutoLock lock(&p_base->m_stopMutex);
-        p_base->m_isRunning = false;
-        p_base->m_cvStop.notifyOne();
-#endif
-
-        return 0;
     }
 
     void startOnce(unsigned int timeoutMs, T *pclass, void (T::*pmemfun)(const char *, unsigned int), const char *portName, unsigned int readBufferLen)
@@ -108,13 +81,13 @@ public:
             return;
         }
 
-        m_isRunning = true;
+        m_isRunning.store(true, std::memory_order_release);
 
-        if (I_THREAD_INITIALIZER != handle)
+        if (m_thread.joinable())
         {
-            i_thread_join(handle);
+            m_thread.join();
         }
-        itas109::i_thread_create(&handle, NULL, threadFun, (void *)this);
+        m_thread = std::thread(&ITimer::threadFun, this);
     }
 
     void stop()
@@ -124,44 +97,25 @@ public:
             return;
         }
 
-        m_tryStop = true;
-#ifdef CPP11_TIMER
+        m_tryStop.store(true, std::memory_order_release);
         m_cv.notify_one();
-#else
-        m_cv.notifyOne();
-#endif
 
-#ifdef CPP11_TIMER
         std::unique_lock<std::mutex> lock(m_stopMutex);
         m_cvStop.wait(lock, [this]
-                      { return m_isRunning == false; });
-#else
-        IAutoLock lock(&m_stopMutex);
-        // TODO: fix this error
-        // m_cvStop.wait(m_stopMutex, m_isRunning == false); // error
-        while (m_isRunning == false)
-        {
-            m_cvStop.wait(m_stopMutex);
-        }
-#endif
-        m_tryStop = false;
+                      { return m_isRunning.load(std::memory_order_acquire) == false; });
+        m_tryStop.store(false, std::memory_order_release);
     }
 
 private:
-    volatile bool m_isRunning; // timer running status
-    volatile bool m_tryStop;
+    std::atomic<bool> m_isRunning{false}; // timer running status
+    std::atomic<bool> m_tryStop{false};   // timer try to stop
 
-#ifdef CPP11_TIMER
     std::condition_variable m_cvStop;
     std::condition_variable m_cv;
     std::mutex m_stopMutex;
-#else
-    itas109::IConditionVariable m_cvStop;
-    itas109::IConditionVariable m_cv;
-    itas109::IMutex m_stopMutex;
-#endif
 
-    itas109::i_thread_t handle;
+    std::thread m_thread;
+
     unsigned int m_timeoutMs;
     char m_portName[PORT_NAME_MAX_LEN];
     unsigned int m_readBufferLen;

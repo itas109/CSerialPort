@@ -55,7 +55,7 @@ public:
     IUtils() {};
     ~IUtils() {};
 
-    static size_t strlen(const char *str)
+    static size_t strlen(const char *str) noexcept
     {
         // assert(str != NULL);
 
@@ -68,7 +68,7 @@ public:
         return (cp - str - 1);
     }
 
-    static char *strncpy(char *dest, const char *src, unsigned int count)
+    static char *strncpy(char *dest, const char *src, unsigned int count) noexcept
     {
         // assert(dest != NULL && src != NULL && count != 0);
 
@@ -85,7 +85,7 @@ public:
         return (dest);
     }
 
-    static char *strncat(char *dest, const char *src, unsigned int count)
+    static char *strncat(char *dest, const char *src, unsigned int count) noexcept
     {
         // assert(dest != NULL && src != NULL);
 
@@ -107,7 +107,7 @@ public:
         return (dest);
     }
 
-    static int strFind(const char *src, const char *str)
+    static int strFind(const char *src, const char *str) noexcept
     {
         // assert(dest != NULL && src != NULL);
 
@@ -136,7 +136,7 @@ public:
         return -1;
     }
 
-    static char *strUpper(char *str)
+    static char *strUpper(char *str) noexcept
     {
         char *cp = str;
         for (; *str != '\0'; str++)
@@ -149,7 +149,7 @@ public:
         return cp;
     }
 
-    static char *strLower(char *str)
+    static char *strLower(char *str) noexcept
     {
         char *cp = str;
         for (; *str != '\0'; str++)
@@ -317,11 +317,11 @@ public:
     }
 #endif
 
-    static char *charToHexStr(char *dest, const char *src, unsigned int count)
+    static char *charToHexStr(char *dest, const char *src, unsigned int count) noexcept
     {
         // assert(dest != NULL && src != NULL);
 
-        static const char hexTable[17] = "0123456789ABCDEF";
+        static constexpr char hexTable[17] = "0123456789ABCDEF";
 
         for (unsigned int i = 0; i < count; ++i)
         {
@@ -333,7 +333,7 @@ public:
         return (dest);
     }
 
-    static char *getOperatingSystemName(char *osName, unsigned int len)
+    static char *getOperatingSystemName(char *osName, unsigned int len) noexcept
     {
         if (NULL == osName)
         {
@@ -500,7 +500,7 @@ public:
         return numOfProcessors;
     }
 
-    static char *getArchitectureName(char *archName, unsigned int len)
+    static char *getArchitectureName(char *archName, unsigned int len) noexcept
     {
         if (NULL == archName)
         {
@@ -528,7 +528,7 @@ public:
         return archName;
     }
 
-    static char *getCompilerName(char *compilerName, unsigned int len)
+    static char *getCompilerName(char *compilerName, unsigned int len) noexcept
     {
         if (NULL == compilerName)
         {
@@ -588,13 +588,13 @@ public:
         return compilerName;
     }
 
-    static int getApplicationBit()
+    static int getApplicationBit() noexcept
     {
         static int bit = (8 == sizeof(char *)) ? 64 : 32;
         return bit;
     }
 
-    static long getCppStdVersion()
+    static long getCppStdVersion() noexcept
     {
 #if defined(_MSVC_LANG)
         return _MSVC_LANG;
@@ -603,7 +603,7 @@ public:
 #endif
     }
 
-    static char *getBindingLanguage(char *bindingLanguage, unsigned int len)
+    static char *getBindingLanguage(char *bindingLanguage, unsigned int len) noexcept
     {
 #ifdef CSERIALPORT_BINDING_LANGUAGE
         strncpy(bindingLanguage, MACRO_TO_STRING(CSERIALPORT_BINDING_LANGUAGE), len);

@@ -14,6 +14,11 @@ cmake_minimum_required(VERSION 3.10.0)
 
 project(CSerialPort LANGUAGES CXX)
 
+# C++11 standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # set output directory
 if (CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -21,7 +26,7 @@ if (CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 endif()
 
-# set build tpye
+# set build type
 if (NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
 	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
@@ -34,7 +39,7 @@ option(CSERIALPORT_ENABLE_UTF8 "Enable CSerialPort UTF8" OFF)
 option(CSERIALPORT_BUILD_DOC "Build CSerialPort Doc" OFF)
 option(CSERIALPORT_BUILD_TEST "Build CSerialPort Test" OFF)
 
-# only build library if add CSeiralPort as subdirectory
+# only build library if add CSerialPort as subdirectory
 if (NOT CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
     set(CSERIALPORT_BUILD_EXAMPLES OFF)
     set(CSERIALPORT_BUILD_DOC OFF)

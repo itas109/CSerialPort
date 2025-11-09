@@ -10,7 +10,7 @@
 #ifndef __CSERIALPORT_HOTPLUG_MAC_HPP__
 #define __CSERIALPORT_HOTPLUG_MAC_HPP__
 
-#include "ithread.hpp"
+#include <thread>
 
 #include "SerialPortListener.h"
 
@@ -25,24 +25,22 @@ class CSerialPortHotPlug
 {
 public:
     CSerialPortHotPlug()
-        : m_notificationPort(NULL)
+        : m_notificationPort(nullptr)
         , m_serialPortAddIterator(0)
         , m_serialPortRemoveIterator(0)
-        , m_thread(I_THREAD_INITIALIZER)
-        , p_listener(NULL)
+        , p_listener(nullptr)
 
     {
         init();
     }
     ~CSerialPortHotPlug()
     {
-        if (m_thread != I_THREAD_INITIALIZER)
+        if (m_thread.joinable())
         {
-            i_thread_join(m_thread);
-            m_thread = I_THREAD_INITIALIZER;
+            m_thread.join();
         }
 
-        if (m_notificationPort != NULL)
+        if (m_notificationPort != nullptr)
         {
             IONotificationPortDestroy(m_notificationPort);
         }
@@ -72,26 +70,24 @@ public:
 
     int disconnectHotPlugEvent()
     {
-        p_listener = NULL;
+        p_listener = nullptr;
         return 0;
     }
 
 private:
-    static void *threadFun(void *param)
+    static void threadFun(CSerialPortHotPlug *p_main)
     {
-        CSerialPortHotPlug *p_base = (CSerialPortHotPlug *)param;
-
-        if (p_base)
+        if (p_main)
         {
             // create notificaiton
-            p_base->m_notificationPort = IONotificationPortCreate(kIOMasterPortDefault);
-            if (!p_base->m_notificationPort)
+            p_main->m_notificationPort = IONotificationPortCreate(kIOMasterPortDefault);
+            if (!p_main->m_notificationPort)
             {
                 // fprintf(stderr, "Failed to create IONotificationPort.\n");
-                return NULL;
+                return;
             }
             // create run loop
-            CFRunLoopSourceRef runLoopSource = IONotificationPortGetRunLoopSource(p_base->m_notificationPort);
+            CFRunLoopSourceRef runLoopSource = IONotificationPortGetRunLoopSource(p_main->m_notificationPort);
             CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopDefaultMode);
 
             kern_return_t result;
@@ -101,20 +97,20 @@ private:
             if (!matchingAddDict)
             {
                 // fprintf(stderr, "Failed to create matching add dictionary.\n");
-                IONotificationPortDestroy(p_base->m_notificationPort);
-                return NULL;
+                IONotificationPortDestroy(p_main->m_notificationPort);
+                return;
             }
             // register serial add event
-            result = IOServiceAddMatchingNotification(p_base->m_notificationPort, kIOPublishNotification, matchingAddDict, serialPortAdd, p_base, &p_base->m_serialPortAddIterator);
+            result = IOServiceAddMatchingNotification(p_main->m_notificationPort, kIOPublishNotification, matchingAddDict, serialPortAdd, p_main, &p_main->m_serialPortAddIterator);
             if (result != KERN_SUCCESS)
             {
                 // fprintf(stderr, "Failed to add publish notification: %d.\n", result);
                 CFRelease(matchingAddDict);
-                IONotificationPortDestroy(p_base->m_notificationPort);
-                return NULL;
+                IONotificationPortDestroy(p_main->m_notificationPort);
+                return;
             }
             // deal current device
-            serialPortAdd(p_base, p_base->m_serialPortAddIterator);
+            serialPortAdd(p_main, p_main->m_serialPortAddIterator);
             // clear dirct
             // CFRelease(matchingAddDict); // TODO
 
@@ -123,20 +119,20 @@ private:
             if (!matchingRemoveDict)
             {
                 // fprintf(stderr, "Failed to create matching add dictionary.\n");
-                IONotificationPortDestroy(p_base->m_notificationPort);
-                return NULL;
+                IONotificationPortDestroy(p_main->m_notificationPort);
+                return;
             }
             // register serial remove event
-            result = IOServiceAddMatchingNotification(p_base->m_notificationPort, kIOTerminatedNotification, matchingRemoveDict, serialPortRemove, p_base, &p_base->m_serialPortRemoveIterator);
+            result = IOServiceAddMatchingNotification(p_main->m_notificationPort, kIOTerminatedNotification, matchingRemoveDict, serialPortRemove, p_main, &p_main->m_serialPortRemoveIterator);
             if (result != KERN_SUCCESS)
             {
                 // fprintf(stderr, "Failed to add terminated notification: %d.\n", result);
                 CFRelease(matchingRemoveDict);
-                IONotificationPortDestroy(p_base->m_notificationPort);
-                return NULL;
+                IONotificationPortDestroy(p_main->m_notificationPort);
+                return;
             }
             // deal current device
-            serialPortRemove(p_base, p_base->m_serialPortRemoveIterator);
+            serialPortRemove(p_main, p_main->m_serialPortRemoveIterator);
             // clear dict
             // CFRelease(matchingRemoveDict); // TODO
 
@@ -148,7 +144,7 @@ private:
 private:
     bool init()
     {
-        itas109::i_thread_create(&m_thread, NULL, threadFun, (void *)this);
+        m_thread = std::thread(threadFun, this);
         return true;
     }
 
@@ -163,7 +159,7 @@ private:
             {
                 char portName[256];
                 CFStringRef cfString = (CFStringRef)IORegistryEntryCreateCFProperty(serialPort, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, 0);
-                if (cfString != NULL)
+                if (cfString != nullptr)
                 {
                     CFStringGetCString(cfString, portName, sizeof(portName), kCFStringEncodingUTF8);
                     CFRelease(cfString);
@@ -187,7 +183,7 @@ private:
             {
                 char portName[256];
                 CFStringRef cfString = (CFStringRef)IORegistryEntryCreateCFProperty(serialPort, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, 0);
-                if (cfString != NULL)
+                if (cfString != nullptr)
                 {
                     CFStringGetCString(cfString, portName, sizeof(portName), kCFStringEncodingUTF8);
                     CFRelease(cfString);
@@ -206,7 +202,7 @@ private:
     io_iterator_t m_serialPortAddIterator;
     io_iterator_t m_serialPortRemoveIterator;
 
-    itas109::i_thread_t m_thread;
+    std::thread m_thread;
     itas109::CSerialPortHotPlugListener *p_listener;
 };
 } // namespace itas109

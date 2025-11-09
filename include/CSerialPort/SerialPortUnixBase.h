@@ -22,6 +22,7 @@
 #include <errno.h>     // Error number definitions
 
 #include "ithread.hpp"
+#include <thread>
 #include "ibuffer.hpp"
 #include "SerialPortBase.h"
 
@@ -334,7 +335,7 @@ private:
      * @brief thread monitor 多线程监视器
      *
      */
-    static void *commThreadMonitor(void *pParam);
+    void commThreadMonitor();
 
     /**
      * @brief start thread monitor 启动多线程监视器
@@ -376,7 +377,7 @@ private:
     int fd; /* File descriptor for the port */
 
 private:
-    itas109::i_thread_t m_monitorThread; /**< read thread */
+    std::thread m_monitorThread; /**< read thread */
 
     bool m_isThreadRunning;
 

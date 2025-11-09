@@ -18,6 +18,9 @@
 #include "ithread.hpp"
 #include "ibuffer.hpp"
 #include "SerialPortBase.h"
+#include <thread>
+
+#include "windows.h"
 
 /**
  * @brief the CSerialPort Windows Base class windows串口基类
@@ -296,34 +299,12 @@ public:
      */
     void setRts(bool set = true);
 
-public:
-    /**
-     * @brief Get the Overlap Monitor object 获取监视器的overlapped
-     *
-     * @return return monitor overlapped 返回监视器的overlapped
-     */
-    OVERLAPPED getOverlapMonitor();
-    /**
-     * @brief Get the Main Handle object 获取handle
-     *
-     * @return retrun handle 返回handle
-     */
-    HANDLE getMainHandle();
-
-    /**
-     * @brief isThreadRunning 是否启动多线程
-     * @return
-     * @retval true thread running 多线程已启动
-     * @retval false thread not running 多线程未启动
-     */
-    bool isThreadRunning();
-
 private:
     /**
      * @brief thread monitor 多线程监视器
      *
      */
-    static unsigned int __stdcall commThreadMonitor(LPVOID pParam);
+    void commThreadMonitor();
     /**
      * @brief start thread monitor 启动多线程监视器
      *
@@ -364,8 +345,8 @@ private:
 private:
     HANDLE m_handle;
 
-    itas109::i_thread_t m_monitorThread;
-    OVERLAPPED overlapMonitor; ///< monitor overlapped
+    std::thread m_monitorThread;
+    OVERLAPPED m_overlapMonitor; ///< monitor overlapped
 
     OVERLAPPED m_overlapRead;  ///< read overlapped
     OVERLAPPED m_overlapWrite; ///< write overlapped

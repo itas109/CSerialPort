@@ -15,6 +15,11 @@ cmake_minimum_required(VERSION 3.10.0)
 
 project(libcserialport)
 
+# C++11 standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 if (CSERIALPORT_ENABLE_DEBUG)
     add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
 endif ()
@@ -22,7 +27,7 @@ if (CSERIALPORT_ENABLE_UTF8)
     add_definitions(-DCSERIALPORT_USE_UTF8) # CSerialPort UTF8 Character Encoding
 endif ()
 
-# static libarary
+# static library
 # add_compile_options(-static)
 
 set(CSerialPortRootPath "${CMAKE_CURRENT_SOURCE_DIR}/..")

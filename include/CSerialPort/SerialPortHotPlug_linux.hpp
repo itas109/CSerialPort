@@ -10,7 +10,7 @@
 #ifndef __CSERIALPORT_HOTPLUG_LINUX_HPP__
 #define __CSERIALPORT_HOTPLUG_LINUX_HPP__
 
-#include "ithread.hpp"
+#include <thread>
 
 #include "SerialPortListener.h"
 
@@ -28,18 +28,16 @@ class CSerialPortHotPlug
 {
 public:
     CSerialPortHotPlug()
-        : m_thread(I_THREAD_INITIALIZER)
-        , p_listener(NULL)
+        : p_listener(NULL)
         , m_sock(-1)
     {
         init();
     }
     ~CSerialPortHotPlug()
     {
-        if (m_thread != I_THREAD_INITIALIZER)
+        if (m_thread.joinable())
         {
-            i_thread_join(m_thread);
-            m_thread = I_THREAD_INITIALIZER;
+            m_thread.join();
         }
 
         if (m_sock != -1)
@@ -69,10 +67,8 @@ public:
     }
 
 private:
-    static void *threadFun(void *param)
+    static void threadFun(CSerialPortHotPlug *p_main)
     {
-        CSerialPortHotPlug *p_main = (CSerialPortHotPlug *)param;
-
         char buffer[2048]; // UEVENT_BUFFER_SIZE
         for (;;)
         {
@@ -153,14 +149,14 @@ private:
             return false;
         }
 
-        itas109::i_thread_create(&m_thread, NULL, threadFun, (void *)this);
+        m_thread = std::thread(threadFun, this);
 
         return true;
     }
 
 private:
     int m_sock;
-    itas109::i_thread_t m_thread;
+    std::thread m_thread;
     itas109::CSerialPortHotPlugListener *p_listener;
 };
 } // namespace itas109
