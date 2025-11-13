@@ -88,7 +88,7 @@ bool CSerialPortVirtual::createPair(char *portName1, char *portName2)
             char ptyName1[256] = {0};
             char ptyName2[256] = {0};
 
-            if (openpty(&master1, &slave1, ptyName1, NULL, NULL) < 0 || openpty(&master2, &slave2, ptyName2, NULL, NULL) < 0)
+            if (openpty(&master1, &slave1, ptyName1, nullptr, nullptr) < 0 || openpty(&master2, &slave2, ptyName2, nullptr, nullptr) < 0)
             {
                 perror("openpty failed\n");
                 m_cv.notify_one();
@@ -110,7 +110,7 @@ bool CSerialPortVirtual::createPair(char *portName1, char *portName2)
                 FD_SET(master2, &readfds); // add to read fdset
 
                 // -1 error, 0 timeout, >0 ok
-                int ret = select(max_fd + 1, &readfds, NULL, NULL, NULL);
+                int ret = select(max_fd + 1, &readfds, nullptr, nullptr, nullptr);
                 if (ret < 0)
                 {
                     if (errno == EINTR)

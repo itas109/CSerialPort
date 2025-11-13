@@ -60,7 +60,7 @@ public:
                 }
 
                 delete[] data;
-                data = NULL;
+                data = nullptr;
             }
         }
     };
