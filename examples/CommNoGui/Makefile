@@ -20,6 +20,9 @@ TARGET=CSerialPortDemoNoGui
 
 CC=g++
 
+# c++11
+CCFLAGS += -std=c++11
+
 # CSerialPort Debug Mode
 CCFLAGS += -DCSERIALPORT_DEBUG
 

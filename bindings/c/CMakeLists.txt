@@ -14,6 +14,11 @@ cmake_minimum_required(VERSION 3.10.0)
 
 project(cserialport)
 
+# C++11 standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 if (CSERIALPORT_ENABLE_DEBUG)
     add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
 endif ()

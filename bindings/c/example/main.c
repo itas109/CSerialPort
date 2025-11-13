@@ -20,7 +20,8 @@ void char2hexstr(char *dest, const char *src, int len)
 {
     static const char hexTable[17] = "0123456789ABCDEF";
 
-    for (int i = 0; i < len; ++i)
+    int i;
+    for (i = 0; i < len; ++i)
     {
         // 0x + two bit hex +  one bit space => 5 bit
         dest[5 * i + 0] = '0';
@@ -313,7 +314,8 @@ int main()
     // connect for hot plug
     CSerialPortConnectHotPlugEvent(handle, onHotPlugEvent);
 
-    for (unsigned int i = 0; i < portInfoArray.size; ++i)
+    unsigned int i;
+    for (i = 0; i < portInfoArray.size; ++i)
     {
         printf("%u - %s %s\n", i + 1, portInfoArray.portInfo[i].portName, portInfoArray.portInfo[i].description);
     }

@@ -15,6 +15,11 @@ cmake_minimum_required(VERSION 3.10.0)
 
 project(CSerialPortDemoNoGuiProtocol)
 
+# C++11 standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 add_definitions(-DCSERIALPORT_DEBUG) # CSerialPort Debug Mode
 # add_definitions(-DCSERIALPORT_USE_UTF8) # CSerialPort UTF8 Character Encoding
 
