@@ -9,43 +9,21 @@
 #ifdef UNICODE
 static wchar_t *CharToWChar(wchar_t *dest, const char *str)
 {
-    if (NULL == str)
+    if (nullptr == str)
     {
-        return NULL;
+        return nullptr;
     }
 
-    int len = MultiByteToWideChar(CP_ACP, 0, str, -1, NULL, 0); // get char length
-    MultiByteToWideChar(CP_ACP, 0, str, -1, dest, len);         // CP_UTF8
+    int len = MultiByteToWideChar(CP_ACP, 0, str, -1, nullptr, 0); // get char length
+    MultiByteToWideChar(CP_ACP, 0, str, -1, dest, len);            // CP_UTF8
 
     return dest;
 }
 #endif
 
 CSerialPortWinBase::CSerialPortWinBase()
-    : m_baudRate(itas109::BaudRate9600)
-    , m_parity(itas109::ParityNone)
-    , m_dataBits(itas109::DataBits8)
-    , m_stopbits(itas109::StopOne)
-    , m_flowControl(itas109::FlowNone)
-    , m_readBufferSize(4096)
-    , m_handle(INVALID_HANDLE_VALUE)
-    , m_overlapMonitor()
-    , m_overlapRead()
-    , m_overlapWrite()
-    , m_comConfigure()
-    , m_comTimeout()
-    , m_communicationMutex()
-    , m_isThreadRunning(false)
-    , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
+    : CSerialPortWinBase("")
 {
-    itas109::IUtils::strncpy(m_portName, "", 1);
-    m_byteReadBufferFullNotify = (unsigned int)(m_readBufferSize * 0.8);
-
-    m_overlapMonitor.Internal = 0;
-    m_overlapMonitor.InternalHigh = 0;
-    m_overlapMonitor.Offset = 0;
-    m_overlapMonitor.OffsetHigh = 0;
-    m_overlapMonitor.hEvent = CreateEvent(NULL, true, false, NULL);
 }
 
 CSerialPortWinBase::CSerialPortWinBase(const char *portName)
@@ -72,7 +50,7 @@ CSerialPortWinBase::CSerialPortWinBase(const char *portName)
     m_overlapMonitor.InternalHigh = 0;
     m_overlapMonitor.Offset = 0;
     m_overlapMonitor.OffsetHigh = 0;
-    m_overlapMonitor.hEvent = CreateEvent(NULL, true, false, NULL);
+    m_overlapMonitor.hEvent = CreateEvent(nullptr, true, false, nullptr);
 }
 
 CSerialPortWinBase::~CSerialPortWinBase()
@@ -82,7 +60,7 @@ CSerialPortWinBase::~CSerialPortWinBase()
     if (p_buffer)
     {
         delete p_buffer;
-        p_buffer = NULL;
+        p_buffer = nullptr;
     }
 }
 
@@ -106,7 +84,7 @@ void CSerialPortWinBase::init(const char *portName,
     if (p_buffer)
     {
         delete p_buffer;
-        p_buffer = NULL;
+        p_buffer = nullptr;
     }
     p_buffer = new itas109::RingBuffer<char>(m_readBufferSize);
 }
@@ -120,7 +98,7 @@ bool CSerialPortWinBase::openPort()
 
     bool bRet = false;
 
-    TCHAR *tcPortName = NULL;
+    TCHAR *tcPortName = nullptr;
     char portName[256] = "\\\\.\\";                    // support COM10 above \\\\.\\COM10
     itas109::IUtils::strncat(portName, m_portName, 7); // COM254
 
@@ -145,10 +123,10 @@ bool CSerialPortWinBase::openPort()
         m_handle = CreateFile(tcPortName,                   // communication port string (COMX)
                               GENERIC_READ | GENERIC_WRITE, // read/write types
                               0,                            // comm devices must be opened with exclusive access
-                              NULL,                         // no security attributes
+                              nullptr,                      // no security attributes
                               OPEN_EXISTING,                // comm devices must use OPEN_EXISTING
                               dwFlagsAndAttributes,         // Async I/O or sync I/O
-                              NULL);
+                              nullptr);
 
         if (m_handle != INVALID_HANDLE_VALUE)
         {
@@ -342,7 +320,7 @@ void CSerialPortWinBase::commThreadMonitor()
             ClearCommError(m_handle, &dwError, &comstat);
             if (comstat.cbInQue >= m_minByteReadNotify)
             {
-                char *data = NULL;
+                char *data = nullptr;
                 if (comstat.cbInQue <= 4096)
                 {
                     data = dataArray;
@@ -416,7 +394,7 @@ void CSerialPortWinBase::commThreadMonitor()
                     if (isNew)
                     {
                         delete[] data;
-                        data = NULL;
+                        data = nullptr;
                     }
                 }
             }
@@ -472,7 +450,7 @@ int CSerialPortWinBase::readDataWin(void *data, int size)
             m_overlapRead.InternalHigh = 0;
             m_overlapRead.Offset = 0;
             m_overlapRead.OffsetHigh = 0;
-            m_overlapRead.hEvent = CreateEvent(NULL, true, false, NULL);
+            m_overlapRead.hEvent = CreateEvent(nullptr, true, false, nullptr);
 
             if (!ReadFile(m_handle, (void *)data, (DWORD)size, &numBytes, &m_overlapRead))
             {
@@ -491,7 +469,7 @@ int CSerialPortWinBase::readDataWin(void *data, int size)
         }
         else
         {
-            if (ReadFile(m_handle, (void *)data, (DWORD)size, &numBytes, NULL))
+            if (ReadFile(m_handle, (void *)data, (DWORD)size, &numBytes, nullptr))
             {
             }
             else
@@ -529,7 +507,7 @@ int CSerialPortWinBase::readData(void *data, int size)
         }
         else
         {
-            if (ReadFile(m_handle, data, (DWORD)size, &numBytes, NULL))
+            if (ReadFile(m_handle, data, (DWORD)size, &numBytes, nullptr))
             {
             }
             else
@@ -602,7 +580,7 @@ int CSerialPortWinBase::writeData(const void *data, int size)
             m_overlapWrite.InternalHigh = 0;
             m_overlapWrite.Offset = 0;
             m_overlapWrite.OffsetHigh = 0;
-            m_overlapWrite.hEvent = CreateEvent(NULL, true, false, NULL);
+            m_overlapWrite.hEvent = CreateEvent(nullptr, true, false, nullptr);
 
             if (!WriteFile(m_handle, (void *)data, (DWORD)size, &numBytes, &m_overlapWrite))
             {
@@ -621,7 +599,7 @@ int CSerialPortWinBase::writeData(const void *data, int size)
         }
         else
         {
-            if (WriteFile(m_handle, (void *)data, (DWORD)size, &numBytes, NULL))
+            if (WriteFile(m_handle, (void *)data, (DWORD)size, &numBytes, nullptr))
             {
             }
             else

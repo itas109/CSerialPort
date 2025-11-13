@@ -64,6 +64,7 @@
 #define CSERIALPORT_CPP11
 #else
 // not support C++11
+#error "this compiler not support c++11. please update to gcc4.8+ clang3.1+ or msvc2015+"
 #endif
 
 // #ifdef CSERIALPORT_DEBUG

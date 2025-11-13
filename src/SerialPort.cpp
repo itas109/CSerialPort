@@ -20,20 +20,12 @@
 using namespace itas109;
 
 CSerialPort::CSerialPort()
-    : p_serialPortBase(NULL)
+    : CSerialPort("")
 {
-    p_serialPortBase = new CSERIALPORTBASE();
-
-    p_serialPortBase->setReadIntervalTimeout(0);
-    p_serialPortBase->setMinByteReadNotify(1);
-
-    char compilerInfo[1024];
-    itas109::IUtils::getCompilerInfo(compilerInfo, 1024);
-    LOG_INFO("%s, Version: %s", compilerInfo, getVersion());
 }
 
 itas109::CSerialPort::CSerialPort(const char *portName)
-    : p_serialPortBase(NULL)
+    : p_serialPortBase(nullptr)
 {
     p_serialPortBase = new CSERIALPORTBASE(portName);
 
@@ -50,7 +42,7 @@ CSerialPort::~CSerialPort()
     if (p_serialPortBase)
     {
         delete p_serialPortBase;
-        p_serialPortBase = NULL;
+        p_serialPortBase = nullptr;
     }
 }
 

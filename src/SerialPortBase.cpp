@@ -5,17 +5,8 @@
 #include "CSerialPort/SerialPortHotPlug.hpp"
 
 CSerialPortBase::CSerialPortBase()
-    : m_lastError(0)
-    , m_operateMode(itas109::AsynchronousOperate)
-    , m_readIntervalTimeoutMS(50)
-    , m_minByteReadNotify(1)
-    , m_byteReadBufferFullNotify(3276) // 4096*0.8
-    , p_readEvent(NULL)
-    , p_timer(NULL)
-    , p_serialPortHotPlug(NULL)
-    , p_protocolParser(NULL)
+    : CSerialPortBase("")
 {
-    p_timer = new itas109::ITimer<itas109::CSerialPortListener>();
 }
 
 CSerialPortBase::CSerialPortBase(const char *portName)
@@ -24,10 +15,10 @@ CSerialPortBase::CSerialPortBase(const char *portName)
     , m_readIntervalTimeoutMS(50)
     , m_minByteReadNotify(1)
     , m_byteReadBufferFullNotify(3276) // 4096*0.8
-    , p_readEvent(NULL)
-    , p_timer(NULL)
-    , p_serialPortHotPlug(NULL)
-    , p_protocolParser(NULL)
+    , p_readEvent(nullptr)
+    , p_timer(nullptr)
+    , p_serialPortHotPlug(nullptr)
+    , p_protocolParser(nullptr)
 {
     p_timer = new itas109::ITimer<itas109::CSerialPortListener>();
 }
@@ -37,7 +28,7 @@ CSerialPortBase::~CSerialPortBase()
     if (p_timer)
     {
         delete p_timer;
-        p_timer = NULL;
+        p_timer = nullptr;
     }
 }
 
@@ -141,7 +132,7 @@ int CSerialPortBase::connectReadEvent(itas109::CSerialPortListener *event)
 
 int CSerialPortBase::disconnectReadEvent()
 {
-    p_readEvent = NULL;
+    p_readEvent = nullptr;
     return itas109::ErrorOK;
 }
 
@@ -149,7 +140,7 @@ int CSerialPortBase::connectHotPlugEvent(itas109::CSerialPortHotPlugListener *ev
 {
     if (event)
     {
-        if (NULL == p_serialPortHotPlug)
+        if (nullptr == p_serialPortHotPlug)
         {
             p_serialPortHotPlug = new itas109::CSerialPortHotPlug();
         }
@@ -170,7 +161,7 @@ int CSerialPortBase::disconnectHotPlugReadEvent()
         p_serialPortHotPlug->disconnectHotPlugEvent();
 
         delete p_serialPortHotPlug;
-        p_serialPortHotPlug = NULL;
+        p_serialPortHotPlug = nullptr;
 
         return itas109::ErrorOK;
     }

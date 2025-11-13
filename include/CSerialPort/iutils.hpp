@@ -57,7 +57,7 @@ public:
 
     static size_t strlen(const char *str) noexcept
     {
-        // assert(str != NULL);
+        // assert(str != nullptr);
 
         const char *cp = str;
 
@@ -70,7 +70,7 @@ public:
 
     static char *strncpy(char *dest, const char *src, unsigned int count) noexcept
     {
-        // assert(dest != NULL && src != NULL && count != 0);
+        // assert(dest != nullptr && src != nullptr && count != 0);
 
         char *cp = dest;
 
@@ -87,7 +87,7 @@ public:
 
     static char *strncat(char *dest, const char *src, unsigned int count) noexcept
     {
-        // assert(dest != NULL && src != NULL);
+        // assert(dest != nullptr && src != nullptr);
 
         char *cp = dest;
 
@@ -109,7 +109,7 @@ public:
 
     static int strFind(const char *src, const char *str) noexcept
     {
-        // assert(dest != NULL && src != NULL);
+        // assert(dest != nullptr && src != nullptr);
 
         char *cp = (char *)src;
         char *s1, *s2;
@@ -223,21 +223,21 @@ public:
     static char *WCharToNativeMB(char *dest, unsigned int len, const wchar_t *wstr)
     {
         // wide char to native multi byte(ANSI)
-        if (NULL == wstr || NULL == dest || 0 == len)
+        if (nullptr == wstr || nullptr == dest || 0 == len)
         {
-            return NULL;
+            return nullptr;
         }
 
-        int clen = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
+        int clen = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, nullptr, 0, nullptr, nullptr);
         if (clen <= 0 || (unsigned int)clen > len)
         {
-            return NULL;
+            return nullptr;
         }
         // char dest = new char[clen]; // length conatin '\0'
         // ::memset((void *)dest, '\0', clen); // sizeof(char)=1
-        if (0 == ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, dest, clen, NULL, NULL))
+        if (0 == ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, dest, clen, nullptr, nullptr))
         {
-            return NULL;
+            return nullptr;
         }
         // dest[clen-1] = '\0'; // redundant but safe
 
@@ -247,21 +247,21 @@ public:
     static char *WCharToUTF8(char *dest, unsigned int len, const wchar_t *wstr)
     {
         // wide char to UTF8
-        if (NULL == wstr || NULL == dest || 0 == len)
+        if (nullptr == wstr || nullptr == dest || 0 == len)
         {
-            return NULL;
+            return nullptr;
         }
 
-        int clen = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
+        int clen = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, nullptr, 0, nullptr, nullptr);
         if (clen <= 0 || (unsigned int)clen > len)
         {
-            return NULL;
+            return nullptr;
         }
         // char dest = new char[clen]; // length conatin '\0'
         // ::memset((void *)dest, '\0', clen); // sizeof(char)=1
-        if (0 == ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, dest, clen, NULL, NULL))
+        if (0 == ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, dest, clen, nullptr, nullptr))
         {
-            return NULL;
+            return nullptr;
         }
         // dest[clen-1] = '\0'; // redundant but safe
 
@@ -271,21 +271,21 @@ public:
     static wchar_t *NativeMBToWChar(wchar_t *dest, unsigned int len, const char *str)
     {
         // native multi byte(ANSI) to wide char
-        if (NULL == str || NULL == dest || 0 == len)
+        if (nullptr == str || nullptr == dest || 0 == len)
         {
-            return NULL;
+            return nullptr;
         }
 
-        int wlen = ::MultiByteToWideChar(CP_ACP, 0, str, -1, NULL, 0);
+        int wlen = ::MultiByteToWideChar(CP_ACP, 0, str, -1, nullptr, 0);
         if (wlen <= 0 || (unsigned int)wlen > len)
         {
-            return NULL;
+            return nullptr;
         }
         // wchar_t*  dest = new wchar_t[wlen]; // length conatin '\0'
         // ::memset((void *)dest, '\0', wlen * sizeof(wchar_t)); // sizeof(wchar_t)=2
         if (0 == ::MultiByteToWideChar(CP_ACP, 0, str, -1, dest, wlen))
         {
-            return NULL;
+            return nullptr;
         }
         // dest[wlen-1] = '\0'; // redundant but safe
 
@@ -295,21 +295,21 @@ public:
     static wchar_t *UTF8ToWChar(wchar_t *dest, unsigned int len, const char *str)
     {
         // UTF8 to wide char
-        if (NULL == str || NULL == dest || 0 == len)
+        if (nullptr == str || nullptr == dest || 0 == len)
         {
-            return NULL;
+            return nullptr;
         }
 
-        int wlen = ::MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
+        int wlen = ::MultiByteToWideChar(CP_UTF8, 0, str, -1, nullptr, 0);
         if (wlen <= 0 || (unsigned int)wlen > len)
         {
-            return NULL;
+            return nullptr;
         }
         // wchar_t*  dest = new wchar_t[wlen]; // length conatin '\0'
         // ::memset((void *)dest, '\0', wlen * sizeof(wchar_t)); // sizeof(wchar_t)=2
         if (0 == ::MultiByteToWideChar(CP_UTF8, 0, str, -1, dest, wlen))
         {
-            return NULL;
+            return nullptr;
         }
         // dest[wlen-1] = '\0'; // redundant but safe
 
@@ -319,7 +319,7 @@ public:
 
     static char *charToHexStr(char *dest, const char *src, unsigned int count) noexcept
     {
-        // assert(dest != NULL && src != NULL);
+        // assert(dest != nullptr && src != nullptr);
 
         static constexpr char hexTable[17] = "0123456789ABCDEF";
 
@@ -335,9 +335,9 @@ public:
 
     static char *getOperatingSystemName(char *osName, unsigned int len) noexcept
     {
-        if (NULL == osName)
+        if (nullptr == osName)
         {
-            return NULL;
+            return nullptr;
         }
 
 #if defined(__APPLE__)
@@ -360,9 +360,9 @@ public:
 
     static char *getProductName(char *productName, unsigned int len)
     {
-        if (NULL == productName)
+        if (nullptr == productName)
         {
-            return NULL;
+            return nullptr;
         }
 
 #if defined(__APPLE__)
@@ -382,7 +382,7 @@ public:
             TCHAR currentVersion[10];
             currentVersion[0] = '\0';
 
-            RegQueryValueEx(hKey, _T("CurrentVersion"), NULL, NULL, (BYTE *)currentVersion, &size);
+            RegQueryValueEx(hKey, _T("CurrentVersion"), nullptr, nullptr, (BYTE *)currentVersion, &size);
 
 #ifdef UNICODE
             char currentVersionChar[10];
@@ -393,7 +393,7 @@ public:
 #endif
 
             RegCloseKey(hKey);
-            hKey = NULL;
+            hKey = nullptr;
         }
 
         // IsWindowsServer()
@@ -438,7 +438,7 @@ public:
 #elif defined(__linux__)
         char prettyName[256] = "Linux";
         FILE *fp = fopen("/etc/os-release", "r");
-        if (NULL != fp)
+        if (nullptr != fp)
         {
             char line[256];
 
@@ -449,7 +449,7 @@ public:
                     // PRETTY_NAME="Ubuntu 22.04.2 LTS" PRETTY_NAME="CentOS Linux 7 (Core)"
                     // strScan(line, "PRETTY_NAME=\"%[^\"]\"", &prettyName); // orangerv2 Noble g++13 crash
                     char *start = line + 13;
-                    char *end = NULL;
+                    char *end = nullptr;
                     end = strchr(start, '"');
                     int count = end - start + 1;
                     if (end && count < len)
@@ -480,7 +480,7 @@ public:
 
 #if defined(__APPLE__)
         size_t size = sizeof(numOfProcessors);
-        sysctlbyname("hw.ncpu", &numOfProcessors, &size, NULL, 0);
+        sysctlbyname("hw.ncpu", &numOfProcessors, &size, nullptr, 0);
 #elif defined(__ANDROID__)
         numOfProcessors = sysconf(_SC_NPROCESSORS_ONLN);
 #elif defined(_WIN32)
@@ -491,7 +491,7 @@ public:
         numOfProcessors = sysconf(_SC_NPROCESSORS_ONLN);
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
         size_t size = sizeof(numOfProcessors);
-        sysctlbyname("hw.ncpu", &numOfProcessors, &size, NULL, 0);
+        sysctlbyname("hw.ncpu", &numOfProcessors, &size, nullptr, 0);
 #elif defined(__unix__)
         numOfProcessors = sysconf(_SC_NPROCESSORS_ONLN);
 #else
@@ -502,9 +502,9 @@ public:
 
     static char *getArchitectureName(char *archName, unsigned int len) noexcept
     {
-        if (NULL == archName)
+        if (nullptr == archName)
         {
-            return NULL;
+            return nullptr;
         }
 
         // https://sourceforge.net/p/predef/wiki/Home/
@@ -530,9 +530,9 @@ public:
 
     static char *getCompilerName(char *compilerName, unsigned int len) noexcept
     {
-        if (NULL == compilerName)
+        if (nullptr == compilerName)
         {
-            return NULL;
+            return nullptr;
         }
 #if defined(__clang__)
         strFormat(compilerName, len, "clang(%d.%d.%d)", __clang_major__, __clang_minor__, __clang_patchlevel__);

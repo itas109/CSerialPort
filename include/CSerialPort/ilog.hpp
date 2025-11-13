@@ -185,7 +185,7 @@ private:
         msec = (uli.QuadPart % 10000000) / 10000;
 #else
         struct timeval now;
-        gettimeofday(&now, NULL);
+        gettimeofday(&now, nullptr);
         ltm = *localtime(&now.tv_sec);
         msec = now.tv_usec / 1000;
 #endif

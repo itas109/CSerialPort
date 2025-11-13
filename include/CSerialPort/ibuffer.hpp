@@ -10,8 +10,8 @@
 #ifndef __I_BUFFER_HPP__
 #define __I_BUFFER_HPP__
 
-#include <memory>  // 添加std::unique_ptr支持
-#include <cstring> // 添加memcpy支持(C++11)
+#include <memory>  // std::unique_ptr
+#include <cstring> // memcpy
 
 static unsigned int nextPowerOf2(unsigned int num)
 {
@@ -77,12 +77,7 @@ public:
      *
      */
     RingBuffer()
-        : m_readMirrorIndex{0}
-        , m_writeMirrotIndex{0}
-        , m_maxBufferSize{4096} ///< must power of two
-        , m_mask{m_maxBufferSize - 1}
-        , m_maxMirrorBufferIndex{2 * m_maxBufferSize - 1}
-        , m_buffer{new T[m_maxBufferSize]}
+        : RingBuffer{4096}
     {
     }
 
@@ -294,12 +289,7 @@ class RingBuffer<char> : public Buffer<char>
 {
 public:
     RingBuffer()
-        : m_readMirrorIndex{0}
-        , m_writeMirrotIndex{0}
-        , m_maxBufferSize{4096} ///< must power of two
-        , m_mask{m_maxBufferSize - 1}
-        , m_maxMirrorBufferIndex{2 * m_maxBufferSize - 1}
-        , m_buffer{new char[m_maxBufferSize]}
+        : RingBuffer{4096}
     {
     }
 

@@ -39,7 +39,7 @@ bool enumDetailsSerialPorts(std::vector<itas109::SerialPortInfo> &portInfoList)
     // Return only devices that are currently present in a system
     // The GUID_DEVINTERFACE_COMPORT device interface class is defined for COM ports. GUID
     // {86E0D1E0-8089-11D0-9CE4-08003E301F73}
-    hDevInfo = SetupDiGetClassDevs(&GUID_DEVINTERFACE_COMPORT, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+    hDevInfo = SetupDiGetClassDevs(&GUID_DEVINTERFACE_COMPORT, nullptr, nullptr, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
 
     if (INVALID_HANDLE_VALUE != hDevInfo)
     {
@@ -55,17 +55,17 @@ bool enumDetailsSerialPorts(std::vector<itas109::SerialPortInfo> &portInfoList)
             if (INVALID_HANDLE_VALUE != hDevKey)
             {
                 DWORD dwCount = 255; // DEV_NAME_MAX_LEN
-                RegQueryValueEx(hDevKey, _T("PortName"), NULL, NULL, (BYTE *)portName, &dwCount);
+                RegQueryValueEx(hDevKey, _T("PortName"), nullptr, nullptr, (BYTE *)portName, &dwCount);
                 RegCloseKey(hDevKey);
             }
 
             // get hardware id
             TCHAR hardwareId[256] = {0};
-            SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_HARDWAREID, NULL, (PBYTE)hardwareId, sizeof(hardwareId), NULL);
+            SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_HARDWAREID, nullptr, (PBYTE)hardwareId, sizeof(hardwareId), nullptr);
 
             // get friendly name
             TCHAR friendlyName[256] = {0};
-            SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, NULL, (PBYTE)friendlyName, sizeof(friendlyName), NULL);
+            SetupDiGetDeviceRegistryProperty(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, nullptr, (PBYTE)friendlyName, sizeof(friendlyName), nullptr);
 
             itas109::SerialPortInfo m_serialPortInfo;
 #ifdef UNICODE
