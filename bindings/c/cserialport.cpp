@@ -309,17 +309,6 @@ int CSerialPortReadAllData(i_handle_t handle, void *data)
     return -1;
 }
 
-int CSerialPortReadLineData(i_handle_t handle, void *data, int size)
-{
-    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
-    if (pCSP)
-    {
-        return pCSP->readLineData(data, size);
-    }
-
-    return -1;
-}
-
 int CSerialPortWriteData(i_handle_t handle, const void *data, int size)
 {
     itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);

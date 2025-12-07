@@ -138,8 +138,6 @@ extern "C"
 
     C_DLL_EXPORT int CSerialPortReadAllData(i_handle_t handle, void *data);
 
-    C_DLL_EXPORT int CSerialPortReadLineData(i_handle_t handle, void *data, int size);
-
     C_DLL_EXPORT int CSerialPortWriteData(i_handle_t handle, const void *data, int size);
 
     C_DLL_EXPORT void CSerialPortSetDebugModel(i_handle_t handle, int isDebug);

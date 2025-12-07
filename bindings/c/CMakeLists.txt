@@ -42,6 +42,12 @@ if (WIN32)
 elseif (UNIX)
     list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortInfoUnixBase.cpp ${CSerialPortRootPath}/src/SerialPortUnixBase.cpp)
 endif ()
+if (CSERIALPORT_ENABLE_NATIVE_SYNC)
+    # TODO
+else()
+    list(APPEND CSerialPortHeaderFiles ${CSerialPortRootPath}/include/CSerialPort/SerialPortAsyncBase.h)
+    list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortAsyncBase.cpp)
+endif ()
 
 add_library(${PROJECT_NAME} SHARED cserialport.cpp ${CSerialPortSourceFiles})
 
