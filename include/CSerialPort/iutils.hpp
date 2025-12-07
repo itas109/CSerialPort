@@ -18,6 +18,15 @@
 #define STRINGIFY(x) #x
 #define MACRO_TO_STRING(x) STRINGIFY(x)
 
+// vs2013 not support noexcept
+#if defined(_MSC_VER)
+#if 1800 == _MSC_VER
+#define NOEXCEPT
+#else
+#define NOEXCEPT noexcept
+#endif
+#endif
+
 // get cpu cores headers
 #if defined(__APPLE__)
 #include <sys/sysctl.h> // sysctlbyname
@@ -68,7 +77,7 @@ public:
         return (cp - str - 1);
     }
 
-    static char *strncpy(char *dest, const char *src, unsigned int count) noexcept
+    static char *strncpy(char *dest, const char *src, unsigned int count) NOEXCEPT
     {
         // assert(dest != nullptr && src != nullptr && count != 0);
 
@@ -85,7 +94,7 @@ public:
         return (dest);
     }
 
-    static char *strncat(char *dest, const char *src, unsigned int count) noexcept
+    static char *strncat(char *dest, const char *src, unsigned int count) NOEXCEPT
     {
         // assert(dest != nullptr && src != nullptr);
 
@@ -107,7 +116,7 @@ public:
         return (dest);
     }
 
-    static int strFind(const char *src, const char *str) noexcept
+    static int strFind(const char *src, const char *str) NOEXCEPT
     {
         // assert(dest != nullptr && src != nullptr);
 
@@ -136,7 +145,7 @@ public:
         return -1;
     }
 
-    static char *strUpper(char *str) noexcept
+    static char *strUpper(char *str) NOEXCEPT
     {
         char *cp = str;
         for (; *str != '\0'; str++)
@@ -149,7 +158,7 @@ public:
         return cp;
     }
 
-    static char *strLower(char *str) noexcept
+    static char *strLower(char *str) NOEXCEPT
     {
         char *cp = str;
         for (; *str != '\0'; str++)
@@ -317,23 +326,23 @@ public:
     }
 #endif
 
-    static char *charToHexStr(char *dest, const char *src, unsigned int count) noexcept
+    static char *charToHexStr(char *dest, const char *src, unsigned int len) NOEXCEPT
     {
         // assert(dest != nullptr && src != nullptr);
 
-        static constexpr char hexTable[17] = "0123456789ABCDEF";
+        static const char hexTable[17] = "0123456789ABCDEF";
 
-        for (unsigned int i = 0; i < count; ++i)
+        for (unsigned int i = 0; i < len; ++i)
         {
-            dest[i * 2] = hexTable[(unsigned char)src[i] / 16];
-            dest[i * 2 + 1] = hexTable[(unsigned char)src[i] % 16];
+            dest[i * 2] = hexTable[(src[i] >> 4) & 0x0F]; // (unsigned char)src[i] / 16
+            dest[i * 2 + 1] = hexTable[src[i] & 0x0F]; // (unsigned char)src[i] % 16
         }
-        dest[count * 2] = '\0';
+        dest[len * 2] = '\0';
 
         return (dest);
     }
 
-    static char *getOperatingSystemName(char *osName, unsigned int len) noexcept
+    static char *getOperatingSystemName(char *osName, unsigned int len) NOEXCEPT
     {
         if (nullptr == osName)
         {
@@ -500,7 +509,7 @@ public:
         return numOfProcessors;
     }
 
-    static char *getArchitectureName(char *archName, unsigned int len) noexcept
+    static char *getArchitectureName(char *archName, unsigned int len) NOEXCEPT
     {
         if (nullptr == archName)
         {
@@ -528,7 +537,7 @@ public:
         return archName;
     }
 
-    static char *getCompilerName(char *compilerName, unsigned int len) noexcept
+    static char *getCompilerName(char *compilerName, unsigned int len) NOEXCEPT
     {
         if (nullptr == compilerName)
         {
@@ -588,13 +597,13 @@ public:
         return compilerName;
     }
 
-    static int getApplicationBit() noexcept
+    static int getApplicationBit() NOEXCEPT
     {
         static int bit = (8 == sizeof(char *)) ? 64 : 32;
         return bit;
     }
 
-    static long getCppStdVersion() noexcept
+    static long getCppStdVersion() NOEXCEPT
     {
 #if defined(_MSVC_LANG)
         return _MSVC_LANG;
@@ -603,7 +612,7 @@ public:
 #endif
     }
 
-    static char *getBindingLanguage(char *bindingLanguage, unsigned int len) noexcept
+    static char *getBindingLanguage(char *bindingLanguage, unsigned int len) NOEXCEPT
     {
 #ifdef CSERIALPORT_BINDING_LANGUAGE
         strncpy(bindingLanguage, MACRO_TO_STRING(CSERIALPORT_BINDING_LANGUAGE), len);
