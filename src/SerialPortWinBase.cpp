@@ -27,7 +27,8 @@ CSerialPortWinBase::CSerialPortWinBase()
 }
 
 CSerialPortWinBase::CSerialPortWinBase(const char *portName)
-    : m_baudRate(itas109::BaudRate9600)
+    : CSerialPortAsyncBase(portName)
+    , m_baudRate(itas109::BaudRate9600)
     , m_parity(itas109::ParityNone)
     , m_dataBits(itas109::DataBits8)
     , m_stopbits(itas109::StopOne)

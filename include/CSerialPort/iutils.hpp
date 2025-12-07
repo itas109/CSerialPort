@@ -19,12 +19,10 @@
 #define MACRO_TO_STRING(x) STRINGIFY(x)
 
 // vs2013 not support noexcept
-#if defined(_MSC_VER)
-#if 1800 == _MSC_VER
+#if defined(_MSC_VER) && (1800 == _MSC_VER)
 #define NOEXCEPT
 #else
 #define NOEXCEPT noexcept
-#endif
 #endif
 
 // get cpu cores headers

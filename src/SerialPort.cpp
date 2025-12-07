@@ -6,6 +6,9 @@
 #include "CSerialPort/itimer.hpp"
 #include "CSerialPort/ilog.hpp"
 
+#if defined(CSERIALPORT_NATIVE_SYNC)
+#define CSERIALPORTBASE // TODO
+#else
 #ifdef I_OS_WIN
 #include "CSerialPort/SerialPortWinBase.h"
 #define CSERIALPORTBASE CSerialPortWinBase
@@ -16,6 +19,7 @@
 // Not support
 #define CSERIALPORTBASE
 #endif // I_OS_WIN
+#endif // CSERIALPORT_NATIVE_SYNC
 
 using namespace itas109;
 
@@ -100,6 +104,44 @@ bool itas109::CSerialPort::isOpen()
     }
 }
 
+int itas109::CSerialPort::readData(void *data, int size)
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->readData(data, size);
+    }
+    else
+    {
+        return itas109::ErrorNullPointer;
+    }
+}
+
+int itas109::CSerialPort::readAllData(void *data)
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->readAllData(data);
+    }
+    else
+    {
+        return itas109::ErrorNullPointer;
+    }
+}
+
+int itas109::CSerialPort::writeData(const void *data, int size)
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->writeData(data, size);
+    }
+    else
+    {
+        return itas109::ErrorNullPointer;
+    }
+}
+
+#if !defined(CSERIALPORT_NATIVE_SYNC)
+
 int itas109::CSerialPort::connectReadEvent(itas109::CSerialPortListener *event)
 {
     if (p_serialPortBase)
@@ -160,6 +202,44 @@ int itas109::CSerialPort::setProtocolParser(itas109::IProtocolParser *parser)
     }
 }
 
+void itas109::CSerialPort::setReadIntervalTimeout(unsigned int msecs)
+{
+    if (p_serialPortBase)
+    {
+        p_serialPortBase->setReadIntervalTimeout(msecs);
+    }
+}
+
+unsigned int itas109::CSerialPort::getReadIntervalTimeout()
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->getReadIntervalTimeout();
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+void CSerialPort::setMinByteReadNotify(unsigned int minByteReadNotify)
+{
+    if (p_serialPortBase)
+    {
+        p_serialPortBase->setMinByteReadNotify(minByteReadNotify);
+    }
+}
+
+void CSerialPort::setByteReadBufferFullNotify(unsigned int byteReadBufferFullNotify)
+{
+    if (p_serialPortBase)
+    {
+        p_serialPortBase->setByteReadBufferFullNotify(byteReadBufferFullNotify);
+    }
+}
+
+#endif
+
 unsigned int itas109::CSerialPort::getReadBufferUsedLen()
 {
     if (p_serialPortBase)
@@ -172,67 +252,11 @@ unsigned int itas109::CSerialPort::getReadBufferUsedLen()
     }
 }
 
-int itas109::CSerialPort::readData(void *data, int size)
-{
-    if (p_serialPortBase)
-    {
-        return p_serialPortBase->readData(data, size);
-    }
-    else
-    {
-        return itas109::ErrorNullPointer;
-    }
-}
-
-int itas109::CSerialPort::readAllData(void *data)
-{
-    if (p_serialPortBase)
-    {
-        return p_serialPortBase->readAllData(data);
-    }
-    else
-    {
-        return itas109::ErrorNullPointer;
-    }
-}
-
-int itas109::CSerialPort::readLineData(void *data, int size)
-{
-    if (p_serialPortBase)
-    {
-        return p_serialPortBase->readLineData(data, size);
-    }
-    else
-    {
-        return itas109::ErrorNullPointer;
-    }
-}
-
-int itas109::CSerialPort::writeData(const void *data, int size)
-{
-    if (p_serialPortBase)
-    {
-        return p_serialPortBase->writeData(data, size);
-    }
-    else
-    {
-        return itas109::ErrorNullPointer;
-    }
-}
-
 void itas109::CSerialPort::setDebugModel(bool isDebug)
 {
     if (p_serialPortBase)
     {
         p_serialPortBase->setDebugModel(isDebug);
-    }
-}
-
-void itas109::CSerialPort::setReadIntervalTimeout(unsigned int msecs)
-{
-    if (p_serialPortBase)
-    {
-        p_serialPortBase->setReadIntervalTimeout(msecs);
     }
 }
 
@@ -269,33 +293,6 @@ bool itas109::CSerialPort::flushWriteBuffers()
     else
     {
         return false;
-    }
-}
-unsigned int itas109::CSerialPort::getReadIntervalTimeout()
-{
-    if (p_serialPortBase)
-    {
-        return p_serialPortBase->getReadIntervalTimeout();
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-void CSerialPort::setMinByteReadNotify(unsigned int minByteReadNotify)
-{
-    if (p_serialPortBase)
-    {
-        p_serialPortBase->setMinByteReadNotify(minByteReadNotify);
-    }
-}
-
-void CSerialPort::setByteReadBufferFullNotify(unsigned int byteReadBufferFullNotify)
-{
-    if (p_serialPortBase)
-    {
-        p_serialPortBase->setByteReadBufferFullNotify(byteReadBufferFullNotify);
     }
 }
 

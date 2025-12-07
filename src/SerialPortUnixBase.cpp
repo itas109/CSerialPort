@@ -53,7 +53,8 @@ CSerialPortUnixBase::CSerialPortUnixBase()
 }
 
 CSerialPortUnixBase::CSerialPortUnixBase(const char *portName)
-    : fd(-1)
+    : CSerialPortAsyncBase(portName)
+    , fd(-1)
     , m_baudRate(itas109::BaudRate9600)
     , m_parity(itas109::ParityNone)
     , m_dataBits(itas109::DataBits8)

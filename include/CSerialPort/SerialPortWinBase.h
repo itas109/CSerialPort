@@ -17,7 +17,7 @@
 
 #include "ithread.hpp"
 #include "ibuffer.hpp"
-#include "SerialPortBase.h"
+#include "SerialPortAsyncBase.h"
 #include <thread>
 
 #include "windows.h"
@@ -36,7 +36,7 @@
  * 8. 重写windows下ReadFile、WriteFile \n
  * @warning More than one character can trigger read event 注意：只有超过一个字符才能出发接收事件
  */
-class CSerialPortWinBase : public CSerialPortBase
+class CSerialPortWinBase : public CSerialPortAsyncBase
 {
 public:
     /**

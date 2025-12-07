@@ -15,16 +15,18 @@
 #define __CSERIALPORT_H__
 
 #include "SerialPort_global.h"
+
+#if defined(CSERIALPORT_NATIVE_SYNC)
+class CSerialPortBase;
+#else
 #include "SerialPortListener.h"
 
+class CSerialPortAsyncBase;
 namespace itas109
 {
-template <class T>
-class ITimer;
 class IProtocolParser;
 } // namespace itas109
-
-class CSerialPortBase;
+#endif
 
 namespace itas109
 {
@@ -40,12 +42,14 @@ public:
      *
      */
     CSerialPort();
+
     /**
      * @brief Construct a new CSerialPort object 通过串口名称构造函数
      *
      * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
      */
     CSerialPort(const char *portName);
+
     /**
      * @brief Destroy the CSerialPort object 析构函数
      *
@@ -86,6 +90,7 @@ public:
      * @retval false open failed 打开失败
      */
     bool open();
+
     /**
      * @brief close 关闭串口
      *
@@ -101,6 +106,38 @@ public:
      */
     bool isOpen();
 
+    /**
+     * @brief read specified length data 读取指定长度数据
+     *
+     * @param data [out] read data result 读取结果
+     * @param size [in] read length 读取长度
+     * @return return number Of bytes read 返回读取字节数
+     * @retval -1 read error 读取错误
+     * @retval [other] return number Of bytes read 返回读取字节数
+     */
+    int readData(void *data, int size);
+    /**
+     * @brief read all data 读取所有数据
+     *
+     * @param data [out] read data result 读取结果
+     * @return return number Of bytes read 返回读取字节数
+     * @retval -1 read error 读取错误
+     * @retval [other] return number Of bytes read 返回读取字节数
+     */
+    int readAllData(void *data);
+
+    /**
+     * @brief write specified lenfth data 写入指定长度数据
+     *
+     * @param data [in] write data 待写入数据
+     * @param size [in] wtite length 写入长度
+     * @return return number Of bytes write 返回写入字节数
+     * @retval -1 read error 写入错误
+     * @retval [other] return number Of bytes write 返回写入字节数
+     */
+    int writeData(const void *data, int size);
+
+#if !defined(CSERIALPORT_NATIVE_SYNC)
     /**
      * @brief connect read event 连接读取事件
      *
@@ -149,61 +186,7 @@ public:
      */
     int setProtocolParser(itas109::IProtocolParser *parser);
 
-    /**
-     * @brief get used length of buffer 获取读取缓冲区已使用大小
-     *
-     * @return return used length of buffer 返回读取缓冲区已使用大小
-     */
-    unsigned int getReadBufferUsedLen();
-
-    /**
-     * @brief read specified length data 读取指定长度数据
-     *
-     * @param data [out] read data result 读取结果
-     * @param size [in] read length 读取长度
-     * @return return number Of bytes read 返回读取字节数
-     * @retval -1 read error 读取错误
-     * @retval [other] return number Of bytes read 返回读取字节数
-     */
-    int readData(void *data, int size);
-    /**
-     * @brief read all data 读取所有数据
-     *
-     * @param data [out] read data result 读取结果
-     * @return return number Of bytes read 返回读取字节数
-     * @retval -1 read error 读取错误
-     * @retval [other] return number Of bytes read 返回读取字节数
-     */
-    int readAllData(void *data);
-    /**
-     * @brief read line data 读取一行字符串
-     * @todo Not implemented 未实现
-     *
-     * @param data
-     * @param size
-     * @return int
-     */
-    int readLineData(void *data, int size);
-    /**
-     * @brief write specified lenfth data 写入指定长度数据
-     *
-     * @param data [in] write data 待写入数据
-     * @param size [in] wtite length 写入长度
-     * @return return number Of bytes write 返回写入字节数
-     * @retval -1 read error 写入错误
-     * @retval [other] return number Of bytes write 返回写入字节数
-     */
-    int writeData(const void *data, int size);
-
-    /**
-     * @brief Set Debug Model 设置调试模式
-     * @details output serial port read and write details info 输出串口读写的详细信息
-     * @todo  Not implemented 未实现
-     *
-     * @param isDebug true if enable true为启用
-     */
-    void setDebugModel(bool isDebug);
-
+    
     /**
      * @brief Set Read Interval Timeout millisecond
      * @details use timer import effectiveness 使用定时器提高效率
@@ -230,6 +213,23 @@ public:
      * @param byteReadBufferFullNotify byte of read buffer full notify 读取通知触发缓冲区字节数
      */
     void setByteReadBufferFullNotify(unsigned int byteReadBufferFullNotify);
+#endif
+
+    /**
+     * @brief get used length of buffer 获取读取缓冲区已使用大小
+     *
+     * @return return used length of buffer 返回读取缓冲区已使用大小
+     */
+    unsigned int getReadBufferUsedLen();
+
+    /**
+     * @brief Set Debug Model 设置调试模式
+     * @details output serial port read and write details info 输出串口读写的详细信息
+     * @todo  Not implemented 未实现
+     *
+     * @param isDebug true if enable true为启用
+     */
+    void setDebugModel(bool isDebug);
 
     /**
      * @brief flush buffers after write 等待发送完成后刷新缓冲区
@@ -389,7 +389,11 @@ public:
     const char *getVersion();
 
 private:
+#if defined(CSERIALPORT_NATIVE_SYNC)
     CSerialPortBase *p_serialPortBase;
+#else
+    CSerialPortAsyncBase *p_serialPortBase;
+#endif
 };
 } // namespace itas109
 #endif //__CSERIALPORT_H__

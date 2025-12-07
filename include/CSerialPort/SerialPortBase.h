@@ -10,25 +10,13 @@
  * You may use, copy, modify, and distribute the CSerialPort, under the terms \n
  * of the LICENSE file.
  */
-#ifndef __CSERIALPORTBASE_H__
-#define __CSERIALPORTBASE_H__
+#ifndef __CSERIALPORT_BASE_H__
+#define __CSERIALPORT_BASE_H__
 
 #include "SerialPort_global.h"
-#include "ithread.hpp"
-
-namespace itas109
-{
-// class IMutex;
-class CSerialPortListener;
-class CSerialPortHotPlugListener;
-class CSerialPortHotPlug;
-template <class T>
-class ITimer;
-class IProtocolParser;
-} // namespace itas109
 
 /**
- * @brief the CSerialPort Base class 串口基类
+ * @brief the CSerialPort Native Sync Base class 串口基类
  *
  */
 class CSerialPortBase
@@ -39,12 +27,14 @@ public:
      *
      */
     CSerialPortBase();
+
     /**
      * @brief Construct a new CSerialPortBase object 通过串口名称构造函数
      *
      * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
      */
     CSerialPortBase(const char *portName);
+
     /**
      * @brief Destroy the CSerialPortBase object 析构函数
      *
@@ -85,6 +75,7 @@ public:
      * @retval false open failed 打开失败
      */
     virtual bool openPort() = 0;
+
     /**
      * @brief close 关闭串口
      *
@@ -99,54 +90,6 @@ public:
      * @retval false serial port open failed 串口打开失败
      */
     virtual bool isOpen() = 0;
-
-    /**
-     * @brief connect read event 连接读取事件
-     *
-     * @param event [in] serial port listener 串口监听事件类
-     * @return return connect status 返回连接状态
-     * @retval 0 success 成功
-     * @retval 14 invalid parameter error 无效的参数
-     */
-    int connectReadEvent(itas109::CSerialPortListener *event);
-
-    /**
-     * @brief disconnect read event 断开连接读取事件
-     *
-     * @return return disconnect status 返回断开连接状态
-     * @retval 0 success 成功
-     * @retval [other] failed 失败
-     */
-    int disconnectReadEvent();
-
-    /**
-     * @brief connect hot plug event 连接串口热插拔事件
-     *
-     * @param event [in] serial port hot plug listener 串口热插拔事件类
-     * @return return connect status 返回连接状态
-     * @retval 0 success 成功
-     * @retval 14 invalid parameter error 无效的参数
-     */
-    int connectHotPlugEvent(itas109::CSerialPortHotPlugListener *event);
-
-    /**
-     * @brief disconnect hot plug event 断开串口热插拔事件
-     *
-     * @return return disconnect status 返回断开串口热插拔状态
-     * @retval 0 success 成功
-     * @retval [other] failed 失败
-     */
-    int disconnectHotPlugReadEvent();
-
-    /**
-     * @brief set protocol parser 设置协议解析器
-     *
-     * @param parser [in] protocol parser 协议解析器
-     * @return return set status 返回设置状态
-     * @retval 0 success 成功
-     * @retval 14 invalid parameter error 无效的参数
-     */
-    int setProtocolParser(itas109::IProtocolParser *parser);
 
     /**
      * @brief get used length of buffer 获取读取缓冲区已使用大小
@@ -165,6 +108,7 @@ public:
      * @retval [other] return number Of bytes read 返回读取字节数
      */
     virtual int readData(void *data, int size) = 0;
+
     /**
      * @brief read all data 读取所有数据
      *
@@ -174,15 +118,7 @@ public:
      * @retval [other] return number Of bytes read 返回读取字节数
      */
     virtual int readAllData(void *data) = 0;
-    /**
-     * @brief read line data 读取一行字符串
-     * @todo Not implemented 未实现
-     *
-     * @param data
-     * @param size
-     * @return int
-     */
-    virtual int readLineData(void *data, int size) = 0;
+
     /**
      * @brief write specified lenfth data 写入指定长度数据
      *
@@ -201,45 +137,6 @@ public:
      * @param isDebug true if enable true为启用
      */
     virtual void setDebugModel(bool isDebug) = 0;
-
-    /**
-     * @brief Set Read Interval Timeout millisecond
-     * @details use timer import effectiveness 使用定时器提高效率
-     *
-     * @param msecs read time timeout millisecond 读取间隔时间，单位：毫秒
-     */
-    virtual void setReadIntervalTimeout(unsigned int msecs) = 0;
-
-    /**
-     * @brief Get Read Interval Timeout millisecond
-     *
-     * @return read time timeout millisecond 读取间隔时间，单位：毫秒
-     */
-    virtual unsigned int getReadIntervalTimeout();
-
-    /**
-     * @brief setMinByteReadNotify set minimum byte of read notify 设置读取通知触发最小字节数
-     * @param minByteReadNotify minimum byte of read notify 读取通知触发最小字节数
-     */
-    virtual void setMinByteReadNotify(unsigned int minByteReadNotify) = 0;
-
-    /**
-     * @brief getMinByteReadNotify get minimum byte of read notify 获取读取通知触发最小字节数
-     * @return minimum byte of read notify 读取通知触发最小字节数
-     */
-    virtual unsigned int getMinByteReadNotify();
-
-    /**
-     * @brief setByteReadBufferFullNotify set byte of read buffer full notify 设置读取通知触发缓冲区字节数
-     * @param byteReadBufferFullNotify byte of read buffer full notify 读取通知触发缓冲区字节数
-     */
-    virtual void setByteReadBufferFullNotify(unsigned int byteReadBufferFullNotify);
-
-    /**
-     * @brief getByteReadBufferFullNotify get byte of read buffer full notify 获取读取通知触发缓冲区字节数
-     * @return byte of read buffer full notify 读取通知触发缓冲区字节数
-     */
-    virtual unsigned int getByteReadBufferFullNotify();
 
     /**
      * @brief flush buffers after write 等待发送完成后刷新缓冲区
@@ -274,12 +171,14 @@ public:
      * @return return last error code, refrence {@link itas109::SerialPortError} 错误代码
      */
     virtual int getLastError() const;
+
     /**
      * @brief Get the Last Error Code Message 获取错误码信息
      *
      * @return return last error code message 返回错误码信息
      */
     virtual const char *getLastErrorMsg() const;
+
     /**
      * @brief clear error 清除错误信息
      *
@@ -292,6 +191,7 @@ public:
      * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
      */
     virtual void setPortName(const char *portName) = 0;
+
     /**
      * @brief Get the Port Name object 获取串口名称
      *
@@ -305,6 +205,7 @@ public:
      * @param baudRate [in] the baudRate 波特率
      */
     virtual void setBaudRate(int baudRate) = 0;
+
     /**
      * @brief Get the Baud Rate object 获取波特率
      *
@@ -318,6 +219,7 @@ public:
      * @param parity [in] the parity 校验位 {@link itas109::Parity}
      */
     virtual void setParity(itas109::Parity parity) = 0;
+
     /**
      * @brief Get the Parity object 获取校验位
      *
@@ -331,6 +233,7 @@ public:
      * @param dataBits [in] the dataBits 数据位 {@link itas109::DataBits}
      */
     virtual void setDataBits(itas109::DataBits dataBits) = 0;
+
     /**
      * @brief Get the Data Bits object 获取数据位
      *
@@ -344,6 +247,7 @@ public:
      * @param stopbits [in] the stopbits 停止位 {@link itas109::StopBits}
      */
     virtual void setStopBits(itas109::StopBits stopbits) = 0;
+
     /**
      * @brief Get the Stop Bits object 获取停止位
      *
@@ -357,6 +261,7 @@ public:
      * @param flowControl [in]
      */
     virtual void setFlowControl(itas109::FlowControl flowControl) = 0;
+
     /**
      * @brief Get the Flow Control object 获取流控制
      *
@@ -370,6 +275,7 @@ public:
      * @param size [in] read buffer size 读取缓冲区大小
      */
     virtual void setReadBufferSize(unsigned int size) = 0;
+
     /**
      * @brief Get the Read Buffer Size object 获取读取缓冲区大小
      *
@@ -383,6 +289,7 @@ public:
      * @param set [in]
      */
     virtual void setDtr(bool set = true) = 0;
+
     /**
      * @brief Set the Rts object 设置RTS
      *
@@ -391,19 +298,10 @@ public:
     virtual void setRts(bool set = true) = 0;
 
 protected:
-    int m_lastError;                                        ///< last error code 最后的错误代码
-    itas109::OperateMode m_operateMode;                     ///< operate mode 串口操作类型
-    unsigned int m_readIntervalTimeoutMS;                   ///< read time timeout millisecond 读取间隔时间，单位：毫秒
-    unsigned int m_minByteReadNotify;                       ///< minimum byte of read notify 读取通知触发最小字节数
-    unsigned int m_byteReadBufferFullNotify;                ///< byte of read buffer full notify 读取通知触发缓冲区字节数
-    itas109::IMutex m_mutex;                                ///< mutex 互斥锁
-    itas109::IMutex m_mutexRead;                            ///< read mutex 读互斥锁
-    itas109::IMutex m_mutexWrite;                           ///< write mutex 写互斥锁
-    itas109::CSerialPortListener *p_readEvent;              ///< read event 读取事件
-    itas109::ITimer<itas109::CSerialPortListener> *p_timer; ///< read timer 读取定时器
-    itas109::CSerialPortHotPlug *p_serialPortHotPlug;       ///< serial port hot plug class 串口热插拔类
-    itas109::IProtocolParser *p_protocolParser;             ///< protocol parse 通信协议解析
+    int m_lastError;                    ///< last error code 最后的错误代码
+    itas109::OperateMode m_operateMode; ///< operate mode 串口操作类型
+    char m_portName[256];               ///< port name 串口名称
 
 private:
 };
-#endif //__CSERIALPORTBASE_H__
+#endif //__CSERIALPORT_BASE_H__

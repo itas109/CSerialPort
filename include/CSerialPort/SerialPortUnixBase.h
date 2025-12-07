@@ -24,7 +24,7 @@
 #include "ithread.hpp"
 #include <thread>
 #include "ibuffer.hpp"
-#include "SerialPortBase.h"
+#include "SerialPortAsyncBase.h"
 
 // Serial Programming Guide for POSIX Operating Systems
 // https://digilander.libero.it/robang/rubrica/serial.htm
@@ -34,7 +34,7 @@
  * @see inherit 继承 CSerialPortBase
  *
  */
-class CSerialPortUnixBase : public CSerialPortBase
+class CSerialPortUnixBase : public CSerialPortAsyncBase
 {
 public:
     /**
@@ -366,7 +366,6 @@ private:
     int readDataUnix(void *data, int size);
 
 private:
-    char m_portName[256];
     int m_baudRate;
     itas109::Parity m_parity;
     itas109::DataBits m_dataBits;

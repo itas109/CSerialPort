@@ -103,8 +103,9 @@ struct SerialPortInfo
  */
 enum OperateMode
 {
-    AsynchronousOperate, ///< Asynchronous 异步
-    SynchronousOperate   ///< Synchronous 同步
+    AsynchronousOperate,     ///< asynchronous mode based event driven and thread  基于事件驱动和多线程的异步模式
+    SynchronousOperate,      ///< synchronous mode based asynchronous mode 基于多线程和事件驱动的异步模式的同步模式
+    NativeSynchronousOperate ///< native synchronous mode baseed os sync api(no thead) 基于操作系统同步API(无多线程)的原生同步模式
 };
 
 /**
@@ -171,11 +172,11 @@ enum Parity
 enum StopBits
 {
     StopOne = 0,        ///< 1 stop bit 1位停止位
-    StopOneAndHalf = 1, ///< 1.5 stop bit 1.5位停止位 - This is only for the Windows platform
+    StopOneAndHalf = 1, ///< 1.5 stop bit 1.5位停止位 - 1.5 only for windows
     StopTwo = 2         ///< 2 stop bit 2位停止位
 };
 
-/**
+/**            
  * @brief the FlowControl enum 流控制
  *
  */
@@ -187,32 +188,34 @@ enum FlowControl
 };
 
 /**
- * @brief the SerialPort error code 串口错误代码
+ * @brief the SerialPort error code 串口错误码 0 ok, <0 error
  *
  */
 enum SerialPortError
 {
-    ErrorUnknown = -1,   ///< unknown error 未知错误
-    ErrorOK = 0,         ///< ok 成功
-    ErrorFail = 1,       ///< general error一般性错误
-    ErrorNotImplemented, ///< not implemented 未实现
-    ErrorInner,          ///< inner error 内部错误(如内存访问异常等)
-    ErrorNullPointer,    ///< null pointer error 空指针错误
-    ErrorInvalidParam,   ///< invalid parameter error 无效的参数
-    ErrorAccessDenied,   ///< access denied error 权限错误
-    ErrorOutOfMemory,    ///< out of memory 内存不足
-    ErrorTimeout,        ///< time out error 超时
+    ErrorOK = 0, ///< ok 成功
 
-    ErrorNotInit,      ///< not init 未初始化
-    ErrorInitFailed,   ///< init failed 初始化失败
-    ErrorAlreadyExist, ///< already exist 已经存在
-    ErrorNotExist,     ///< not exist 不存在
-    ErrorAlreadyOpen,  ///< already open 已经打开
-    ErrorNotOpen,      ///< not open 未打开
-    ErrorOpenFailed,   ///< open failed 打开失败
-    ErrorCloseFailed,  ///< close failed 关闭失败
-    ErrorWriteFailed,  ///< write failed 写入失败
-    ErrorReadFailed    ///< read failed 读取失败
+    ErrorFail = -1,           ///< general error一般性错误
+    ErrorNotImplemented = -2, ///< not implemented 未实现
+    ErrorInner = -3,          ///< inner error 内部错误(如内存访问异常等)
+    ErrorNullPointer = -4,    ///< null pointer error 空指针错误
+    ErrorInvalidParam = -5,   ///< invalid parameter error 无效的参数
+    ErrorAccessDenied = -6,   ///< access denied error 权限错误
+    ErrorOutOfMemory = -7,    ///< out of memory 内存不足
+    ErrorTimeout = -8,        ///< time out error 超时
+
+    ErrorNotInit = -20,      ///< not init 未初始化
+    ErrorInitFailed = -21,   ///< init failed 初始化失败
+    ErrorAlreadyExist = -22, ///< already exist 已经存在
+    ErrorNotExist = -23,     ///< not exist 不存在
+    ErrorAlreadyOpen = -24,  ///< already open 已经打开
+    ErrorNotOpen = -25,      ///< not open 未打开
+    ErrorOpenFailed = -26,   ///< open failed 打开失败
+    ErrorCloseFailed = -27,  ///< close failed 关闭失败
+    ErrorWriteFailed = -28,  ///< write failed 写入失败
+    ErrorReadFailed = -29,   ///< read failed 读取失败
+
+    ErrorUnknown = -999, ///< unknown error 未知错误
 };
 } // namespace itas109
 
