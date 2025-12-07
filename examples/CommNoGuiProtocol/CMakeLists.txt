@@ -57,7 +57,13 @@ else()
       list(APPEND CSerialPortHeaderFiles ${CSerialPortRootPath}/include/CSerialPort/SerialPortUnixBase.h ${CSerialPortRootPath}/include/CSerialPort/SerialPortInfoUnixBase.h)
       list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortInfoUnixBase.cpp ${CSerialPortRootPath}/src/SerialPortUnixBase.cpp)
   endif ()
-
+  if (CSERIALPORT_ENABLE_NATIVE_SYNC)
+      # TODO
+  else()
+      list(APPEND CSerialPortHeaderFiles ${CSerialPortRootPath}/include/CSerialPort/SerialPortAsyncBase.h)
+      list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortAsyncBase.cpp)
+  endif ()
+  
   add_executable( ${PROJECT_NAME} CommNoGuiProtocol.cpp ${CSerialPortHeaderFiles} ${CSerialPortSourceFiles})
 
   if (WIN32)

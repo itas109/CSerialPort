@@ -33,6 +33,7 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(CSERIALPORT_ENABLE_NATIVE_SYNC "Enable CSerialPort native synchronous mode" OFF)
 option(CSERIALPORT_BUILD_EXAMPLES "Build CSerialPort examples" ON)
 option(CSERIALPORT_ENABLE_DEBUG "Enable CSerialPort Debug Log" OFF)
 option(CSERIALPORT_ENABLE_UTF8 "Enable CSerialPort UTF8" OFF)
@@ -52,12 +53,17 @@ message(STATUS "    Operation System : ${CMAKE_SYSTEM}")
 message(STATUS "    CPU Architecture : ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "    Build Type : ${CMAKE_BUILD_TYPE}")
 message(STATUS "    Shared Library [ BUILD_SHARED_LIBS ] : ${BUILD_SHARED_LIBS}")
+message(STATUS "    Enable Native Sync Mode [ CSERIALPORT_ENABLE_NATIVE_SYNC ] : ${CSERIALPORT_ENABLE_NATIVE_SYNC}")
 message(STATUS "    Build Examples [ CSERIALPORT_BUILD_EXAMPLES ] : ${CSERIALPORT_BUILD_EXAMPLES}")
 message(STATUS "    Enable Debug [ CSERIALPORT_ENABLE_DEBUG ] : ${CSERIALPORT_ENABLE_DEBUG}")
 message(STATUS "    Enable UTF8 [ CSERIALPORT_ENABLE_UTF8 ] : ${CSERIALPORT_ENABLE_UTF8}")
 message(STATUS "    Build Doc [ CSERIALPORT_BUILD_DOC ] : ${CSERIALPORT_BUILD_DOC}")
 message(STATUS "    Build Test [ CSERIALPORT_BUILD_TEST ] : ${CSERIALPORT_BUILD_TEST}")
 message(STATUS "=======================================================")
+
+if (CSERIALPORT_ENABLE_NATIVE_SYNC)
+    add_definitions(-DCSERIALPORT_NATIVE_SYNC) # CSerialPort Native Sync Mode
+endif ()
 
 # libcserialport
 add_subdirectory(lib)
