@@ -1,0 +1,577 @@
+﻿#include <unistd.h> // usleep
+
+#include "CSerialPort/SerialPortNativeSyncUnixBase.h"
+#include "CSerialPort/ilog.hpp"
+
+#include <sys/select.h> // select
+#include <sys/time.h>   // timeval
+
+#ifdef I_OS_LINUX
+// termios2 for custom baud rate at least linux kernel 2.6.32 (RHEL 6.0)
+
+#ifndef I_OS_ANDROID
+// linux/include/uapi/asm-generic/termbits.h
+struct termios2
+{
+    tcflag_t c_iflag; /* input mode flags */
+    tcflag_t c_oflag; /* output mode flags */
+    tcflag_t c_cflag; /* control mode flags */
+    tcflag_t c_lflag; /* local mode flags */
+    cc_t c_line;      /* line discipline */
+    cc_t c_cc[19];    /* control characters */
+    speed_t c_ispeed; /* input speed */
+    speed_t c_ospeed; /* output speed */
+};
+#endif
+
+#ifndef BOTHER
+#define BOTHER 0010000
+#endif
+
+// linux/include/uapi/asm-generic/ioctls.h
+#ifndef TCGETS2
+#define TCGETS2 _IOR('T', 0x2A, struct termios2)
+#endif
+
+#ifndef TCSETS2
+#define TCSETS2 _IOW('T', 0x2B, struct termios2)
+#endif
+
+#endif
+
+#ifdef I_OS_MAC
+#include <IOKit/serial/ioss.h> // IOSSIOSPEED
+#endif
+
+CSerialPortNativeSyncUnixBase::CSerialPortNativeSyncUnixBase()
+    : CSerialPortNativeSyncUnixBase("")
+{
+}
+
+CSerialPortNativeSyncUnixBase::CSerialPortNativeSyncUnixBase(const char *portName)
+    : CSerialPortBase(portName)
+    , fd(-1)
+{
+}
+
+CSerialPortNativeSyncUnixBase::~CSerialPortNativeSyncUnixBase()
+{
+}
+
+int CSerialPortNativeSyncUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl)
+{
+    struct termios options;
+
+    // 获取终端属性
+    if (tcgetattr(fd, &options) < 0)
+    {
+        fprintf(stderr, "tcgetattr error");
+        return -1;
+    }
+
+    // 设置输入输出波特率
+    int baudRateConstant = 0;
+    baudRateConstant = rate2Constant(baudRate);
+
+    if (0 != baudRateConstant)
+    {
+        cfsetispeed(&options, baudRateConstant);
+        cfsetospeed(&options, baudRateConstant);
+    }
+
+    // 设置校验位
+    switch (parity)
+    {
+        // 无奇偶校验位
+        case itas109::ParityNone:
+            options.c_cflag &= ~PARENB; // PARENB：产生奇偶位，执行奇偶校验
+            options.c_cflag &= ~INPCK;  // INPCK：使奇偶校验起作用
+            break;
+        // 设置奇校验
+        case itas109::ParityOdd:
+            options.c_cflag |= PARENB; // PARENB：产生奇偶位，执行奇偶校验
+            options.c_cflag |= PARODD; // PARODD：若设置则为奇校验,否则为偶校验
+            options.c_cflag |= INPCK;  // INPCK：使奇偶校验起作用
+            options.c_cflag |= ISTRIP; // ISTRIP：若设置则有效输入数字被剥离7个字节，否则保留全部8位
+            break;
+        // 设置偶校验
+        case itas109::ParityEven:
+            options.c_cflag |= PARENB;  // PARENB：产生奇偶位，执行奇偶校验
+            options.c_cflag &= ~PARODD; // PARODD：若设置则为奇校验,否则为偶校验
+            options.c_cflag |= INPCK;   // INPCK：使奇偶校验起作用
+            options.c_cflag |= ISTRIP;  // ISTRIP：若设置则有效输入数字被剥离7个字节，否则保留全部8位
+            break;
+        // 设置0校验
+        case itas109::ParitySpace:
+            options.c_cflag &= ~PARENB; // PARENB：产生奇偶位，执行奇偶校验
+            options.c_cflag &= ~CSTOPB; // CSTOPB：使用两位停止位
+            break;
+        default:
+            fprintf(stderr, "unknown parity\n");
+            return -1;
+    }
+
+    // 设置数据位
+    switch (dataBits)
+    {
+        case itas109::DataBits5:
+            options.c_cflag &= ~CSIZE; // 屏蔽其它标志位
+            options.c_cflag |= CS5;
+            break;
+        case itas109::DataBits6:
+            options.c_cflag &= ~CSIZE; // 屏蔽其它标志位
+            options.c_cflag |= CS6;
+            break;
+        case itas109::DataBits7:
+            options.c_cflag &= ~CSIZE; // 屏蔽其它标志位
+            options.c_cflag |= CS7;
+            break;
+        case itas109::DataBits8:
+            options.c_cflag &= ~CSIZE; // 屏蔽其它标志位
+            options.c_cflag |= CS8;
+            break;
+        default:
+            fprintf(stderr, "unknown data bits\n");
+            return -1;
+    }
+
+    // 停止位
+    switch (stopbits)
+    {
+        case itas109::StopOne:
+            options.c_cflag &= ~CSTOPB; // CSTOPB：使用两位停止位
+            break;
+        case itas109::StopOneAndHalf:
+            fprintf(stderr, "POSIX does not support 1.5 stop bits\n");
+            return -1;
+        case itas109::StopTwo:
+            options.c_cflag |= CSTOPB; // CSTOPB：使用两位停止位
+            break;
+        default:
+            fprintf(stderr, "unknown stop\n");
+            return -1;
+    }
+
+    // 控制模式
+    options.c_cflag |= CLOCAL; // 保证程序不占用串口
+    options.c_cflag |= CREAD;  // 保证程序可以从串口中读取数据
+
+    // 流控制
+    switch (flowControl)
+    {
+        case itas109::FlowNone: ///< No flow control 无流控制
+            options.c_cflag &= ~CRTSCTS;
+            break;
+        case itas109::FlowHardware: ///< Hardware(RTS / CTS) flow control 硬件流控制
+            options.c_cflag |= CRTSCTS;
+            break;
+        case itas109::FlowSoftware: ///< Software(XON / XOFF) flow control 软件流控制
+            options.c_cflag |= IXON | IXOFF | IXANY;
+            break;
+        default:
+            fprintf(stderr, "unknown flow control\n");
+            return -1;
+    }
+
+    // 设置输出模式为原始输出
+    options.c_oflag &= ~OPOST; // OPOST：若设置则按定义的输出处理，否则所有c_oflag失效
+
+    // 设置本地模式为原始模式
+    options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+    /*
+     *ICANON：允许规范模式进行输入处理
+     *ECHO：允许输入字符的本地回显
+     *ECHOE：在接收EPASE时执行Backspace,Space,Backspace组合
+     *ISIG：允许信号
+     */
+
+    options.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+    /*
+     *BRKINT：如果设置了IGNBRK，BREAK键输入将被忽略
+     *ICRNL：将输入的回车转化成换行（如果IGNCR未设置的情况下）(0x0d => 0x0a)
+     *INPCK：允许输入奇偶校验
+     *ISTRIP：去除字符的第8个比特
+     *IXON：允许输出时对XON/XOFF流进行控制 (0x11 0x13)
+     */
+
+    // 设置等待时间和最小接受字符
+    options.c_cc[VTIME] = 0; // 可以在select中设置
+    options.c_cc[VMIN] = 0;  // read function will undefinite wait when no read data
+
+    // 如果发生数据溢出，只接受数据，但是不进行读操作
+    tcflush(fd, TCIFLUSH);
+
+    // 激活配置
+    if (tcsetattr(fd, TCSANOW, &options) < 0)
+    {
+        perror("tcsetattr failed");
+        return -1;
+    }
+
+    // set custom baud rate, after tcsetattr
+    if (0 == baudRateConstant)
+    {
+#ifdef I_OS_LINUX
+        struct termios2 tio2;
+
+        if (-1 != ioctl(fd, TCGETS2, &tio2))
+        {
+            tio2.c_cflag &= ~CBAUD; // remove current baud rate
+            tio2.c_cflag |= BOTHER; // allow custom baud rate using int input
+
+            tio2.c_ispeed = baudRate; // set the input baud rate
+            tio2.c_ospeed = baudRate; // set the output baud rate
+
+            if (-1 == ioctl(fd, TCSETS2, &tio2))
+            {
+                fprintf(stderr, "termios2 set custom baudrate error\n");
+                return -1;
+            }
+        }
+        else
+        {
+            fprintf(stderr, "termios2 ioctl error\n");
+            return -1;
+        }
+#elif defined I_OS_MAC
+        // Mac OS X Tiger(10.4.11) support non-standard baud rate through IOSSIOSPEED
+        speed_t customBaudRate = (speed_t)baudRate;
+        if (-1 == ioctl(fd, IOSSIOSPEED, &customBaudRate))
+        {
+            fprintf(stderr, "ioctl IOSSIOSPEED custom baud rate error\n");
+            return -1;
+        }
+#else
+        fprintf(stderr, "not support custom baudrate\n");
+        return -1;
+#endif
+    }
+
+    return 0;
+}
+
+bool CSerialPortNativeSyncUnixBase::openPort()
+{
+    // itas109::IScopedLock lock(m_mutex);
+
+    LOG_INFO("portName: %s, baudRate: %d, dataBit: %d, parity: %d, stopBit: %d, flowControl: %d, mode: nativeSync, readBufferSize:%u",
+             m_portName, m_baudRate, m_dataBits, m_parity, m_stopbits, m_flowControl, m_readBufferSize);
+
+    bool bRet = false;
+
+    fd = open(m_portName, O_RDWR | O_NOCTTY); // block
+    // fd = open(m_portName, O_RDWR | O_NOCTTY | O_NDELAY); // non-block
+    if (-1 != fd)
+    {
+        // set param
+        if (uartSet(fd, m_baudRate, m_parity, m_dataBits, m_stopbits, m_flowControl) == -1)
+        {
+            fprintf(stderr, "uart set failed\n");
+
+            bRet = false;
+            m_lastError = itas109::/*SerialPortError::*/ ErrorInvalidParam;
+        }
+        else
+        {
+            bRet = true;
+            m_lastError = itas109::/*SerialPortError::*/ ErrorOK;
+        }
+    }
+    else
+    {
+        // Could not open the port
+        // char str[300];
+        // snprintf(str, sizeof(str), "open port error: Unable to open %s", m_portName);
+        // perror(str);
+
+        if (EACCES == errno)
+        {
+            m_lastError = itas109::/*SerialPortError::*/ ErrorAccessDenied;
+        }
+        else if (ENOENT == errno)
+        {
+            m_lastError = itas109::/*SerialPortError::*/ ErrorNotExist;
+        }
+        else
+        {
+            m_lastError = itas109::/*SerialPortError::*/ ErrorOpenFailed;
+        }
+
+        bRet = false;
+    }
+
+    if (!bRet)
+    {
+        closePort();
+    }
+
+    LOG_INFO("open %s. code: %d, message: %s", m_portName, getLastError(), getLastErrorMsg());
+
+    return bRet;
+}
+
+void CSerialPortNativeSyncUnixBase::closePort()
+{
+    if (isOpen())
+    {
+        close(fd);
+        fd = -1;
+    }
+}
+
+bool CSerialPortNativeSyncUnixBase::isOpen()
+{
+    return fd != -1;
+}
+
+unsigned int CSerialPortNativeSyncUnixBase::getReadBufferUsedLen()
+{
+    unsigned int usedLen = 0;
+
+    if (isOpen())
+    {
+        // read前获取可读的字节数,不区分阻塞和非阻塞
+        ioctl(fd, FIONREAD, &usedLen);
+
+#ifdef CSERIALPORT_DEBUG
+        if (usedLen > 0)
+        {
+            LOG_INFO("getReadBufferUsedLen: %u", usedLen);
+        }
+#endif
+    }
+
+    return usedLen;
+}
+
+int CSerialPortNativeSyncUnixBase::readData(void *data, int size)
+{
+    // itas109::IScopedLock lock(m_mutexRead);
+
+    if (size <= 0)
+    {
+        return 0;
+    }
+
+    int iRet = -1;
+
+    if (isOpen())
+    {
+        iRet = read(fd, data, size);
+    }
+    else
+    {
+        m_lastError = itas109::/*SerialPortError::*/ ErrorNotOpen;
+        iRet = -1;
+    }
+
+#ifdef CSERIALPORT_DEBUG
+    char hexStr[201]; // 100*2 + 1
+    LOG_INFO("read. len: %d, hex(top100): %s", iRet, itas109::IUtils::charToHexStr(hexStr, (const char *)data, iRet > 100 ? 100 : iRet));
+#endif
+
+    return iRet;
+}
+
+int CSerialPortNativeSyncUnixBase::readAllData(void *data)
+{
+    return readData(data, getReadBufferUsedLen());
+}
+
+int CSerialPortNativeSyncUnixBase::writeData(const void *data, int size)
+{
+    // itas109::IScopedLock lock(m_mutexWrite);
+
+    int iRet = -1;
+
+    if (isOpen())
+    {
+        // Write N bytes of BUF to FD.  Return the number written, or -1
+        iRet = write(fd, data, size);
+    }
+    else
+    {
+        m_lastError = itas109::/*SerialPortError::*/ ErrorNotOpen;
+        iRet = -1;
+    }
+
+#ifdef CSERIALPORT_DEBUG
+    char hexStr[201]; // 100*2 + 1
+    LOG_INFO("write. len: %d, hex(top100): %s", size, itas109::IUtils::charToHexStr(hexStr, (const char *)data, size > 100 ? 100 : size));
+#endif
+
+    return iRet;
+}
+
+bool CSerialPortNativeSyncUnixBase::flushBuffers()
+{
+    // itas109::IScopedLock lock(m_mutex);
+
+    if (isOpen())
+    {
+        return 0 == tcdrain(fd);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool CSerialPortNativeSyncUnixBase::flushReadBuffers()
+{
+    // itas109::IScopedLock lock(m_mutex);
+
+    if (isOpen())
+    {
+        return 0 == tcflush(fd, TCIFLUSH);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool CSerialPortNativeSyncUnixBase::flushWriteBuffers()
+{
+    // itas109::IScopedLock lock(m_mutex);
+
+    if (isOpen())
+    {
+        return 0 == tcflush(fd, TCOFLUSH);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void CSerialPortNativeSyncUnixBase::setDtr(bool set /*= true*/)
+{
+    // itas109::IScopedLock lock(m_mutex);
+    if (isOpen())
+    {
+        int status = TIOCM_DTR;
+        if (ioctl(fd, set ? TIOCMBIS : TIOCMBIC, &status) < 0)
+        {
+            perror("setDtr error");
+        }
+    }
+}
+
+void CSerialPortNativeSyncUnixBase::setRts(bool set /*= true*/)
+{
+    // itas109::IScopedLock lock(m_mutex);
+    if (isOpen())
+    {
+        int status = TIOCM_RTS;
+        if (ioctl(fd, set ? TIOCMBIS : TIOCMBIC, &status) < 0)
+        {
+            perror("setRts error");
+        }
+    }
+}
+
+int CSerialPortNativeSyncUnixBase::rate2Constant(int baudrate)
+{
+#define B(x) \
+    case x:  \
+        return B##x
+
+    switch (baudrate)
+    {
+#ifdef B50
+        B(50);
+#endif
+#ifdef B75
+        B(75);
+#endif
+#ifdef B110
+        B(110);
+#endif
+#ifdef B134
+        B(134);
+#endif
+#ifdef B150
+        B(150);
+#endif
+#ifdef B200
+        B(200);
+#endif
+#ifdef B300
+        B(300);
+#endif
+#ifdef B600
+        B(600);
+#endif
+#ifdef B1200
+        B(1200);
+#endif
+#ifdef B1800
+        B(1800);
+#endif
+#ifdef B2400
+        B(2400);
+#endif
+#ifdef B4800
+        B(4800);
+#endif
+#ifdef B9600
+        B(9600);
+#endif
+#ifdef B19200
+        B(19200);
+#endif
+#ifdef B38400
+        B(38400);
+#endif
+#ifdef B57600
+        B(57600);
+#endif
+#ifdef B115200
+        B(115200);
+#endif
+#ifdef B230400
+        B(230400);
+#endif
+#ifdef B460800
+        B(460800);
+#endif
+#ifdef B500000
+        B(500000);
+#endif
+#ifdef B576000
+        B(576000);
+#endif
+#ifdef B921600
+        B(921600);
+#endif
+#ifdef B1000000
+        B(1000000);
+#endif
+#ifdef B1152000
+        B(1152000);
+#endif
+#ifdef B1500000
+        B(1500000);
+#endif
+#ifdef B2000000
+        B(2000000);
+#endif
+#ifdef B2500000
+        B(2500000);
+#endif
+#ifdef B3000000
+        B(3000000);
+#endif
+#ifdef B3500000
+        B(3500000);
+#endif
+#ifdef B4000000
+        B(4000000);
+#endif
+        default:
+            return 0;
+    }
+
+#undef B
+}

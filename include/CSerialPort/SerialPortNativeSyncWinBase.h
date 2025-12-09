@@ -1,5 +1,5 @@
 ﻿/**
- * @file SerialPortWinBase.h
+ * @file SerialPortNativeSyncWinBase.h
  * @author itas109 (itas109@qq.com) \n\n
  * Blog : https://blog.csdn.net/itas109 \n
  * Github : https://github.com/itas109 \n
@@ -10,43 +10,40 @@
  * You may use, copy, modify, and distribute the CSerialPort, under the terms \n
  * of the LICENSE file.
  */
-#ifndef __CSERIALPORT_WIN_BASE_H__
-#define __CSERIALPORT_WIN_BASE_H__
+#ifndef __CSERIALPORT_NATIVE_SYNC_WIN_BASE_H__
+#define __CSERIALPORT_NATIVE_SYNC_WIN_BASE_H__
 
 #include <tchar.h> //tchar
 
-#include "ithread.hpp"
-#include "ibuffer.hpp"
-#include "SerialPortAsyncBase.h"
-#include <thread>
+#include "SerialPortBase.h"
 
 #include "windows.h"
 
 /**
  * @brief the CSerialPort Windows Base class windows串口基类
- * @see inherit 继承 CSerialPortAsyncBase
+ * @see inherit 继承 CSerialPortBase
  */
-class CSerialPortWinBase : public CSerialPortAsyncBase
+class CSerialPortNativeSyncWinBase : public CSerialPortBase
 {
 public:
     /**
-     * @brief Construct a new CSerialPortWinBase object 构造函数
+     * @brief Construct a new CSerialPortNativeSyncWinBase object 构造函数
      *
      */
-    CSerialPortWinBase();
+    CSerialPortNativeSyncWinBase();
 
     /**
-     * @brief Construct a new CSerialPortWinBase object 通过串口名称构造函数
+     * @brief Construct a new CSerialPortNativeSyncWinBase object 通过串口名称构造函数
      *
      * @param portName  [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
      */
-    CSerialPortWinBase(const char *portName);
+    CSerialPortNativeSyncWinBase(const char *portName);
 
     /**
-     * @brief Destroy the CSerialPortWinBase object 析构函数
+     * @brief Destroy the CSerialPortNativeSyncWinBase object 析构函数
      *
      */
-    ~CSerialPortWinBase();
+    ~CSerialPortNativeSyncWinBase();
 
     /**
      * @brief open serial port 打开串口
@@ -152,53 +149,9 @@ public:
     void setRts(bool set = true) override final;
 
 private:
-    /**
-     * @brief thread monitor 多线程监视器
-     *
-     */
-    void commThreadMonitor();
-    /**
-     * @brief start thread monitor 启动多线程监视器
-     *
-     * @return
-     * @retval true start success 启动成功
-     * @retval false start failed 启动失败
-     */
-    bool startThreadMonitor();
-    /**
-     * @brief stop thread monitor 停止多线程监视器
-     *
-     * @return
-     * @retval true stop success 停止成功
-     * @retval false stop failed 停止失败
-     */
-    bool stopThreadMonitor();
-
-    /**
-     * @brief read specified length data 读取指定长度数据
-     *
-     * @param data [out] read data result 读取结果
-     * @param size [in] read length 读取长度
-     * @return return number Of bytes read 返回读取字节数
-     * @retval -1 read error 读取错误
-     * @retval [other] return number Of bytes read 返回读取字节数
-     */
-    int readDataWin(void *data, int size);
-
-private:
     HANDLE m_handle;
-
-    std::thread m_monitorThread;
-    OVERLAPPED m_overlapMonitor; ///< monitor overlapped
-
-    OVERLAPPED m_overlapRead;  ///< read overlapped
-    OVERLAPPED m_overlapWrite; ///< write overlapped
 
     COMMCONFIG m_comConfigure;
     COMMTIMEOUTS m_comTimeout;
-
-    CRITICAL_SECTION m_communicationMutex; ///< mutex
-
-    bool m_isThreadRunning;
 };
-#endif //__CSERIALPORT_WIN_BASE_H__
+#endif //__CSERIALPORT_NATIVE_SYNC_WIN_BASE_H__

@@ -1,5 +1,5 @@
 ﻿/**
- * @file SerialPortUnixBase.h
+ * @file SerialPortNativeSyncUnixBase.h
  * @author itas109 (itas109@qq.com) \n\n
  * Blog : https://blog.csdn.net/itas109 \n
  * Github : https://github.com/itas109 \n
@@ -10,8 +10,8 @@
  * You may use, copy, modify, and distribute the CSerialPort, under the terms \n
  * of the LICENSE file.
  */
-#ifndef __CSERIALPORT_UNIX_BASE_H__
-#define __CSERIALPORT_UNIX_BASE_H__
+#ifndef __CSERIALPORT_NATIVE_SYNC_UNIX_BASE_H__
+#define __CSERIALPORT_NATIVE_SYNC_UNIX_BASE_H__
 
 #include <stdio.h>     // Standard input/output definitions
 #include <string.h>    // String function definitions
@@ -21,37 +21,37 @@
 #include <unistd.h>    // UNIX standard function definitions
 #include <errno.h>     // Error number definitions
 
-#include "ithread.hpp"
-#include <thread>
-#include "SerialPortAsyncBase.h"
+// #include "ithread.hpp"
+// #include <thread>
+#include "SerialPortBase.h"
 
 // Serial Programming Guide for POSIX Operating Systems
 // https://digilander.libero.it/robang/rubrica/serial.htm
 
 /**
  * @brief the CSerialPort unix Base class unix串口基类
- * @see inherit 继承 CSerialPortAsyncBase
+ * @see inherit 继承 CSerialPortBase
  *
  */
-class CSerialPortUnixBase : public CSerialPortAsyncBase
+class CSerialPortNativeSyncUnixBase : public CSerialPortBase
 {
 public:
     /**
-     * @brief Construct a new CSerialPortUnixBase object 构造函数
+     * @brief Construct a new CSerialPortNativeSyncUnixBase object 构造函数
      *
      */
-    CSerialPortUnixBase();
+    CSerialPortNativeSyncUnixBase();
     /**
-     * @brief Construct a new CSerialPortUnixBase object 通过串口名称构造函数
+     * @brief Construct a new CSerialPortNativeSyncUnixBase object 通过串口名称构造函数
      *
      * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
      */
-    CSerialPortUnixBase(const char *portName);
+    CSerialPortNativeSyncUnixBase(const char *portName);
     /**
-     * @brief Destroy the CSerialPortUnixBase object 析构函数
+     * @brief Destroy the CSerialPortNativeSyncUnixBase object 析构函数
      *
      */
-    ~CSerialPortUnixBase();
+    ~CSerialPortNativeSyncUnixBase();
 
     /**
      * @brief open serial port 打开串口
@@ -155,15 +155,6 @@ public:
      */
     void setRts(bool set = true) override final;
 
-public:
-    /**
-     * @brief isThreadRunning 是否启动多线程
-     * @return
-     * @retval true thread running 多线程已启动
-     * @retval false thread not running 多线程未启动
-     */
-    bool isThreadRunning();
-
 private:
     /**
      * @brief rate2Constant baudrate to constant 波特率转为unix常量
@@ -189,48 +180,7 @@ private:
                 itas109::StopBits stopbits = itas109::StopOne,
                 itas109::FlowControl flowControl = itas109::FlowNone);
 
-    /**
-     * @brief thread monitor 多线程监视器
-     *
-     */
-    void commThreadMonitor();
-
-    /**
-     * @brief start thread monitor 启动多线程监视器
-     *
-     * @return
-     * @retval true start success 启动成功
-     * @retval false start failed 启动失败
-     */
-    bool startThreadMonitor();
-    /**
-     * @brief stop thread monitor 停止多线程监视器
-     *
-     * @return
-     * @retval true stop success 停止成功
-     * @retval false stop failed 停止失败
-     */
-    bool stopThreadMonitor();
-
-    /**
-     * @brief read specified length data 读取指定长度数据
-     *
-     * @param data [out] read data result 读取结果
-     * @param size [in] read length 读取长度
-     * @return return number Of bytes read 返回读取字节数
-     * @retval -1 read error 读取错误
-     * @retval [other] return number Of bytes read 返回读取字节数
-     */
-    int readDataUnix(void *data, int size);
-
 private:
     int fd; /* File descriptor for the port */
-
-private:
-    std::thread m_monitorThread; /**< read thread */
-
-    bool m_isThreadRunning;
-
-    itas109::RingBuffer<char> *p_buffer; ///< receive buffer
 };
-#endif //__CSERIALPORT_UNIX_BASE_H__
+#endif //__CSERIALPORT_NATIVE_SYNC_UNIX_BASE_H__

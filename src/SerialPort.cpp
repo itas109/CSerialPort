@@ -7,7 +7,16 @@
 #include "CSerialPort/ilog.hpp"
 
 #if defined(CSERIALPORT_NATIVE_SYNC)
-#define CSERIALPORTBASE // TODO
+#ifdef I_OS_WIN
+#include "CSerialPort/SerialPortNativeSyncWinBase.h"
+#define CSERIALPORTBASE CSerialPortNativeSyncWinBase
+#elif defined I_OS_UNIX
+#include "CSerialPort/SerialPortNativeSyncUnixBase.h"
+#define CSERIALPORTBASE CSerialPortNativeSyncUnixBase
+#else
+// Not support
+#define CSERIALPORTBASE
+#endif // I_OS_WIN
 #else
 #ifdef I_OS_WIN
 #include "CSerialPort/SerialPortWinBase.h"
@@ -32,9 +41,6 @@ itas109::CSerialPort::CSerialPort(const char *portName)
     : p_serialPortBase(nullptr)
 {
     p_serialPortBase = new CSERIALPORTBASE(portName);
-
-    p_serialPortBase->setReadIntervalTimeout(0);
-    p_serialPortBase->setMinByteReadNotify(1);
 
     char compilerInfo[256];
     itas109::IUtils::getCompilerInfo(compilerInfo, 256);
