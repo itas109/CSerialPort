@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/itas109/CSerialPort",
   "dependencies": {
-    "electron": "^31.0.2",
+    "electron": "latest",
     "jquery": "^3.7.1"
   },
   "scripts": {
