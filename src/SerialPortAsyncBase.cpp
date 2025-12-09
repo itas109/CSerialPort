@@ -1,6 +1,7 @@
 ﻿#include "CSerialPort/SerialPortAsyncBase.h"
 
 #include "CSerialPort/ithread.hpp"
+#include "CSerialPort/ibuffer.hpp"
 #include "CSerialPort/itimer.hpp"
 #include "CSerialPort/IProtocolParser.h"
 #include "CSerialPort/SerialPortHotPlug.hpp"
@@ -12,9 +13,10 @@ CSerialPortAsyncBase::CSerialPortAsyncBase()
 
 CSerialPortAsyncBase::CSerialPortAsyncBase(const char *portName)
     : CSerialPortBase(portName)
-    , m_readIntervalTimeoutMS(50)
-    , m_minByteReadNotify(1)
+    , m_readIntervalTimeoutMS(0)
+    , m_minByteReadNotify(2)
     , m_byteReadBufferFullNotify(3276) // 4096*0.8
+    , p_readBuffer(nullptr)
     , p_readEvent(nullptr)
     , p_timer(nullptr)
     , p_serialPortHotPlug(nullptr)
@@ -26,6 +28,12 @@ CSerialPortAsyncBase::CSerialPortAsyncBase(const char *portName)
 
 CSerialPortAsyncBase::~CSerialPortAsyncBase()
 {
+    if (p_readBuffer)
+    {
+        delete p_readBuffer;
+        p_readBuffer = nullptr;
+    }
+
     if (p_timer)
     {
         delete p_timer;
@@ -33,12 +41,42 @@ CSerialPortAsyncBase::~CSerialPortAsyncBase()
     }
 }
 
-unsigned int CSerialPortAsyncBase::getReadIntervalTimeout()
+void CSerialPortAsyncBase::init(const char *portName,
+                                int baudRate /*= itas109::BaudRate::BaudRate9600*/,
+                                itas109::Parity parity /*= itas109::Parity::ParityNone*/,
+                                itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/,
+                                itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/,
+                                itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/,
+                                unsigned int readBufferSize /*= 4096*/)
+{
+    CSerialPortBase::init(portName, baudRate, parity, dataBits, stopbits, flowControl, readBufferSize);
+
+    m_byteReadBufferFullNotify = (unsigned int)(m_readBufferSize * 0.8);
+
+    if (p_readBuffer)
+    {
+        delete p_readBuffer;
+        p_readBuffer = nullptr;
+    }
+    p_readBuffer = new itas109::RingBuffer<char>(m_readBufferSize);
+}
+
+void CSerialPortAsyncBase::setReadIntervalTimeout(unsigned int msecs)
+{
+    m_readIntervalTimeoutMS = msecs;
+}
+
+unsigned int CSerialPortAsyncBase::getReadIntervalTimeout() const
 {
     return m_readIntervalTimeoutMS;
 }
 
-unsigned int CSerialPortAsyncBase::getMinByteReadNotify()
+void CSerialPortAsyncBase::setMinByteReadNotify(unsigned int minByteReadNotify)
+{
+    m_minByteReadNotify = minByteReadNotify;
+}
+
+unsigned int CSerialPortAsyncBase::getMinByteReadNotify() const
 {
     return m_minByteReadNotify;
 }
@@ -48,7 +86,7 @@ void CSerialPortAsyncBase::setByteReadBufferFullNotify(unsigned int byteReadBuff
     m_byteReadBufferFullNotify = byteReadBufferFullNotify;
 }
 
-unsigned int CSerialPortAsyncBase::getByteReadBufferFullNotify()
+unsigned int CSerialPortAsyncBase::getByteReadBufferFullNotify() const
 {
     return m_byteReadBufferFullNotify;
 }

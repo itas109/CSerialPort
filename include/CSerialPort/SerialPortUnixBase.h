@@ -23,7 +23,6 @@
 
 #include "ithread.hpp"
 #include <thread>
-#include "ibuffer.hpp"
 #include "SerialPortAsyncBase.h"
 
 // Serial Programming Guide for POSIX Operating Systems
@@ -31,7 +30,7 @@
 
 /**
  * @brief the CSerialPort unix Base class unix串口基类
- * @see inherit 继承 CSerialPortBase
+ * @see inherit 继承 CSerialPortAsyncBase
  *
  */
 class CSerialPortUnixBase : public CSerialPortAsyncBase
@@ -55,37 +54,18 @@ public:
     ~CSerialPortUnixBase();
 
     /**
-     * @brief init 初始化函数
-     *
-     * @param portName [in] the port name串口名称 Windows:COM1 Linux:/dev/ttyS0
-     * @param baudRate [in] the baudRate 波特率
-     * @param parity [in] the parity 校验位
-     * @param dataBits [in] the dataBits 数据位
-     * @param stopbits [in] the stopbits 停止位
-     * @param flowControl [in] flowControl type 流控制
-     * @param readBufferSize [in] the read buffer size 读取缓冲区大小
-     */
-    void init(const char *portName,
-              int baudRate = itas109::BaudRate9600,
-              itas109::Parity parity = itas109::ParityNone,
-              itas109::DataBits dataBits = itas109::DataBits8,
-              itas109::StopBits stopbits = itas109::StopOne,
-              itas109::FlowControl flowControl = itas109::FlowNone,
-              unsigned int readBufferSize = 4096);
-
-    /**
      * @brief open serial port 打开串口
      *
      * @return
      * @retval true open success 打开成功
      * @retval false open failed 打开失败
      */
-    bool openPort();
+    bool openPort() override final;
     /**
      * @brief close 关闭串口
      *
      */
-    void closePort();
+    void closePort() override final;
 
     /**
      * @brief if serial port is open success 串口是否打开成功
@@ -94,14 +74,14 @@ public:
      * @retval true serial port open success 串口打开成功
      * @retval false serial port open failed 串口打开失败
      */
-    bool isOpen();
+    bool isOpen() override final;
 
     /**
      * @brief get used length of buffer 获取读取缓冲区已使用大小
      *
      * @return return used length of buffer 返回读取缓冲区已使用大小
      */
-    unsigned int getReadBufferUsedLen();
+    unsigned int getReadBufferUsedLen() override final;
 
     /**
      * @brief read specified length data 读取指定长度数据
@@ -112,7 +92,8 @@ public:
      * @retval -1 read error 读取错误
      * @retval [other] return number Of bytes read 返回读取字节数
      */
-    int readData(void *data, int size);
+    int readData(void *data, int size) override final;
+
     /**
      * @brief read all data 读取所有数据
      *
@@ -121,16 +102,8 @@ public:
      * @retval -1 read error 读取错误
      * @retval [other] return number Of bytes read 返回读取字节数
      */
-    int readAllData(void *data);
-    /**
-     * @brief read line data 读取一行字符串
-     * @todo Not implemented 未实现
-     *
-     * @param data
-     * @param size
-     * @return int
-     */
-    int readLineData(void *data, int size);
+    int readAllData(void *data) override final;
+
     /**
      * @brief write specified lenfth data 写入指定长度数据
      *
@@ -140,30 +113,7 @@ public:
      * @retval -1 read error 写入错误
      * @retval [other] return number Of bytes write 返回写入字节数
      */
-    int writeData(const void *data, int size);
-
-    /**
-     * @brief Set Debug Model 设置调试模式
-     * @details output serial port read and write details info 输出串口读写的详细信息
-     * @todo  Not implemented 未实现
-     *
-     * @param isDebug true if enable true为启用
-     */
-    void setDebugModel(bool isDebug);
-
-    /**
-     * @brief Set Read Interval Timeout millisecond
-     * @details use timer import effectiveness 使用定时器提高效率
-     *
-     * @param msecs read time timeout millisecond 读取间隔时间，单位：毫秒
-     */
-    void setReadIntervalTimeout(unsigned int msecs);
-
-    /**
-     * @brief setMinByteReadNotify set minimum byte of read notify 设置读取通知触发最小字节数
-     * @param minByteReadNotify minimum byte of read notify 读取通知触发最小字节数
-     */
-    void setMinByteReadNotify(unsigned int minByteReadNotify = 2);
+    int writeData(const void *data, int size) override final;
 
     /**
      * @brief flush buffers after write 等待发送完成后刷新缓冲区
@@ -172,7 +122,7 @@ public:
      * @retval true flush success 刷新缓冲区成功
      * @retval false flush failed 刷新缓冲区失败
      */
-    bool flushBuffers();
+    bool flushBuffers() override final;
 
     /**
      * @brief flush read buffers 刷新接收缓冲区
@@ -181,7 +131,7 @@ public:
      * @retval true flush success 刷新缓冲区成功
      * @retval false flush failed 刷新缓冲区失败
      */
-    bool flushReadBuffers();
+    bool flushReadBuffers() override final;
 
     /**
      * @brief flush write buffers 刷新发送缓冲区
@@ -190,112 +140,20 @@ public:
      * @retval true flush success 刷新缓冲区成功
      * @retval false flush failed 刷新缓冲区失败
      */
-    bool flushWriteBuffers();
-
-    /**
-     * @brief Set the Port Name object 设置串口名称
-     *
-     * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
-     */
-    void setPortName(const char *portName);
-    /**
-     * @brief Get the Port Name object 获取串口名称
-     *
-     * @return return port name 返回串口名称
-     */
-    const char *getPortName() const;
-
-    /**
-     * @brief Set the Baud Rate object 设置波特率
-     *
-     * @param baudRate [in] the baudRate 波特率
-     */
-    void setBaudRate(int baudRate);
-    /**
-     * @brief Get the Baud Rate object 获取波特率
-     *
-     * @return return baudRate 返回波特率
-     */
-    int getBaudRate() const;
-
-    /**
-     * @brief Set the Parity object 设置校验位
-     *
-     * @param parity [in] the parity 校验位 {@link itas109::Parity}
-     */
-    void setParity(itas109::Parity parity);
-    /**
-     * @brief Get the Parity object 获取校验位
-     *
-     * @return return parity 返回校验位 {@link itas109::Parity}
-     */
-    itas109::Parity getParity() const;
-    /**
-     * @brief Set the Data Bits object 设置数据位
-     *
-     * @param dataBits [in] the dataBits 数据位 {@link itas109::DataBits}
-     */
-    void setDataBits(itas109::DataBits dataBits);
-    /**
-     * @brief Get the Data Bits object 获取数据位
-     *
-     * @return return dataBits 返回数据位 {@link itas109::DataBits}
-     */
-    itas109::DataBits getDataBits() const;
-
-    /**
-     * @brief Set the Stop Bits object 设置停止位
-     *
-     * @param stopbits [in] the stopbits 停止位 {@link itas109::StopBits}
-     */
-    void setStopBits(itas109::StopBits stopbits);
-    /**
-     * @brief Get the Stop Bits object 获取停止位
-     *
-     * @return return stopbits 返回停止位 {@link itas109::StopBits}
-     */
-    itas109::StopBits getStopBits() const;
-
-    /**
-     * @brief Set the Flow Control object 设置流控制
-     * @todo Not implemented 未实现
-     *
-     * @param flowControl [in]
-     */
-    void setFlowControl(itas109::FlowControl flowControl);
-    /**
-     * @brief Get the Flow Control object 获取流控制
-     * @todo Not implemented 未实现
-     *
-     * @return itas109::FlowControl
-     */
-    itas109::FlowControl getFlowControl() const;
-
-    /**
-     * @brief Set the Read Buffer Size object 设置读取缓冲区大小
-     *
-     * @param size [in] read buffer size 读取缓冲区大小
-     */
-    void setReadBufferSize(unsigned int size);
-    /**
-     * @brief Get the Read Buffer Size object 获取读取缓冲区大小
-     *
-     * @return return read buffer size 返回读取缓冲区大小
-     */
-    unsigned int getReadBufferSize() const;
+    bool flushWriteBuffers() override final;
 
     /**
      * @brief Set the Dtr object 设置DTR
      *
      * @param set [in]
      */
-    void setDtr(bool set = true);
+    void setDtr(bool set = true) override final;
     /**
      * @brief Set the Rts object 设置RTS
      *
      * @param set [in]
      */
-    void setRts(bool set = true);
+    void setRts(bool set = true) override final;
 
 public:
     /**
@@ -366,13 +224,6 @@ private:
     int readDataUnix(void *data, int size);
 
 private:
-    int m_baudRate;
-    itas109::Parity m_parity;
-    itas109::DataBits m_dataBits;
-    itas109::StopBits m_stopbits;
-    itas109::FlowControl m_flowControl;
-    unsigned int m_readBufferSize;
-
     int fd; /* File descriptor for the port */
 
 private:

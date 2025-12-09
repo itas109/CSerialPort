@@ -186,7 +186,6 @@ public:
      */
     int setProtocolParser(itas109::IProtocolParser *parser);
 
-    
     /**
      * @brief Set Read Interval Timeout millisecond
      * @details use timer import effectiveness 使用定时器提高效率

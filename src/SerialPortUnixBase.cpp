@@ -3,6 +3,7 @@
 #include "CSerialPort/SerialPortUnixBase.h"
 #include "CSerialPort/SerialPortListener.h"
 #include "CSerialPort/IProtocolParser.h"
+#include "CSerialPort/ibuffer.hpp"
 #include "CSerialPort/ithread.hpp"
 #include "CSerialPort/itimer.hpp"
 #include "CSerialPort/ilog.hpp"
@@ -55,51 +56,12 @@ CSerialPortUnixBase::CSerialPortUnixBase()
 CSerialPortUnixBase::CSerialPortUnixBase(const char *portName)
     : CSerialPortAsyncBase(portName)
     , fd(-1)
-    , m_baudRate(itas109::BaudRate9600)
-    , m_parity(itas109::ParityNone)
-    , m_dataBits(itas109::DataBits8)
-    , m_stopbits(itas109::StopOne)
-    , m_flowControl(itas109::FlowNone)
-    , m_readBufferSize(4096)
     , m_isThreadRunning(false)
-    , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
-    itas109::IUtils::strncpy(m_portName, portName, 256);
-    m_byteReadBufferFullNotify = (unsigned int)(m_readBufferSize * 0.8);
 }
 
 CSerialPortUnixBase::~CSerialPortUnixBase()
 {
-    if (p_buffer)
-    {
-        delete p_buffer;
-        p_buffer = NULL;
-    }
-}
-
-void CSerialPortUnixBase::init(const char *portName,
-                               int baudRate /*= itas109::BaudRate::BaudRate9600*/,
-                               itas109::Parity parity /*= itas109::Parity::ParityNone*/,
-                               itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/,
-                               itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/,
-                               itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/,
-                               unsigned int readBufferSize /*= 4096*/)
-{
-    itas109::IUtils::strncpy(m_portName, portName, 256); // portName;//串口 /dev/ttySn, USB /dev/ttyUSBn
-    m_baudRate = baudRate;
-    m_parity = parity;
-    m_dataBits = dataBits;
-    m_stopbits = stopbits;
-    m_flowControl = flowControl;
-    m_readBufferSize = readBufferSize;
-    m_byteReadBufferFullNotify = (unsigned int)(m_readBufferSize * 0.8);
-
-    if (p_buffer)
-    {
-        delete p_buffer;
-        p_buffer = NULL;
-    }
-    p_buffer = new itas109::RingBuffer<char>(m_readBufferSize);
 }
 
 int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl)
@@ -346,24 +308,24 @@ void CSerialPortUnixBase::commThreadMonitor()
             }
             if (data)
             {
-                if (p_buffer)
+                if (p_readBuffer)
                 {
                     int len = readDataUnix(data, readbytes);
-                    p_buffer->write(data, len);
+                    p_readBuffer->write(data, len);
 #ifdef CSERIALPORT_DEBUG
                     char hexStr[201]; // 100*2 + 1
-                    LOG_INFO("write buffer(usedLen %u). len: %d, hex(top100): %s", p_buffer->getUsedLen(), len, itas109::IUtils::charToHexStr(hexStr, data, len > 100 ? 100 : len));
+                    LOG_INFO("write buffer(usedLen %u). len: %d, hex(top100): %s", p_readBuffer->getUsedLen(), len, itas109::IUtils::charToHexStr(hexStr, data, len > 100 ? 100 : len));
 #endif
 
                     if (p_protocolParser)
                     {
-                        int realSize = p_buffer->peek(bufferArray, 4096);
+                        int realSize = p_readBuffer->peek(bufferArray, 4096);
 
                         unsigned int skipSize = 0;
                         std::vector<itas109::IProtocolResult> results;
                         skipSize = p_protocolParser->parse(&bufferArray, realSize, results);
 
-                        p_buffer->skip(skipSize);
+                        p_readBuffer->skip(skipSize);
 
                         if (!results.empty())
                         {
@@ -383,21 +345,21 @@ void CSerialPortUnixBase::commThreadMonitor()
                                         p_timer->stop();
                                     }
 
-                                    if (p_buffer->isFull() || p_buffer->getUsedLen() > getByteReadBufferFullNotify())
+                                    if (p_readBuffer->isFull() || p_readBuffer->getUsedLen() > getByteReadBufferFullNotify())
                                     {
-                                        LOG_INFO("onReadEvent buffer full. portName: %s, readLen: %u", getPortName(), p_buffer->getUsedLen());
-                                        p_readEvent->onReadEvent(getPortName(), p_buffer->getUsedLen());
+                                        LOG_INFO("onReadEvent buffer full. portName: %s, readLen: %u", getPortName(), p_readBuffer->getUsedLen());
+                                        p_readEvent->onReadEvent(getPortName(), p_readBuffer->getUsedLen());
                                     }
                                     else
                                     {
-                                        p_timer->startOnce(m_readIntervalTimeoutMS, p_readEvent, &itas109::CSerialPortListener::onReadEvent, getPortName(), p_buffer->getUsedLen());
+                                        p_timer->startOnce(m_readIntervalTimeoutMS, p_readEvent, &itas109::CSerialPortListener::onReadEvent, getPortName(), p_readBuffer->getUsedLen());
                                     }
                                 }
                             }
                             else
                             {
-                                LOG_INFO("onReadEvent min read byte. portName: %s, readLen: %u", getPortName(), p_buffer->getUsedLen());
-                                p_readEvent->onReadEvent(getPortName(), p_buffer->getUsedLen());
+                                LOG_INFO("onReadEvent min read byte. portName: %s, readLen: %u", getPortName(), p_readBuffer->getUsedLen());
+                                p_readEvent->onReadEvent(getPortName(), p_readBuffer->getUsedLen());
                             }
                         }
                     }
@@ -447,7 +409,7 @@ bool CSerialPortUnixBase::openPort()
     itas109::IScopedLock lock(m_mutex);
 
     LOG_INFO("portName: %s, baudRate: %d, dataBit: %d, parity: %d, stopBit: %d, flowControl: %d, mode: %s, readBufferSize:%u(%u), readIntervalTimeoutMS: %u, minByteReadNotify: %u, byteReadBufferFullNotify: %u",
-             m_portName, m_baudRate, m_dataBits, m_parity, m_stopbits, m_flowControl, m_operateMode == itas109::AsynchronousOperate ? "async" : "sync", m_readBufferSize, p_buffer->getBufferSize(), m_readIntervalTimeoutMS, m_minByteReadNotify, m_byteReadBufferFullNotify);
+             m_portName, m_baudRate, m_dataBits, m_parity, m_stopbits, m_flowControl, m_operateMode == itas109::AsynchronousOperate ? "async" : "sync", m_readBufferSize, p_readBuffer->getBufferSize(), m_readIntervalTimeoutMS, m_minByteReadNotify, m_byteReadBufferFullNotify);
 
     bool bRet = false;
 
@@ -544,7 +506,7 @@ unsigned int CSerialPortUnixBase::getReadBufferUsedLen()
     {
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
         {
-            usedLen = p_buffer->getUsedLen();
+            usedLen = p_readBuffer->getUsedLen();
         }
         else
         {
@@ -597,7 +559,7 @@ int CSerialPortUnixBase::readData(void *data, int size)
     {
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
         {
-            iRet = p_buffer->read((char *)data, size);
+            iRet = p_readBuffer->read((char *)data, size);
         }
         else
         {
@@ -623,26 +585,6 @@ int CSerialPortUnixBase::readAllData(void *data)
     return readData(data, getReadBufferUsedLen());
 }
 
-int CSerialPortUnixBase::readLineData(void *data, int size)
-{
-    itas109::IScopedLock lock(m_mutexRead);
-
-    int iRet = -1;
-
-    if (isOpen())
-    {
-        m_lastError = itas109::/*SerialPortError::*/ ErrorNotImplemented;
-        iRet = -1;
-    }
-    else
-    {
-        m_lastError = itas109::/*SerialPortError::*/ ErrorNotOpen;
-        iRet = -1;
-    }
-
-    return iRet;
-}
-
 int CSerialPortUnixBase::writeData(const void *data, int size)
 {
     itas109::IScopedLock lock(m_mutexWrite);
@@ -666,21 +608,6 @@ int CSerialPortUnixBase::writeData(const void *data, int size)
 #endif
 
     return iRet;
-}
-
-void CSerialPortUnixBase::setDebugModel(bool isDebug)
-{
-    //@todo
-}
-
-void CSerialPortUnixBase::setReadIntervalTimeout(unsigned int msecs)
-{
-    m_readIntervalTimeoutMS = msecs;
-}
-
-void CSerialPortUnixBase::setMinByteReadNotify(unsigned int minByteReadNotify)
-{
-    m_minByteReadNotify = minByteReadNotify;
 }
 
 bool CSerialPortUnixBase::flushBuffers()
@@ -723,76 +650,6 @@ bool CSerialPortUnixBase::flushWriteBuffers()
     {
         return false;
     }
-}
-
-void CSerialPortUnixBase::setPortName(const char *portName)
-{
-    itas109::IUtils::strncpy(m_portName, portName, 256);
-}
-
-const char *CSerialPortUnixBase::getPortName() const
-{
-    return m_portName;
-}
-
-void CSerialPortUnixBase::setBaudRate(int baudRate)
-{
-    m_baudRate = baudRate;
-}
-
-int CSerialPortUnixBase::getBaudRate() const
-{
-    return m_baudRate;
-}
-
-void CSerialPortUnixBase::setParity(itas109::Parity parity)
-{
-    m_parity = parity;
-}
-
-itas109::Parity CSerialPortUnixBase::getParity() const
-{
-    return m_parity;
-}
-
-void CSerialPortUnixBase::setDataBits(itas109::DataBits dataBits)
-{
-    m_dataBits = dataBits;
-}
-
-itas109::DataBits CSerialPortUnixBase::getDataBits() const
-{
-    return m_dataBits;
-}
-
-void CSerialPortUnixBase::setStopBits(itas109::StopBits stopbits)
-{
-    m_stopbits = stopbits;
-}
-
-itas109::StopBits CSerialPortUnixBase::getStopBits() const
-{
-    return m_stopbits;
-}
-
-void CSerialPortUnixBase::setFlowControl(itas109::FlowControl flowControl)
-{
-    m_flowControl = flowControl;
-}
-
-itas109::FlowControl CSerialPortUnixBase::getFlowControl() const
-{
-    return m_flowControl;
-}
-
-void CSerialPortUnixBase::setReadBufferSize(unsigned int size)
-{
-    m_readBufferSize = size;
-}
-
-unsigned int CSerialPortUnixBase::getReadBufferSize() const
-{
-    return m_readBufferSize;
 }
 
 void CSerialPortUnixBase::setDtr(bool set /*= true*/)

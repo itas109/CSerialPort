@@ -1,6 +1,7 @@
 ﻿#include "CSerialPort/SerialPortWinBase.h"
 #include "CSerialPort/SerialPortListener.h"
 #include "CSerialPort/IProtocolParser.h"
+#include "CSerialPort/ibuffer.hpp"
 #include "CSerialPort/iutils.hpp"
 #include "CSerialPort/ithread.hpp"
 #include "CSerialPort/itimer.hpp"
@@ -28,12 +29,6 @@ CSerialPortWinBase::CSerialPortWinBase()
 
 CSerialPortWinBase::CSerialPortWinBase(const char *portName)
     : CSerialPortAsyncBase(portName)
-    , m_baudRate(itas109::BaudRate9600)
-    , m_parity(itas109::ParityNone)
-    , m_dataBits(itas109::DataBits8)
-    , m_stopbits(itas109::StopOne)
-    , m_flowControl(itas109::FlowNone)
-    , m_readBufferSize(4096)
     , m_handle(INVALID_HANDLE_VALUE)
     , m_overlapMonitor()
     , m_overlapRead()
@@ -42,11 +37,7 @@ CSerialPortWinBase::CSerialPortWinBase(const char *portName)
     , m_comTimeout()
     , m_communicationMutex()
     , m_isThreadRunning(false)
-    , p_buffer(new itas109::RingBuffer<char>(m_readBufferSize))
 {
-    itas109::IUtils::strncpy(m_portName, portName, 256);
-    m_byteReadBufferFullNotify = (unsigned int)(m_readBufferSize * 0.8);
-
     m_overlapMonitor.Internal = 0;
     m_overlapMonitor.InternalHigh = 0;
     m_overlapMonitor.Offset = 0;
@@ -57,37 +48,6 @@ CSerialPortWinBase::CSerialPortWinBase(const char *portName)
 CSerialPortWinBase::~CSerialPortWinBase()
 {
     CloseHandle(m_overlapMonitor.hEvent);
-
-    if (p_buffer)
-    {
-        delete p_buffer;
-        p_buffer = nullptr;
-    }
-}
-
-void CSerialPortWinBase::init(const char *portName,
-                              int baudRate /*= itas109::BaudRate::BaudRate9600*/,
-                              itas109::Parity parity /*= itas109::Parity::ParityNone*/,
-                              itas109::DataBits dataBits /*= itas109::DataBits::DataBits8*/,
-                              itas109::StopBits stopbits /*= itas109::StopBits::StopOne*/,
-                              itas109::FlowControl flowControl /*= itas109::FlowControl::FlowNone*/,
-                              unsigned int readBufferSize /*= 4096*/)
-{
-    itas109::IUtils::strncpy(m_portName, portName, 256);
-    m_baudRate = baudRate;
-    m_parity = parity;
-    m_dataBits = dataBits;
-    m_stopbits = stopbits;
-    m_flowControl = flowControl;
-    m_readBufferSize = readBufferSize;
-    m_byteReadBufferFullNotify = (unsigned int)(m_readBufferSize * 0.8);
-
-    if (p_buffer)
-    {
-        delete p_buffer;
-        p_buffer = nullptr;
-    }
-    p_buffer = new itas109::RingBuffer<char>(m_readBufferSize);
 }
 
 bool CSerialPortWinBase::openPort()
@@ -95,7 +55,7 @@ bool CSerialPortWinBase::openPort()
     itas109::IScopedLock lock(m_mutex);
 
     LOG_INFO("portName: %s, baudRate: %d, dataBit: %d, parity: %d, stopBit: %d, flowControl: %d, mode: %s, readBufferSize:%u(%u), readIntervalTimeoutMS: %u, minByteReadNotify: %u, byteReadBufferFullNotify: %u",
-             m_portName, m_baudRate, m_dataBits, m_parity, m_stopbits, m_flowControl, m_operateMode == itas109::AsynchronousOperate ? "async" : "sync", m_readBufferSize, p_buffer->getBufferSize(), m_readIntervalTimeoutMS, m_minByteReadNotify, m_byteReadBufferFullNotify);
+             m_portName, m_baudRate, m_dataBits, m_parity, m_stopbits, m_flowControl, m_operateMode == itas109::AsynchronousOperate ? "async" : "sync", m_readBufferSize, p_readBuffer->getBufferSize(), m_readIntervalTimeoutMS, m_minByteReadNotify, m_byteReadBufferFullNotify);
 
     bool bRet = false;
 
@@ -335,24 +295,24 @@ void CSerialPortWinBase::commThreadMonitor()
 
                 if (data)
                 {
-                    if (p_buffer)
+                    if (p_readBuffer)
                     {
                         int len = readDataWin(data, comstat.cbInQue);
-                        p_buffer->write(data, len);
+                        p_readBuffer->write(data, len);
 #ifdef CSERIALPORT_DEBUG
                         char hexStr[201]; // 100*2 + 1
-                        LOG_INFO("write buffer(usedLen %u). len: %d, hex(top100): %s", p_buffer->getUsedLen(), len, itas109::IUtils::charToHexStr(hexStr, data, len > 100 ? 100 : len));
+                        LOG_INFO("write buffer(usedLen %u). len: %d, hex(top100): %s", p_readBuffer->getUsedLen(), len, itas109::IUtils::charToHexStr(hexStr, data, len > 100 ? 100 : len));
 #endif
 
                         if (p_protocolParser)
                         {
-                            int realSize = p_buffer->peek(bufferArray, 4096);
+                            int realSize = p_readBuffer->peek(bufferArray, 4096);
 
                             unsigned int skipSize = 0;
                             std::vector<itas109::IProtocolResult> results;
                             skipSize = p_protocolParser->parse(bufferArray, realSize, results);
 
-                            p_buffer->skip(skipSize);
+                            p_readBuffer->skip(skipSize);
 
                             if (!results.empty())
                             {
@@ -372,21 +332,21 @@ void CSerialPortWinBase::commThreadMonitor()
                                             p_timer->stop();
                                         }
 
-                                        if (p_buffer->isFull() || p_buffer->getUsedLen() > getByteReadBufferFullNotify())
+                                        if (p_readBuffer->isFull() || p_readBuffer->getUsedLen() > getByteReadBufferFullNotify())
                                         {
-                                            LOG_INFO("onReadEvent buffer full. portName: %s, readLen: %u", getPortName(), p_buffer->getUsedLen());
-                                            p_readEvent->onReadEvent(getPortName(), p_buffer->getUsedLen());
+                                            LOG_INFO("onReadEvent buffer full. portName: %s, readLen: %u", getPortName(), p_readBuffer->getUsedLen());
+                                            p_readEvent->onReadEvent(getPortName(), p_readBuffer->getUsedLen());
                                         }
                                         else
                                         {
-                                            p_timer->startOnce(m_readIntervalTimeoutMS, p_readEvent, &itas109::CSerialPortListener::onReadEvent, getPortName(), p_buffer->getUsedLen());
+                                            p_timer->startOnce(m_readIntervalTimeoutMS, p_readEvent, &itas109::CSerialPortListener::onReadEvent, getPortName(), p_readBuffer->getUsedLen());
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    LOG_INFO("onReadEvent min read byte. portName: %s, readLen: %u", getPortName(), p_buffer->getUsedLen());
-                                    p_readEvent->onReadEvent(getPortName(), p_buffer->getUsedLen());
+                                    LOG_INFO("onReadEvent min read byte. portName: %s, readLen: %u", getPortName(), p_readBuffer->getUsedLen());
+                                    p_readEvent->onReadEvent(getPortName(), p_readBuffer->getUsedLen());
                                 }
                             }
                         }
@@ -416,7 +376,7 @@ unsigned int CSerialPortWinBase::getReadBufferUsedLen()
     {
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
         {
-            usedLen = p_buffer->getUsedLen();
+            usedLen = p_readBuffer->getUsedLen();
         }
         else
         {
@@ -504,7 +464,7 @@ int CSerialPortWinBase::readData(void *data, int size)
     {
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
         {
-            numBytes = p_buffer->read((char *)data, size);
+            numBytes = p_readBuffer->read((char *)data, size);
         }
         else
         {
@@ -535,26 +495,6 @@ int CSerialPortWinBase::readData(void *data, int size)
 int CSerialPortWinBase::readAllData(void *data)
 {
     return readData(data, getReadBufferUsedLen());
-}
-
-int CSerialPortWinBase::readLineData(void *data, int size)
-{
-    itas109::IScopedLock lock(m_mutexRead);
-
-    DWORD numBytes = 0;
-
-    if (isOpen())
-    {
-        m_lastError = itas109::/*SerialPortError::*/ ErrorNotImplemented;
-        numBytes = (DWORD)-1;
-    }
-    else
-    {
-        m_lastError = itas109::/*SerialPortError::*/ ErrorNotOpen;
-        numBytes = (DWORD)-1;
-    }
-
-    return numBytes;
 }
 
 int CSerialPortWinBase::writeData(const void *data, int size)
@@ -619,21 +559,6 @@ int CSerialPortWinBase::writeData(const void *data, int size)
     return numBytes;
 }
 
-void CSerialPortWinBase::setDebugModel(bool isDebug)
-{
-    //@todo
-}
-
-void CSerialPortWinBase::setReadIntervalTimeout(unsigned int msecs)
-{
-    m_readIntervalTimeoutMS = msecs;
-}
-
-void CSerialPortWinBase::setMinByteReadNotify(unsigned int minByteReadNotify)
-{
-    m_minByteReadNotify = minByteReadNotify;
-}
-
 bool CSerialPortWinBase::flushBuffers()
 {
     itas109::IScopedLock lock(m_mutex);
@@ -674,82 +599,6 @@ bool CSerialPortWinBase::flushWriteBuffers()
     {
         return false;
     }
-}
-
-void CSerialPortWinBase::setPortName(const char *portName)
-{
-    // Windows : COM1
-    // Linux : /dev/ttyS0
-    itas109::IUtils::strncpy(m_portName, portName, 256);
-}
-
-const char *CSerialPortWinBase::getPortName() const
-{
-    return m_portName;
-}
-
-void CSerialPortWinBase::setBaudRate(int baudRate)
-{
-    m_baudRate = baudRate;
-}
-
-int CSerialPortWinBase::getBaudRate() const
-{
-    return m_baudRate;
-}
-
-void CSerialPortWinBase::setParity(itas109::Parity parity)
-{
-    m_parity = parity;
-}
-
-itas109::Parity CSerialPortWinBase::getParity() const
-{
-    return m_parity;
-}
-
-void CSerialPortWinBase::setDataBits(itas109::DataBits dataBits)
-{
-    m_dataBits = dataBits;
-}
-
-itas109::DataBits CSerialPortWinBase::getDataBits() const
-{
-    return m_dataBits;
-}
-
-void CSerialPortWinBase::setStopBits(itas109::StopBits stopbits)
-{
-    m_stopbits = stopbits;
-}
-
-itas109::StopBits CSerialPortWinBase::getStopBits() const
-{
-    return m_stopbits;
-}
-
-void CSerialPortWinBase::setFlowControl(itas109::FlowControl flowControl)
-{
-    m_flowControl = flowControl;
-}
-
-itas109::FlowControl CSerialPortWinBase::getFlowControl() const
-{
-    return m_flowControl;
-}
-
-void CSerialPortWinBase::setReadBufferSize(unsigned int size)
-{
-    itas109::IScopedLock lock(m_mutex);
-    if (isOpen())
-    {
-        m_readBufferSize = size;
-    }
-}
-
-unsigned int CSerialPortWinBase::getReadBufferSize() const
-{
-    return m_readBufferSize;
 }
 
 void CSerialPortWinBase::setDtr(bool set /*= true*/)

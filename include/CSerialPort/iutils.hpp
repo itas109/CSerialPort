@@ -333,7 +333,7 @@ public:
         for (unsigned int i = 0; i < len; ++i)
         {
             dest[i * 2] = hexTable[(src[i] >> 4) & 0x0F]; // (unsigned char)src[i] / 16
-            dest[i * 2 + 1] = hexTable[src[i] & 0x0F]; // (unsigned char)src[i] % 16
+            dest[i * 2 + 1] = hexTable[src[i] & 0x0F];    // (unsigned char)src[i] % 16
         }
         dest[len * 2] = '\0';
 

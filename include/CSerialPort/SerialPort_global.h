@@ -176,7 +176,7 @@ enum StopBits
     StopTwo = 2         ///< 2 stop bit 2位停止位
 };
 
-/**            
+/**
  * @brief the FlowControl enum 流控制
  *
  */

@@ -58,7 +58,7 @@ public:
                       itas109::DataBits dataBits,
                       itas109::StopBits stopbits,
                       itas109::FlowControl flowControl,
-                      unsigned int readBufferSize) = 0;
+                      unsigned int readBufferSize);
 
     /**
      * @brief Set the Operate Mode object 设置串口操作模式
@@ -131,14 +131,6 @@ public:
     virtual int writeData(const void *data, int size) = 0;
 
     /**
-     * @brief Set Debug Model 设置调试模式
-     * @details output serial port read and write details info 输出串口读写的详细信息
-     *
-     * @param isDebug true if enable true为启用
-     */
-    virtual void setDebugModel(bool isDebug) = 0;
-
-    /**
      * @brief flush buffers after write 等待发送完成后刷新缓冲区
      *
      * @return
@@ -166,124 +158,6 @@ public:
     virtual bool flushWriteBuffers() = 0;
 
     /**
-     * @brief Get the Last Error object 获取最后的错误代码
-     *
-     * @return return last error code, refrence {@link itas109::SerialPortError} 错误代码
-     */
-    virtual int getLastError() const;
-
-    /**
-     * @brief Get the Last Error Code Message 获取错误码信息
-     *
-     * @return return last error code message 返回错误码信息
-     */
-    virtual const char *getLastErrorMsg() const;
-
-    /**
-     * @brief clear error 清除错误信息
-     *
-     */
-    virtual void clearError();
-
-    /**
-     * @brief Set the Port Name object 设置串口名称
-     *
-     * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
-     */
-    virtual void setPortName(const char *portName) = 0;
-
-    /**
-     * @brief Get the Port Name object 获取串口名称
-     *
-     * @return return port name 返回串口名称
-     */
-    virtual const char *getPortName() const = 0;
-
-    /**
-     * @brief Set the Baud Rate object 设置波特率
-     *
-     * @param baudRate [in] the baudRate 波特率
-     */
-    virtual void setBaudRate(int baudRate) = 0;
-
-    /**
-     * @brief Get the Baud Rate object 获取波特率
-     *
-     * @return return baudRate 返回波特率
-     */
-    virtual int getBaudRate() const = 0;
-
-    /**
-     * @brief Set the Parity object 设置校验位
-     *
-     * @param parity [in] the parity 校验位 {@link itas109::Parity}
-     */
-    virtual void setParity(itas109::Parity parity) = 0;
-
-    /**
-     * @brief Get the Parity object 获取校验位
-     *
-     * @return return parity 返回校验位 {@link itas109::Parity}
-     */
-    virtual itas109::Parity getParity() const = 0;
-
-    /**
-     * @brief Set the Data Bits object 设置数据位
-     *
-     * @param dataBits [in] the dataBits 数据位 {@link itas109::DataBits}
-     */
-    virtual void setDataBits(itas109::DataBits dataBits) = 0;
-
-    /**
-     * @brief Get the Data Bits object 获取数据位
-     *
-     * @return return dataBits 返回数据位 {@link itas109::DataBits}
-     */
-    virtual itas109::DataBits getDataBits() const = 0;
-
-    /**
-     * @brief Set the Stop Bits object 设置停止位
-     *
-     * @param stopbits [in] the stopbits 停止位 {@link itas109::StopBits}
-     */
-    virtual void setStopBits(itas109::StopBits stopbits) = 0;
-
-    /**
-     * @brief Get the Stop Bits object 获取停止位
-     *
-     * @return return stopbits 返回停止位 {@link itas109::StopBits}
-     */
-    virtual itas109::StopBits getStopBits() const = 0;
-
-    /**
-     * @brief Set the Flow Control object 设置流控制
-     *
-     * @param flowControl [in]
-     */
-    virtual void setFlowControl(itas109::FlowControl flowControl) = 0;
-
-    /**
-     * @brief Get the Flow Control object 获取流控制
-     *
-     * @return itas109::FlowControl
-     */
-    virtual itas109::FlowControl getFlowControl() const = 0;
-
-    /**
-     * @brief Set the Read Buffer Size object 设置读取缓冲区大小
-     *
-     * @param size [in] read buffer size 读取缓冲区大小
-     */
-    virtual void setReadBufferSize(unsigned int size) = 0;
-
-    /**
-     * @brief Get the Read Buffer Size object 获取读取缓冲区大小
-     *
-     * @return return read buffer size 返回读取缓冲区大小
-     */
-    virtual unsigned int getReadBufferSize() const = 0;
-
-    /**
      * @brief Set the Dtr object 设置DTR
      *
      * @param set [in]
@@ -297,10 +171,144 @@ public:
      */
     virtual void setRts(bool set = true) = 0;
 
+public:
+    /**
+     * @brief Set Debug Model 设置调试模式
+     * @details output serial port read and write details info 输出串口读写的详细信息
+     *
+     * @param isDebug true if enable true为启用
+     */
+    void setDebugModel(bool isDebug);
+
+    /**
+     * @brief Get the Last Error object 获取最后的错误代码
+     *
+     * @return return last error code, refrence {@link itas109::SerialPortError} 错误代码
+     */
+    int getLastError() const;
+
+    /**
+     * @brief Get the Last Error Code Message 获取错误码信息
+     *
+     * @return return last error code message 返回错误码信息
+     */
+    const char *getLastErrorMsg() const;
+
+    /**
+     * @brief clear error 清除错误信息
+     *
+     */
+    void clearError();
+
+    /**
+     * @brief Set the Port Name object 设置串口名称
+     *
+     * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
+     */
+    void setPortName(const char *portName);
+
+    /**
+     * @brief Get the Port Name object 获取串口名称
+     *
+     * @return return port name 返回串口名称
+     */
+    const char *getPortName() const;
+
+    /**
+     * @brief Set the Baud Rate object 设置波特率
+     *
+     * @param baudRate [in] the baudRate 波特率
+     */
+    void setBaudRate(int baudRate);
+
+    /**
+     * @brief Get the Baud Rate object 获取波特率
+     *
+     * @return return baudRate 返回波特率
+     */
+    int getBaudRate() const;
+
+    /**
+     * @brief Set the Parity object 设置校验位
+     *
+     * @param parity [in] the parity 校验位 {@link itas109::Parity}
+     */
+    void setParity(itas109::Parity parity);
+
+    /**
+     * @brief Get the Parity object 获取校验位
+     *
+     * @return return parity 返回校验位 {@link itas109::Parity}
+     */
+    itas109::Parity getParity() const;
+
+    /**
+     * @brief Set the Data Bits object 设置数据位
+     *
+     * @param dataBits [in] the dataBits 数据位 {@link itas109::DataBits}
+     */
+    void setDataBits(itas109::DataBits dataBits);
+
+    /**
+     * @brief Get the Data Bits object 获取数据位
+     *
+     * @return return dataBits 返回数据位 {@link itas109::DataBits}
+     */
+    itas109::DataBits getDataBits() const;
+
+    /**
+     * @brief Set the Stop Bits object 设置停止位
+     *
+     * @param stopbits [in] the stopbits 停止位 {@link itas109::StopBits}
+     */
+    void setStopBits(itas109::StopBits stopbits);
+
+    /**
+     * @brief Get the Stop Bits object 获取停止位
+     *
+     * @return return stopbits 返回停止位 {@link itas109::StopBits}
+     */
+    itas109::StopBits getStopBits() const;
+
+    /**
+     * @brief Set the Flow Control object 设置流控制
+     *
+     * @param flowControl [in]
+     */
+    void setFlowControl(itas109::FlowControl flowControl);
+
+    /**
+     * @brief Get the Flow Control object 获取流控制
+     *
+     * @return itas109::FlowControl
+     */
+    itas109::FlowControl getFlowControl() const;
+
+    /**
+     * @brief Set the Read Buffer Size object 设置读取缓冲区大小
+     *
+     * @param size [in] read buffer size 读取缓冲区大小
+     */
+    void setReadBufferSize(unsigned int size);
+
+    /**
+     * @brief Get the Read Buffer Size object 获取读取缓冲区大小
+     *
+     * @return return read buffer size 返回读取缓冲区大小
+     */
+    virtual unsigned int getReadBufferSize() const;
+
 protected:
     int m_lastError;                    ///< last error code 最后的错误代码
     itas109::OperateMode m_operateMode; ///< operate mode 串口操作类型
-    char m_portName[256];               ///< port name 串口名称
+
+    char m_portName[256];                    ///< port name 串口名称
+    int m_baudRate;                          ///< badurate 波特率
+    itas109::Parity m_parity;                ///< parity 校验位(0-4)
+    itas109::DataBits m_dataBits;            ///< data bit 数据位(5-8)
+    itas109::StopBits m_stopbits;            ///< stop bit 停止位(1 1.5 2)
+    enum itas109::FlowControl m_flowControl; ///< flow control 流控(0-2)
+    unsigned int m_readBufferSize;           ///< read buffer size 读取缓冲区大小
 
 private:
 };

@@ -23,6 +23,8 @@ class CSerialPortListener;
 class CSerialPortHotPlugListener;
 class CSerialPortHotPlug;
 template <class T>
+class RingBuffer;
+template <class T>
 class ITimer;
 class IProtocolParser;
 } // namespace itas109
@@ -31,7 +33,7 @@ class IProtocolParser;
  * @brief the CSerialPort Async Base class 异步串口基类
  *
  */
-class CSerialPortAsyncBase: public CSerialPortBase
+class CSerialPortAsyncBase : public CSerialPortBase
 {
 public:
     /**
@@ -39,17 +41,38 @@ public:
      *
      */
     CSerialPortAsyncBase();
+
     /**
      * @brief Construct a new CSerialPortAsyncBase object 通过串口名称构造函数
      *
      * @param portName [in] the port name 串口名称 Windows:COM1 Linux:/dev/ttyS0
      */
     CSerialPortAsyncBase(const char *portName);
+
     /**
      * @brief Destroy the CSerialPortAsyncBase object 析构函数
      *
      */
     virtual ~CSerialPortAsyncBase();
+
+    /**
+     * @brief init 初始化函数
+     *
+     * @param portName [in] the port name串口名称 Windows:COM1 Linux:/dev/ttyS0
+     * @param baudRate [in] the baudRate 波特率
+     * @param parity [in] the parity 校验位
+     * @param dataBits [in] the dataBits 数据位
+     * @param stopbits [in] the stopbits 停止位
+     * @param flowControl [in] flowControl type 流控制
+     * @param readBufferSize [in] the read buffer size 读取缓冲区大小
+     */
+    void init(const char *portName,
+              int baudRate,
+              itas109::Parity parity,
+              itas109::DataBits dataBits,
+              itas109::StopBits stopbits,
+              itas109::FlowControl flowControl,
+              unsigned int readBufferSize) override final;
 
     /**
      * @brief connect read event 连接读取事件
@@ -100,58 +123,54 @@ public:
     int setProtocolParser(itas109::IProtocolParser *parser);
 
     /**
-     * @brief get used length of buffer 获取读取缓冲区已使用大小
-     *
-     * @return return used length of buffer 返回读取缓冲区已使用大小
-     */
-    virtual unsigned int getReadBufferUsedLen() = 0;
-
-    /**
      * @brief Set Read Interval Timeout millisecond
      * @details use timer import effectiveness 使用定时器提高效率
      *
      * @param msecs read time timeout millisecond 读取间隔时间，单位：毫秒
      */
-    virtual void setReadIntervalTimeout(unsigned int msecs) = 0;
+    void setReadIntervalTimeout(unsigned int msecs);
 
     /**
      * @brief Get Read Interval Timeout millisecond
      *
      * @return read time timeout millisecond 读取间隔时间，单位：毫秒
      */
-    virtual unsigned int getReadIntervalTimeout();
+    unsigned int getReadIntervalTimeout() const;
 
     /**
      * @brief setMinByteReadNotify set minimum byte of read notify 设置读取通知触发最小字节数
      * @param minByteReadNotify minimum byte of read notify 读取通知触发最小字节数
      */
-    virtual void setMinByteReadNotify(unsigned int minByteReadNotify) = 0;
+    void setMinByteReadNotify(unsigned int minByteReadNotify);
 
     /**
      * @brief getMinByteReadNotify get minimum byte of read notify 获取读取通知触发最小字节数
      * @return minimum byte of read notify 读取通知触发最小字节数
      */
-    virtual unsigned int getMinByteReadNotify();
+    unsigned int getMinByteReadNotify() const;
 
     /**
      * @brief setByteReadBufferFullNotify set byte of read buffer full notify 设置读取通知触发缓冲区字节数
      * @param byteReadBufferFullNotify byte of read buffer full notify 读取通知触发缓冲区字节数
      */
-    virtual void setByteReadBufferFullNotify(unsigned int byteReadBufferFullNotify);
+    void setByteReadBufferFullNotify(unsigned int byteReadBufferFullNotify);
 
     /**
      * @brief getByteReadBufferFullNotify get byte of read buffer full notify 获取读取通知触发缓冲区字节数
      * @return byte of read buffer full notify 读取通知触发缓冲区字节数
      */
-    virtual unsigned int getByteReadBufferFullNotify();
+    unsigned int getByteReadBufferFullNotify() const;
 
 protected:
-    unsigned int m_readIntervalTimeoutMS;                   ///< read time timeout millisecond 读取间隔时间，单位：毫秒
-    unsigned int m_minByteReadNotify;                       ///< minimum byte of read notify 读取通知触发最小字节数
-    unsigned int m_byteReadBufferFullNotify;                ///< byte of read buffer full notify 读取通知触发缓冲区字节数
-    itas109::IMutex m_mutex;                                ///< mutex 互斥锁
-    itas109::IMutex m_mutexRead;                            ///< read mutex 读互斥锁
-    itas109::IMutex m_mutexWrite;                           ///< write mutex 写互斥锁
+    unsigned int m_readIntervalTimeoutMS;    ///< read time timeout millisecond 读取间隔时间，单位：毫秒
+    unsigned int m_minByteReadNotify;        ///< minimum byte of read notify 读取通知触发最小字节数
+    unsigned int m_byteReadBufferFullNotify; ///< byte of read buffer full notify 读取通知触发缓冲区字节数
+
+    itas109::IMutex m_mutex;      ///< mutex 互斥锁
+    itas109::IMutex m_mutexRead;  ///< read mutex 读互斥锁
+    itas109::IMutex m_mutexWrite; ///< write mutex 写互斥锁
+
+    itas109::RingBuffer<char> *p_readBuffer;                ///< receive buffer 读取缓冲区
     itas109::CSerialPortListener *p_readEvent;              ///< read event 读取事件
     itas109::ITimer<itas109::CSerialPortListener> *p_timer; ///< read timer 读取定时器
     itas109::CSerialPortHotPlug *p_serialPortHotPlug;       ///< serial port hot plug class 串口热插拔类
