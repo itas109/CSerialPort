@@ -19,7 +19,7 @@
 #define MACRO_TO_STRING(x) STRINGIFY(x)
 
 // vs2013 not support noexcept
-#if defined(_MSC_VER) && (1800 == _MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
 #define NOEXCEPT
 #else
 #define NOEXCEPT noexcept
