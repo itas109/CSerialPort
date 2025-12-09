@@ -62,7 +62,7 @@ public:
     IUtils() {};
     ~IUtils() {};
 
-    static size_t strlen(const char *str) noexcept
+    static size_t strlen(const char *str) NOEXCEPT
     {
         // assert(str != nullptr);
 
