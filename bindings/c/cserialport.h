@@ -101,7 +101,7 @@ extern "C"
 
     C_DLL_EXPORT void CSerialPortAvailablePortInfosFree(struct SerialPortInfoArray *portInfoArray);
 
-    C_DLL_EXPORT i_handle_t CSerialPortMalloc();
+    C_DLL_EXPORT i_handle_t CSerialPortMalloc(void);
 
     C_DLL_EXPORT void CSerialPortFree(i_handle_t handle);
 
