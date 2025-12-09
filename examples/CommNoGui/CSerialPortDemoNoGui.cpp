@@ -31,8 +31,35 @@ std::string char2hexstr(const char *str, int len)
     return result;
 }
 
-int countRead = 0;
+unsigned int countRead = 0;
 
+inline void onReadData(CSerialPort *sp, const char *portName, unsigned int readBufferLen, unsigned int& countRead)
+{
+    if (readBufferLen > 0)
+    {
+        char *data = new char[readBufferLen + 1]; // '\0'
+
+        if (data)
+        {
+            // read
+            int recLen = sp->readData(data, readBufferLen);
+
+            if (recLen > 0)
+            {
+                data[recLen] = '\0';
+                printf("%s - Count: %d, Length: %d, Str: %s, Hex: %s\n", portName, ++countRead, recLen, data, char2hexstr(data, recLen).c_str());
+
+                // return receive data
+                sp->writeData(data, recLen);
+            }
+
+            delete[] data;
+            data = nullptr;
+        }
+    }
+}
+
+#if !defined(CSERIALPORT_NATIVE_SYNC)
 class MyListener : public CSerialPortListener, public CSerialPortHotPlugListener
 {
 public:
@@ -41,28 +68,7 @@ public:
 
     void onReadEvent(const char *portName, unsigned int readBufferLen)
     {
-        if (readBufferLen > 0)
-        {
-            char *data = new char[readBufferLen + 1]; // '\0'
-
-            if (data)
-            {
-                // read
-                int recLen = p_sp->readData(data, readBufferLen);
-
-                if (recLen > 0)
-                {
-                    data[recLen] = '\0';
-                    printf("%s - Count: %d, Length: %d, Str: %s, Hex: %s\n", portName, ++countRead, recLen, data, char2hexstr(data, recLen).c_str());
-
-                    // return receive data
-                    p_sp->writeData(data, recLen);
-                }
-
-                delete[] data;
-                data = nullptr;
-            }
-        }
+        onReadData(p_sp, portName, readBufferLen, countRead);
     };
 
     void onHotPlugEvent(const char *portName, int isAdd)
@@ -73,17 +79,20 @@ public:
 private:
     CSerialPort *p_sp;
 };
+#endif
 
 int main()
 {
     CSerialPort sp;
     printf("Version: %s\n\n", sp.getVersion());
 
+#if !defined(CSERIALPORT_NATIVE_SYNC)
     MyListener listener(&sp);
     // connect for read
     sp.connectReadEvent(&listener);
     // connect for hot plug
     sp.connectHotPlugEvent(&listener);
+#endif
 
     std::vector<SerialPortInfo> m_availablePortsList = CSerialPortInfo::availablePortInfos();
 
@@ -129,8 +138,11 @@ int main()
                 itas109::FlowNone,     // flow
                 4096                   // read buffer size
         );
+
+#if !defined(CSERIALPORT_NATIVE_SYNC)
         sp.setReadIntervalTimeout(0);         // read interval timeout 0ms
         sp.setByteReadBufferFullNotify(3276); // 4096*0.8 // buffer full notify
+#endif
 
         sp.open();
         printf("Open %s %s\n", portName, sp.isOpen() ? "Success" : "Failed");
@@ -150,6 +162,8 @@ int main()
 
         for (;;)
         {
+            onReadData(&sp, portName, sp.getReadBufferUsedLen(), countRead);
+
             imsleep(1);
         }
     }

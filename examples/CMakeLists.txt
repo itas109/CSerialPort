@@ -17,7 +17,9 @@ cmake_minimum_required(VERSION 3.10.0)
 add_subdirectory(CommNoGui)
 
 # CommNoGuiProtocol
+if (NOT CSERIALPORT_ENABLE_NATIVE_SYNC)
 add_subdirectory(CommNoGuiProtocol)
+endif ()
 
 if(WIN32)
 find_package(MFC)

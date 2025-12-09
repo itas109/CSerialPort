@@ -32,6 +32,7 @@ using namespace itas109;
 static char portName1[256] = {0};
 static char portName2[256] = {0};
 
+#if !defined(CSERIALPORT_NATIVE_SYNC)
 class ReadEventNotify
 {
 public:
@@ -337,7 +338,7 @@ public:
         ProtocolEventNotify::getInstance().notify(results);
     }
 };
-
+#endif
 
 class CSerialPortTests
 {
@@ -523,6 +524,7 @@ TEST_CASE_FIXTURE(CSerialPortTests, "read_sync_4_1")
     CHECK(0 == strcmp(writeData, readData));
 }
 
+#if !defined(CSERIALPORT_NATIVE_SYNC)
 // #5_1 read async 异步读
 TEST_CASE_FIXTURE(CSerialPortTests, "read_async_5_1")
 {
@@ -989,7 +991,7 @@ TEST_CASE_FIXTURE(CSerialPortTests, "nmea0183_protocol_parse_6_3")
         REQUIRE(0 == result.size());
     }
 }
-
+#endif
 
 int main(int argc, char **argv)
 {
