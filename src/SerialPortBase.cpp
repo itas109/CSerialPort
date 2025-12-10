@@ -46,6 +46,11 @@ void CSerialPortBase::setOperateMode(itas109::OperateMode operateMode)
     m_operateMode = operateMode;
 }
 
+int CSerialPortBase::readAllData(void *data)
+{
+    return readData(data, getReadBufferUsedLen());
+}
+
 void CSerialPortBase::setDebugModel(bool isDebug)
 {
     // TODO

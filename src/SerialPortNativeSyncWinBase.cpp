@@ -255,11 +255,6 @@ int CSerialPortNativeSyncWinBase::readData(void *data, int size)
     return numBytes;
 }
 
-int CSerialPortNativeSyncWinBase::readAllData(void *data)
-{
-    return readData(data, getReadBufferUsedLen());
-}
-
 int CSerialPortNativeSyncWinBase::writeData(const void *data, int size)
 {
     //itas109::IScopedLock lock(m_mutexWrite);

@@ -95,16 +95,6 @@ public:
     int readData(void *data, int size) override final;
 
     /**
-     * @brief read all data 读取所有数据
-     *
-     * @param data [out] read data result 读取结果
-     * @return return number Of bytes read 返回读取字节数
-     * @retval -1 read error 读取错误
-     * @retval [other] return number Of bytes read 返回读取字节数
-     */
-    int readAllData(void *data) override final;
-
-    /**
      * @brief write specified lenfth data 写入指定长度数据
      *
      * @param data [in] write data 待写入数据

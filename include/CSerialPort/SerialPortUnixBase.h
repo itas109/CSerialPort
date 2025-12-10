@@ -95,16 +95,6 @@ public:
     int readData(void *data, int size) override final;
 
     /**
-     * @brief read all data 读取所有数据
-     *
-     * @param data [out] read data result 读取结果
-     * @return return number Of bytes read 返回读取字节数
-     * @retval -1 read error 读取错误
-     * @retval [other] return number Of bytes read 返回读取字节数
-     */
-    int readAllData(void *data) override final;
-
-    /**
      * @brief write specified lenfth data 写入指定长度数据
      *
      * @param data [in] write data 待写入数据
@@ -155,15 +145,6 @@ public:
      */
     void setRts(bool set = true) override final;
 
-public:
-    /**
-     * @brief isThreadRunning 是否启动多线程
-     * @return
-     * @retval true thread running 多线程已启动
-     * @retval false thread not running 多线程未启动
-     */
-    bool isThreadRunning();
-
 private:
     /**
      * @brief rate2Constant baudrate to constant 波特率转为unix常量
@@ -190,29 +171,6 @@ private:
                 itas109::FlowControl flowControl = itas109::FlowNone);
 
     /**
-     * @brief thread monitor 多线程监视器
-     *
-     */
-    void commThreadMonitor();
-
-    /**
-     * @brief start thread monitor 启动多线程监视器
-     *
-     * @return
-     * @retval true start success 启动成功
-     * @retval false start failed 启动失败
-     */
-    bool startThreadMonitor();
-    /**
-     * @brief stop thread monitor 停止多线程监视器
-     *
-     * @return
-     * @retval true stop success 停止成功
-     * @retval false stop failed 停止失败
-     */
-    bool stopThreadMonitor();
-
-    /**
      * @brief read specified length data 读取指定长度数据
      *
      * @param data [out] read data result 读取结果
@@ -221,16 +179,25 @@ private:
      * @retval -1 read error 读取错误
      * @retval [other] return number Of bytes read 返回读取字节数
      */
-    int readDataUnix(void *data, int size);
+    int readDataNative(void *data, int size) override final;
+
+     /**
+     * @brief get used length of native buffer 获取系统读缓冲区已使用大小
+     *
+     * @return return used length of native buffer 返回系统读缓冲区已使用大小
+     */
+    unsigned int getReadBufferUsedLenNative() override final;
+
+     /**
+     * @brief before stop read thread 停止读取多线程之前的操作
+     *
+     * @return
+     * @retval true wait comm event success 等待串口事件成功
+     * @retval false wait comm event failed 等待串口事件失败
+     */
+    bool waitCommEventNative() override final;
 
 private:
     int fd; /* File descriptor for the port */
-
-private:
-    std::thread m_monitorThread; /**< read thread */
-
-    bool m_isThreadRunning;
-
-    itas109::RingBuffer<char> *p_buffer; ///< receive buffer
 };
 #endif //__CSERIALPORT_UNIX_BASE_H__

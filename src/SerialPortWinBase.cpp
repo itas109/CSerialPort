@@ -35,8 +35,6 @@ CSerialPortWinBase::CSerialPortWinBase(const char *portName)
     , m_overlapWrite()
     , m_comConfigure()
     , m_comTimeout()
-    , m_communicationMutex()
-    , m_isThreadRunning(false)
 {
     m_overlapMonitor.Internal = 0;
     m_overlapMonitor.InternalHigh = 0;
@@ -155,8 +153,8 @@ bool CSerialPortWinBase::openPort()
                     // only need receive event
                     if (SetCommMask(m_handle, EV_RXCHAR))
                     {
-                        m_isThreadRunning = true;
-                        bRet = startThreadMonitor();
+                        m_isEnableReadThread = true;
+                        bRet = startReadThread();
 
                         if (bRet)
                         {
@@ -164,7 +162,7 @@ bool CSerialPortWinBase::openPort()
                         }
                         else
                         {
-                            m_isThreadRunning = false;
+                            m_isEnableReadThread = false;
                             m_lastError = itas109::/*SerialPortError::*/ ErrorInner;
                         }
                     }
@@ -240,7 +238,7 @@ void CSerialPortWinBase::closePort()
 {
     if (isOpen())
     {
-        stopThreadMonitor();
+        stopReadThread();
 
         if (INVALID_HANDLE_VALUE != m_handle)
         {
@@ -253,113 +251,6 @@ void CSerialPortWinBase::closePort()
         }
 
         ResetEvent(m_overlapMonitor.hEvent);
-    }
-}
-
-void CSerialPortWinBase::commThreadMonitor()
-{
-    DWORD dwError = 0;
-    COMSTAT comstat;
-    DWORD eventMask = 0;
-
-    int isNew = 0;
-    char dataArray[4096];
-    char bufferArray[4096];
-    for (; m_isThreadRunning;)
-    {
-        eventMask = 0;
-        if (!WaitCommEvent(m_handle, &eventMask, &m_overlapMonitor))
-        {
-            if (ERROR_IO_PENDING == GetLastError())
-            {
-                WaitForSingleObject(m_overlapMonitor.hEvent, INFINITE);
-            }
-        }
-
-        if (eventMask & EV_RXCHAR)
-        {
-            ClearCommError(m_handle, &dwError, &comstat);
-            if (comstat.cbInQue >= m_minByteReadNotify)
-            {
-                char *data = nullptr;
-                if (comstat.cbInQue <= 4096)
-                {
-                    data = dataArray;
-                    isNew = 0;
-                }
-                else
-                {
-                    data = new char[comstat.cbInQue];
-                    isNew = 1;
-                }
-
-                if (data)
-                {
-                    if (p_readBuffer)
-                    {
-                        int len = readDataWin(data, comstat.cbInQue);
-                        p_readBuffer->write(data, len);
-#ifdef CSERIALPORT_DEBUG
-                        char hexStr[201]; // 100*2 + 1
-                        LOG_INFO("write buffer(usedLen %u). len: %d, hex(top100): %s", p_readBuffer->getUsedLen(), len, itas109::IUtils::charToHexStr(hexStr, data, len > 100 ? 100 : len));
-#endif
-
-                        if (p_protocolParser)
-                        {
-                            int realSize = p_readBuffer->peek(bufferArray, 4096);
-
-                            unsigned int skipSize = 0;
-                            std::vector<itas109::IProtocolResult> results;
-                            skipSize = p_protocolParser->parse(bufferArray, realSize, results);
-
-                            p_readBuffer->skip(skipSize);
-
-                            if (!results.empty())
-                            {
-                                p_protocolParser->onProtocolEvent(results);
-                            }
-                        }
-                        else
-                        {
-                            if (p_readEvent)
-                            {
-                                if (m_readIntervalTimeoutMS > 0)
-                                {
-                                    if (p_timer)
-                                    {
-                                        if (p_timer->isRunning())
-                                        {
-                                            p_timer->stop();
-                                        }
-
-                                        if (p_readBuffer->isFull() || p_readBuffer->getUsedLen() > getByteReadBufferFullNotify())
-                                        {
-                                            LOG_INFO("onReadEvent buffer full. portName: %s, readLen: %u", getPortName(), p_readBuffer->getUsedLen());
-                                            p_readEvent->onReadEvent(getPortName(), p_readBuffer->getUsedLen());
-                                        }
-                                        else
-                                        {
-                                            p_timer->startOnce(m_readIntervalTimeoutMS, p_readEvent, &itas109::CSerialPortListener::onReadEvent, getPortName(), p_readBuffer->getUsedLen());
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    LOG_INFO("onReadEvent min read byte. portName: %s, readLen: %u", getPortName(), p_readBuffer->getUsedLen());
-                                    p_readEvent->onReadEvent(getPortName(), p_readBuffer->getUsedLen());
-                                }
-                            }
-                        }
-                    }
-
-                    if (isNew)
-                    {
-                        delete[] data;
-                        data = nullptr;
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -380,10 +271,7 @@ unsigned int CSerialPortWinBase::getReadBufferUsedLen()
         }
         else
         {
-            DWORD dwError = 0;
-            COMSTAT comstat;
-            ClearCommError(m_handle, &dwError, &comstat);
-            usedLen = comstat.cbInQue;
+            usedLen = getReadBufferUsedLenNative();
         }
 
 #ifdef CSERIALPORT_DEBUG
@@ -395,58 +283,6 @@ unsigned int CSerialPortWinBase::getReadBufferUsedLen()
     }
 
     return usedLen;
-}
-
-int CSerialPortWinBase::readDataWin(void *data, int size)
-{
-    itas109::IScopedLock lock(m_mutexRead);
-
-    DWORD numBytes = 0;
-
-    if (isOpen())
-    {
-        if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
-        {
-            m_overlapRead.Internal = 0;
-            m_overlapRead.InternalHigh = 0;
-            m_overlapRead.Offset = 0;
-            m_overlapRead.OffsetHigh = 0;
-            m_overlapRead.hEvent = CreateEvent(nullptr, true, false, nullptr);
-
-            if (!ReadFile(m_handle, (void *)data, (DWORD)size, &numBytes, &m_overlapRead))
-            {
-                if (ERROR_IO_PENDING == GetLastError())
-                {
-                    GetOverlappedResult(m_handle, &m_overlapRead, &numBytes, true);
-                }
-                else
-                {
-                    m_lastError = itas109::/*SerialPortError::*/ ErrorReadFailed;
-                    numBytes = (DWORD)-1;
-                }
-            }
-
-            CloseHandle(m_overlapRead.hEvent);
-        }
-        else
-        {
-            if (ReadFile(m_handle, (void *)data, (DWORD)size, &numBytes, nullptr))
-            {
-            }
-            else
-            {
-                m_lastError = itas109::/*SerialPortError::*/ ErrorReadFailed;
-                numBytes = (DWORD)-1;
-            }
-        }
-    }
-    else
-    {
-        m_lastError = itas109::/*SerialPortError::*/ ErrorNotOpen;
-        numBytes = (DWORD)-1;
-    }
-
-    return numBytes;
 }
 
 int CSerialPortWinBase::readData(void *data, int size)
@@ -492,11 +328,6 @@ int CSerialPortWinBase::readData(void *data, int size)
     return numBytes;
 }
 
-int CSerialPortWinBase::readAllData(void *data)
-{
-    return readData(data, getReadBufferUsedLen());
-}
-
 int CSerialPortWinBase::writeData(const void *data, int size)
 {
     itas109::IScopedLock lock(m_mutexWrite);
@@ -512,7 +343,7 @@ int CSerialPortWinBase::writeData(const void *data, int size)
 
 #ifdef CSERIALPORT_DEBUG
         char hexStr[201]; // 100*2 + 1
-        LOG_INFO("write. len: %d, hex(top100): %s", size, itas109::IUtils::charToHexStr(hexStr, (const char *)data, size > 100 ? 100 : size));
+        LOG_INFO("%s write. len: %d, hex(top100): %s", m_portName, size, itas109::IUtils::charToHexStr(hexStr, (const char *)data, size > 100 ? 100 : size));
 #endif
 
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
@@ -619,38 +450,86 @@ void CSerialPortWinBase::setRts(bool set /*= true*/)
     }
 }
 
-bool CSerialPortWinBase::startThreadMonitor()
+void CSerialPortWinBase::beforeStopReadThread()
 {
-    // start event thread monitor
-    bool bRet = false;
-    try
-    {
-        m_monitorThread = std::thread(&CSerialPortWinBase::commThreadMonitor, this);
-        bRet = true;
-    }
-    catch (...)
-    {
-        bRet = false;
-    }
-
-    return bRet;
-}
-
-bool CSerialPortWinBase::stopThreadMonitor()
-{
-    m_isThreadRunning = false;
-
     // 唤醒等待的线程，避免join()阻塞
     if (INVALID_HANDLE_VALUE != m_handle)
     {
         SetCommMask(m_handle, 0);          // stop WaitCommEvent
         SetEvent(m_overlapMonitor.hEvent); // stop WaitForSingleObject
     }
+}
 
-    if (m_monitorThread.joinable())
+int CSerialPortWinBase::readDataNative(void *data, int size)
+{
+    itas109::IScopedLock lock(m_mutexRead);
+
+    DWORD numBytes = 0;
+
+    if (isOpen())
     {
-        m_monitorThread.join();
+        if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
+        {
+            m_overlapRead.Internal = 0;
+            m_overlapRead.InternalHigh = 0;
+            m_overlapRead.Offset = 0;
+            m_overlapRead.OffsetHigh = 0;
+            m_overlapRead.hEvent = CreateEvent(nullptr, true, false, nullptr);
+
+            if (!ReadFile(m_handle, (void *)data, (DWORD)size, &numBytes, &m_overlapRead))
+            {
+                if (ERROR_IO_PENDING == GetLastError())
+                {
+                    GetOverlappedResult(m_handle, &m_overlapRead, &numBytes, true);
+                }
+                else
+                {
+                    m_lastError = itas109::/*SerialPortError::*/ ErrorReadFailed;
+                    numBytes = (DWORD)-1;
+                }
+            }
+
+            CloseHandle(m_overlapRead.hEvent);
+        }
+        else
+        {
+            if (ReadFile(m_handle, (void *)data, (DWORD)size, &numBytes, nullptr))
+            {
+            }
+            else
+            {
+                m_lastError = itas109::/*SerialPortError::*/ ErrorReadFailed;
+                numBytes = (DWORD)-1;
+            }
+        }
+    }
+    else
+    {
+        m_lastError = itas109::/*SerialPortError::*/ ErrorNotOpen;
+        numBytes = (DWORD)-1;
     }
 
-    return true;
+    return numBytes;
+}
+
+unsigned int CSerialPortWinBase::getReadBufferUsedLenNative()
+{
+    DWORD dwError = 0;
+    COMSTAT comstat;
+    ClearCommError(m_handle, &dwError, &comstat);
+    return (unsigned int)comstat.cbInQue;
+}
+
+bool CSerialPortWinBase::waitCommEventNative()
+{
+    DWORD eventMask = 0;
+    if (!WaitCommEvent(m_handle, &eventMask, &m_overlapMonitor))
+    {
+        if (ERROR_IO_PENDING == GetLastError())
+        {
+            WaitForSingleObject(m_overlapMonitor.hEvent, INFINITE);
+        }
+    }
+
+    return (eventMask & EV_RXCHAR);
 }

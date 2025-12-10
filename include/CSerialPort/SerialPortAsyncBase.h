@@ -13,6 +13,9 @@
 #ifndef __CSERIALPORT_ASYNC_BASE_H__
 #define __CSERIALPORT_ASYNC_BASE_H__
 
+#include <atomic>
+#include <thread>
+
 #include "SerialPortBase.h"
 #include "ithread.hpp"
 
@@ -162,6 +165,67 @@ public:
     unsigned int getByteReadBufferFullNotify() const;
 
 protected:
+    /**
+     * @brief read thread function 读取多线程函数
+     *
+     */
+    void readThreadFun();
+
+    /**
+     * @brief start read thread 启动读取多线程
+     *
+     * @return
+     * @retval true start success 启动成功
+     * @retval false start failed 启动失败
+     */
+    bool startReadThread();
+
+    /**
+     * @brief stop read thread 停止读取多线程
+     *
+     * @return
+     * @retval true stop success 停止成功
+     * @retval false stop failed 停止失败
+     */
+    bool stopReadThread();
+
+     /**
+     * @brief before stop read thread 停止读取多线程之前的操作
+     *
+     * @return void
+     */
+    virtual void beforeStopReadThread() {};
+
+    /**
+     * @brief read specified length data 读取指定长度数据
+     *
+     * @param data [out] read data result 读取结果
+     * @param size [in] read length 读取长度
+     * @return return number Of bytes read 返回读取字节数
+     * @retval -1 read error 读取错误
+     * @retval [other] return number Of bytes read 返回读取字节数
+     */
+    virtual int readDataNative(void *data, int size) = 0;
+
+     /**
+     * @brief get used length of native buffer 获取系统读缓冲区已使用大小
+     *
+     * @return return used length of native buffer 返回系统读缓冲区已使用大小
+     */
+    virtual unsigned int getReadBufferUsedLenNative() = 0;
+
+     /**
+     * @brief before stop read thread 停止读取多线程之前的操作
+     *
+     * @retval true wait comm event success 等待串口事件成功
+     * @retval false wait comm event failed 等待串口事件失败
+     */
+    virtual bool waitCommEventNative() = 0;
+
+protected:
+    std::atomic<bool> m_isEnableReadThread; ///< 是否启用读取线程
+    std::thread m_readThread;                      ///< read thread 读取线程
+
     unsigned int m_readIntervalTimeoutMS;    ///< read time timeout millisecond 读取间隔时间，单位：毫秒
     unsigned int m_minByteReadNotify;        ///< minimum byte of read notify 读取通知触发最小字节数
     unsigned int m_byteReadBufferFullNotify; ///< byte of read buffer full notify 读取通知触发缓冲区字节数

@@ -110,16 +110,6 @@ public:
     virtual int readData(void *data, int size) = 0;
 
     /**
-     * @brief read all data 读取所有数据
-     *
-     * @param data [out] read data result 读取结果
-     * @return return number Of bytes read 返回读取字节数
-     * @retval -1 read error 读取错误
-     * @retval [other] return number Of bytes read 返回读取字节数
-     */
-    virtual int readAllData(void *data) = 0;
-
-    /**
      * @brief write specified lenfth data 写入指定长度数据
      *
      * @param data [in] write data 待写入数据
@@ -172,6 +162,16 @@ public:
     virtual void setRts(bool set = true) = 0;
 
 public:
+    /**
+     * @brief read all data 读取所有数据
+     *
+     * @param data [out] read data result 读取结果
+     * @return return number Of bytes read 返回读取字节数
+     * @retval -1 read error 读取错误
+     * @retval [other] return number Of bytes read 返回读取字节数
+     */
+    int readAllData(void *data);
+
     /**
      * @brief Set Debug Model 设置调试模式
      * @details output serial port read and write details info 输出串口读写的详细信息

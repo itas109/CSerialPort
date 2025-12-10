@@ -373,11 +373,6 @@ int CSerialPortNativeSyncUnixBase::readData(void *data, int size)
     return iRet;
 }
 
-int CSerialPortNativeSyncUnixBase::readAllData(void *data)
-{
-    return readData(data, getReadBufferUsedLen());
-}
-
 int CSerialPortNativeSyncUnixBase::writeData(const void *data, int size)
 {
     // itas109::IScopedLock lock(m_mutexWrite);
