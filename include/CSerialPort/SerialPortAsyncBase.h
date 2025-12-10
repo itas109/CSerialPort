@@ -189,7 +189,7 @@ protected:
      */
     bool stopReadThread();
 
-     /**
+    /**
      * @brief before stop read thread 停止读取多线程之前的操作
      *
      * @return void
@@ -207,14 +207,14 @@ protected:
      */
     virtual int readDataNative(void *data, int size) = 0;
 
-     /**
+    /**
      * @brief get used length of native buffer 获取系统读缓冲区已使用大小
      *
      * @return return used length of native buffer 返回系统读缓冲区已使用大小
      */
     virtual unsigned int getReadBufferUsedLenNative() = 0;
 
-     /**
+    /**
      * @brief before stop read thread 停止读取多线程之前的操作
      *
      * @retval true wait comm event success 等待串口事件成功
@@ -224,7 +224,7 @@ protected:
 
 protected:
     std::atomic<bool> m_isEnableReadThread; ///< 是否启用读取线程
-    std::thread m_readThread;                      ///< read thread 读取线程
+    std::thread m_readThread;               ///< read thread 读取线程
 
     unsigned int m_readIntervalTimeoutMS;    ///< read time timeout millisecond 读取间隔时间，单位：毫秒
     unsigned int m_minByteReadNotify;        ///< minimum byte of read notify 读取通知触发最小字节数

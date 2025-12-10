@@ -638,7 +638,7 @@ unsigned int CSerialPortUnixBase::getReadBufferUsedLenNative()
 
 bool CSerialPortUnixBase::waitCommEventNative()
 {
-    fd_set readFd; // read fdset
+    fd_set readFd;                       // read fdset
     struct timeval timeout = {0, 50000}; // 50ms for stop
 
     FD_ZERO(&readFd);    // clear all read fdset

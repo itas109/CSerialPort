@@ -191,7 +191,7 @@ void CSerialPortNativeSyncWinBase::closePort()
             m_handle = INVALID_HANDLE_VALUE;
         }
 
-        //ResetEvent(m_overlapMonitor.hEvent);
+        // ResetEvent(m_overlapMonitor.hEvent);
     }
 }
 
@@ -224,7 +224,7 @@ unsigned int CSerialPortNativeSyncWinBase::getReadBufferUsedLen()
 
 int CSerialPortNativeSyncWinBase::readData(void *data, int size)
 {
-    //itas109::IScopedLock lock(m_mutexRead);
+    // itas109::IScopedLock lock(m_mutexRead);
 
     if (size <= 0)
     {
@@ -257,7 +257,7 @@ int CSerialPortNativeSyncWinBase::readData(void *data, int size)
 
 int CSerialPortNativeSyncWinBase::writeData(const void *data, int size)
 {
-    //itas109::IScopedLock lock(m_mutexWrite);
+    // itas109::IScopedLock lock(m_mutexWrite);
 
     DWORD numBytes = 0;
 
@@ -290,7 +290,7 @@ int CSerialPortNativeSyncWinBase::writeData(const void *data, int size)
 
 bool CSerialPortNativeSyncWinBase::flushBuffers()
 {
-    //itas109::IScopedLock lock(m_mutex);
+    // itas109::IScopedLock lock(m_mutex);
 
     if (isOpen())
     {
@@ -304,7 +304,7 @@ bool CSerialPortNativeSyncWinBase::flushBuffers()
 
 bool CSerialPortNativeSyncWinBase::flushReadBuffers()
 {
-    //itas109::IScopedLock lock(m_mutex);
+    // itas109::IScopedLock lock(m_mutex);
 
     if (isOpen())
     {
@@ -318,7 +318,7 @@ bool CSerialPortNativeSyncWinBase::flushReadBuffers()
 
 bool CSerialPortNativeSyncWinBase::flushWriteBuffers()
 {
-    //itas109::IScopedLock lock(m_mutex);
+    // itas109::IScopedLock lock(m_mutex);
 
     if (isOpen())
     {
@@ -332,7 +332,7 @@ bool CSerialPortNativeSyncWinBase::flushWriteBuffers()
 
 void CSerialPortNativeSyncWinBase::setDtr(bool set /*= true*/)
 {
-    //itas109::IScopedLock lock(m_mutex);
+    // itas109::IScopedLock lock(m_mutex);
     if (isOpen())
     {
         EscapeCommFunction(m_handle, set ? SETDTR : CLRDTR);
@@ -341,7 +341,7 @@ void CSerialPortNativeSyncWinBase::setDtr(bool set /*= true*/)
 
 void CSerialPortNativeSyncWinBase::setRts(bool set /*= true*/)
 {
-    //itas109::IScopedLock lock(m_mutex);
+    // itas109::IScopedLock lock(m_mutex);
     if (isOpen())
     {
         EscapeCommFunction(m_handle, set ? SETRTS : CLRRTS);

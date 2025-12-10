@@ -181,14 +181,14 @@ private:
      */
     int readDataNative(void *data, int size) override final;
 
-     /**
+    /**
      * @brief get used length of native buffer 获取系统读缓冲区已使用大小
      *
      * @return return used length of native buffer 返回系统读缓冲区已使用大小
      */
     unsigned int getReadBufferUsedLenNative() override final;
 
-     /**
+    /**
      * @brief before stop read thread 停止读取多线程之前的操作
      *
      * @return
