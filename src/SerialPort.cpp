@@ -51,6 +51,16 @@ CSerialPort::~CSerialPort()
 {
     if (p_serialPortBase)
     {
+        // avoid forget call closePort function
+        if (p_serialPortBase->isOpen())
+        {
+            p_serialPortBase->closePort();
+        }
+
+#ifdef CSERIALPORT_DEBUG
+        LOG_INFO("%s destruct", p_serialPortBase->getPortName());
+#endif
+
         delete p_serialPortBase;
         p_serialPortBase = nullptr;
     }

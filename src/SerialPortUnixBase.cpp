@@ -334,6 +334,8 @@ bool CSerialPortUnixBase::openPort()
 
 void CSerialPortUnixBase::closePort()
 {
+    LOG_INFO("%s close...", m_portName);
+    
     if (isOpen())
     {
         stopReadThread();
@@ -342,6 +344,8 @@ void CSerialPortUnixBase::closePort()
 
         fd = -1;
     }
+
+    LOG_INFO("%s close success", m_portName);
 }
 
 bool CSerialPortUnixBase::isOpen()

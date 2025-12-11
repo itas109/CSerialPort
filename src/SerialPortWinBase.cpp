@@ -236,6 +236,8 @@ bool CSerialPortWinBase::openPort()
 
 void CSerialPortWinBase::closePort()
 {
+    LOG_INFO("%s close...", m_portName);
+
     if (isOpen())
     {
         stopReadThread();
@@ -252,6 +254,8 @@ void CSerialPortWinBase::closePort()
 
         ResetEvent(m_overlapMonitor.hEvent);
     }
+
+    LOG_INFO("%s close success", m_portName);
 }
 
 bool CSerialPortWinBase::isOpen()

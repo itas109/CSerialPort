@@ -270,11 +270,19 @@ bool CSerialPortAsyncBase::startReadThread()
         bRet = false;
     }
 
+#ifdef CSERIALPORT_DEBUG
+    LOG_INFO("%s start read thread %s. thread id: %u", m_portName, bRet ? "success" : "failed", (*(unsigned int*)&m_readThread.get_id()));
+#endif
+
     return bRet;
 }
 
 bool CSerialPortAsyncBase::stopReadThread()
 {
+#ifdef CSERIALPORT_DEBUG
+    LOG_INFO("%s stop read thread...", m_portName);
+#endif
+
     m_isEnableReadThread = false;
 
     beforeStopReadThread();
@@ -283,6 +291,10 @@ bool CSerialPortAsyncBase::stopReadThread()
     {
         m_readThread.join();
     }
+
+#ifdef CSERIALPORT_DEBUG
+    LOG_INFO("%s stop read thread success", m_portName);
+#endif
 
     return true;
 }

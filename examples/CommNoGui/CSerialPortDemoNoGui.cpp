@@ -162,7 +162,9 @@ int main()
 
         for (;;)
         {
+#if defined(CSERIALPORT_NATIVE_SYNC)
             onReadData(&sp, portName, sp.getReadBufferUsedLen(), countRead);
+#endif
 
             imsleep(1);
         }
