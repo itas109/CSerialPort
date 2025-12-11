@@ -1,5 +1,7 @@
 ﻿#include "CSerialPort/SerialPortAsyncBase.h"
 
+#include <sstream> // std::ostringstream for thread id
+
 #include "CSerialPort/ithread.hpp"
 #include "CSerialPort/ibuffer.hpp"
 #include "CSerialPort/itimer.hpp"
@@ -271,7 +273,9 @@ bool CSerialPortAsyncBase::startReadThread()
     }
 
 #ifdef CSERIALPORT_DEBUG
-    LOG_INFO("%s start read thread %s. thread id: %u", m_portName, bRet ? "success" : "failed", (*(unsigned int*)&m_readThread.get_id()));
+    std::ostringstream oss;
+    oss << std::this_thread::get_id();
+    LOG_INFO("%s start read thread %s. thread id: %s", m_portName, bRet ? "success" : "failed", oss.str().c_str());
 #endif
 
     return bRet;
