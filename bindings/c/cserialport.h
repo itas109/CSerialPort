@@ -7,9 +7,9 @@ typedef unsigned __int64 i_handle_t; // windows 64bit
 #else
 typedef unsigned int i_handle_t; // windows 32bit
 #endif
-#elif defined(__MINGW64__) // MinGW-w64 (64-bit)
+#elif defined(__MINGW64__)                // MinGW-w64 (64-bit)
 typedef unsigned long long i_handle_t; // windows 64bit (MinGW-w64)
-#elif defined(__MINGW32__) // MinGW (32-bit)
+#elif defined(__MINGW32__)                // MinGW (32-bit)
 typedef unsigned int i_handle_t; // windows 32bit (MinGW)
 #elif defined(__LP64__) || defined(_LP64) // gcc/clang
 typedef unsigned long i_handle_t; // LP64(long pointer 64) // 64bit OS(unix/linux/macos)
@@ -89,14 +89,6 @@ enum FlowControl
 extern "C"
 {
 #endif
-    typedef void (*pFunReadEvent)(i_handle_t /*handle*/, const char * /*portName*/, unsigned int /*readBufferLen*/);
-
-    typedef void (*pFunHotPlugEvent)(i_handle_t /*handle*/, const char * /*portName*/, int /*isAdd*/);
-
-    typedef unsigned int (*pFunProtocolParser)(i_handle_t /*handle*/, const void * /*buffer*/, unsigned int /*size*/, struct ProtocolResultArray * /*results*/);
-
-    typedef void (*pFunProtocolEvent)(i_handle_t /*handle*/, struct ProtocolResult * /*result*/);
-
     C_DLL_EXPORT void CSerialPortAvailablePortInfosMalloc(struct SerialPortInfoArray *portInfoArray);
 
     C_DLL_EXPORT void CSerialPortAvailablePortInfosFree(struct SerialPortInfoArray *portInfoArray);
@@ -122,6 +114,21 @@ extern "C"
 
     C_DLL_EXPORT int CSerialPortIsOpen(i_handle_t handle);
 
+    C_DLL_EXPORT int CSerialPortReadData(i_handle_t handle, void *data, int size);
+
+    C_DLL_EXPORT int CSerialPortReadAllData(i_handle_t handle, void *data);
+
+    C_DLL_EXPORT int CSerialPortWriteData(i_handle_t handle, const void *data, int size);
+
+#if !defined(CSERIALPORT_NATIVE_SYNC)
+    typedef void (*pFunReadEvent)(i_handle_t /*handle*/, const char * /*portName*/, unsigned int /*readBufferLen*/);
+
+    typedef void (*pFunHotPlugEvent)(i_handle_t /*handle*/, const char * /*portName*/, int /*isAdd*/);
+
+    typedef unsigned int (*pFunProtocolParser)(i_handle_t /*handle*/, const void * /*buffer*/, unsigned int /*size*/, struct ProtocolResultArray * /*results*/);
+
+    typedef void (*pFunProtocolEvent)(i_handle_t /*handle*/, struct ProtocolResult * /*result*/);
+	
     C_DLL_EXPORT int CSerialPortConnectReadEvent(i_handle_t handle, pFunReadEvent pFun);
 
     C_DLL_EXPORT int CSerialPortDisconnectReadEvent(i_handle_t handle);
@@ -130,23 +137,20 @@ extern "C"
 
     C_DLL_EXPORT int CSerialPortDisconnectHotPlugEvent(i_handle_t handle);
 
-    C_DLL_EXPORT int CSerialPortSetProtocolParser(i_handle_t handle, pFunProtocolParser pParser,pFunProtocolEvent pFun);
-
-    C_DLL_EXPORT unsigned int CSerialPortGetReadBufferUsedLen(i_handle_t handle);
-
-    C_DLL_EXPORT int CSerialPortReadData(i_handle_t handle, void *data, int size);
-
-    C_DLL_EXPORT int CSerialPortReadAllData(i_handle_t handle, void *data);
-
-    C_DLL_EXPORT int CSerialPortWriteData(i_handle_t handle, const void *data, int size);
-
-    C_DLL_EXPORT void CSerialPortSetDebugModel(i_handle_t handle, int isDebug);
+    C_DLL_EXPORT int CSerialPortSetProtocolParser(i_handle_t handle, pFunProtocolParser pParser, pFunProtocolEvent pFun);
 
     C_DLL_EXPORT void CSerialPortSetReadIntervalTimeout(i_handle_t handle, unsigned int msecs);
 
     C_DLL_EXPORT unsigned int CSerialPortGetReadIntervalTimeout(i_handle_t handle);
 
     C_DLL_EXPORT void CSerialPortSetMinByteReadNotify(i_handle_t handle, unsigned int minByteReadNotify);
+
+    C_DLL_EXPORT void CSerialPortSetByteReadBufferFullNotify(i_handle_t handle, unsigned int byteReadBufferFullNotify);
+#endif
+
+    C_DLL_EXPORT unsigned int CSerialPortGetReadBufferUsedLen(i_handle_t handle);
+
+    C_DLL_EXPORT void CSerialPortSetDebugModel(i_handle_t handle, int isDebug);
 
     C_DLL_EXPORT int CSerialPortFlushBuffers(i_handle_t handle);
 

@@ -16,6 +16,10 @@ project(CommC)
 
 include_directories(../) # cserialport.h
 
+if (CSERIALPORT_ENABLE_NATIVE_SYNC)
+add_executable(${PROJECT_NAME} main_sync_native.c)
+else ()
 add_executable(${PROJECT_NAME} main.c)
+endif ()
 
 target_link_libraries(${PROJECT_NAME} cserialport)

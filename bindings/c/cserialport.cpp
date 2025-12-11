@@ -2,13 +2,17 @@
 
 #include "CSerialPort/SerialPort.h"
 #include "CSerialPort/SerialPortInfo.h"
-#include "CSerialPort/IProtocolParser.h"
 #include "CSerialPort/iutils.hpp"
+
+#if !defined(CSERIALPORT_NATIVE_SYNC)
+#include "CSerialPort/IProtocolParser.h"
+#endif
 
 #include <vector>
 #include <cstdlib>  // malloc free
 #include <string.h> // memcpy memset
 
+#if !defined(CSERIALPORT_NATIVE_SYNC)
 class CSPReadEventListener : public itas109::CSerialPortListener
 {
 public:
@@ -96,7 +100,7 @@ public:
     {
         for (size_t i = 0; i < results.size(); ++i)
         {
-            struct ProtocolResult* result = (struct ProtocolResult *)malloc(sizeof(struct ProtocolResult));
+            struct ProtocolResult *result = (struct ProtocolResult *)malloc(sizeof(struct ProtocolResult));
             if (NULL != result)
             {
                 // TODO: no copy
@@ -112,6 +116,7 @@ private:
     pFunProtocolParser m_pParser;
     pFunProtocolEvent m_pFun;
 };
+#endif
 
 void CSerialPortAvailablePortInfosMalloc(SerialPortInfoArray *portInfoArray)
 {
@@ -161,10 +166,10 @@ void CSerialPortFree(i_handle_t handle)
 void CSerialPortInit(i_handle_t handle,
                      const char *portName,
                      int baudRate,
-                     Parity parity,
-                     DataBits dataBits,
-                     StopBits stopbits,
-                     FlowControl flowControl,
+                     enum Parity parity,
+                     enum DataBits dataBits,
+                     enum StopBits stopbits,
+                     enum FlowControl flowControl,
                      unsigned int readBufferSize)
 {
     itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
@@ -174,7 +179,7 @@ void CSerialPortInit(i_handle_t handle,
     }
 }
 
-void CSerialPortSetOperateMode(i_handle_t handle, OperateMode operateMode)
+void CSerialPortSetOperateMode(i_handle_t handle, enum OperateMode operateMode)
 {
     itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
     if (pCSP)
@@ -215,6 +220,40 @@ int CSerialPortIsOpen(i_handle_t handle)
     return 0;
 }
 
+int CSerialPortReadData(i_handle_t handle, void *data, int size)
+{
+    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
+    if (pCSP)
+    {
+        return pCSP->readData(data, size);
+    }
+
+    return -1;
+}
+
+int CSerialPortReadAllData(i_handle_t handle, void *data)
+{
+    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
+    if (pCSP)
+    {
+        return pCSP->readAllData(data);
+    }
+
+    return -1;
+}
+
+int CSerialPortWriteData(i_handle_t handle, const void *data, int size)
+{
+    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
+    if (pCSP)
+    {
+        return pCSP->writeData(data, size);
+    }
+
+    return -1;
+}
+
+#if !defined(CSERIALPORT_NATIVE_SYNC)
 int CSerialPortConnectReadEvent(i_handle_t handle, pFunReadEvent pFun)
 {
     itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
@@ -276,59 +315,6 @@ int CSerialPortSetProtocolParser(i_handle_t handle, pFunProtocolParser pParser, 
     return -1;
 }
 
-unsigned int CSerialPortGetReadBufferUsedLen(i_handle_t handle)
-{
-    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
-    if (pCSP)
-    {
-        return pCSP->getReadBufferUsedLen();
-    }
-
-    return 0;
-}
-
-int CSerialPortReadData(i_handle_t handle, void *data, int size)
-{
-    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
-    if (pCSP)
-    {
-        return pCSP->readData(data, size);
-    }
-
-    return -1;
-}
-
-int CSerialPortReadAllData(i_handle_t handle, void *data)
-{
-    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
-    if (pCSP)
-    {
-        return pCSP->readAllData(data);
-    }
-
-    return -1;
-}
-
-int CSerialPortWriteData(i_handle_t handle, const void *data, int size)
-{
-    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
-    if (pCSP)
-    {
-        return pCSP->writeData(data, size);
-    }
-
-    return -1;
-}
-
-void CSerialPortSetDebugModel(i_handle_t handle, int isDebug)
-{
-    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
-    if (pCSP)
-    {
-        pCSP->setDebugModel(isDebug);
-    }
-}
-
 void CSerialPortSetReadIntervalTimeout(i_handle_t handle, unsigned int msecs)
 {
     itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
@@ -355,6 +341,36 @@ void CSerialPortSetMinByteReadNotify(i_handle_t handle, unsigned int minByteRead
     if (pCSP)
     {
         pCSP->setMinByteReadNotify(minByteReadNotify);
+    }
+}
+
+void CSerialPortSetByteReadBufferFullNotify(i_handle_t handle, unsigned int byteReadBufferFullNotify)
+{
+    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
+    if (pCSP)
+    {
+        pCSP->setByteReadBufferFullNotify(byteReadBufferFullNotify);
+    }
+}
+#endif
+
+unsigned int CSerialPortGetReadBufferUsedLen(i_handle_t handle)
+{
+    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
+    if (pCSP)
+    {
+        return pCSP->getReadBufferUsedLen();
+    }
+
+    return 0;
+}
+
+void CSerialPortSetDebugModel(i_handle_t handle, int isDebug)
+{
+    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
+    if (pCSP)
+    {
+        pCSP->setDebugModel(isDebug);
     }
 }
 
