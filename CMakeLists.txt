@@ -74,6 +74,9 @@ if (CSERIALPORT_ENABLE_NATIVE_SYNC)
     add_definitions(-DCSERIALPORT_NATIVE_SYNC) # CSerialPort Native Sync Mode
 endif ()
 
+# common headers and source files
+include(cmake/cserialport_src.cmake)
+
 # libcserialport
 add_subdirectory(lib)
 

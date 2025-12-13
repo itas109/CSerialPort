@@ -35,15 +35,10 @@ include_directories(.)
 include_directories(node-addon-api)
 
 # cserialport files
-set(CSerialPortRootPath "${CMAKE_CURRENT_SOURCE_DIR}/../..")
-include_directories(${CSerialPortRootPath}/include)
-list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPort.cpp ${CSerialPortRootPath}/src/SerialPortBase.cpp ${CSerialPortRootPath}/src/SerialPortInfo.cpp ${CSerialPortRootPath}/src/SerialPortInfoBase.cpp)
-if (WIN32)
-    list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortInfoWinBase.cpp ${CSerialPortRootPath}/src/SerialPortWinBase.cpp)
-    list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/lib/version.rc)
-elseif (UNIX)
-    list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortInfoUnixBase.cpp ${CSerialPortRootPath}/src/SerialPortUnixBase.cpp)
-endif ()
+# include source files if CSerialPortSourceFiles is empty
+if(NOT CSerialPortSourceFiles)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/cserialport_src.cmake)
+endif()
 
 add_library(${PROJECT_NAME} SHARED addon.cpp CSerialPortWrapper.cpp ${CSerialPortSourceFiles} ${CMAKE_JS_SRC})
 

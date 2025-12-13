@@ -26,19 +26,10 @@ add_definitions(-DCSERIALPORT_USE_UTF8) # CSerialPort UTF8 Character Encoding
 add_definitions(-DCSERIALPORT_BINDING_LANGUAGE=Android) # CSerialPort Binding Language
 
 # cserialport files
-set(CSerialPortRootPath "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../")
-include_directories(${CSerialPortRootPath}/include)
-list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPort.cpp ${CSerialPortRootPath}/src/SerialPortBase.cpp ${CSerialPortRootPath}/src/SerialPortInfo.cpp ${CSerialPortRootPath}/src/SerialPortInfoBase.cpp)
-# android
-if (CSERIALPORT_ENABLE_NATIVE_SYNC)
-    list(APPEND CSerialPortHeaderFiles ${CSerialPortRootPath}/include/CSerialPort/SerialPortNativeSyncUnixBase.h ${CSerialPortRootPath}/include/CSerialPort/SerialPortInfoUnixBase.h)
-    list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortNativeSyncUnixBase.cpp ${CSerialPortRootPath}/src/SerialPortInfoUnixBase.cpp)
-else()
-    list(APPEND CSerialPortHeaderFiles ${CSerialPortRootPath}/include/CSerialPort/SerialPortAsyncBase.h)
-    list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortAsyncBase.cpp)
-    list(APPEND CSerialPortHeaderFiles ${CSerialPortRootPath}/include/CSerialPort/SerialPortUnixBase.h ${CSerialPortRootPath}/include/CSerialPort/SerialPortInfoUnixBase.h)
-    list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortUnixBase.cpp ${CSerialPortRootPath}/src/SerialPortInfoUnixBase.cpp)
-endif ()
+# include source files if CSerialPortSourceFiles is empty
+if(NOT CSerialPortSourceFiles)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../cmake/cserialport_src.cmake)
+endif()
 
 # find java
 find_package(Java REQUIRED)

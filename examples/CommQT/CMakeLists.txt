@@ -36,28 +36,10 @@ add_definitions(-D_UNICODE) # fixed mingw49 error
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
-set(CSerialPortRootPath "${CMAKE_CURRENT_SOURCE_DIR}/../../")
-include_directories(${CSerialPortRootPath}/include)
-list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPort.cpp ${CSerialPortRootPath}/src/SerialPortBase.cpp ${CSerialPortRootPath}/src/SerialPortInfo.cpp ${CSerialPortRootPath}/src/SerialPortInfoBase.cpp)
-if (CSERIALPORT_ENABLE_NATIVE_SYNC)
-    if (WIN32)
-        list(APPEND CSerialPortHeaderFiles ${CSerialPortRootPath}/include/CSerialPort/SerialPortNativeSyncWinBase.h ${CSerialPortRootPath}/include/CSerialPort/SerialPortInfoWinBase.h)
-        list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortNativeSyncWinBase.cpp ${CSerialPortRootPath}/src/SerialPortInfoWinBase.cpp)
-    elseif (UNIX)
-        list(APPEND CSerialPortHeaderFiles ${CSerialPortRootPath}/include/CSerialPort/SerialPortNativeSyncUnixBase.h ${CSerialPortRootPath}/include/CSerialPort/SerialPortInfoUnixBase.h)
-        list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortNativeSyncUnixBase.cpp ${CSerialPortRootPath}/src/SerialPortInfoUnixBase.cpp)
-    endif ()
-else()
-    list(APPEND CSerialPortHeaderFiles ${CSerialPortRootPath}/include/CSerialPort/SerialPortAsyncBase.h)
-    list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortAsyncBase.cpp)
-    if (WIN32)
-        list(APPEND CSerialPortHeaderFiles ${CSerialPortRootPath}/include/CSerialPort/SerialPortWinBase.h ${CSerialPortRootPath}/include/CSerialPort/SerialPortInfoWinBase.h)
-        list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortWinBase.cpp ${CSerialPortRootPath}/src/SerialPortInfoWinBase.cpp)
-    elseif (UNIX)
-        list(APPEND CSerialPortHeaderFiles ${CSerialPortRootPath}/include/CSerialPort/SerialPortUnixBase.h ${CSerialPortRootPath}/include/CSerialPort/SerialPortInfoUnixBase.h)
-        list(APPEND CSerialPortSourceFiles ${CSerialPortRootPath}/src/SerialPortUnixBase.cpp ${CSerialPortRootPath}/src/SerialPortInfoUnixBase.cpp)
-    endif ()
-endif ()
+# include source files if CSerialPortSourceFiles is empty
+if(NOT CSerialPortSourceFiles)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/cserialport_src.cmake)
+endif()
 
 add_executable(${PROJECT_NAME}
     main.cpp

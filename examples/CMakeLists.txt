@@ -13,6 +13,11 @@
 
 cmake_minimum_required(VERSION 3.10.0)
 
+# include source files if CSerialPortSourceFiles is empty
+if(NOT CSerialPortSourceFiles)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/cserialport_src.cmake)
+endif()
+
 # CommNoGui
 add_subdirectory(CommNoGui)
 
