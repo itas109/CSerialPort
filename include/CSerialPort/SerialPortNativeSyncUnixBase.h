@@ -21,12 +21,10 @@
 #include <unistd.h>    // UNIX standard function definitions
 #include <errno.h>     // Error number definitions
 
-// #include "ithread.hpp"
-// #include <thread>
 #include "SerialPortBase.h"
 
 // Serial Programming Guide for POSIX Operating Systems
-// https://digilander.libero.it/robang/rubrica/serial.htm
+// https://www.msweet.org/serial/serial.html
 
 /**
  * @brief the CSerialPort unix Base class unix串口基类
@@ -66,15 +64,6 @@ public:
      *
      */
     void closePort() override final;
-
-    /**
-     * @brief if serial port is open success 串口是否打开成功
-     *
-     * @return
-     * @retval true serial port open success 串口打开成功
-     * @retval false serial port open failed 串口打开失败
-     */
-    bool isOpen() override final;
 
     /**
      * @brief get used length of buffer 获取读取缓冲区已使用大小
@@ -169,8 +158,5 @@ private:
                 itas109::DataBits dataBits = itas109::DataBits8,
                 itas109::StopBits stopbits = itas109::StopOne,
                 itas109::FlowControl flowControl = itas109::FlowNone);
-
-private:
-    int fd; /* File descriptor for the port */
 };
 #endif //__CSERIALPORT_NATIVE_SYNC_UNIX_BASE_H__

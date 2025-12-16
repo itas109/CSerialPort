@@ -23,9 +23,6 @@ CSerialPortNativeSyncWinBase::CSerialPortNativeSyncWinBase()
 
 CSerialPortNativeSyncWinBase::CSerialPortNativeSyncWinBase(const char *portName)
     : CSerialPortBase(portName)
-    , m_handle(INVALID_HANDLE_VALUE)
-    , m_comConfigure()
-    , m_comTimeout()
 {
 }
 
@@ -51,7 +48,8 @@ bool CSerialPortNativeSyncWinBase::openPort()
     tcPortName = portName;
 #endif
     unsigned long configSize = sizeof(COMMCONFIG);
-    m_comConfigure.dwSize = configSize;
+    COMMCONFIG comConfigure;
+    comConfigure.dwSize = configSize;
 
     DWORD dwFlagsAndAttributes = 0; // sync
 
@@ -66,52 +64,52 @@ bool CSerialPortNativeSyncWinBase::openPort()
                               dwFlagsAndAttributes,         // Async I/O or sync I/O
                               nullptr);
 
-        if (m_handle != INVALID_HANDLE_VALUE)
+        if (m_handle != INVALID_FILE_HANDLE)
         {
             // set system internal input output buffer size
             SetupComm(m_handle, m_readBufferSize <= 4096 ? 4096 : m_readBufferSize, m_readBufferSize <= 4096 ? 4096 : m_readBufferSize); // windows default 4096
 
             // get default parameter
-            GetCommConfig(m_handle, &m_comConfigure, &configSize);
-            GetCommState(m_handle, &(m_comConfigure.dcb));
+            GetCommConfig(m_handle, &comConfigure, &configSize);
+            GetCommState(m_handle, &(comConfigure.dcb));
 
             // set parameter
-            m_comConfigure.dcb.BaudRate = m_baudRate;
-            m_comConfigure.dcb.ByteSize = m_dataBits; // Number of bits/byte, 4-8
-            m_comConfigure.dcb.Parity = m_parity;     // 0-4=None,Odd,Even,Mark,Space
-            m_comConfigure.dcb.StopBits = m_stopbits; // 0,1,2 = 1, 1.5, 2
+            comConfigure.dcb.BaudRate = m_baudRate;
+            comConfigure.dcb.ByteSize = m_dataBits; // Number of bits/byte, 4-8
+            comConfigure.dcb.Parity = m_parity;     // 0-4=None,Odd,Even,Mark,Space
+            comConfigure.dcb.StopBits = m_stopbits; // 0,1,2 = 1, 1.5, 2
             switch (m_flowControl)
             {
                 case itas109::/*FlowControl::*/ FlowNone: // No flow control
 
-                    m_comConfigure.dcb.fOutxCtsFlow = FALSE;
-                    m_comConfigure.dcb.fRtsControl = RTS_CONTROL_DISABLE;
-                    m_comConfigure.dcb.fInX = FALSE;
-                    m_comConfigure.dcb.fOutX = FALSE;
+                    comConfigure.dcb.fOutxCtsFlow = FALSE;
+                    comConfigure.dcb.fRtsControl = RTS_CONTROL_DISABLE;
+                    comConfigure.dcb.fInX = FALSE;
+                    comConfigure.dcb.fOutX = FALSE;
                     break;
 
                 case itas109::/*FlowControl::*/ FlowSoftware: // Software(XON / XOFF) flow control
-                    m_comConfigure.dcb.fOutxCtsFlow = FALSE;
-                    m_comConfigure.dcb.fRtsControl = RTS_CONTROL_DISABLE;
-                    m_comConfigure.dcb.fInX = TRUE;
-                    m_comConfigure.dcb.fOutX = TRUE;
+                    comConfigure.dcb.fOutxCtsFlow = FALSE;
+                    comConfigure.dcb.fRtsControl = RTS_CONTROL_DISABLE;
+                    comConfigure.dcb.fInX = TRUE;
+                    comConfigure.dcb.fOutX = TRUE;
                     break;
 
                 case itas109::/*FlowControl::*/ FlowHardware: // Hardware(RTS / CTS) flow control
-                    m_comConfigure.dcb.fOutxCtsFlow = TRUE;
-                    m_comConfigure.dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
-                    m_comConfigure.dcb.fInX = FALSE;
-                    m_comConfigure.dcb.fOutX = FALSE;
+                    comConfigure.dcb.fOutxCtsFlow = TRUE;
+                    comConfigure.dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
+                    comConfigure.dcb.fInX = FALSE;
+                    comConfigure.dcb.fOutX = FALSE;
                     break;
             }
 
-            m_comConfigure.dcb.fBinary = true;
-            m_comConfigure.dcb.fInX = false;
-            m_comConfigure.dcb.fOutX = false;
-            m_comConfigure.dcb.fAbortOnError = false;
-            m_comConfigure.dcb.fNull = false;
+            comConfigure.dcb.fBinary = true;
+            comConfigure.dcb.fInX = false;
+            comConfigure.dcb.fOutX = false;
+            comConfigure.dcb.fAbortOnError = false;
+            comConfigure.dcb.fNull = false;
 
-            if (SetCommConfig(m_handle, &m_comConfigure, configSize))
+            if (SetCommConfig(m_handle, &comConfigure, configSize))
             {
                 // @todo
                 // Discards all characters from the output or input buffer of a specified communications resource. It
@@ -119,12 +117,13 @@ bool CSerialPortNativeSyncWinBase::openPort()
                 PurgeComm(m_handle, PURGE_TXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_RXABORT);
 
                 // timeout
-                m_comTimeout.ReadIntervalTimeout = MAXDWORD;
-                m_comTimeout.ReadTotalTimeoutMultiplier = 0;
-                m_comTimeout.ReadTotalTimeoutConstant = 0;
-                m_comTimeout.WriteTotalTimeoutMultiplier = 100;
-                m_comTimeout.WriteTotalTimeoutConstant = 500;
-                SetCommTimeouts(m_handle, &m_comTimeout);
+                COMMTIMEOUTS comTimeout;
+                comTimeout.ReadIntervalTimeout = MAXDWORD;
+                comTimeout.ReadTotalTimeoutMultiplier = 0;
+                comTimeout.ReadTotalTimeoutConstant = 0;
+                comTimeout.WriteTotalTimeoutMultiplier = 100;
+                comTimeout.WriteTotalTimeoutConstant = 500;
+                SetCommTimeouts(m_handle, &comTimeout);
 
                 bRet = true;
                 m_lastError = itas109::/*SerialPortError::*/ ErrorOK;
@@ -181,23 +180,18 @@ void CSerialPortNativeSyncWinBase::closePort()
 {
     if (isOpen())
     {
-        if (INVALID_HANDLE_VALUE != m_handle)
+        if (INVALID_FILE_HANDLE != m_handle)
         {
             // Discards all characters from the output or input buffer of a specified communications resource. It can
             // also terminate pending read or write operations on the resource.
             PurgeComm(m_handle, PURGE_TXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_RXABORT);
 
             CloseHandle(m_handle);
-            m_handle = INVALID_HANDLE_VALUE;
+            m_handle = INVALID_FILE_HANDLE;
         }
 
         // ResetEvent(m_overlapMonitor.hEvent);
     }
-}
-
-bool CSerialPortNativeSyncWinBase::isOpen()
-{
-    return m_handle != INVALID_HANDLE_VALUE;
 }
 
 unsigned int CSerialPortNativeSyncWinBase::getReadBufferUsedLen()

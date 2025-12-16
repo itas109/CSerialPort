@@ -15,6 +15,19 @@
 
 #include "SerialPort_global.h"
 
+// define serial port file handle
+#if defined(_WIN32)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+using i_file_handle_t = HANDLE;
+static const i_file_handle_t INVALID_FILE_HANDLE = INVALID_HANDLE_VALUE;
+#else
+using i_file_handle_t = int;
+static const i_file_handle_t INVALID_FILE_HANDLE = -1;
+#endif
+
 /**
  * @brief the CSerialPort Native Sync Base class 串口基类
  *
@@ -89,7 +102,7 @@ public:
      * @retval true serial port open success 串口打开成功
      * @retval false serial port open failed 串口打开失败
      */
-    virtual bool isOpen() = 0;
+    bool isOpen();
 
     /**
      * @brief get used length of buffer 获取读取缓冲区已使用大小
@@ -299,6 +312,7 @@ public:
     virtual unsigned int getReadBufferSize() const;
 
 protected:
+    i_file_handle_t m_handle;           ///< serial port file handle 串口文件句柄
     int m_lastError;                    ///< last error code 最后的错误代码
     itas109::OperateMode m_operateMode; ///< operate mode 串口操作类型
 

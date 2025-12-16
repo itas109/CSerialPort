@@ -1,11 +1,7 @@
-﻿#include <unistd.h> // usleep
-
-#include "CSerialPort/SerialPortUnixBase.h"
+﻿#include "CSerialPort/SerialPortUnixBase.h"
 #include "CSerialPort/SerialPortListener.h"
-#include "CSerialPort/IProtocolParser.h"
 #include "CSerialPort/ibuffer.hpp"
 #include "CSerialPort/ithread.hpp"
-#include "CSerialPort/itimer.hpp"
 #include "CSerialPort/ilog.hpp"
 
 #include <sys/select.h> // select
@@ -55,7 +51,6 @@ CSerialPortUnixBase::CSerialPortUnixBase()
 
 CSerialPortUnixBase::CSerialPortUnixBase(const char *portName)
     : CSerialPortAsyncBase(portName)
-    , fd(-1)
 {
 }
 
@@ -68,7 +63,7 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
     struct termios options;
 
     // 获取终端属性
-    if (tcgetattr(fd, &options) < 0)
+    if (tcgetattr(m_handle, &options) < 0)
     {
         fprintf(stderr, "tcgetattr error");
         return -1;
@@ -204,10 +199,10 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
     options.c_cc[VMIN] = 0;  // read function will undefinite wait when no read data
 
     // 如果发生数据溢出，只接受数据，但是不进行读操作
-    tcflush(fd, TCIFLUSH);
+    tcflush(m_handle, TCIFLUSH);
 
     // 激活配置
-    if (tcsetattr(fd, TCSANOW, &options) < 0)
+    if (tcsetattr(m_handle, TCSANOW, &options) < 0)
     {
         perror("tcsetattr failed");
         return -1;
@@ -219,7 +214,7 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
 #ifdef I_OS_LINUX
         struct termios2 tio2;
 
-        if (-1 != ioctl(fd, TCGETS2, &tio2))
+        if (-1 != ioctl(m_handle, TCGETS2, &tio2))
         {
             tio2.c_cflag &= ~CBAUD; // remove current baud rate
             tio2.c_cflag |= BOTHER; // allow custom baud rate using int input
@@ -227,7 +222,7 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
             tio2.c_ispeed = baudRate; // set the input baud rate
             tio2.c_ospeed = baudRate; // set the output baud rate
 
-            if (-1 == ioctl(fd, TCSETS2, &tio2))
+            if (-1 == ioctl(m_handle, TCSETS2, &tio2))
             {
                 fprintf(stderr, "termios2 set custom baudrate error\n");
                 return -1;
@@ -241,7 +236,7 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
 #elif defined I_OS_MAC
         // Mac OS X Tiger(10.4.11) support non-standard baud rate through IOSSIOSPEED
         speed_t customBaudRate = (speed_t)baudRate;
-        if (-1 == ioctl(fd, IOSSIOSPEED, &customBaudRate))
+        if (-1 == ioctl(m_handle, IOSSIOSPEED, &customBaudRate))
         {
             fprintf(stderr, "ioctl IOSSIOSPEED custom baud rate error\n");
             return -1;
@@ -264,11 +259,11 @@ bool CSerialPortUnixBase::openPort()
 
     bool bRet = false;
 
-    fd = open(m_portName, O_RDWR | O_NOCTTY); // block for select
-    if (-1 != fd)
+    m_handle = open(m_portName, O_RDWR | O_NOCTTY); // block for select
+    if (INVALID_FILE_HANDLE != m_handle)
     {
         // set param
-        if (uartSet(fd, m_baudRate, m_parity, m_dataBits, m_stopbits, m_flowControl) == -1)
+        if (uartSet(m_handle, m_baudRate, m_parity, m_dataBits, m_stopbits, m_flowControl) == -1)
         {
             fprintf(stderr, "uart set failed\n");
 
@@ -335,22 +330,17 @@ bool CSerialPortUnixBase::openPort()
 void CSerialPortUnixBase::closePort()
 {
     LOG_INFO("%s close...", m_portName);
-    
+
     if (isOpen())
     {
         stopReadThread();
 
-        close(fd);
+        close(m_handle);
 
-        fd = -1;
+        m_handle = INVALID_FILE_HANDLE;
     }
 
     LOG_INFO("%s close success", m_portName);
-}
-
-bool CSerialPortUnixBase::isOpen()
-{
-    return fd != -1;
 }
 
 unsigned int CSerialPortUnixBase::getReadBufferUsedLen()
@@ -398,7 +388,7 @@ int CSerialPortUnixBase::readData(void *data, int size)
         }
         else
         {
-            iRet = read(fd, data, size);
+            iRet = read(m_handle, data, size);
         }
     }
     else
@@ -424,7 +414,7 @@ int CSerialPortUnixBase::writeData(const void *data, int size)
     if (isOpen())
     {
         // Write N bytes of BUF to FD.  Return the number written, or -1
-        iRet = write(fd, data, size);
+        iRet = write(m_handle, data, size);
     }
     else
     {
@@ -446,7 +436,7 @@ bool CSerialPortUnixBase::flushBuffers()
 
     if (isOpen())
     {
-        return 0 == tcdrain(fd);
+        return 0 == tcdrain(m_handle);
     }
     else
     {
@@ -460,7 +450,7 @@ bool CSerialPortUnixBase::flushReadBuffers()
 
     if (isOpen())
     {
-        return 0 == tcflush(fd, TCIFLUSH);
+        return 0 == tcflush(m_handle, TCIFLUSH);
     }
     else
     {
@@ -474,7 +464,7 @@ bool CSerialPortUnixBase::flushWriteBuffers()
 
     if (isOpen())
     {
-        return 0 == tcflush(fd, TCOFLUSH);
+        return 0 == tcflush(m_handle, TCOFLUSH);
     }
     else
     {
@@ -488,7 +478,7 @@ void CSerialPortUnixBase::setDtr(bool set /*= true*/)
     if (isOpen())
     {
         int status = TIOCM_DTR;
-        if (ioctl(fd, set ? TIOCMBIS : TIOCMBIC, &status) < 0)
+        if (ioctl(m_handle, set ? TIOCMBIS : TIOCMBIC, &status) < 0)
         {
             perror("setDtr error");
         }
@@ -501,7 +491,7 @@ void CSerialPortUnixBase::setRts(bool set /*= true*/)
     if (isOpen())
     {
         int status = TIOCM_RTS;
-        if (ioctl(fd, set ? TIOCMBIS : TIOCMBIC, &status) < 0)
+        if (ioctl(m_handle, set ? TIOCMBIS : TIOCMBIC, &status) < 0)
         {
             perror("setRts error");
         }
@@ -621,7 +611,7 @@ int CSerialPortUnixBase::readDataNative(void *data, int size)
 
     if (isOpen())
     {
-        iRet = read(fd, data, size);
+        iRet = read(m_handle, data, size);
     }
     else
     {
@@ -636,7 +626,7 @@ unsigned int CSerialPortUnixBase::getReadBufferUsedLenNative()
 {
     // read前获取可读的字节数,不区分阻塞和非阻塞
     unsigned int readBufferBytes = 0;
-    ioctl(fd, FIONREAD, &readBufferBytes);
+    ioctl(m_handle, FIONREAD, &readBufferBytes);
     return readBufferBytes;
 }
 
@@ -645,9 +635,9 @@ bool CSerialPortUnixBase::waitCommEventNative()
     fd_set readFd;                       // read fdset
     struct timeval timeout = {0, 50000}; // 50ms for stop
 
-    FD_ZERO(&readFd);    // clear all read fdset
-    FD_SET(fd, &readFd); // add read fdset
-    int ret = select(fd + 1, &readFd, nullptr, nullptr, &timeout);
+    FD_ZERO(&readFd);          // clear all read fdset
+    FD_SET(m_handle, &readFd); // add read fdset
+    int ret = select(m_handle + 1, &readFd, nullptr, nullptr, &timeout);
     if (ret < 0) // -1 error, 0 timeout, >0 ok
     {
         if (errno == EINTR) // ignore system interupt
@@ -661,7 +651,7 @@ bool CSerialPortUnixBase::waitCommEventNative()
     {
         return false; // continue
     }
-    if (0 == FD_ISSET(fd, &readFd))
+    if (0 == FD_ISSET(m_handle, &readFd))
     {
         return false; // continue
     }

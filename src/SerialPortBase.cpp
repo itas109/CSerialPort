@@ -8,7 +8,8 @@ CSerialPortBase::CSerialPortBase()
 }
 
 CSerialPortBase::CSerialPortBase(const char *portName)
-    : m_lastError{itas109::ErrorOK}
+    : m_handle{INVALID_FILE_HANDLE}
+    , m_lastError{itas109::ErrorOK}
     , m_operateMode{itas109::NativeSynchronousOperate}
     , m_baudRate(itas109::BaudRate9600)
     , m_parity(itas109::ParityNone)
@@ -44,6 +45,11 @@ void CSerialPortBase::init(const char *portName,
 void CSerialPortBase::setOperateMode(itas109::OperateMode operateMode)
 {
     m_operateMode = operateMode;
+}
+
+bool CSerialPortBase::isOpen()
+{
+    return INVALID_FILE_HANDLE != m_handle;
 }
 
 int CSerialPortBase::readAllData(void *data)

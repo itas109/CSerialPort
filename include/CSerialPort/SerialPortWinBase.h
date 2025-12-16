@@ -15,10 +15,7 @@
 
 #include <tchar.h> //tchar
 
-#include "ithread.hpp"
-#include "ibuffer.hpp"
 #include "SerialPortAsyncBase.h"
-#include <thread>
 
 #include "windows.h"
 
@@ -62,15 +59,6 @@ public:
      *
      */
     void closePort() override final;
-
-    /**
-     * @brief if serial port is open success 串口是否打开成功
-     *
-     * @return
-     * @retval true serial port open success 串口打开成功
-     * @retval false serial port open failed 串口打开失败
-     */
-    bool isOpen() override final;
 
     /**
      * @brief get used length of buffer 获取读取缓冲区已使用大小
@@ -176,16 +164,9 @@ private:
     bool waitCommEventNative() override final;
 
 private:
-    HANDLE m_handle;
-
     OVERLAPPED m_overlapMonitor; ///< monitor overlapped
 
     OVERLAPPED m_overlapRead;  ///< read overlapped
     OVERLAPPED m_overlapWrite; ///< write overlapped
-
-    COMMCONFIG m_comConfigure;
-    COMMTIMEOUTS m_comTimeout;
-
-    bool m_isThreadRunning;
 };
 #endif //__CSERIALPORT_WIN_BASE_H__

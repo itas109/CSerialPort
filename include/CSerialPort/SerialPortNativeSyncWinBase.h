@@ -61,15 +61,6 @@ public:
     void closePort() override final;
 
     /**
-     * @brief if serial port is open success 串口是否打开成功
-     *
-     * @return
-     * @retval true serial port open success 串口打开成功
-     * @retval false serial port open failed 串口打开失败
-     */
-    bool isOpen() override final;
-
-    /**
      * @brief get used length of buffer 获取读取缓冲区已使用大小
      *
      * @return return used length of buffer 返回读取缓冲区已使用大小
@@ -137,11 +128,5 @@ public:
      * @param set [in]
      */
     void setRts(bool set = true) override final;
-
-private:
-    HANDLE m_handle;
-
-    COMMCONFIG m_comConfigure;
-    COMMTIMEOUTS m_comTimeout;
 };
 #endif //__CSERIALPORT_NATIVE_SYNC_WIN_BASE_H__
