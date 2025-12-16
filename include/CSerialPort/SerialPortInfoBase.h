@@ -10,8 +10,8 @@
  * You may use, copy, modify, and distribute the CSerialPort, under the terms \n
  * of the LICENSE file.
  */
-#ifndef __CSERIALPORTINFOBASE_H__
-#define __CSERIALPORTINFOBASE_H__
+#ifndef __CSERIALPORT_INFO_BASE_H__
+#define __CSERIALPORT_INFO_BASE_H__
 
 #include <vector>
 #include <map>
@@ -70,4 +70,4 @@ private:
     static HardwareIdDespSingleton g_instance;
     HardwareIdDespMap m_hwIdMap;
 };
-#endif //__CSERIALPORTINFOBASE_H__
+#endif //__CSERIALPORT_INFO_BASE_H__

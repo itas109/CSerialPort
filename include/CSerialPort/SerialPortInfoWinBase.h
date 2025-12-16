@@ -10,8 +10,8 @@
  * You may use, copy, modify, and distribute the CSerialPort, under the terms \n
  * of the LICENSE file.
  */
-#ifndef __CSERIALPORTINFOWINBASE_H__
-#define __CSERIALPORTINFOWINBASE_H__
+#ifndef __CSERIALPORT_INFO_WIN_BASE_H__
+#define __CSERIALPORT_INFO_WIN_BASE_H__
 
 #include "SerialPortInfoBase.h"
 
@@ -40,4 +40,4 @@ public:
      */
     static std::vector<itas109::SerialPortInfo> availablePortInfos();
 };
-#endif //__CSERIALPORTINFOWINBASE_H__
+#endif //__CSERIALPORT_INFO_WIN_BASE_H__
