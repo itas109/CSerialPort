@@ -77,24 +77,34 @@ bool CSerialPortNativeSyncWinBase::openPort()
             comConfigure.dcb.BaudRate = m_baudRate;
             comConfigure.dcb.ByteSize = m_dataBits; // Number of bits/byte, 4-8
             comConfigure.dcb.Parity = m_parity;     // 0-4=None,Odd,Even,Mark,Space
-            comConfigure.dcb.StopBits = m_stopbits; // 0,1,2 = 1, 1.5, 2
+            switch (m_stopbits)                     // 0,1,2 = 1, 1.5, 2
+            {
+                default:
+                case itas109::/*StopBits::*/ StopOne:
+                    comConfigure.dcb.StopBits = 0;
+                    break;
+                case itas109::/*StopBits::*/ StopOneAndHalf:
+                    comConfigure.dcb.StopBits = 1;
+                    break;
+                case itas109::/*StopBits::*/ StopTwo:
+                    comConfigure.dcb.StopBits = 2;
+                    break;
+            }
             switch (m_flowControl)
             {
+                default:                                  // default no flow control
                 case itas109::/*FlowControl::*/ FlowNone: // No flow control
-
                     comConfigure.dcb.fOutxCtsFlow = FALSE;
                     comConfigure.dcb.fRtsControl = RTS_CONTROL_DISABLE;
                     comConfigure.dcb.fInX = FALSE;
                     comConfigure.dcb.fOutX = FALSE;
                     break;
-
                 case itas109::/*FlowControl::*/ FlowSoftware: // Software(XON / XOFF) flow control
                     comConfigure.dcb.fOutxCtsFlow = FALSE;
                     comConfigure.dcb.fRtsControl = RTS_CONTROL_DISABLE;
                     comConfigure.dcb.fInX = TRUE;
                     comConfigure.dcb.fOutX = TRUE;
                     break;
-
                 case itas109::/*FlowControl::*/ FlowHardware: // Hardware(RTS / CTS) flow control
                     comConfigure.dcb.fOutxCtsFlow = TRUE;
                     comConfigure.dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;

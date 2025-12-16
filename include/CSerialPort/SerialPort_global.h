@@ -171,9 +171,9 @@ enum Parity
  */
 enum StopBits
 {
-    StopOne = 0,        ///< 1 stop bit 1位停止位
-    StopOneAndHalf = 1, ///< 1.5 stop bit 1.5位停止位 - 1.5 only for windows
-    StopTwo = 2         ///< 2 stop bit 2位停止位
+    StopOne = 1,       ///< 1 stop bit 1位停止位
+    StopTwo = 2,       ///< 2 stop bit 2位停止位
+    StopOneAndHalf = 3 ///< 1.5 stop bit 1.5位停止位 - 1.5 only for windows
 };
 
 /**
