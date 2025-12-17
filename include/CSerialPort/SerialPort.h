@@ -56,6 +56,12 @@ public:
      */
     ~CSerialPort();
 
+    CSerialPort(const CSerialPort&) = delete;
+    CSerialPort& operator=(const CSerialPort&) = delete;
+
+    CSerialPort(CSerialPort&& other) noexcept;
+    CSerialPort &operator=(CSerialPort &&other) noexcept;
+
     /**
      * @brief init 初始化函数
      *

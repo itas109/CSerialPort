@@ -66,6 +66,28 @@ CSerialPort::~CSerialPort()
     }
 }
 
+itas109::CSerialPort::CSerialPort(CSerialPort &&other) noexcept
+    : p_serialPortBase(other.p_serialPortBase)
+{
+    other.p_serialPortBase = nullptr;
+}
+
+CSerialPort &itas109::CSerialPort::operator=(CSerialPort &&other) noexcept
+{
+    if (this != &other)
+    {
+        if (p_serialPortBase)
+        {
+            delete p_serialPortBase;
+            p_serialPortBase = nullptr;
+        }
+
+        p_serialPortBase = other.p_serialPortBase;
+        other.p_serialPortBase = nullptr;
+    }
+    return *this;
+}
+
 void itas109::CSerialPort::init(const char *portName,
                                 int baudRate /*= itas109::BaudRate::BaudRate9600*/,
                                 itas109::Parity parity /*= itas109::Parity::ParityNone*/,
