@@ -31,8 +31,8 @@ environment:
   - compiler: msvc-14-win32-xp
     generator: Visual Studio 14 2015
     platformset: v140_xp
-  - compiler: msvc-12-win32
-    generator: Visual Studio 12 2013
+#  - compiler: msvc-12-win32
+#    generator: Visual Studio 12 2013
 #  - compiler: msvc-12-win64
 #    generator: Visual Studio 12 2013 Win64
 #  - compiler: msvc-11-win32
