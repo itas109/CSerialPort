@@ -38,10 +38,8 @@ CSerialPort::CSerialPort()
 }
 
 itas109::CSerialPort::CSerialPort(const char *portName)
-    : p_serialPortBase(nullptr)
+    : p_serialPortBase(new CSERIALPORTBASE(portName))
 {
-    p_serialPortBase = new CSERIALPORTBASE(portName);
-
     char compilerInfo[256];
     itas109::IUtils::getCompilerInfo(compilerInfo, 256);
     LOG_INFO("%s, Version: %s", compilerInfo, getVersion());
@@ -49,41 +47,32 @@ itas109::CSerialPort::CSerialPort(const char *portName)
 
 CSerialPort::~CSerialPort()
 {
-    if (p_serialPortBase)
+    // avoid forget call closePort function
+    if (p_serialPortBase && p_serialPortBase->isOpen())
     {
-        // avoid forget call closePort function
-        if (p_serialPortBase->isOpen())
-        {
-            p_serialPortBase->closePort();
-        }
+        p_serialPortBase->closePort();
 
 #ifdef CSERIALPORT_DEBUG
         LOG_INFO("%s destruct", p_serialPortBase->getPortName());
 #endif
-
-        delete p_serialPortBase;
-        p_serialPortBase = nullptr;
     }
 }
 
 itas109::CSerialPort::CSerialPort(CSerialPort &&other) noexcept
-    : p_serialPortBase(other.p_serialPortBase)
+    : p_serialPortBase(std::move(other.p_serialPortBase))
 {
-    other.p_serialPortBase = nullptr;
 }
 
 CSerialPort &itas109::CSerialPort::operator=(CSerialPort &&other) noexcept
 {
     if (this != &other)
     {
-        if (p_serialPortBase)
+        if (p_serialPortBase && p_serialPortBase->isOpen())
         {
-            delete p_serialPortBase;
-            p_serialPortBase = nullptr;
+            p_serialPortBase->closePort();
         }
 
-        p_serialPortBase = other.p_serialPortBase;
-        other.p_serialPortBase = nullptr;
+        p_serialPortBase = std::move(other.p_serialPortBase);
     }
     return *this;
 }

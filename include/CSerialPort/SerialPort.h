@@ -14,6 +14,8 @@
 #ifndef __CSERIALPORT_H__
 #define __CSERIALPORT_H__
 
+#include <memory> // std::unique_ptr
+
 #include "SerialPort_global.h"
 
 #if defined(CSERIALPORT_NATIVE_SYNC)
@@ -56,10 +58,14 @@ public:
      */
     ~CSerialPort();
 
-    CSerialPort(const CSerialPort&) = delete;
-    CSerialPort& operator=(const CSerialPort&) = delete;
+    CSerialPort(const CSerialPort &) = delete;
+    CSerialPort &operator=(const CSerialPort &) = delete;
 
-    CSerialPort(CSerialPort&& other) noexcept;
+    /**
+     * @brief Move construct a new CSerialPort object 移动构造函数
+     *
+     */
+    CSerialPort(CSerialPort &&other) noexcept;
     CSerialPort &operator=(CSerialPort &&other) noexcept;
 
     /**
@@ -395,9 +401,9 @@ public:
 
 private:
 #if defined(CSERIALPORT_NATIVE_SYNC)
-    CSerialPortBase *p_serialPortBase;
+    std::unique_ptr<CSerialPortBase> p_serialPortBase;
 #else
-    CSerialPortAsyncBase *p_serialPortBase;
+    std::unique_ptr<CSerialPortAsyncBase> p_serialPortBase;
 #endif
 };
 } // namespace itas109
