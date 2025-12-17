@@ -22,12 +22,8 @@
 using namespace itas109;
 
 // ReadEventNotify
-#ifdef CSERIALPORT_CPP11
 #include <mutex>
 #include <condition_variable>
-#else
-#include "CSerialPort/ithread.hpp"
-#endif
 
 static char portName1[256] = {0};
 static char portName2[256] = {0};
@@ -44,13 +40,9 @@ public:
 
     void wait(char *portName, unsigned int &readBufferLen, unsigned int timeoutMS = 100)
     {
-#ifdef CSERIALPORT_CPP11
         std::unique_lock<std::mutex> lock(m_mutex);
         if (m_cv.wait_for(lock, std::chrono::milliseconds(timeoutMS), [&]
                           { return m_readBufferLen > 0; }))
-#else
-        if (m_cv.timeWait(m_mutex, timeoutMS, m_readBufferLen > 0))
-#endif
         {
             readBufferLen = m_readBufferLen;
             itas109::IUtils::strncpy(portName, m_portName, 256);
@@ -64,19 +56,11 @@ public:
     void notify(const char *portName, unsigned int readBufferLen)
     {
         {
-#ifdef CSERIALPORT_CPP11
             std::unique_lock<std::mutex> lock(m_mutex);
-#else
-            IAutoLock lock(&m_mutex);
-#endif
             m_readBufferLen = readBufferLen;
             itas109::IUtils::strncpy(m_portName, portName, 256);
         }
-#ifdef CSERIALPORT_CPP11
         m_cv.notify_one();
-#else
-        m_cv.notifyOne();
-#endif
     }
 
 private:
@@ -87,13 +71,8 @@ private:
     }
 
 private:
-#ifdef CSERIALPORT_CPP11
     std::condition_variable m_cv;
     std::mutex m_mutex;
-#else
-    IConditionVariable m_cv;
-    IMutex m_mutex;
-#endif
 
     char m_portName[256];
     unsigned int m_readBufferLen;
@@ -126,19 +105,11 @@ public:
 
     void wait(std::vector<IProtocolResult> &results, unsigned int timeoutMS = 100)
     {
-#ifdef CSERIALPORT_CPP11
         std::unique_lock<std::mutex> lock(m_mutex);
         if (m_cv.wait_for(lock, std::chrono::milliseconds(timeoutMS), [&]
                           { return m_results.size() > 0; }))
-#else
-        if (m_cv.timeWait(m_mutex, timeoutMS, m_results.size() > 0))
-#endif
         {
-#ifdef CSERIALPORT_CPP11
             results = std::move(m_results);
-#else
-            results = m_results;
-#endif
         }
         else
         {
@@ -149,20 +120,11 @@ public:
     void notify(std::vector<IProtocolResult> &results)
     {
         {
-#ifdef CSERIALPORT_CPP11
             std::unique_lock<std::mutex> lock(m_mutex);
             m_results = std::move(results);
-#else
-            IAutoLock lock(&m_mutex);
-            m_results = results;
-#endif
         }
 
-#ifdef CSERIALPORT_CPP11
         m_cv.notify_one();
-#else
-        m_cv.notifyOne();
-#endif
     }
 
 private:
@@ -171,13 +133,8 @@ private:
     }
 
 private:
-#ifdef CSERIALPORT_CPP11
     std::condition_variable m_cv;
     std::mutex m_mutex;
-#else
-    IConditionVariable m_cv;
-    IMutex m_mutex;
-#endif
 
     std::vector<IProtocolResult> m_results;
 };
@@ -254,7 +211,7 @@ public:
     ATCommandProtocolParser(
         unsigned int headerFieldLength, // 0 1 2
         unsigned char header[2],
-        unsigned int footerFieldLength,    // 1 2
+        unsigned int footerFieldLength, // 1 2
         unsigned char footer[2])
         : DelimiterBasedProtocolParser(headerFieldLength, header, footerFieldLength, footer)
     {
@@ -266,7 +223,7 @@ public:
         for (size_t i = 0; i < results.size(); ++i)
         {
             const IProtocolResult result = results.at(i);
-            printf("parse protocol result. str: %s, len: %d, hex(top100): %s\n", (char*)result.data, result.len, itas109::IUtils::charToHexStr(hexStr, (char *)result.data, result.len > 100 ? 100 : result.len));
+            printf("parse protocol result. str: %s, len: %d, hex(top100): %s\n", (char *)result.data, result.len, itas109::IUtils::charToHexStr(hexStr, (char *)result.data, result.len > 100 ? 100 : result.len));
         }
         ProtocolEventNotify::getInstance().notify(results);
     }
@@ -317,8 +274,8 @@ public:
             checksum ^= *ptr++;
         }
 
-        unsigned char high = hexToByte(*(ptr+1));
-        unsigned char low = hexToByte(*(ptr+2));
+        unsigned char high = hexToByte(*(ptr + 1));
+        unsigned char low = hexToByte(*(ptr + 2));
         if (high == 0xFF || low == 0xFF)
         {
             return false;
@@ -381,7 +338,9 @@ TEST_CASE_FIXTURE(CSerialPortTests, "isContainsVirtualPair_0_1")
     int virtualSerialPortCount = 0;
     for (size_t i = 0; i < m_availablePortsInfoVector.size(); i++)
     {
-        if (0 == strcmp(m_availablePortsInfoVector[i].portName, portName1) || 0 == strcmp(m_availablePortsInfoVector[i].portName, portName2))
+        SerialPortInfo serialPortInfo = m_availablePortsInfoVector[i];
+        std::cout << i + 1 << " - " << serialPortInfo.portName << " " << serialPortInfo.description << " " << serialPortInfo.hardwareId << std::endl;
+        if (0 == strcmp(serialPortInfo.portName, portName1) || 0 == strcmp(serialPortInfo.portName, portName2))
         {
             ++virtualSerialPortCount;
         }
@@ -764,7 +723,7 @@ TEST_CASE_FIXTURE(CSerialPortTests, "at_protocol_parse_6_2")
 
     // 多帧
     {
-        unsigned char writeData[14] = {0x41, 0x54, 0x2B, 0x42, 0x41, 0x55, 0x44, 0x34, 0x0D, 0x0A,0x41, 0x54, 0x0D, 0x0A};
+        unsigned char writeData[14] = {0x41, 0x54, 0x2B, 0x42, 0x41, 0x55, 0x44, 0x34, 0x0D, 0x0A, 0x41, 0x54, 0x0D, 0x0A};
         int writeLen = sizeof(writeData);
         m_serialport1.writeData(writeData, writeLen);
 
@@ -996,8 +955,8 @@ TEST_CASE_FIXTURE(CSerialPortTests, "nmea0183_protocol_parse_6_3")
 int main(int argc, char **argv)
 {
 #ifdef _WIN32
-    itas109::IUtils::strncpy(portName1, "COM40", 256);
-    itas109::IUtils::strncpy(portName2, "COM50", 256);
+    itas109::IUtils::strncpy(portName1, "COM99", 256);
+    itas109::IUtils::strncpy(portName2, "COM100", 256);
 #endif
 
     bool isOk = CSerialPortVirtual::createPair(portName1, portName2);

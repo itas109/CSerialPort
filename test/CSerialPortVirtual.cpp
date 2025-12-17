@@ -17,8 +17,6 @@
 #include <unistd.h>     // read write
 
 #include <thread> // std::thread
-#include <condition_variable>
-#include <chrono>
 
 #define READ_DATA_MAX_LEN 4096
 
@@ -78,28 +76,17 @@ bool CSerialPortVirtual::createPair(char *portName1, char *portName2)
 
     return ret;
 #else
-    std::condition_variable m_cv;
-    std::mutex m_mutex;
+    int master1 = 0, slave1 = 0;
+    int master2 = 0, slave2 = 0;
 
-    std::thread t([&]
+    if (openpty(&master1, &slave1, portName1, nullptr, nullptr) < 0 || openpty(&master2, &slave2, portName2, nullptr, nullptr) < 0)
+    {
+        perror("openpty failed\n");
+        return false;
+    }
+
+    std::thread t([master1, master2, slave1, slave2, portName1, portName2]
         {
-            int master1 = 0, slave1 = 0;
-            int master2 = 0, slave2 = 0;
-            char ptyName1[256] = {0};
-            char ptyName2[256] = {0};
-
-            if (openpty(&master1, &slave1, ptyName1, nullptr, nullptr) < 0 || openpty(&master2, &slave2, ptyName2, nullptr, nullptr) < 0)
-            {
-                perror("openpty failed\n");
-                m_cv.notify_one();
-                return;
-            }
-
-            itas109::IUtils::strncpy(portName1, ptyName1, 256);
-            itas109::IUtils::strncpy(portName2, ptyName2, 256);
-            printf("virtual serial port names: %s(%d) %s(%d)\n", portName1, master1, portName2, master2);
-            m_cv.notify_one();
-
             fd_set readfds; // only care read fdset
             int max_fd = master1 > master2 ? master1 : master2;
             while (1)
@@ -123,11 +110,11 @@ bool CSerialPortVirtual::createPair(char *portName1, char *portName2)
 
                 if (FD_ISSET(master1, &readfds))
                 {
-                    handle_io(master1, master2, ptyName1);
+                    handle_io(master1, master2, portName1);
                 }
                 else if (FD_ISSET(master2, &readfds))
                 {
-                    handle_io(master2, master1, ptyName2);
+                    handle_io(master2, master1, portName2);
                 }
                 else
                 {
@@ -140,13 +127,6 @@ bool CSerialPortVirtual::createPair(char *portName1, char *portName2)
             close(slave2); 
         });
     t.detach();
-
-    std::unique_lock<std::mutex> lock(m_mutex);
-    if (!m_cv.wait_for(lock, std::chrono::microseconds(500), [&]{ return '\0' != portName1[0] && '\0' != portName2[0]; }))
-    {
-        printf("createPair wait timeout\n");
-        return false;
-    }
 
     return true;
 #endif // _WIN32

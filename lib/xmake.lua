@@ -1,7 +1,9 @@
 -- cserialport shared library
 target("libcserialport")
     set_kind("shared")
-    add_files("version.rc")
+    if is_plat("windows") then
+        add_files("version.rc")
+    end
 
 -- cserialport static library
 target("libcserialport-static")

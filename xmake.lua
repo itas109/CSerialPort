@@ -7,7 +7,6 @@ option("CSERIALPORT_BUILD_EXAMPLES", {default = true, description = "Enable CSer
 option("CSERIALPORT_BUILD_BINDING_C", {default = true, description = "Enable CSerialPort c binding"})
 option("CSERIALPORT_ENABLE_DEBUG", {default = false, description = "Enable CSerialPort debug log"})
 option("CSERIALPORT_ENABLE_UTF8", {default = false, description = "Enable CSerialPort UTF8"})
-option("CSERIALPORT_BUILD_DOC", {default = false, description = "Enable CSerialPort doc"})
 option("CSERIALPORT_BUILD_TEST", {default = true, description = "Enable CSerialPort test"})
 
 if is_config("CSERIALPORT_ENABLE_NATIVE_SYNC", true) then
@@ -67,9 +66,4 @@ end
 -- test
 if is_config("CSERIALPORT_BUILD_TEST", true) then
     includes("test")
-end
-
--- doc
-if is_config("CSERIALPORT_BUILD_DOC", true) then
-    -- includes("doc")
 end

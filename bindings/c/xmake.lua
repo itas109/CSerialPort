@@ -4,7 +4,10 @@ add_includedirs(".") -- cserialport.h
 target("cserialport")
     set_kind("shared")
     add_defines("CSERIALPORT_BINDING_LANGUAGE=C") -- CSerialPort Binding Language
-    add_files("$(projectdir)/lib/version.rc")
+    if is_plat("windows") then
+        add_files("$(projectdir)/lib/version.rc")
+    end
+    
     add_files("cserialport.cpp")
 
 -- CSerialPort c binding static library
