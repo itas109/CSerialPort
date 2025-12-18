@@ -47,9 +47,7 @@ itas109::CSerialPort::CSerialPort(const char *portName)
 
 CSerialPort::~CSerialPort()
 {
-#ifdef CSERIALPORT_DEBUG
-        LOG_INFO("%s destruct", p_serialPortBase->getPortName());
-#endif
+    LOG_INFO("%s destruct", p_serialPortBase->getPortName());
 }
 
 itas109::CSerialPort::CSerialPort(CSerialPort &&other) noexcept

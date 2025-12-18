@@ -193,7 +193,7 @@ bool CSerialPortNativeSyncWinBase::openPort()
 void CSerialPortNativeSyncWinBase::closePort()
 {
     LOG_INFO("%s close...", m_portName);
-    
+
     if (isOpen())
     {
         // Discards all characters from the output or input buffer of a specified communications resource. It can
