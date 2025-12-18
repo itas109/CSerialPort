@@ -37,6 +37,11 @@ CSerialPortWinBase::CSerialPortWinBase(const char *portName)
 
 CSerialPortWinBase::~CSerialPortWinBase()
 {
+    if (isOpen())
+    {
+        closePort();
+    }
+
     CloseHandle(m_overlapMonitor.hEvent);
 }
 
@@ -247,15 +252,12 @@ void CSerialPortWinBase::closePort()
     {
         stopReadThread();
 
-        if (INVALID_FILE_HANDLE != m_handle)
-        {
-            // Discards all characters from the output or input buffer of a specified communications resource. It can
-            // also terminate pending read or write operations on the resource.
-            PurgeComm(m_handle, PURGE_TXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_RXABORT);
+        // Discards all characters from the output or input buffer of a specified communications resource. It can
+        // also terminate pending read or write operations on the resource.
+        PurgeComm(m_handle, PURGE_TXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_RXABORT);
 
-            CloseHandle(m_handle);
-            m_handle = INVALID_FILE_HANDLE;
-        }
+        CloseHandle(m_handle);
+        m_handle = INVALID_FILE_HANDLE;
 
         ResetEvent(m_overlapMonitor.hEvent);
     }

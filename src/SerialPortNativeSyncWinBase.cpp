@@ -28,6 +28,10 @@ CSerialPortNativeSyncWinBase::CSerialPortNativeSyncWinBase(const char *portName)
 
 CSerialPortNativeSyncWinBase::~CSerialPortNativeSyncWinBase()
 {
+    if (isOpen())
+    {
+        closePort();
+    }
 }
 
 bool CSerialPortNativeSyncWinBase::openPort()
@@ -188,20 +192,19 @@ bool CSerialPortNativeSyncWinBase::openPort()
 
 void CSerialPortNativeSyncWinBase::closePort()
 {
+    LOG_INFO("%s close...", m_portName);
+    
     if (isOpen())
     {
-        if (INVALID_FILE_HANDLE != m_handle)
-        {
-            // Discards all characters from the output or input buffer of a specified communications resource. It can
-            // also terminate pending read or write operations on the resource.
-            PurgeComm(m_handle, PURGE_TXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_RXABORT);
+        // Discards all characters from the output or input buffer of a specified communications resource. It can
+        // also terminate pending read or write operations on the resource.
+        PurgeComm(m_handle, PURGE_TXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_RXABORT);
 
-            CloseHandle(m_handle);
-            m_handle = INVALID_FILE_HANDLE;
-        }
-
-        // ResetEvent(m_overlapMonitor.hEvent);
+        CloseHandle(m_handle);
+        m_handle = INVALID_FILE_HANDLE;
     }
+
+    LOG_INFO("%s close success", m_portName);
 }
 
 unsigned int CSerialPortNativeSyncWinBase::getReadBufferUsedLen()

@@ -50,6 +50,10 @@ CSerialPortNativeSyncUnixBase::CSerialPortNativeSyncUnixBase(const char *portNam
 
 CSerialPortNativeSyncUnixBase::~CSerialPortNativeSyncUnixBase()
 {
+    if (isOpen())
+    {
+        closePort();
+    }
 }
 
 int CSerialPortNativeSyncUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl)
@@ -306,11 +310,15 @@ bool CSerialPortNativeSyncUnixBase::openPort()
 
 void CSerialPortNativeSyncUnixBase::closePort()
 {
+    LOG_INFO("%s close...", m_portName);
+
     if (isOpen())
     {
         close(m_handle);
         m_handle = INVALID_FILE_HANDLE;
     }
+
+    LOG_INFO("%s close success", m_portName);
 }
 
 unsigned int CSerialPortNativeSyncUnixBase::getReadBufferUsedLen()

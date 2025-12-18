@@ -47,15 +47,9 @@ itas109::CSerialPort::CSerialPort(const char *portName)
 
 CSerialPort::~CSerialPort()
 {
-    // avoid forget call closePort function
-    if (p_serialPortBase && p_serialPortBase->isOpen())
-    {
-        p_serialPortBase->closePort();
-
 #ifdef CSERIALPORT_DEBUG
         LOG_INFO("%s destruct", p_serialPortBase->getPortName());
 #endif
-    }
 }
 
 itas109::CSerialPort::CSerialPort(CSerialPort &&other) noexcept

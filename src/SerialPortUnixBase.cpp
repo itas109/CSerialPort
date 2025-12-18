@@ -56,6 +56,10 @@ CSerialPortUnixBase::CSerialPortUnixBase(const char *portName)
 
 CSerialPortUnixBase::~CSerialPortUnixBase()
 {
+    if (isOpen())
+    {
+        closePort();
+    }
 }
 
 int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, itas109::DataBits dataBits, itas109::StopBits stopbits, itas109::FlowControl flowControl)
