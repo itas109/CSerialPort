@@ -158,10 +158,11 @@ private:
     /**
      * @brief before stop read thread 停止读取多线程之前的操作
      *
-     * @retval true wait comm event success 等待串口事件成功
-     * @retval false wait comm event failed 等待串口事件失败
+     * @retval 1 wait comm event success 等待串口事件成功
+     * @retval 0 wait comm event timeout 等待串口事件超时
+     * @retval -1 wait comm event failed 等待串口事件失败
      */
-    bool waitCommEventNative() override final;
+    int waitCommEventNative() override final;
 
 private:
     OVERLAPPED m_overlapMonitor; ///< monitor overlapped

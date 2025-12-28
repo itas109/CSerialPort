@@ -634,31 +634,33 @@ unsigned int CSerialPortUnixBase::getReadBufferUsedLenNative()
     return readBufferBytes;
 }
 
-bool CSerialPortUnixBase::waitCommEventNative()
+int CSerialPortUnixBase::waitCommEventNative()
 {
-    fd_set readFd;                       // read fdset
-    struct timeval timeout = {0, 50000}; // 50ms for stop
+	m_readIntervalTimeoutMS = 0 == m_readIntervalTimeoutMS ? 50 : m_readIntervalTimeoutMS; // TODO: not support wait infinite
+	
+    fd_set readFd; // read fdset
+    struct timeval timeout = {m_readIntervalTimeoutMS / 1000, (m_readIntervalTimeoutMS % 1000) * 1000};
 
     FD_ZERO(&readFd);          // clear all read fdset
     FD_SET(m_handle, &readFd); // add read fdset
-    int ret = select(m_handle + 1, &readFd, nullptr, nullptr, &timeout);
+    int ret = select(m_handle + 1, &readFd, nullptr, nullptr, 0 == m_readIntervalTimeoutMS ? NULL : &timeout);
     if (ret < 0) // -1 error, 0 timeout, >0 ok
     {
         if (errno == EINTR) // ignore system interupt
         {
-            return false; // continue
+            return -1; // continue
         }
         perror("select error");
-        return false; // break
+        return -1; // break
     }
     else if (0 == ret) // timeout
     {
-        return false; // continue
+        return 0; // continue
     }
     if (0 == FD_ISSET(m_handle, &readFd))
     {
-        return false; // continue
+        return -1; // continue
     }
 
-    return true; // ok
+    return 1; // ok
 }

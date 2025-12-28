@@ -526,16 +526,34 @@ unsigned int CSerialPortWinBase::getReadBufferUsedLenNative()
     return (unsigned int)comstat.cbInQue;
 }
 
-bool CSerialPortWinBase::waitCommEventNative()
+int CSerialPortWinBase::waitCommEventNative()
 {
+    m_readIntervalTimeoutMS = 0; // TODO: need to fix thread crash
+
     DWORD eventMask = 0;
-    if (!WaitCommEvent(m_handle, &eventMask, &m_overlapMonitor))
+    if (FALSE == WaitCommEvent(m_handle, &eventMask, &m_overlapMonitor))
     {
         if (ERROR_IO_PENDING == GetLastError())
         {
-            WaitForSingleObject(m_overlapMonitor.hEvent, INFINITE);
+            DWORD waitState = WaitForSingleObject(m_overlapMonitor.hEvent, 0 == m_readIntervalTimeoutMS ? INFINITE : m_readIntervalTimeoutMS);
+            if (WAIT_TIMEOUT == waitState)
+            {
+                return 0; // timeout
+            }
+            else if (WAIT_OBJECT_0 == waitState)
+            {
+                return (eventMask & EV_RXCHAR) ? 1 : -1;
+            }
+            else
+            {
+                return -1; // failed
+            }
         }
-    }
 
-    return (eventMask & EV_RXCHAR);
+        return -1; // failed
+    }
+    else
+    {
+        return (eventMask & EV_RXCHAR) ? 1 : -1;
+    }
 }

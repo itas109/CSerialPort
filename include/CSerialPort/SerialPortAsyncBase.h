@@ -217,10 +217,11 @@ protected:
     /**
      * @brief before stop read thread 停止读取多线程之前的操作
      *
-     * @retval true wait comm event success 等待串口事件成功
-     * @retval false wait comm event failed 等待串口事件失败
+     * @retval 1 wait comm event success 等待串口事件成功
+     * @retval 0 wait comm event timeout 等待串口事件超时
+     * @retval <0 wait comm event failed 等待串口事件失败
      */
-    virtual bool waitCommEventNative() = 0;
+    virtual int waitCommEventNative() = 0;
 
 protected:
     std::atomic<bool> m_isEnableReadThread; ///< 是否启用读取线程
@@ -234,11 +235,10 @@ protected:
     itas109::IMutex m_mutexRead;  ///< read mutex 读互斥锁
     itas109::IMutex m_mutexWrite; ///< write mutex 写互斥锁
 
-    itas109::RingBuffer<char> *p_readBuffer;                ///< receive buffer 读取缓冲区
-    itas109::CSerialPortListener *p_readEvent;              ///< read event 读取事件
-    itas109::ITimer<itas109::CSerialPortListener> *p_timer; ///< read timer 读取定时器
-    itas109::CSerialPortHotPlug *p_serialPortHotPlug;       ///< serial port hot plug class 串口热插拔类
-    itas109::IProtocolParser *p_protocolParser;             ///< protocol parse 通信协议解析
+    itas109::RingBuffer<char> *p_readBuffer;          ///< receive buffer 读取缓冲区
+    itas109::CSerialPortListener *p_readEvent;        ///< read event 读取事件
+    itas109::CSerialPortHotPlug *p_serialPortHotPlug; ///< serial port hot plug class 串口热插拔类
+    itas109::IProtocolParser *p_protocolParser;       ///< protocol parse 通信协议解析
 
 private:
 };

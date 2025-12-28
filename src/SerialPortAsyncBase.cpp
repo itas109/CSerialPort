@@ -22,12 +22,10 @@ CSerialPortAsyncBase::CSerialPortAsyncBase(const char *portName)
     , m_byteReadBufferFullNotify(3276) // 4096*0.8
     , p_readBuffer(nullptr)
     , p_readEvent(nullptr)
-    , p_timer(nullptr)
     , p_serialPortHotPlug(nullptr)
     , p_protocolParser(nullptr)
 {
     m_operateMode = itas109::AsynchronousOperate;
-    p_timer = new itas109::ITimer<itas109::CSerialPortListener>();
 }
 
 CSerialPortAsyncBase::~CSerialPortAsyncBase()
@@ -36,12 +34,6 @@ CSerialPortAsyncBase::~CSerialPortAsyncBase()
     {
         delete p_readBuffer;
         p_readBuffer = nullptr;
-    }
-
-    if (p_timer)
-    {
-        delete p_timer;
-        p_timer = nullptr;
     }
 }
 
@@ -166,12 +158,14 @@ void CSerialPortAsyncBase::readThreadFun()
 {
     unsigned int readBufferSize = 0;
 
+    int state = 0;
     int isNew = 0;
-    char dataArray[4096];
-    char bufferArray[4096];
+    char dataArray[4096] = {0};
+    char bufferArray[4096] = {0};
     for (; m_isEnableReadThread;)
     {
-        if (waitCommEventNative())
+        state = waitCommEventNative();
+        if (state > 0)
         {
             readBufferSize = getReadBufferUsedLenNative();
             if (readBufferSize >= m_minByteReadNotify)
@@ -214,35 +208,17 @@ void CSerialPortAsyncBase::readThreadFun()
                                 p_protocolParser->onProtocolEvent(results);
                             }
                         }
-                        else
+                        else if (0 == m_readIntervalTimeoutMS && p_readEvent && p_readBuffer && !p_readBuffer->isEmpty())
                         {
-                            if (p_readEvent)
+                            LOG_INFO("onReadEvent read byte. portName: %s, readLen: %u", getPortName(), p_readBuffer->getUsedLen());
+                            p_readEvent->onReadEvent(getPortName(), p_readBuffer->getUsedLen());
+                        }
+                        else if (m_readIntervalTimeoutMS > 0 && p_readEvent && p_readBuffer)
+                        {
+                            if (p_readBuffer->getUsedLen() > m_byteReadBufferFullNotify || p_readBuffer->isFull())
                             {
-                                if (m_readIntervalTimeoutMS > 0)
-                                {
-                                    if (p_timer)
-                                    {
-                                        if (p_timer->isRunning())
-                                        {
-                                            p_timer->stop();
-                                        }
-
-                                        if (p_readBuffer->isFull() || p_readBuffer->getUsedLen() > getByteReadBufferFullNotify())
-                                        {
-                                            LOG_INFO("onReadEvent buffer full. portName: %s, readLen: %u", getPortName(), p_readBuffer->getUsedLen());
-                                            p_readEvent->onReadEvent(getPortName(), p_readBuffer->getUsedLen());
-                                        }
-                                        else
-                                        {
-                                            p_timer->startOnce(m_readIntervalTimeoutMS, p_readEvent, &itas109::CSerialPortListener::onReadEvent, getPortName(), p_readBuffer->getUsedLen());
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    LOG_INFO("onReadEvent min read byte. portName: %s, readLen: %u", getPortName(), p_readBuffer->getUsedLen());
-                                    p_readEvent->onReadEvent(getPortName(), p_readBuffer->getUsedLen());
-                                }
+                                LOG_INFO("onReadEvent buffer full. portName: %s, readLen: %u", getPortName(), p_readBuffer->getUsedLen());
+                                p_readEvent->onReadEvent(getPortName(), p_readBuffer->getUsedLen());
                             }
                         }
                     }
@@ -254,6 +230,14 @@ void CSerialPortAsyncBase::readThreadFun()
                     }
                 }
             }
+        }
+        else if (0 == state && p_readEvent && p_readBuffer && !p_readBuffer->isEmpty())
+        {
+            LOG_INFO("onReadEvent read byte timeout(%d). portName: %s, readLen: %u", m_readIntervalTimeoutMS, getPortName(), p_readBuffer->getUsedLen());
+            p_readEvent->onReadEvent(getPortName(), p_readBuffer->getUsedLen());
+        }
+        else
+        {
         }
     }
 }
