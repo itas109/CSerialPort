@@ -160,6 +160,13 @@ private:
                 itas109::FlowControl flowControl = itas109::FlowNone);
 
     /**
+     * @brief before stop read thread 停止读取多线程之前的操作
+     *
+     * @return void
+     */
+    void beforeStopReadThread() override final;
+
+    /**
      * @brief read specified length data 读取指定长度数据
      *
      * @param data [out] read data result 读取结果
@@ -186,5 +193,8 @@ private:
      * @retval -1 wait comm event failed 等待串口事件失败
      */
     int waitCommEventNative() override final;
+
+private:
+    int pipefd[2]; ///< pipe file descriptor for wake up read thread 用于唤醒读取线程的管道文件描述符
 };
 #endif //__CSERIALPORT_UNIX_BASE_H__

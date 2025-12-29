@@ -210,15 +210,15 @@ void CSerialPortAsyncBase::readThreadFun()
                         }
                         else if (0 == m_readIntervalTimeoutMS && p_readEvent && p_readBuffer && !p_readBuffer->isEmpty())
                         {
-                            LOG_INFO("onReadEvent read byte. portName: %s, readLen: %u", getPortName(), p_readBuffer->getUsedLen());
-                            p_readEvent->onReadEvent(getPortName(), p_readBuffer->getUsedLen());
+                            LOG_INFO("onReadEvent read byte. portName: %s, readLen: %u", m_portName, p_readBuffer->getUsedLen());
+                            p_readEvent->onReadEvent(m_portName, p_readBuffer->getUsedLen());
                         }
                         else if (m_readIntervalTimeoutMS > 0 && p_readEvent && p_readBuffer)
                         {
                             if (p_readBuffer->getUsedLen() > m_byteReadBufferFullNotify || p_readBuffer->isFull())
                             {
-                                LOG_INFO("onReadEvent buffer full. portName: %s, readLen: %u", getPortName(), p_readBuffer->getUsedLen());
-                                p_readEvent->onReadEvent(getPortName(), p_readBuffer->getUsedLen());
+                                LOG_INFO("onReadEvent buffer full. portName: %s, readLen: %u", m_portName, p_readBuffer->getUsedLen());
+                                p_readEvent->onReadEvent(m_portName, p_readBuffer->getUsedLen());
                             }
                         }
                     }
@@ -233,8 +233,8 @@ void CSerialPortAsyncBase::readThreadFun()
         }
         else if (0 == state && p_readEvent && p_readBuffer && !p_readBuffer->isEmpty())
         {
-            LOG_INFO("onReadEvent read byte timeout(%d). portName: %s, readLen: %u", m_readIntervalTimeoutMS, getPortName(), p_readBuffer->getUsedLen());
-            p_readEvent->onReadEvent(getPortName(), p_readBuffer->getUsedLen());
+            LOG_INFO("onReadEvent read byte timeout(%d). portName: %s, readLen: %u", m_readIntervalTimeoutMS, m_portName, p_readBuffer->getUsedLen());
+            p_readEvent->onReadEvent(m_portName, p_readBuffer->getUsedLen());
         }
         else
         {

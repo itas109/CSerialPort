@@ -52,6 +52,10 @@ CSerialPortUnixBase::CSerialPortUnixBase()
 CSerialPortUnixBase::CSerialPortUnixBase(const char *portName)
     : CSerialPortAsyncBase(portName)
 {
+    if (-1 == pipe(pipefd))
+    {
+        perror("pipe");
+    }
 }
 
 CSerialPortUnixBase::~CSerialPortUnixBase()
@@ -607,6 +611,14 @@ int CSerialPortUnixBase::rate2Constant(int baudrate)
 #undef B
 }
 
+void CSerialPortUnixBase::beforeStopReadThread()
+{
+    if (INVALID_FILE_HANDLE != m_handle)
+    {
+        write(pipefd[1], "q", 1);
+    }
+}
+
 int CSerialPortUnixBase::readDataNative(void *data, int size)
 {
     itas109::IScopedLock lock(m_mutexRead);
@@ -636,14 +648,15 @@ unsigned int CSerialPortUnixBase::getReadBufferUsedLenNative()
 
 int CSerialPortUnixBase::waitCommEventNative()
 {
-	m_readIntervalTimeoutMS = 0 == m_readIntervalTimeoutMS ? 50 : m_readIntervalTimeoutMS; // TODO: not support wait infinite
-	
     fd_set readFd; // read fdset
-    struct timeval timeout = {m_readIntervalTimeoutMS / 1000, (m_readIntervalTimeoutMS % 1000) * 1000};
+    struct timeval timeout;
+    timeout.tv_sec = m_readIntervalTimeoutMS / 1000;
+    timeout.tv_usec = (m_readIntervalTimeoutMS % 1000) * 1000;
 
-    FD_ZERO(&readFd);          // clear all read fdset
-    FD_SET(m_handle, &readFd); // add read fdset
-    int ret = select(m_handle + 1, &readFd, nullptr, nullptr, 0 == m_readIntervalTimeoutMS ? NULL : &timeout);
+    FD_ZERO(&readFd);           // clear all read fdset
+    FD_SET(m_handle, &readFd);  // add read fdset
+    FD_SET(pipefd[0], &readFd); // add pipe read fdset for wake up
+    int ret = select(m_handle > pipefd[0] ? m_handle + 1 : pipefd[0] + 1, &readFd, nullptr, nullptr, 0 == m_readIntervalTimeoutMS ? NULL : &timeout);
     if (ret < 0) // -1 error, 0 timeout, >0 ok
     {
         if (errno == EINTR) // ignore system interupt
@@ -657,9 +670,16 @@ int CSerialPortUnixBase::waitCommEventNative()
     {
         return 0; // continue
     }
+
     if (0 == FD_ISSET(m_handle, &readFd))
     {
         return -1; // continue
+    }
+    else if (1 == FD_ISSET(pipefd[0], &readFd))
+    {
+        char buf[1];                       // q
+        read(pipefd[0], buf, sizeof(buf)); // clear pipe
+        return -1;                         // continue
     }
 
     return 1; // ok
