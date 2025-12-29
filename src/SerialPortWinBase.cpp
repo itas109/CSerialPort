@@ -521,14 +521,19 @@ int CSerialPortWinBase::readDataNative(void *data, int size)
 unsigned int CSerialPortWinBase::getReadBufferUsedLenNative()
 {
     DWORD dwError = 0;
-    COMSTAT comstat;
-    ClearCommError(m_handle, &dwError, &comstat);
-    return (unsigned int)comstat.cbInQue;
+    // TODO: Run-Time Check Failure #2 - Stack around the variable 'comstat' was corrupted.
+    static char buffer[64] = {0};
+    COMSTAT *pStat = reinterpret_cast<COMSTAT *>(buffer);
+    if (ClearCommError(m_handle, &dwError, pStat))
+    {
+        return (unsigned int)pStat->cbInQue;
+    }
+    return 0;
 }
 
 int CSerialPortWinBase::waitCommEventNative()
 {
-    m_readIntervalTimeoutMS = 0; // TODO: need to fix thread crash
+    m_readIntervalTimeoutMS = 0; // TODO: need to fix thread crash. stack overflow
 
     DWORD eventMask = 0;
     if (FALSE == WaitCommEvent(m_handle, &eventMask, &m_overlapMonitor))
