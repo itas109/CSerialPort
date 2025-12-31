@@ -25,7 +25,6 @@ endif ()
 add_definitions(-DCSERIALPORT_USE_UTF8) # CSerialPort UTF8 Character Encoding
 add_definitions(-DCSERIALPORT_BINDING_LANGUAGE=Node.js) # CSerialPort Binding Language
 
-set(CMAKE_CXX_STANDARD 11)
 #add_compile_options(-g)
 
 include_directories(${CMAKE_JS_INC})

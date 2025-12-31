@@ -78,38 +78,14 @@ pub const Parity_ParityEven: Parity = 2;
 pub const Parity_ParityMark: Parity = 3;
 pub const Parity_ParitySpace: Parity = 4;
 pub type Parity = ::std::os::raw::c_int;
-pub const StopBits_StopOne: StopBits = 0;
-pub const StopBits_StopOneAndHalf: StopBits = 1;
+pub const StopBits_StopOne: StopBits = 1;
 pub const StopBits_StopTwo: StopBits = 2;
+pub const StopBits_StopOneAndHalf: StopBits = 3;
 pub type StopBits = ::std::os::raw::c_int;
 pub const FlowControl_FlowNone: FlowControl = 0;
 pub const FlowControl_FlowHardware: FlowControl = 1;
 pub const FlowControl_FlowSoftware: FlowControl = 2;
 pub type FlowControl = ::std::os::raw::c_int;
-pub type pFunReadEvent = ::std::option::Option<
-    unsafe extern "C" fn(
-        arg1: i_handle_t,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_uint,
-    ),
->;
-pub type pFunHotPlugEvent = ::std::option::Option<
-    unsafe extern "C" fn(
-        arg1: i_handle_t,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-    ),
->;
-pub type pFunProtocolParser = ::std::option::Option<
-    unsafe extern "C" fn(
-        arg1: i_handle_t,
-        arg2: *const ::std::os::raw::c_void,
-        arg3: ::std::os::raw::c_uint,
-        arg4: *mut ProtocolResultArray,
-    ) -> ::std::os::raw::c_uint,
->;
-pub type pFunProtocolEvent =
-    ::std::option::Option<unsafe extern "C" fn(arg1: i_handle_t, arg2: *mut ProtocolResult)>;
 unsafe extern "C" {
     pub fn CSerialPortAvailablePortInfosMalloc(portInfoArray: *mut SerialPortInfoArray);
 }
@@ -147,6 +123,50 @@ unsafe extern "C" {
     pub fn CSerialPortIsOpen(handle: i_handle_t) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
+    pub fn CSerialPortReadData(
+        handle: i_handle_t,
+        data: *mut ::std::os::raw::c_void,
+        size: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn CSerialPortReadAllData(
+        handle: i_handle_t,
+        data: *mut ::std::os::raw::c_void,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn CSerialPortWriteData(
+        handle: i_handle_t,
+        data: *const ::std::os::raw::c_void,
+        size: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
+pub type pFunReadEvent = ::std::option::Option<
+    unsafe extern "C" fn(
+        arg1: i_handle_t,
+        arg2: *const ::std::os::raw::c_char,
+        arg3: ::std::os::raw::c_uint,
+    ),
+>;
+pub type pFunHotPlugEvent = ::std::option::Option<
+    unsafe extern "C" fn(
+        arg1: i_handle_t,
+        arg2: *const ::std::os::raw::c_char,
+        arg3: ::std::os::raw::c_int,
+    ),
+>;
+pub type pFunProtocolParser = ::std::option::Option<
+    unsafe extern "C" fn(
+        arg1: i_handle_t,
+        arg2: *const ::std::os::raw::c_void,
+        arg3: ::std::os::raw::c_uint,
+        arg4: *mut ProtocolResultArray,
+    ) -> ::std::os::raw::c_uint,
+>;
+pub type pFunProtocolEvent =
+    ::std::option::Option<unsafe extern "C" fn(arg1: i_handle_t, arg2: *mut ProtocolResult)>;
+unsafe extern "C" {
     pub fn CSerialPortConnectReadEvent(
         handle: i_handle_t,
         pFun: pFunReadEvent,
@@ -172,39 +192,6 @@ unsafe extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn CSerialPortGetReadBufferUsedLen(handle: i_handle_t) -> ::std::os::raw::c_uint;
-}
-unsafe extern "C" {
-    pub fn CSerialPortReadData(
-        handle: i_handle_t,
-        data: *mut ::std::os::raw::c_void,
-        size: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn CSerialPortReadAllData(
-        handle: i_handle_t,
-        data: *mut ::std::os::raw::c_void,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn CSerialPortReadLineData(
-        handle: i_handle_t,
-        data: *mut ::std::os::raw::c_void,
-        size: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn CSerialPortWriteData(
-        handle: i_handle_t,
-        data: *const ::std::os::raw::c_void,
-        size: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn CSerialPortSetDebugModel(handle: i_handle_t, isDebug: ::std::os::raw::c_int);
-}
-unsafe extern "C" {
     pub fn CSerialPortSetReadIntervalTimeout(handle: i_handle_t, msecs: ::std::os::raw::c_uint);
 }
 unsafe extern "C" {
@@ -215,6 +202,18 @@ unsafe extern "C" {
         handle: i_handle_t,
         minByteReadNotify: ::std::os::raw::c_uint,
     );
+}
+unsafe extern "C" {
+    pub fn CSerialPortSetByteReadBufferFullNotify(
+        handle: i_handle_t,
+        byteReadBufferFullNotify: ::std::os::raw::c_uint,
+    );
+}
+unsafe extern "C" {
+    pub fn CSerialPortGetReadBufferUsedLen(handle: i_handle_t) -> ::std::os::raw::c_uint;
+}
+unsafe extern "C" {
+    pub fn CSerialPortSetDebugModel(handle: i_handle_t, isDebug: ::std::os::raw::c_int);
 }
 unsafe extern "C" {
     pub fn CSerialPortFlushBuffers(handle: i_handle_t) -> ::std::os::raw::c_int;

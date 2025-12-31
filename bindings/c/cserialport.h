@@ -73,9 +73,9 @@ enum Parity
 
 enum StopBits
 {
-    StopOne = 0,
-    StopOneAndHalf = 1,
-    StopTwo = 2
+    StopOne = 1,
+    StopTwo = 2,
+    StopOneAndHalf = 3
 };
 
 enum FlowControl

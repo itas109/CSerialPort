@@ -60,9 +60,9 @@ set(CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_SOURCE_DIR}/generate")
 add_definitions(-DBUILDING_NODE_EXTENSION)
 # call swig in c++ mode
 set_property(SOURCE cserialport.i PROPERTY CPLUSPLUS ON)
-# use node javascript engine
-set(CMAKE_SWIG_FLAGS -node)
-# swig -javascript -c++ -node -outdir generate -I../../include cserialport.i
+# use node javascript engine and -std=c++11
+set(CMAKE_SWIG_FLAGS -node "-std=c++11")
+# swig -javascript -c++ -node -std=c++11 -outdir generate -I../../include cserialport.i
 swig_add_library(${PROJECT_NAME} LANGUAGE javascript SOURCES cserialport.i ${CSerialPortSourceFiles})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
