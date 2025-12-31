@@ -37,7 +37,7 @@ CSerialPort是一个基于C++的轻量级开源跨平台串口类库，可以轻
 
 ## Long-term Goal 长期目标
 
-- [ ] 1.支持现代C++标准
+- [x] 1.支持现代C++标准
 - [ ] 2.支持字符间超时和自定义协议解析
 - [ ] 3.支持原生同步、原生异步和可扩展异步模式
 - [ ] 4.支持脚本引擎
@@ -115,6 +115,15 @@ $ cmake .. -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_arm.cmake
 $ cmake --build .
 ```
 
+- arm on windows
+
+```
+$ cd CSerialPort
+$ mkdir bin_arm && cd bin_arm
+$ cmake .. -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_arm_win32.cmake
+$ cmake --build .
+```
+
 - aarch64 on ubuntu 20.04
 
 ```
@@ -122,6 +131,15 @@ $ sudo apt-get install g++-aarch64-linux-gnu
 $ cd CSerialPort
 $ mkdir bin_aarch64 && cd bin_aarch64
 $ cmake .. -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_aarch64.cmake
+$ cmake --build .
+```
+
+- aarch64 on windows
+
+```
+$ cd CSerialPort
+$ mkdir bin_aarch64 && cd bin_aarch64
+$ cmake .. -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_aarch64_win32.cmake
 $ cmake --build .
 ```
 

@@ -37,7 +37,7 @@ CSerialPort is a lightweight cross-platform serial port library based on C++, wh
 
 ## Long-term Goal
 
-- [ ] 1.support modern c++ standard
+- [x] 1.support modern c++ standard
 - [ ] 2.support character interval time and custom protocol parsing
 - [ ] 3.support raw sync、raw async and extend async mode
 - [ ] 4.support script engine
@@ -115,6 +115,15 @@ $ cmake .. -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_arm.cmake
 $ cmake --build .
 ```
 
+- arm on windows
+
+```
+$ cd CSerialPort
+$ mkdir bin_arm && cd bin_arm
+$ cmake .. -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_arm_win32.cmake
+$ cmake --build .
+```
+
 - aarch64 on ubuntu 20.04
 
 ```
@@ -122,6 +131,15 @@ $ sudo apt-get install g++-aarch64-linux-gnu
 $ cd CSerialPort
 $ mkdir bin_aarch64 && cd bin_aarch64
 $ cmake .. -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_aarch64.cmake
+$ cmake --build .
+```
+
+- aarch64 on windows
+
+```
+$ cd CSerialPort
+$ mkdir bin_aarch64 && cd bin_aarch64
+$ cmake .. -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_aarch64_win32.cmake
 $ cmake --build .
 ```
 
