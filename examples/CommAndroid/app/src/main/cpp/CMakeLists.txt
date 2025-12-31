@@ -53,8 +53,8 @@ set(CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_SOURCE_DIR}/../java/${JAVA_GEN_SUBDIR}")
 # call swig in c++ mode
 set_property(SOURCE cserialport.i PROPERTY CPLUSPLUS ON)
 # set swig package
-set(CMAKE_SWIG_FLAGS -package ${JAVA_GEN_PACKAGE})
-# swig -java -c++ -outdir generate -I../../include -package com.itas109.cserialport.jni cserialport.i
+set(CMAKE_SWIG_FLAGS -package ${JAVA_GEN_PACKAGE} "-std=c++11")
+# swig -java -c++ -std=c++11 -outdir generate -I../../include -package com.itas109.cserialport.jni cserialport.i
 swig_add_library(${PROJECT_NAME} LANGUAGE java SOURCES cserialport.i ${CSerialPortSourceFiles})
 
 find_library( log-lib log )
