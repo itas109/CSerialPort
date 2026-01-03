@@ -36,16 +36,6 @@ if(NOT CSerialPortSourceFiles)
     include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/cserialport_src.cmake)
 endif()
 
-if (WIN32)
-    link_libraries(user32 advapi32 setupapi)
-elseif (APPLE)
-    find_library(IOKIT_LIBRARY IOKit)
-    find_library(FOUNDATION_LIBRARY Foundation)
-    link_libraries(${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
-elseif (UNIX)
-    link_libraries(pthread)
-endif ()
-
 # find swig
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
@@ -59,6 +49,8 @@ set_property(SOURCE cserialport.i PROPERTY CPLUSPLUS ON)
 set(CMAKE_SWIG_FLAGS "-std=c++11" -namespace itas109)
 # swig -csharp -c++ -std=c++11 -outdir generate -I../../include -namespace itas109 cserialport.i
 swig_add_library(${PROJECT_NAME} LANGUAGE csharp SOURCES cserialport.i ${CSerialPortSourceFiles})
+
+cserialport_target_link_libraries(${PROJECT_NAME})
 
 # example
 if (WIN32)

@@ -41,6 +41,7 @@ find_package (Python3 COMPONENTS Interpreter Development)
 include_directories(${Python3_INCLUDE_DIRS})
 link_libraries(${Python3_LIBRARIES})
 
+# TODO: use cserialport_target_link_libraries
 if (WIN32)
     link_libraries(user32 advapi32 setupapi)
 elseif (APPLE)
@@ -64,3 +65,6 @@ set_property(SOURCE cserialport.i PROPERTY CPLUSPLUS ON)
 set(CMAKE_SWIG_FLAGS "-std=c++11")
 # swig -python -c++ -std=c++11 -outdir generate -I../../include cserialport.i
 swig_add_library(${PROJECT_NAME} LANGUAGE python SOURCES cserialport.i ${CSerialPortSourceFiles})
+
+# error: Cannot specify link libraries for target "cserialport" which is not built by this project.
+# cserialport_target_link_libraries(${PROJECT_NAME})

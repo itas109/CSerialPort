@@ -50,12 +50,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
 
-if (WIN32)
-	target_link_libraries( ${PROJECT_NAME} user32 advapi32 setupapi)
-elseif(APPLE)
-    find_library(IOKIT_LIBRARY IOKit)
-    find_library(FOUNDATION_LIBRARY Foundation)
-    target_link_libraries( ${PROJECT_NAME} ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
-elseif (UNIX)
-	target_link_libraries( ${PROJECT_NAME} pthread)
-endif()
+cserialport_target_link_libraries(${PROJECT_NAME})

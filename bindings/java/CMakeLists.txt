@@ -42,16 +42,6 @@ find_package(JNI REQUIRED)
 include(UseJava) # add_jar
 include_directories(${JNI_INCLUDE_DIRS}) # jni.h
 
-if (WIN32)
-    link_libraries(user32 advapi32 setupapi)
-elseif (APPLE)
-    find_library(IOKIT_LIBRARY IOKit)
-    find_library(FOUNDATION_LIBRARY Foundation)
-    link_libraries(${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
-elseif (UNIX)
-    link_libraries(pthread)
-endif ()
-
 # find swig
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
@@ -65,6 +55,8 @@ set_property(SOURCE cserialport.i PROPERTY CPLUSPLUS ON)
 set(CMAKE_SWIG_FLAGS "-std=c++11" -package com.itas109.cserialport)
 # swig -java -c++ -std=c++11 -outdir generate -I../../include -package com.itas109.cserialport cserialport.i
 swig_add_library(${PROJECT_NAME} LANGUAGE java SOURCES cserialport.i ${CSerialPortSourceFiles})
+
+cserialport_target_link_libraries(${PROJECT_NAME})
 
 # example
 set(EXAMPLE_NAME CommJava) 

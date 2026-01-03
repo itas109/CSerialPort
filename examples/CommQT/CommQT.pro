@@ -21,14 +21,4 @@ HEADERS  += mainwindow.h
 
 FORMS    += mainwindow.ui
 
-#DEFINES += QT_NO_EMIT
-DEFINES += _UNICODE
-
 include($$PWD/commqt.pri)
-
-win32:LIBS += -luser32 -ladvapi32 -lsetupapi
-unix:!macx:LIBS += -lpthread
-macx {
-    LIBS += -framework IOKit
-    LIBS += -framework Foundation
-}

@@ -59,19 +59,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES PREFIX "")
 # preprocessor definitions for compiling CSerialPort library
 set_target_properties( ${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS BUILDING_LIBCSERIALPORT)
 
-if (WIN32)
-	# for function availableFriendlyPorts
-	target_link_libraries( ${PROJECT_NAME} user32 advapi32 setupapi)
-	#target_link_libraries( ${PROJECT_NAME} libgcc.a)
-	#target_link_libraries( ${PROJECT_NAME} libstdc++.a)
-	#target_link_libraries( ${PROJECT_NAME} libpthread.a)
-elseif(APPLE)
-    find_library(IOKIT_LIBRARY IOKit)
-    find_library(FOUNDATION_LIBRARY Foundation)
-    target_link_libraries( ${PROJECT_NAME} ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
-elseif (UNIX)
-	target_link_libraries( ${PROJECT_NAME} pthread)
-endif()
+cserialport_target_link_libraries(${PROJECT_NAME})
 
 install(DIRECTORY ../include/CSerialPort DESTINATION include FILES_MATCHING PATTERN "*.h" PATTERN "*Base.h" EXCLUDE)
 

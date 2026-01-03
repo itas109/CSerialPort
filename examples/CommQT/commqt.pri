@@ -1,6 +1,10 @@
+#DEFINES += QT_NO_EMIT
+DEFINES += _UNICODE
+
 HEADERS += $$PWD/../../include/CSerialPort/SerialPort_global.h
 HEADERS += $$PWD/../../include/CSerialPort/SerialPortListener.h
 HEADERS += $$PWD/../../include/CSerialPort/SerialPortBase.h
+HEADERS += $$PWD/../../include/CSerialPort/SerialPortAsyncBase.h
 HEADERS += $$PWD/../../include/CSerialPort/SerialPort.h
 HEADERS += $$PWD/../../include/CSerialPort/SerialPortInfoBase.h
 HEADERS += $$PWD/../../include/CSerialPort/SerialPortInfo.h
@@ -18,6 +22,7 @@ unix {
 }
 
 SOURCES += $$PWD/../../src/SerialPortBase.cpp
+SOURCES += $$PWD/../../src/SerialPortAsyncBase.cpp
 SOURCES += $$PWD/../../src/SerialPort.cpp
 SOURCES += $$PWD/../../src/SerialPortInfoBase.cpp
 SOURCES += $$PWD/../../src/SerialPortInfo.cpp
@@ -34,3 +39,10 @@ unix {
 
 INCLUDEPATH += $$PWD/../../include
 DEPENDPATH += $$PWD/../../src
+
+win32:LIBS += -luser32 -ladvapi32 -lsetupapi
+unix:!macx:LIBS += -lpthread
+macx {
+    LIBS += -framework IOKit
+    LIBS += -framework Foundation
+}

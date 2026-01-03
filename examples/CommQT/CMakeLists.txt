@@ -51,13 +51,4 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(CommQT Qt5::Widgets)
 
-if (WIN32)
-        # for function availableFriendlyPorts
-        target_link_libraries( ${PROJECT_NAME} user32 advapi32 setupapi)
-elseif(APPLE)
-    find_library(IOKIT_LIBRARY IOKit)
-    find_library(FOUNDATION_LIBRARY Foundation)
-    target_link_libraries( ${PROJECT_NAME} ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
-elseif(UNIX)
-        target_link_libraries( ${PROJECT_NAME} pthread)
-endif ()
+cserialport_target_link_libraries(${PROJECT_NAME})

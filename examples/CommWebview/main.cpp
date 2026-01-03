@@ -36,7 +36,7 @@ std::string stringToHex(const std::string &input)
 void HexStrToString(const std::string &input, char *des)
 {
     const char *src = input.c_str();
-    int len = input.size() / 2;
+    int len = (int)(input.size() / 2);
     while (len--)
     {
         *des = (*src > '9' ? *src + 9 : *src) << 4;
@@ -358,7 +358,7 @@ int main()
                int len = 0;
                if (isHex)
                {
-                   int hexLen = data.size() / 2;
+                   int hexLen = (int)(data.size() / 2);
                    char *hex = new char[hexLen];
                    HexStrToString(data, hex);
                    len = sp.writeData(hex, hexLen);

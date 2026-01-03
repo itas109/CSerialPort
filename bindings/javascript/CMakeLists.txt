@@ -39,16 +39,6 @@ endif()
 # use cmake-js (npm i -g cmake-js)
 include_directories(${CMAKE_JS_INC}) # node.h
 
-if (WIN32)
-    link_libraries(user32 advapi32 setupapi)
-elseif (APPLE)
-    find_library(IOKIT_LIBRARY IOKit)
-    find_library(FOUNDATION_LIBRARY Foundation)
-    link_libraries(${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
-elseif (UNIX)
-    link_libraries(pthread)
-endif ()
-
 # find swig
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
@@ -67,3 +57,5 @@ swig_add_library(${PROJECT_NAME} LANGUAGE javascript SOURCES cserialport.i ${CSe
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB}) # windows node.lib
+
+cserialport_target_link_libraries(${PROJECT_NAME})

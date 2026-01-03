@@ -499,7 +499,7 @@ TEST_CASE_FIXTURE(CSerialPortTests, "read_async_5_1")
     CHECK_EQ(true, m_serialport2.open());
 
     const char *writeData = "itas109";
-    int writeLen = strlen(writeData);
+    int writeLen = (int)strlen(writeData);
     m_serialport1.writeData(writeData, writeLen);
 
     // wait read event
@@ -827,7 +827,7 @@ TEST_CASE_FIXTURE(CSerialPortTests, "nmea0183_protocol_parse_6_3")
     //  空帧
     {
         const char *writeData = "$*00\r\n";
-        int writeLen = strlen(writeData);
+        int writeLen = (int)strlen(writeData);
         m_serialport1.writeData(writeData, writeLen);
 
         // wait protocol event
@@ -841,7 +841,7 @@ TEST_CASE_FIXTURE(CSerialPortTests, "nmea0183_protocol_parse_6_3")
     // 标准帧
     {
         const char *writeData = "$GPGGA,092750.00,3723.24,N,12158.34,W,1,10,1.0,9.0,M,,*26\r\n";
-        int writeLen = strlen(writeData);
+        int writeLen = (int)strlen(writeData);
         m_serialport1.writeData(writeData, writeLen);
 
         // wait protocol event
@@ -855,7 +855,7 @@ TEST_CASE_FIXTURE(CSerialPortTests, "nmea0183_protocol_parse_6_3")
     // 多帧
     {
         const char *writeData = "$GPVTG,,*52\r\n$GPGGA,092750.00,3723.24,N,12158.34,W,1,10,1.0,9.0,M,,*26\r\n";
-        int writeLen = strlen(writeData);
+        int writeLen = (int)strlen(writeData);
         m_serialport1.writeData(writeData, writeLen);
 
         // wait protocol event
@@ -871,11 +871,11 @@ TEST_CASE_FIXTURE(CSerialPortTests, "nmea0183_protocol_parse_6_3")
     // 半帧拼接 - 数据
     {
         const char *writeData1 = "$GPGGA,092750.00,3723.24,N";
-        int writeLen1 = strlen(writeData1);
+        int writeLen1 = (int)strlen(writeData1);
         const char *writeData2 = ",12158.34,W,1,10,1.0,9.0,M,,*26\r\n";
-        int writeLen2 = strlen(writeData2);
+        int writeLen2 = (int)strlen(writeData2);
         const char *writeData = "$GPGGA,092750.00,3723.24,N,12158.34,W,1,10,1.0,9.0,M,,*26\r\n";
-        int writeLen = strlen(writeData);
+        int writeLen = (int)strlen(writeData);
         m_serialport1.writeData(writeData1, writeLen1); // 前半帧
 
         // wait protocol event
@@ -893,11 +893,11 @@ TEST_CASE_FIXTURE(CSerialPortTests, "nmea0183_protocol_parse_6_3")
     // 半帧拼接 - 帧尾
     {
         const char *writeData1 = "$GPGGA,092750.00,3723.24,N,12158.34,W,1,10,1.0,9.0,M,,*26\r";
-        int writeLen1 = strlen(writeData1);
+        int writeLen1 = (int)strlen(writeData1);
         const char *writeData2 = "\n";
-        int writeLen2 = strlen(writeData2);
+        int writeLen2 = (int)strlen(writeData2);
         const char *writeData = "$GPGGA,092750.00,3723.24,N,12158.34,W,1,10,1.0,9.0,M,,*26\r\n";
-        int writeLen = strlen(writeData);
+        int writeLen = (int)strlen(writeData);
         m_serialport1.writeData(writeData1, writeLen1); // 前半帧
 
         // wait protocol event
@@ -915,7 +915,7 @@ TEST_CASE_FIXTURE(CSerialPortTests, "nmea0183_protocol_parse_6_3")
     // 多余帧头
     {
         const char *writeData = "$$GPGGA,092750.00,3723.24,N,12158.34,W,1,10,1.0,9.0,M,,*26\r\n";
-        int writeLen = strlen(writeData);
+        int writeLen = (int)strlen(writeData);
         m_serialport1.writeData(writeData, writeLen);
 
         // wait protocol event
@@ -941,7 +941,7 @@ TEST_CASE_FIXTURE(CSerialPortTests, "nmea0183_protocol_parse_6_3")
     // 校验错误
     {
         const char *writeData = "$GPGGA,092750.00,3723.24,N,12158.34,W,1,10,1.0,9.0,M,,*00\r\n";
-        int writeLen = strlen(writeData);
+        int writeLen = (int)strlen(writeData);
         m_serialport1.writeData(writeData, writeLen);
 
         // wait protocol event

@@ -22,8 +22,10 @@ endif ()
 
 MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 
+# C++11 standard
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # include source files if CSerialPortSourceFiles is empty
 if(NOT CSerialPortSourceFiles)
@@ -38,15 +40,7 @@ list(APPEND CSerialPortVirtualSourceFiles CSerialPortVirtual.cpp)
 
 add_executable(${PROJECT_NAME} cseiralport_test.cpp ${CSerialPortHeaderFiles} ${CSerialPortSourceFiles} ${CSerialPortVirtualSourceFiles})
 
-if (WIN32)
-    # for function availableFriendlyPorts
-    target_link_libraries( ${PROJECT_NAME} user32 advapi32 setupapi)
-elseif(APPLE)
-    find_library(IOKIT_LIBRARY IOKit)
-    find_library(FOUNDATION_LIBRARY Foundation)
-    target_link_libraries( ${PROJECT_NAME} ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
-    target_link_libraries( ${PROJECT_NAME} util) # pty
-elseif(UNIX)
-    target_link_libraries( ${PROJECT_NAME} pthread)
+cserialport_target_link_libraries(${PROJECT_NAME})
+if(UNIX) # Linux or MacOS or BSD etc.
     target_link_libraries( ${PROJECT_NAME} util) # pty
 endif ()

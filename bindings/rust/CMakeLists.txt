@@ -43,15 +43,7 @@ list(APPEND CSerialPortCBindSourceFiles ${CSerialPortCBindRootPath}/cserialport.
 
 add_library(${PROJECT_NAME} SHARED ${CSerialPortSourceFiles} ${CSerialPortCBindSourceFiles})
 
-if (WIN32)
-    target_link_libraries(${PROJECT_NAME} user32 advapi32 setupapi)
-elseif (APPLE)
-    find_library(IOKIT_LIBRARY IOKit)
-    find_library(FOUNDATION_LIBRARY Foundation)
-    target_link_libraries(${PROJECT_NAME} ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
-elseif (UNIX)
-    target_link_libraries(${PROJECT_NAME} pthread)
-endif ()
+cserialport_target_link_libraries(${PROJECT_NAME})
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_LINKER_FILE:${PROJECT_NAME}>" "${CMAKE_SOURCE_DIR}"
