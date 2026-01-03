@@ -105,7 +105,7 @@ $ ./vcpkg install cserialport
 
 # Cross Compile 交叉编译
 
-- arm on ubuntu 20.04
+- arm on ubuntu 22.04
 
 ```
 $ sudo apt-get install g++-arm-linux-gnueabi
@@ -124,7 +124,7 @@ $ cmake .. -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_arm_win3
 $ cmake --build .
 ```
 
-- aarch64 on ubuntu 20.04
+- aarch64 on ubuntu 22.04
 
 ```
 $ sudo apt-get install g++-aarch64-linux-gnu
@@ -143,7 +143,7 @@ $ cmake .. -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_aarch64_
 $ cmake --build .
 ```
 
-- mips64el on ubuntu 20.04
+- mips64el on ubuntu 22.04
 
 ```
 $ sudo apt-get install g++-mips64el-linux-gnuabi64
@@ -153,13 +153,23 @@ $ cmake .. -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_mips64el.cmake
 $ cmake --build .
 ```
 
-- riscv64 on ubuntu 20.04
+- riscv64 on ubuntu 22.04
 
 ```
 $ sudo apt-get install g++-riscv64-linux-gnu
 $ cd CSerialPort
 $ mkdir bin_riscv64 && cd bin_riscv64
 $ cmake .. -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_riscv64.cmake
+$ cmake --build .
+```
+
+- mingw64(windows posix thread) on ununtu 22.04
+
+```
+$ sudo apt-get install mingw-w64
+$ cd CSerialPort
+$ mkdir bin_mingw64 && cd bin_mingw64
+$ cmake .. -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain_mingw64_linux.cmake
 $ cmake --build .
 ```
 
