@@ -105,7 +105,7 @@ void MainWindow::on_pushButtonOpen_clicked()
                               ui->comboBoxBaudrate->currentText().toInt(),
                               itas109::Parity(ui->comboBoxParity->currentIndex()),
                               itas109::DataBits(ui->comboBoxDataBit->currentText().toInt()),
-                              itas109::StopBits(ui->comboBoxStopBit->currentIndex()));
+                              itas109::StopBits(ui->comboBoxStopBit->currentText().toInt()));
 
             m_SerialPort.setReadIntervalTimeout(ui->lineEditReadIntervalTimeoutMS->text().toInt());
 

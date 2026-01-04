@@ -1,5 +1,6 @@
 ﻿#include "CSerialPort/SerialPortUnixBase.h"
 #include "CSerialPort/SerialPortListener.h"
+#include "CSerialPort/ilockfile.hpp"
 #include "CSerialPort/ibuffer.hpp"
 #include "CSerialPort/ithread.hpp"
 #include "CSerialPort/ilog.hpp"
@@ -51,8 +52,9 @@ CSerialPortUnixBase::CSerialPortUnixBase()
 
 CSerialPortUnixBase::CSerialPortUnixBase(const char *portName)
     : CSerialPortAsyncBase(portName)
+    , m_serialPortFileLock(new itas109::ILockFile())
 {
-    if (-1 == pipe(pipefd))
+    if (-1 == pipe(m_pipefd))
     {
         perror("pipe");
     }
@@ -212,9 +214,17 @@ int CSerialPortUnixBase::uartSet(int fd, int baudRate, itas109::Parity parity, i
     // 激活配置
     if (tcsetattr(m_handle, TCSANOW, &options) < 0)
     {
-        perror("tcsetattr failed");
+        fprintf(stderr, "tcsetattr failed\n");
         return -1;
     }
+
+    // set exclusive mode. No further opens are permitted except by root or CAP_SYS_ADMIN.
+    // TIOCEXCL + lock file to avoid open the same serial port
+    // if (-1 == ioctl(m_handle, TIOCEXCL))
+    //{
+    //    fprintf(stderr, "ioctl TIOCEXCL failed\n");
+    //    return -1;
+    //}
 
     // set custom baud rate, after tcsetattr
     if (0 == baudRateConstant)
@@ -267,67 +277,83 @@ bool CSerialPortUnixBase::openPort()
 
     bool bRet = false;
 
-    m_handle = open(m_portName, O_RDWR | O_NOCTTY); // block for select
-    if (INVALID_FILE_HANDLE != m_handle)
+    if (m_serialPortFileLock->lock(m_portName))
     {
-        // set param
-        if (uartSet(m_handle, m_baudRate, m_parity, m_dataBits, m_stopbits, m_flowControl) == -1)
+        m_handle = open(m_portName, O_RDWR | O_NOCTTY); // block for select
+        if (INVALID_FILE_HANDLE != m_handle)
         {
-            fprintf(stderr, "uart set failed\n");
-
-            bRet = false;
-            m_lastError = itas109::/*SerialPortError::*/ ErrorInvalidParam;
-        }
-        else
-        {
-            if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
+            // set param
+            if (uartSet(m_handle, m_baudRate, m_parity, m_dataBits, m_stopbits, m_flowControl) == -1)
             {
-                m_isEnableReadThread = true;
-                bRet = startReadThread();
+                fprintf(stderr, "uart set failed\n");
 
-                if (bRet)
-                {
-                    m_lastError = itas109::/*SerialPortError::*/ ErrorOK;
-                }
-                else
-                {
-                    m_isEnableReadThread = false;
-                    m_lastError = itas109::/*SerialPortError::*/ ErrorInner;
-                }
+                bRet = false;
+                m_lastError = itas109::/*SerialPortError::*/ ErrorInvalidParam;
             }
             else
             {
-                bRet = true;
-                m_lastError = itas109::/*SerialPortError::*/ ErrorOK;
+                if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
+                {
+                    m_isEnableReadThread = true;
+                    bRet = startReadThread();
+
+                    if (bRet)
+                    {
+                        m_lastError = itas109::/*SerialPortError::*/ ErrorOK;
+                    }
+                    else
+                    {
+                        m_isEnableReadThread = false;
+                        m_lastError = itas109::/*SerialPortError::*/ ErrorInner;
+                    }
+                }
+                else
+                {
+                    bRet = true;
+                    m_lastError = itas109::/*SerialPortError::*/ ErrorOK;
+                }
             }
+        }
+        else
+        {
+            // Could not open the port
+            // char str[300];
+            // snprintf(str, sizeof(str), "open port error: Unable to open %s", m_portName);
+            // perror(str);
+
+            if (EACCES == errno)
+            {
+                m_lastError = itas109::/*SerialPortError::*/ ErrorAccessDenied;
+            }
+            else if (EBUSY == errno)
+            {
+                m_lastError = itas109::/*SerialPortError::*/ ErrorAlreadyOpen;
+            }
+            else if (ENOENT == errno)
+            {
+                m_lastError = itas109::/*SerialPortError::*/ ErrorNotExist;
+            }
+            else
+            {
+                m_lastError = itas109::/*SerialPortError::*/ ErrorOpenFailed;
+            }
+
+            bRet = false;
+        }
+
+        if (!bRet)
+        {
+            m_serialPortFileLock->unlock();
+
+            // TODO:
+            closePort();
         }
     }
     else
     {
-        // Could not open the port
-        // char str[300];
-        // snprintf(str, sizeof(str), "open port error: Unable to open %s", m_portName);
-        // perror(str);
-
-        if (EACCES == errno)
-        {
-            m_lastError = itas109::/*SerialPortError::*/ ErrorAccessDenied;
-        }
-        else if (ENOENT == errno)
-        {
-            m_lastError = itas109::/*SerialPortError::*/ ErrorNotExist;
-        }
-        else
-        {
-            m_lastError = itas109::/*SerialPortError::*/ ErrorOpenFailed;
-        }
-
         bRet = false;
-    }
-
-    if (!bRet)
-    {
-        closePort();
+        m_lastError = itas109::/*SerialPortError::*/ ErrorAlreadyOpen;
+        fprintf(stderr, "%s is already locked\n", m_serialPortFileLock->path());
     }
 
     LOG_INFO("open %s. code: %d, message: %s", m_portName, getLastError(), getLastErrorMsg());
@@ -342,6 +368,10 @@ void CSerialPortUnixBase::closePort()
     if (isOpen())
     {
         stopReadThread();
+
+        m_serialPortFileLock->unlock();
+
+        // ioctl(m_handle, TIOCNXCL); // disable exclusive mode
 
         close(m_handle);
 
@@ -615,7 +645,7 @@ void CSerialPortUnixBase::beforeStopReadThread()
 {
     if (INVALID_FILE_HANDLE != m_handle)
     {
-        write(pipefd[1], "q", 1);
+        write(m_pipefd[1], "q", 1);
     }
 }
 
@@ -653,10 +683,10 @@ int CSerialPortUnixBase::waitCommEventNative()
     timeout.tv_sec = m_readIntervalTimeoutMS / 1000;
     timeout.tv_usec = (m_readIntervalTimeoutMS % 1000) * 1000;
 
-    FD_ZERO(&readFd);           // clear all read fdset
-    FD_SET(m_handle, &readFd);  // add read fdset
-    FD_SET(pipefd[0], &readFd); // add pipe read fdset for wake up
-    int ret = select(m_handle > pipefd[0] ? m_handle + 1 : pipefd[0] + 1, &readFd, nullptr, nullptr, 0 == m_readIntervalTimeoutMS ? NULL : &timeout);
+    FD_ZERO(&readFd);             // clear all read fdset
+    FD_SET(m_handle, &readFd);    // add read fdset
+    FD_SET(m_pipefd[0], &readFd); // add pipe read fdset for wake up
+    int ret = select(m_handle > m_pipefd[0] ? m_handle + 1 : m_pipefd[0] + 1, &readFd, nullptr, nullptr, 0 == m_readIntervalTimeoutMS ? NULL : &timeout);
     if (ret < 0) // -1 error, 0 timeout, >0 ok
     {
         if (errno == EINTR) // ignore system interupt
@@ -675,11 +705,11 @@ int CSerialPortUnixBase::waitCommEventNative()
     {
         return -1; // continue
     }
-    else if (1 == FD_ISSET(pipefd[0], &readFd))
+    else if (1 == FD_ISSET(m_pipefd[0], &readFd))
     {
-        char buf[1];                       // q
-        read(pipefd[0], buf, sizeof(buf)); // clear pipe
-        return -1;                         // continue
+        char buf[1];                         // q
+        read(m_pipefd[0], buf, sizeof(buf)); // clear pipe
+        return -1;                           // continue
     }
 
     return 1; // ok

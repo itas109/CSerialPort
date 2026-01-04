@@ -23,6 +23,11 @@
 
 #include "SerialPortAsyncBase.h"
 
+namespace itas109
+{
+class ILockFile;
+}
+
 // Serial Programming Guide for POSIX Operating Systems
 // https://www.msweet.org/serial/serial.html
 
@@ -195,6 +200,7 @@ private:
     int waitCommEventNative() override final;
 
 private:
-    int pipefd[2]; ///< pipe file descriptor for wake up read thread 用于唤醒读取线程的管道文件描述符
+    int m_pipefd[2];                                          ///< pipe file descriptor for wake up read thread 用于唤醒读取线程的管道文件描述符
+    std::unique_ptr<itas109::ILockFile> m_serialPortFileLock; ///< lock file for serial port 串口锁文件
 };
 #endif //__CSERIALPORT_UNIX_BASE_H__

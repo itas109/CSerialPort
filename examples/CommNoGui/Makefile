@@ -12,6 +12,7 @@ SRC = ${DEMO_DIR}/CSerialPortDemoNoGui.cpp \
       ${SRC_DIR}/SerialPortInfoUnixBase.cpp \
       ${SRC_DIR}/SerialPort.cpp \
       ${SRC_DIR}/SerialPortBase.cpp \
+      ${SRC_DIR}/SerialPortAsyncBase.cpp \
       ${SRC_DIR}/SerialPortUnixBase.cpp
 
 OBJ = ${SRC}

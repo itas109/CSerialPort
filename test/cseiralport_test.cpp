@@ -356,7 +356,6 @@ TEST_CASE_FIXTURE(CSerialPortTests, "open_1_1")
     CHECK_MESSAGE(m_serialport1.open(), portName1 << " open error");
 }
 
-#ifdef _WIN32
 // #1_2 open port 打开占用的串口
 TEST_CASE_FIXTURE(CSerialPortTests, "open_1_2")
 {
@@ -366,7 +365,6 @@ TEST_CASE_FIXTURE(CSerialPortTests, "open_1_2")
     m_serialport1.init(portName1);
     CHECK_FALSE_MESSAGE(m_serialport1.open(), portName1 << " is used,but open ok");
 }
-#endif
 
 // #1_3 multiple open port 同时打开多个串口
 TEST_CASE_FIXTURE(CSerialPortTests, "open_1_3")
