@@ -1,4 +1,4 @@
-TARGET = CSerialPortDemoNoGui
+TARGET = CSerialPortWebServer
 CROSS_COMPILE ?=
 CC = $(CROSS_COMPILE)g++
 # CC=/usr/bin/arm-linux-gnueabi-g++ # make CROSS_COMPILE=/usr/bin/arm-linux-gnueabi-
@@ -14,7 +14,7 @@ CCFLAGS = -O2 ${CUSTOM_CCFLAGS}
 LDFLAGS = -lpthread
 
 # source files
-SRC = ${CUR_DIR}/CSerialPortDemoNoGui.cpp \
+SRC = ${CUR_DIR}/main.cpp \
       ${SRC_DIR}/SerialPortInfo.cpp \
       ${SRC_DIR}/SerialPortInfoBase.cpp \
       ${SRC_DIR}/SerialPortInfoUnixBase.cpp \

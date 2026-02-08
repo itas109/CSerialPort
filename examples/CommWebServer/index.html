@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='utf-8'>
+    <title>CSerialPort Web Server</title>
+
+    <style>
+        #header {
+            text-align: center;
+            padding: 1px;
+        }
+
+        #left {
+            position: absolute;
+            width: 55%;
+            height: 100%;
+        }
+
+        #right {
+            margin-left: 55%;
+            height: 100%;
+        }
+
+        #receive {
+            width: 50vw;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        #log {
+            width: 40vw;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+    <div id='header'>CSerialPort Web Server</div>
+
+    <hr />
+
+    <div>
+        <label>PortName</label>
+        <select id='listPortSelect'></select>
+        <label>BaudRate</label>
+        <select id='baudRateSelect'></select>
+        <button id='onOpen' onclick='onOpen()'>open</button>
+        <button id='onClose' onclick='onClose()'>close</button>
+        <input type='checkbox' id='setDtr' onclick='onSetDtr(this)' />
+        <label>setDtr</label>
+        <input type='checkbox' id='setRts' onclick='onSetRts(this)' />
+        <label>setRts</label>
+    </div>
+
+    <hr />
+
+    <div>
+        <h2>Send</h2>
+        <input type='checkbox' id='isSendHex' />
+        <label for="isSendHex">isSendHex</label>
+        <input id='send' type='text' style='width:230px;' value='https://github.com/itas109/CSerialPort'>
+        <button id='onSend' onclick='onSend()'>send</button>
+        <input type='checkbox' id='sendCycle' onclick='onSendCycle()' />
+        <label for="sendCycle">sendCycle</label>
+        <input id='sendCycleInterval' type='text' style='width:50px;' value='1000'>
+        <label for="sendCycleInterval">ms</label>
+    </div>
+
+    <hr />
+
+    <div id='left'>
+        <h2>Receive</h2>
+        <input type='checkbox' id='isReceiveHex' onclick='onSetReceiveMode()' />
+        <label for="isReceiveHex">isReceiveHex</label>
+        <button id='onRead' onclick='onRead()'>read</button>
+        <button id='clearReceive' onclick='onClearReceive()'>clear</button>
+        <pre id='receive'></pre>
+    </div>
+
+    <div id='right'>
+        <h2>Log</h2>
+        <button id='clearLog' onclick='onClear()'>clear</button>
+        <pre id='log'></pre>
+    </div>
+
+    <script>
+        // tile
+        (async function listPort() {
+            const getVersion = await fetch('getVersion');
+            const getVersionData = await getVersion.json();
+            document.title += ' - ' + getVersionData.version;
+        })();
+
+        // listPortSelect
+        const listPortSelect = document.getElementById('listPortSelect');
+        (async function listPort() {
+            const listPorts = await fetch('listPorts');
+            const listPortsData = await listPorts.json();
+            listPortsData.forEach(listPort => {
+                const optionElement = document.createElement('option');
+                optionElement.value = listPort.portName;
+                optionElement.textContent = listPort.portName;
+                listPortSelect.appendChild(optionElement);
+            });
+        })();
+
+        // baudRateSelect
+        const baudRateSelect = document.getElementById('baudRateSelect');
+        const baudRateArray = [110, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200, 921600];
+        baudRateArray.forEach(baudRate => {
+            const option = document.createElement('option');
+            option.value = baudRate;
+            option.text = baudRate;
+            if (baudRate === 9600) {
+                option.selected = true; // default selected
+            }
+            baudRateSelect.appendChild(option);
+        });
+    </script>
+    <script>
+        if ('EventSource' in window) {
+            const source = new EventSource('/onReadEvent');
+
+            source.onopen = function (event) {
+                output("onReadEvent success");
+            };
+
+            source.onmessage = function (event) {
+                outputReceive(event.data);
+            };
+
+            source.onerror = function (error) {
+                output('EventSource failed. ' + JSON.stringify(error));
+                source.close();
+            };
+        }
+    </script>
+    <script>
+        function output(str, id = '#log') {
+            document.querySelector(id).textContent += str + '\n';
+        }
+
+        function outputReceive(str, id = '#receive') {
+            document.querySelector(id).textContent += str;
+        }
+
+        function onClear(id = '#log') {
+            document.querySelector(id).textContent = '';
+        }
+
+        function onClearReceive(id = '#receive') {
+            document.querySelector(id).textContent = '';
+        }
+
+        async function onOpen() {
+            const params = {
+                portName: document.querySelector('#listPortSelect option:checked').value,
+                baudRate: parseInt(document.querySelector('#baudRateSelect option:checked').value)
+            };
+
+            await fetch('init', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(params)
+            });
+            let result = await fetch('open');
+            let resultData = await result.json();
+            output(JSON.stringify(resultData));
+        }
+
+        async function onClose() {
+            await fetch('close');
+            output('close ok');
+        }
+
+        async function onSend() {
+            const str = document.querySelector('#send').value;
+            const params = {
+                isHex: document.querySelector('#isSendHex').checked,
+                data: encodeURI(str),
+                size: str.length
+            };
+            let result;
+            result = await fetch('writeData', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(params)
+            });
+            const writeData = await result.json();
+            output(JSON.stringify(writeData));
+        }
+
+        let sendCycleIntervalId = null;
+        async function onSendCycle() {
+            const isSendCycle = document.querySelector('#sendCycle').checked;
+            const interval = parseInt(document.querySelector('#sendCycleInterval').value);
+            if (isSendCycle) {
+                sendCycleIntervalId = setInterval(async () => {
+                    await onSend();
+                }, interval);
+            }
+            else {
+                if (sendCycleIntervalId !== null) {
+                    clearInterval(sendCycleIntervalId);
+                    sendCycleIntervalId = null;
+                }
+            }
+        }
+
+        async function onRead() {
+            let result;
+            result = await fetch('readData');
+            const readData = await result.text();
+            if (readData.length > 0) {
+                outputReceive(readData);
+            }
+        }
+
+        async function onSetReceiveMode() {
+            const params = {
+                isReceiveHex: document.querySelector('#isReceiveHex').checked
+            };
+            await fetch('setReceiveMode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(params)
+            });
+        }
+
+        async function onSetDtr(checkbox) {
+            await fetch('setDtr', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    isSet: checkbox.checked
+                })
+            });
+            output('setDtr ' + checkbox.checked);
+        }
+
+        async function onSetRts(checkbox) {
+            await fetch('setRts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    isSet: checkbox.checked
+                })
+            });
+            output('setRts ' + checkbox.checked);
+        }
+    </script>
+
+</body>
+
+</html>
