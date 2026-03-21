@@ -8,7 +8,8 @@
  * SWIG: 4.1.0
  * @brief Python CSerialPort Interface Python的CSerialPort接口
  */
-%module(directors="1") cserialport
+// threads="1" enable SWIG_PYTHON_THREADS
+%module(directors="1", threads="1") cserialport
 
 #define DLL_EXPORT
 

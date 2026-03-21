@@ -62,8 +62,8 @@ set(CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_SOURCE_DIR}/generate")
 # call swig in c++ mode
 set_property(SOURCE cserialport.i PROPERTY CPLUSPLUS ON)
 # -std=c++11
-set(CMAKE_SWIG_FLAGS "-std=c++11")
-# swig -python -c++ -std=c++11 -outdir generate -I../../include cserialport.i
+set(CMAKE_SWIG_FLAGS "-std=c++11" -threads) # enable SWIG_PYTHON_THREADS
+# swig -python -c++ -std=c++11 -threads -outdir generate -I../../include cserialport.i
 swig_add_library(${PROJECT_NAME} LANGUAGE python SOURCES cserialport.i ${CSerialPortSourceFiles})
 
 # error: Cannot specify link libraries for target "cserialport" which is not built by this project.
