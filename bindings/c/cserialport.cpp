@@ -478,7 +478,7 @@ int CSerialPortGetBaudRate(i_handle_t handle)
     return 0;
 }
 
-void CSerialPortSetParity(i_handle_t handle, Parity parity)
+void CSerialPortSetParity(i_handle_t handle, enum Parity parity)
 {
     itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
     if (pCSP)
@@ -498,7 +498,7 @@ Parity CSerialPortGetParity(i_handle_t handle)
     return ParityNone;
 }
 
-void CSerialPortSetDataBits(i_handle_t handle, DataBits dataBits)
+void CSerialPortSetDataBits(i_handle_t handle, enum DataBits dataBits)
 {
     itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
     if (pCSP)
@@ -518,7 +518,7 @@ DataBits CSerialPortGetDataBits(i_handle_t handle)
     return DataBits8;
 }
 
-void CSerialPortSetStopBits(i_handle_t handle, StopBits stopbits)
+void CSerialPortSetStopBits(i_handle_t handle, enum StopBits stopbits)
 {
     itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
     if (pCSP)
@@ -538,7 +538,7 @@ StopBits CSerialPortGetStopBits(i_handle_t handle)
     return StopOne;
 }
 
-void CSerialPortSetFlowControl(i_handle_t handle, FlowControl flowControl)
+void CSerialPortSetFlowControl(i_handle_t handle, enum FlowControl flowControl)
 {
     itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
     if (pCSP)

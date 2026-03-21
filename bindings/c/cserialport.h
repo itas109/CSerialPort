@@ -1,21 +1,8 @@
 #ifndef __C_CSERIALPORT_H__
 #define __C_CSERIALPORT_H__
 
-#if defined(_MSC_VER) // msvc
-#ifdef _WIN64
-typedef unsigned __int64 i_handle_t; // windows 64bit
-#else
-typedef unsigned int i_handle_t; // windows 32bit
-#endif
-#elif defined(__MINGW64__)                // MinGW-w64 (64-bit)
-typedef unsigned long long i_handle_t; // windows 64bit (MinGW-w64)
-#elif defined(__MINGW32__)                // MinGW (32-bit)
-typedef unsigned int i_handle_t; // windows 32bit (MinGW)
-#elif defined(__LP64__) || defined(_LP64) // gcc/clang
-typedef unsigned long i_handle_t; // LP64(long pointer 64) // 64bit OS(unix/linux/macos)
-#else
-typedef unsigned int i_handle_t; // ILP32(int long pointer 32) // 32bit OS(windows/unix/linux/macos)
-#endif
+#include <stdint.h> // uintptr_t
+typedef uintptr_t i_handle_t;
 
 #ifdef _WIN32
 #define C_DLL_EXPORT __declspec(dllexport)
