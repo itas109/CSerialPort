@@ -72,6 +72,33 @@ enum FlowControl
     FlowSoftware = 2
 };
 
+enum SerialPortError
+{
+    ErrorOK = 0,
+
+    ErrorFail = -1,
+    ErrorNotImplemented = -2,
+    ErrorInner = -3,
+    ErrorNullPointer = -4,
+    ErrorInvalidParam = -5,
+    ErrorAccessDenied = -6,
+    ErrorOutOfMemory = -7,
+    ErrorTimeout = -8,
+
+    ErrorNotInit = -20,
+    ErrorInitFailed = -21,
+    ErrorAlreadyExist = -22,
+    ErrorNotExist = -23,
+    ErrorAlreadyOpen = -24,
+    ErrorNotOpen = -25,
+    ErrorOpenFailed = -26,
+    ErrorCloseFailed = -27,
+    ErrorWriteFailed = -28,
+    ErrorReadFailed = -29,
+
+    ErrorUnknown = -999,
+};
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -148,6 +175,8 @@ extern "C"
     C_DLL_EXPORT int CSerialPortGetLastError(i_handle_t handle);
 
     C_DLL_EXPORT const char *CSerialPortGetLastErrorMsg(i_handle_t handle);
+
+    C_DLL_EXPORT const char *CSerialPortGetErrorMsg(i_handle_t handle, int code);
 
     C_DLL_EXPORT void CSerialPortClearError(i_handle_t handle);
 

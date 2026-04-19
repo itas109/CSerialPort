@@ -340,6 +340,18 @@ const char *itas109::CSerialPort::getLastErrorMsg() const
     }
 }
 
+const char *itas109::CSerialPort::getErrorMsg(int code) const
+{
+    if (p_serialPortBase)
+    {
+        return p_serialPortBase->getErrorMsg(code);
+    }
+    else
+    {
+        return "";
+    }
+}
+
 void itas109::CSerialPort::clearError()
 {
     if (p_serialPortBase)

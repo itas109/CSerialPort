@@ -208,6 +208,14 @@ public:
     const char *getLastErrorMsg() const;
 
     /**
+     * @brief Get the Error Code Message 获取指定错误码信息
+     *
+     * @param code errorCode 错误码
+     * @return return error code message 返回指定错误码信息
+     */
+    const char *getErrorMsg(int code) const;
+
+    /**
      * @brief clear error 清除错误信息
      *
      */

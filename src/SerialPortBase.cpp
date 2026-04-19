@@ -69,7 +69,12 @@ int CSerialPortBase::getLastError() const
 
 const char *CSerialPortBase::getLastErrorMsg() const
 {
-    switch (m_lastError)
+    return getErrorMsg(m_lastError);
+}
+
+const char *CSerialPortBase::getErrorMsg(int code) const
+{
+    switch (code)
     {
         case itas109::ErrorOK:
             return "success";

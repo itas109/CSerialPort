@@ -429,6 +429,17 @@ const char *CSerialPortGetLastErrorMsg(i_handle_t handle)
     return "";
 }
 
+const char *CSerialPortGetErrorMsg(i_handle_t handle, int code)
+{
+    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
+    if (pCSP)
+    {
+        return pCSP->getErrorMsg(code);
+    }
+
+    return "";
+}
+
 void CSerialPortClearError(i_handle_t handle)
 {
     itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
