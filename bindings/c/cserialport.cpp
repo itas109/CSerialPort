@@ -429,15 +429,9 @@ const char *CSerialPortGetLastErrorMsg(i_handle_t handle)
     return "";
 }
 
-const char *CSerialPortGetErrorMsg(i_handle_t handle, int code)
+const char *CSerialPortErrorToString(enum SerialPortError error)
 {
-    itas109::CSerialPort *pCSP = reinterpret_cast<itas109::CSerialPort *>(handle);
-    if (pCSP)
-    {
-        return pCSP->getErrorMsg(code);
-    }
-
-    return "";
+    return itas109::toString(static_cast<itas109::SerialPortError>(error));
 }
 
 void CSerialPortClearError(i_handle_t handle)

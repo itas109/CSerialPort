@@ -18,7 +18,7 @@ if is_config("CSERIALPORT_ENABLE_DEBUG", true) then
 end
 
 if is_config("CSERIALPORT_ENABLE_UTF8", true) then
-    add_defines("CSERIALPORT_UTF8") -- CSerialPort UTF8
+    add_defines("CSERIALPORT_USE_UTF8") -- CSerialPort UTF8
 end
 
 -- common include dirs
@@ -50,17 +50,16 @@ elseif is_plat("macosx") then
     add_syslinks("Foundation", "IOKit")
 end
 
--- libcserialport
-includes("lib")
-
 -- examples
 if is_config("CSERIALPORT_BUILD_EXAMPLES", true) then
     includes("examples")
 end
 
--- bindings/c
+-- c++ or c
 if is_config("CSERIALPORT_BUILD_BINDING_C", true) then
     includes("bindings/c")
+else
+    includes("lib")
 end
 
 -- test

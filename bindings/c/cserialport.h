@@ -176,7 +176,7 @@ extern "C"
 
     C_DLL_EXPORT const char *CSerialPortGetLastErrorMsg(i_handle_t handle);
 
-    C_DLL_EXPORT const char *CSerialPortGetErrorMsg(i_handle_t handle, int code);
+    C_DLL_EXPORT const char *CSerialPortErrorToString(enum SerialPortError error);
 
     C_DLL_EXPORT void CSerialPortClearError(i_handle_t handle);
 
