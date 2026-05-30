@@ -282,13 +282,6 @@ public:
      */
     const char *getLastErrorMsg() const;
     /**
-     * @brief Get the Error Code Message 获取指定错误码信息
-     *
-     * @param code errorCode 错误码
-     * @return return error code message 返回指定错误码信息
-     */
-    static const char *errorToString(int code);
-    /**
      * @brief clear error 清除错误信息
      *
      */
@@ -413,5 +406,7 @@ private:
     std::unique_ptr<CSerialPortAsyncBase> p_serialPortBase;
 #endif
 };
+
+DLL_EXPORT const char *toString(SerialPortError code);
 } // namespace itas109
 #endif //__CSERIALPORT_H__
