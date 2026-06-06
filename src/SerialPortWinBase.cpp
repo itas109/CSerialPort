@@ -24,6 +24,7 @@ CSerialPortWinBase::CSerialPortWinBase()
 
 CSerialPortWinBase::CSerialPortWinBase(const char *portName)
     : CSerialPortAsyncBase(portName)
+    , m_eventMask(0)
     , m_overlapMonitor()
     , m_overlapRead()
     , m_overlapWrite()
@@ -521,22 +522,15 @@ int CSerialPortWinBase::readDataNative(void *data, int size)
 unsigned int CSerialPortWinBase::getReadBufferUsedLenNative()
 {
     DWORD dwError = 0;
-    // TODO: Run-Time Check Failure #2 - Stack around the variable 'comstat' was corrupted.
-    static char buffer[64] = {0};
-    COMSTAT *pStat = reinterpret_cast<COMSTAT *>(buffer);
-    if (ClearCommError(m_handle, &dwError, pStat))
-    {
-        return (unsigned int)pStat->cbInQue;
-    }
-    return 0;
+    COMSTAT comstat;
+    ClearCommError(m_handle, &dwError, &comstat);
+    return (unsigned int)comstat.cbInQue;
 }
 
 int CSerialPortWinBase::waitCommEventNative()
 {
-    m_readIntervalTimeoutMS = 0; // TODO: need to fix thread crash. stack overflow
-
-    DWORD eventMask = 0;
-    if (FALSE == WaitCommEvent(m_handle, &eventMask, &m_overlapMonitor))
+    m_eventMask = 0;
+    if (FALSE == WaitCommEvent(m_handle, &m_eventMask, &m_overlapMonitor))
     {
         if (ERROR_IO_PENDING == GetLastError())
         {
@@ -547,7 +541,7 @@ int CSerialPortWinBase::waitCommEventNative()
             }
             else if (WAIT_OBJECT_0 == waitState)
             {
-                return (eventMask & EV_RXCHAR) ? 1 : -1;
+                return (m_eventMask & EV_RXCHAR) ? 1 : -1;
             }
             else
             {
@@ -559,6 +553,6 @@ int CSerialPortWinBase::waitCommEventNative()
     }
     else
     {
-        return (eventMask & EV_RXCHAR) ? 1 : -1;
+        return (m_eventMask & EV_RXCHAR) ? 1 : -1;
     }
 }

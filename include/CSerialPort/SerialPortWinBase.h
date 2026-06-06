@@ -165,6 +165,8 @@ private:
     int waitCommEventNative() override final;
 
 private:
+    DWORD m_eventMask;
+
     OVERLAPPED m_overlapMonitor; ///< monitor overlapped
 
     OVERLAPPED m_overlapRead;  ///< read overlapped
