@@ -213,7 +213,7 @@ public:
      * @param code errorCode 错误码
      * @return return error code message 返回指定错误码信息
      */
-    const char *getErrorMsg(int code) const;
+    static const char *getErrorMsg(int code);
 
     /**
      * @brief clear error 清除错误信息
