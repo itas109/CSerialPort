@@ -42,11 +42,14 @@ CSerialPortWinBase::CSerialPortWinBase()
     itas109::IUtils::strncpy(m_portName, "", 1);
     m_byteReadBufferFullNotify = (unsigned int)(m_readBufferSize * 0.8);
 
-    overlapMonitor.Internal = 0;
-    overlapMonitor.InternalHigh = 0;
-    overlapMonitor.Offset = 0;
-    overlapMonitor.OffsetHigh = 0;
+    memset(&overlapMonitor, 0, sizeof(overlapMonitor));
     overlapMonitor.hEvent = CreateEvent(NULL, true, false, NULL);
+
+    memset(&m_overlapRead, 0, sizeof(m_overlapRead));
+    m_overlapRead.hEvent = CreateEvent(NULL, true, false, NULL);
+
+    memset(&m_overlapWrite, 0, sizeof(m_overlapWrite));
+    m_overlapWrite.hEvent = CreateEvent(NULL, true, false, NULL);
 }
 
 CSerialPortWinBase::CSerialPortWinBase(const char *portName)
@@ -70,16 +73,35 @@ CSerialPortWinBase::CSerialPortWinBase(const char *portName)
     itas109::IUtils::strncpy(m_portName, portName, 256);
     m_byteReadBufferFullNotify = (unsigned int)(m_readBufferSize * 0.8);
 
-    overlapMonitor.Internal = 0;
-    overlapMonitor.InternalHigh = 0;
-    overlapMonitor.Offset = 0;
-    overlapMonitor.OffsetHigh = 0;
+    memset(&overlapMonitor, 0, sizeof(overlapMonitor));
     overlapMonitor.hEvent = CreateEvent(NULL, true, false, NULL);
+
+    memset(&m_overlapRead, 0, sizeof(m_overlapRead));
+    m_overlapRead.hEvent = CreateEvent(NULL, true, false, NULL);
+
+    memset(&m_overlapWrite, 0, sizeof(m_overlapWrite));
+    m_overlapWrite.hEvent = CreateEvent(NULL, true, false, NULL);
 }
 
 CSerialPortWinBase::~CSerialPortWinBase()
 {
-    CloseHandle(overlapMonitor.hEvent);
+    if (NULL != overlapMonitor.hEvent)
+    {
+        CloseHandle(overlapMonitor.hEvent);
+        overlapMonitor.hEvent = NULL;
+    }
+    
+    if (NULL != m_overlapRead.hEvent)
+    {
+        CloseHandle(m_overlapRead.hEvent);
+        m_overlapRead.hEvent = NULL;
+    }
+
+    if (NULL != m_overlapWrite.hEvent)
+    {
+        CloseHandle(m_overlapWrite.hEvent);
+        m_overlapWrite.hEvent = NULL;
+    }
 
     if (p_buffer)
     {
@@ -304,7 +326,20 @@ void CSerialPortWinBase::closePort()
             m_handle = INVALID_HANDLE_VALUE;
         }
 
-        ResetEvent(overlapMonitor.hEvent);
+        if (NULL != overlapMonitor.hEvent)
+        {
+            ResetEvent(overlapMonitor.hEvent);
+        }
+
+        if (NULL != m_overlapRead.hEvent)
+        {
+            ResetEvent(m_overlapRead.hEvent);
+        }
+
+        if (NULL != m_overlapWrite.hEvent)
+        {
+            ResetEvent(m_overlapWrite.hEvent);
+        }
     }
 }
 
@@ -493,11 +528,19 @@ int CSerialPortWinBase::readDataWin(void *data, int size)
     {
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
         {
-            m_overlapRead.Internal = 0;
-            m_overlapRead.InternalHigh = 0;
-            m_overlapRead.Offset = 0;
-            m_overlapRead.OffsetHigh = 0;
-            m_overlapRead.hEvent = CreateEvent(NULL, true, false, NULL);
+            if (NULL != m_overlapRead.hEvent)
+            {
+                m_overlapRead.Internal = 0;
+                m_overlapRead.InternalHigh = 0;
+                m_overlapRead.Offset = 0;
+                m_overlapRead.OffsetHigh = 0;
+                ResetEvent(m_overlapRead.hEvent);
+            }
+            else
+            {
+                m_lastError = itas109::/*SerialPortError::*/ ErrorReadFailed;
+                numBytes = (DWORD)-1;
+            }
 
             if (!ReadFile(m_handle, (void *)data, (DWORD)size, &numBytes, &m_overlapRead))
             {
@@ -511,8 +554,6 @@ int CSerialPortWinBase::readDataWin(void *data, int size)
                     numBytes = (DWORD)-1;
                 }
             }
-
-            CloseHandle(m_overlapRead.hEvent);
         }
         else
         {
@@ -623,11 +664,19 @@ int CSerialPortWinBase::writeData(const void *data, int size)
 
         if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
         {
-            m_overlapWrite.Internal = 0;
-            m_overlapWrite.InternalHigh = 0;
-            m_overlapWrite.Offset = 0;
-            m_overlapWrite.OffsetHigh = 0;
-            m_overlapWrite.hEvent = CreateEvent(NULL, true, false, NULL);
+            if (NULL != m_overlapWrite.hEvent)
+            {
+                m_overlapWrite.Internal = 0;
+                m_overlapWrite.InternalHigh = 0;
+                m_overlapWrite.Offset = 0;
+                m_overlapWrite.OffsetHigh = 0;
+                ResetEvent(m_overlapWrite.hEvent);
+            }
+            else
+            {
+                m_lastError = itas109::/*SerialPortError::*/ ErrorWriteFailed;
+                numBytes = (DWORD)-1;
+            }
 
             if (!WriteFile(m_handle, (void *)data, (DWORD)size, &numBytes, &m_overlapWrite))
             {
@@ -641,8 +690,6 @@ int CSerialPortWinBase::writeData(const void *data, int size)
                     numBytes = (DWORD)-1;
                 }
             }
-
-            CloseHandle(m_overlapWrite.hEvent);
         }
         else
         {
