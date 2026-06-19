@@ -37,9 +37,9 @@ CSerialPort is a lightweight cross-platform serial port library based on C++, wh
 
 ## Long-term Goal
 
-- [x] 1.support modern c++ standard
-- [ ] 2.support character interval time and custom protocol parsing
-- [ ] 3.support raw sync、raw async and extend async mode
+- [x] 1.support modern c++11 standard
+- [x] 2.support character interval timeout and custom protocol parsing
+- [ ] 3.support raw sync(implemented), raw async(implemented) and extend sync mode(not implemented)
 - [ ] 4.support script engine
 
 ## Short-term Goal
@@ -53,8 +53,8 @@ CSerialPort is a lightweight cross-platform serial port library based on C++, wh
 
 # Latest version
 
-## Version: 4.3.3.250923
-by itas109 on 2025-09-23
+## Version: 5.0.0.260619
+by itas109 on 2026-06-19
 
 # Quick Start
 
@@ -70,8 +70,8 @@ run demo ( for example serial port lookback test on linux)
 
 ```
 CSerialPort/bin $ ./CSerialPortDemoNoGui 
-[INFO] CSerialPort - OS: Linux, ProductName: Ubuntu 22.04.2 LTS, Arch: x86_64, ProcessorNum: 4, Compiler: gcc(11.4.0), Bit: 64, C++: 201703L, Bindings: , Version: https://github.com/itas109/CSerialPort - v4.3.3.250923
-Version: https://github.com/itas109/CSerialPort - v4.3.3.250923
+[INFO] CSerialPort - OS: Linux, ProductName: Ubuntu 22.04.2 LTS, Arch: x86_64, ProcessorNum: 16, Compiler: gcc(11.4.0), Bit: 64, C++: 201103L, Bindings: , Version: https://github.com/itas109/CSerialPort - v5.0.0.260619
+Version: https://github.com/itas109/CSerialPort - v5.0.0.260619
 
 AvailableFriendlyPorts:
 1 - /dev/ttyCH341USB0 QinHeng CH340 serial converter 1a86:7523
@@ -80,14 +80,15 @@ AvailableFriendlyPorts:
 Please Input The Index Of Port(1 - 2)
 1
 Port Name: /dev/ttyCH341USB0
-[INFO] openPort - portName: /dev/ttyCH341USB0, baudRate: 9600, dataBit: 8, parity: 0, stopBit: 0, flowControl: 0, mode: async, readBufferSize:4096(4096), readIntervalTimeoutMS: 0, minByteReadNotify: 1, byteReadBufferFullNotify: 3276
+[INFO] openPort - portName: /dev/ttyCH341USB0, baudRate: 9600, dataBit: 8, parity: 0, stopBit: 1, flowControl: 0, mode: async, readBufferSize:4096(4096), readIntervalTimeoutMS: 0, minByteReadNotify: 1, byteReadBufferFullNotify: 3276
+[INFO] startReadThread - /dev/ttyCH341USB0 start read thread success. thread id: 140057885512640
 [INFO] openPort - open /dev/ttyCH341USB0. code: 0, message: success
 Open /dev/ttyCH341USB0 Success
 Code: 0, Message: success
-[INFO] writeData - write. len: 5, hex(top100): 3132333435
-[INFO] writeData - write. len: 7, hex(top100): 69746173313039
-[INFO] commThreadMonitor - write buffer(usedLen 12). len: 12, hex(top100): 313233343569746173313039
-[INFO] commThreadMonitor - onReadEvent min read byte. portName: /dev/ttyCH341USB0, readLen: 12
+[INFO] writeData - /dev/ttyCH341USB0 write. len: 5, hex(top100): 3132333435
+[INFO] writeData - /dev/ttyCH341USB0 write. len: 7, hex(top100): 69746173313039
+[INFO] readThreadFun - /dev/ttyCH341USB0 write buffer(usedLen 12). len: 12, hex(top100): 313233343569746173313039
+[INFO] readThreadFun - onReadEvent read byte. portName: /dev/ttyCH341USB0, readLen: 12
 [INFO] readData - read. len: 12, hex(top100): 313233343569746173313039
 /dev/ttyCH341USB0 - Count: 1, Length: 12, Str: 12345itas109, Hex: 0x31 0x32 0x33 0x34 0x35 0x69 0x74 0x61 0x73 0x31 0x30 0x39
 ```

@@ -1,5 +1,23 @@
 # CSerialPort Changelog
 
+## v5.0.0 (2026-06-19)
+
+Feature:
+
+* support modern c++11 standard 支持现代C++11标准(gcc4.8+ clang3.1+ msvc2015+)
+* support character interval timeout 支持字符间超时
+* support custom protocol parsing 支持自定义协议解析
+* support raw sync, raw async and extend sync mode 支持原生同步(无线程无缓冲区无协议解析)、原生异步(有多线程有缓冲区有协议解析)和可扩展同步模式(基于原生异步，未实现)
+* support custom protocol parser 支持自定义协议解析器
+* support xmake cmake compile 支持xmake cmake编译
+* improve read and write overlap performance 优化异步读写性能
+* support c99 standard for c binding 对于C绑定支持c99标准
+
+Fixed:
+
+* #87 fixed python 12 or above read thread crash problem 修复python12及以上版本异步读取崩溃问题
+* #27 fixed unix serial non-exclusive problem 修复unix串口非独占问题
+
 ## v4.3.3 (2025-09-23)
 
 Feature:
