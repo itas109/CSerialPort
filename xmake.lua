@@ -47,7 +47,7 @@ if is_plat("windows") then
 elseif is_plat("linux") then
     add_syslinks("pthread")
 elseif is_plat("macosx") then
-    add_syslinks("Foundation", "IOKit")
+    add_frameworks("Foundation", "IOKit")
 end
 
 -- examples
